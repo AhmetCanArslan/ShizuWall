@@ -25,13 +25,17 @@ class AppListAdapter(
             packageName.text = appInfo.packageName
             checkbox.isChecked = appInfo.isSelected
             
+            // Avoid triggering listener when recycling views
+            checkbox.setOnCheckedChangeListener(null)
+            checkbox.isChecked = appInfo.isSelected
+            
             checkbox.setOnCheckedChangeListener { _, isChecked ->
                 appInfo.isSelected = isChecked
+                onAppClick(appInfo)
             }
             
             itemView.setOnClickListener {
                 checkbox.isChecked = !checkbox.isChecked
-                onAppClick(appInfo)
             }
         }
     }
