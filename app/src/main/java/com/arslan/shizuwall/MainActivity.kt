@@ -3,14 +3,17 @@ package com.arslan.shizuwall
 import android.annotation.SuppressLint
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class MainActivity : AppCompatActivity() {
@@ -19,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appListAdapter: AppListAdapter
     private lateinit var firewallToggle: SwitchMaterial
     private lateinit var searchView: SearchView
+    private lateinit var selectedCountText: TextView
     private val appList = mutableListOf<AppInfo>()
     private val filteredAppList = mutableListOf<AppInfo>()
     private var isFirewallEnabled = false
@@ -37,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         setupSearchView()
         setupRecyclerView()
         loadInstalledApps()
+        updateSelectedCount()
     }
     
     private fun setupSearchView() {
@@ -70,14 +75,58 @@ class MainActivity : AppCompatActivity() {
     
     private fun setupFirewallToggle() {
         firewallToggle = findViewById(R.id.firewallToggle)
+        selectedCountText = findViewById(R.id.selectedCountText)
+        
         firewallToggle.setOnCheckedChangeListener { _, isChecked ->
-            isFirewallEnabled = isChecked
             if (isChecked) {
-                Toast.makeText(this, "Firewall Etkinleştirildi", Toast.LENGTH_SHORT).show()
+                val selectedApps = appList.filter { it.isSelected }
+                if (selectedApps.isEmpty()) {
+                    Toast.makeText(this, "Please select at least one app", Toast.LENGTH_SHORT).show()
+                    firewallToggle.isChecked = false
+                    return@setOnCheckedChangeListener
+                }
+                showFirewallConfirmDialog(selectedApps)
             } else {
-                Toast.makeText(this, "Firewall Devre Dışı", Toast.LENGTH_SHORT).show()
+                isFirewallEnabled = false
+                Toast.makeText(this, "Firewall disabled", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    
+    private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_firewall_confirm, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+        
+        val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
+        val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
+        val btnConfirm = dialogView.findViewById<MaterialButton>(R.id.btnConfirm)
+        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
+        
+        dialogMessage.text = "Do you want to enable firewall for ${selectedApps.size} apps listed below?"
+        
+        selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
+        selectedAppsRecyclerView.adapter = SelectedAppsAdapter(selectedApps)
+        
+        btnConfirm.setOnClickListener {
+            isFirewallEnabled = true
+            Toast.makeText(this, "Firewall activated for ${selectedApps.size} apps", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+        
+        btnCancel.setOnClickListener {
+            firewallToggle.isChecked = false
+            dialog.dismiss()
+        }
+        
+        dialog.show()
+    }
+    
+    private fun updateSelectedCount() {
+        val count = appList.count { it.isSelected }
+        selectedCountText.text = "Selected: $count"
     }
     
     private fun setupRecyclerView() {
@@ -85,7 +134,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         appListAdapter = AppListAdapter(filteredAppList) { appInfo ->
             // when an app is clicked
-            Toast.makeText(this, "Seçilen: ${appInfo.appName}", Toast.LENGTH_SHORT).show()
+            updateSelectedCount()
         }
         recyclerView.adapter = appListAdapter
     }

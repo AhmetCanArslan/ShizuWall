@@ -30,6 +30,17 @@
         app:layout_constraintTop_toTopOf="@id/appTitle"
         app:layout_constraintBottom_toBottomOf="@id/appTitle" />
 
+    <TextView
+        android:id="@+id/selectedCountText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selected: 0"
+        android:textSize="12sp"
+        android:padding="4dp"
+        app:layout_constraintEnd_toStartOf="@id/firewallLabel"
+        app:layout_constraintTop_toTopOf="@id/appTitle"
+        app:layout_constraintBottom_toBottomOf="@id/appTitle" />
+
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/firewallToggle"
         android:layout_width="wrap_content"
