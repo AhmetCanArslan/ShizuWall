@@ -9,12 +9,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class MainActivity : AppCompatActivity() {
     
     private lateinit var recyclerView: RecyclerView
     private lateinit var appListAdapter: AppListAdapter
+    private lateinit var firewallToggle: SwitchMaterial
     private val appList = mutableListOf<AppInfo>()
+    private var isFirewallEnabled = false
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +29,21 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         
+        setupFirewallToggle()
         setupRecyclerView()
         loadInstalledApps()
+    }
+    
+    private fun setupFirewallToggle() {
+        firewallToggle = findViewById(R.id.firewallToggle)
+        firewallToggle.setOnCheckedChangeListener { _, isChecked ->
+            isFirewallEnabled = isChecked
+            if (isChecked) {
+                Toast.makeText(this, "Firewall Etkinleştirildi", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Firewall Devre Dışı", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
     
     private fun setupRecyclerView() {
