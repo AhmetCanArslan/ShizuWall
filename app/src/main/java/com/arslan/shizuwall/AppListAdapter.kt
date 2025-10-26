@@ -3,6 +3,7 @@ package com.arslan.shizuwall
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -16,13 +17,20 @@ class AppListAdapter(
         val appIcon: ImageView = itemView.findViewById(R.id.appIcon)
         val appName: TextView = itemView.findViewById(R.id.appName)
         val packageName: TextView = itemView.findViewById(R.id.packageName)
+        val checkbox: CheckBox = itemView.findViewById(R.id.appCheckbox)
 
         fun bind(appInfo: AppInfo) {
             appIcon.setImageDrawable(appInfo.icon)
             appName.text = appInfo.appName
             packageName.text = appInfo.packageName
+            checkbox.isChecked = appInfo.isSelected
+            
+            checkbox.setOnCheckedChangeListener { _, isChecked ->
+                appInfo.isSelected = isChecked
+            }
             
             itemView.setOnClickListener {
+                checkbox.isChecked = !checkbox.isChecked
                 onAppClick(appInfo)
             }
         }
