@@ -1,6 +1,8 @@
 package com.arslan.shizuwall
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.widget.TextView
@@ -27,6 +29,13 @@ class MainActivity : AppCompatActivity() {
     private val filteredAppList = mutableListOf<AppInfo>()
     private var isFirewallEnabled = false
     
+    private lateinit var sharedPreferences: SharedPreferences
+    
+    companion object {
+        private const val PREF_NAME = "ShizuWallPrefs"
+        private const val KEY_SELECTED_APPS = "selected_apps"
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,6 +45,8 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        
+        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         
         setupFirewallToggle()
         setupSearchView()
@@ -136,6 +147,7 @@ class MainActivity : AppCompatActivity() {
         appListAdapter = AppListAdapter(filteredAppList) { appInfo ->
             // when an app is clicked
             updateSelectedCount()
+            saveSelectedApps()
         }
         recyclerView.adapter = appListAdapter
     }
@@ -145,6 +157,9 @@ class MainActivity : AppCompatActivity() {
         val packageManager = packageManager
         val packages = packageManager.getInstalledApplications(0)
         
+        // Load previously selected apps
+        val selectedPackages = loadSelectedApps()
+        
         appList.clear()
         for (packageInfo in packages) {
             // only show user apps (exclude system apps)
@@ -153,7 +168,8 @@ class MainActivity : AppCompatActivity() {
                 val packageName = packageInfo.packageName
                 val icon = packageManager.getApplicationIcon(packageInfo)
                 
-                appList.add(AppInfo(appName, packageName, icon))
+                val isSelected = selectedPackages.contains(packageName)
+                appList.add(AppInfo(appName, packageName, icon, isSelected))
             }
         }
         
@@ -164,5 +180,16 @@ class MainActivity : AppCompatActivity() {
         filteredAppList.addAll(appList)
         
         appListAdapter.notifyDataSetChanged()
+    }
+    
+    private fun saveSelectedApps() {
+        val selectedPackages = appList.filter { it.isSelected }.map { it.packageName }.toSet()
+        sharedPreferences.edit()
+            .putStringSet(KEY_SELECTED_APPS, selectedPackages)
+            .apply()
+    }
+    
+    private fun loadSelectedApps(): Set<String> {
+        return sharedPreferences.getStringSet(KEY_SELECTED_APPS, emptySet()) ?: emptySet()
     }
 }
