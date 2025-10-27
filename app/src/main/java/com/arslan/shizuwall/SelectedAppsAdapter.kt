@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import android.graphics.Bitmap
 
 class SelectedAppsAdapter(
     private val appList: List<AppInfo>
@@ -16,7 +17,11 @@ class SelectedAppsAdapter(
         val appName: TextView = itemView.findViewById(R.id.appName)
 
         fun bind(appInfo: AppInfo) {
-            appIcon.setImageDrawable(appInfo.icon)
+            if (appInfo.iconBitmap != null) {
+                appIcon.setImageBitmap(appInfo.iconBitmap)
+            } else {
+                appIcon.setImageDrawable(null)
+            }
             appName.text = appInfo.appName
         }
     }

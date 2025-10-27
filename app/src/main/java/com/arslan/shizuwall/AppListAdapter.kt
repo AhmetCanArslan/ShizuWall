@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import android.graphics.Bitmap
 
 class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
     override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
@@ -40,7 +41,13 @@ class AppListAdapter(
         val checkbox: CheckBox = itemView.findViewById(R.id.appCheckbox)
 
         fun bind(appInfo: AppInfo) {
-            appIcon.setImageDrawable(appInfo.icon)
+            // use cached bitmap (fast) instead of resolving drawable each bind
+            if (appInfo.iconBitmap != null) {
+                appIcon.setImageBitmap(appInfo.iconBitmap)
+            } else {
+                appIcon.setImageDrawable(null)
+            }
+
             appName.text = appInfo.appName
             packageName.text = appInfo.packageName
 
