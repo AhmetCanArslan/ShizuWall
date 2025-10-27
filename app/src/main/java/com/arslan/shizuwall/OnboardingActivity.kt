@@ -1,55 +1,116 @@
 package com.arslan.shizuwall
 
+import android.Manifest
 import android.content.Intent
-import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.button.MaterialButton
 
 class OnboardingActivity : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
-    private lateinit var sharedPreferences: SharedPreferences
+    private val pages = mutableListOf<OnboardingPage>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_onboarding)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.onboarding_root)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        sharedPreferences = getSharedPreferences(MainActivity.PREF_NAME, MODE_PRIVATE)
         viewPager = findViewById(R.id.viewPager)
-        val adapter = OnboardingPageAdapter(this)
-        viewPager.adapter = adapter
-        viewPager.isUserInputEnabled = false // Disable swipe, use buttons only
+
+        setupPages()
+        viewPager.adapter = OnboardingPagerAdapter(pages, this)
+    }
+
+    private fun setupPages() {
+        pages.add(
+            OnboardingPage(
+                title = "Welcome to ShizuWall",
+                message = "Block unwanted network connections without root or vpn",
+                buttonText = "Next",
+                onButtonClick = { goToNextPage() }
+            )
+        )
+
+        pages.add(
+            OnboardingPage(
+                title = "Notification Permission",
+                message = "We need notification permission to keep you informed about firewall status and blocked connections",
+                buttonText = "Grant Permission",
+                onButtonClick = { requestNotificationPermission() },
+                isPermissionPage = true
+            )
+        )
+
+        pages.add(
+            OnboardingPage(
+                title = "Shizuku Required",
+                message = "Shizuku is required for this application to run. Therefore, the developer is not responsible for any negative consequences. Please install and activate Shizuku before proceeding.",
+                buttonText = "Get Started",
+                onButtonClick = { finishOnboarding() }
+            )
+        )
+    }
+
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Permission granted, move to next page
+            goToNextPage()
+        } else {
+            // Permission denied, still move to next page
+            goToNextPage()
+        }
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission already granted
+                    goToNextPage()
+                }
+                else -> {
+                    // Request permission
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        } else {
+            // No permission needed for Android 12 and below
+            goToNextPage()
+        }
     }
 
     fun goToNextPage() {
-        if (viewPager.currentItem < 1) {
-            viewPager.currentItem += 1
+        if (viewPager.currentItem < pages.size - 1) {
+            viewPager.currentItem = viewPager.currentItem + 1
         }
     }
 
     fun finishOnboarding() {
-        sharedPreferences.edit().putBoolean(MainActivity.KEY_ONBOARDING_DONE, true).apply()
+        // Save that onboarding is complete
+        getSharedPreferences("app_prefs", MODE_PRIVATE)
+            .edit()
+            .putBoolean("onboarding_complete", true)
+            .apply()
+
+        // Navigate to MainActivity
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
-
-    override fun onBackPressed() {
-        if (viewPager.currentItem > 0) {
-            viewPager.currentItem -= 1
-        } else {
-            super.onBackPressed()
-        }
-    }
 }
+
+data class OnboardingPage(
+    val title: String,
+    val message: String,
+    val buttonText: String,
+    val onButtonClick: () -> Unit,
+    val isPermissionPage: Boolean = false
+)

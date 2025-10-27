@@ -84,16 +84,21 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
         
-        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        
-        // Check if onboarding is done; if not, start OnboardingActivity
-        if (!sharedPreferences.getBoolean(KEY_ONBOARDING_DONE, false)) {
+        // Check if onboarding is complete
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val onboardingComplete = prefs.getBoolean("onboarding_complete", false)
+
+        if (!onboardingComplete) {
+            // Show onboarding
             startActivity(Intent(this, OnboardingActivity::class.java))
             finish()
             return
         }
+
+        setContentView(R.layout.activity_main)
+        
+        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -126,7 +131,13 @@ class MainActivity : AppCompatActivity() {
         
         // Ensure adapter and dim reflect saved firewall state
         appListAdapter.setSelectionEnabled(!isFirewallEnabled)
-        if (isFirewallEnabled) showDimOverlay() else hideDimOverlay()
+        if (isFirewallEnabled) {
+            showDimOverlay()
+            // Restart notification service if firewall was enabled
+            FirewallNotificationService.startService(this, activeFirewallPackages.size)
+        } else {
+            hideDimOverlay()
+        }
 
         // Check permission on startup
         checkShizukuPermission()
@@ -150,6 +161,7 @@ class MainActivity : AppCompatActivity() {
         Shizuku.removeRequestPermissionResultListener(requestPermissionResultListener)
         Shizuku.removeBinderReceivedListener(binderReceivedListener)
         Shizuku.removeBinderDeadListener(binderDeadListener)
+        // Don't stop the service here - it should persist even when MainActivity is destroyed
     }
     
     private fun checkShizukuAvailable(): Boolean {
@@ -515,9 +527,13 @@ class MainActivity : AppCompatActivity() {
                     activeFirewallPackages.addAll(packageNames)
                     saveActivePackages(activeFirewallPackages)
                     showDimOverlay()
+                    // Start notification service
+                    FirewallNotificationService.startService(this@MainActivity, packageNames.size)
                     Toast.makeText(this@MainActivity, "Firewall activated for ${packageNames.size} apps", Toast.LENGTH_SHORT).show()
                 } else {
                     hideDimOverlay()
+                    // Stop notification service
+                    FirewallNotificationService.stopService(this@MainActivity)
                     Toast.makeText(this@MainActivity, "Firewall disabled", Toast.LENGTH_SHORT).show()
                     activeFirewallPackages.clear()
                     saveActivePackages(activeFirewallPackages)
