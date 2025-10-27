@@ -1,5 +1,6 @@
 package com.arslan.shizuwall
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -10,6 +11,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.widget.TextView
@@ -18,6 +20,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -68,6 +72,7 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed"
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
         const val KEY_ONBOARDING_DONE = "onboarding_done"
+        private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
                 "newProcess",
@@ -141,6 +146,9 @@ class MainActivity : AppCompatActivity() {
 
         // Check permission on startup
         checkShizukuPermission()
+
+        // Check notification permission on startup
+        checkNotificationPermission()
     }
     
     override fun onResume() {
@@ -234,6 +242,13 @@ class MainActivity : AppCompatActivity() {
                         .show()
                 }
             }
+            NOTIFICATION_PERMISSION_REQUEST_CODE -> {
+                if (granted) {
+                    Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Notification permission denied. You won't see firewall status notifications.", Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
     
@@ -255,6 +270,22 @@ class MainActivity : AppCompatActivity() {
             // Request the permission
             Shizuku.requestPermission(code)
             false
+        }
+    }
+    
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    NOTIFICATION_PERMISSION_REQUEST_CODE
+                )
+            }
         }
     }
     
@@ -519,18 +550,21 @@ class MainActivity : AppCompatActivity() {
             firewallToggle.isEnabled = true
             if (success) {
                 isFirewallEnabled = enable
-                saveFirewallEnabled(enable)  // Save the state
+                saveFirewallEnabled(enable)
 
-                // disable selection and dim when enabled; re-enable when disabled
                 if (enable) {
                     activeFirewallPackages.clear()
                     activeFirewallPackages.addAll(packageNames)
                     saveActivePackages(activeFirewallPackages)
+                    appListAdapter.setSelectionEnabled(false)
                     showDimOverlay()
                     // Start notification service
                     FirewallNotificationService.startService(this@MainActivity, packageNames.size)
+                    // Send enable notification
+                    FirewallNotificationService.sendFirewallEnabledNotification(this@MainActivity, packageNames.size)
                     Toast.makeText(this@MainActivity, "Firewall activated for ${packageNames.size} apps", Toast.LENGTH_SHORT).show()
                 } else {
+                    appListAdapter.setSelectionEnabled(true)
                     hideDimOverlay()
                     // Stop notification service
                     FirewallNotificationService.stopService(this@MainActivity)
@@ -546,7 +580,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    
     private fun enableFirewall(packageNames: List<String>): Boolean {
         if (!runShizukuShellCommand("cmd connectivity set-chain3-enabled true")) {
             return false
