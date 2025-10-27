@@ -568,6 +568,8 @@ class MainActivity : AppCompatActivity() {
                     hideDimOverlay()
                     // Stop notification service
                     FirewallNotificationService.stopService(this@MainActivity)
+                    // Cancel enable notification
+                    FirewallNotificationService.cancelFirewallEnabledNotification(this@MainActivity)
                     Toast.makeText(this@MainActivity, "Firewall disabled", Toast.LENGTH_SHORT).show()
                     activeFirewallPackages.clear()
                     saveActivePackages(activeFirewallPackages)

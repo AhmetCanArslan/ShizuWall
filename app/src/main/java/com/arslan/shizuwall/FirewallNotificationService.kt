@@ -64,6 +64,11 @@ class FirewallNotificationService : Service() {
             notificationManager.notify(EVENT_NOTIFICATION_ID, notification)
         }
 
+        fun cancelFirewallEnabledNotification(context: Context) {
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancel(EVENT_NOTIFICATION_ID)
+        }
+
         private fun createEventNotificationChannel(context: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val channel = NotificationChannel(
