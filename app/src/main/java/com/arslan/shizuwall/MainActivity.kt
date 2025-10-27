@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private val appList = mutableListOf<AppInfo>()
     private val filteredAppList = mutableListOf<AppInfo>()
     private var isFirewallEnabled = false
+    private var currentQuery = ""
     
     private lateinit var sharedPreferences: SharedPreferences
     
@@ -226,7 +227,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                filterApps(newText ?: "")
+                currentQuery = newText ?: ""
+                filterApps(currentQuery)
                 return true
             }
         })
@@ -245,6 +247,12 @@ class MainActivity : AppCompatActivity() {
             })
         }
         appListAdapter.notifyDataSetChanged()
+    }
+    
+    private fun sortAndFilterApps() {
+        val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
+        appList.sortWith(compareByDescending<AppInfo> { it.isSelected }.thenBy(turkishCollator) { it.appName })
+        filterApps(currentQuery)
     }
     
     private fun setupFirewallToggle() {
@@ -328,6 +336,7 @@ class MainActivity : AppCompatActivity() {
             // when an app is clicked
             updateSelectedCount()
             saveSelectedApps()
+            sortAndFilterApps()
         }
         recyclerView.adapter = appListAdapter
     }
@@ -354,7 +363,7 @@ class MainActivity : AppCompatActivity() {
         }
         
         val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
-        appList.sortWith(compareBy(turkishCollator) { it.appName })
+        appList.sortWith(compareByDescending<AppInfo> { it.isSelected }.thenBy(turkishCollator) { it.appName })
         
         filteredAppList.clear()
         filteredAppList.addAll(appList)
