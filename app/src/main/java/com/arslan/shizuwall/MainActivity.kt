@@ -67,6 +67,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val PREF_NAME = "ShizuWallPrefs"
         private const val KEY_SELECTED_APPS = "selected_apps"
+        private const val KEY_SELECTED_COUNT = "selected_count"
         private const val KEY_FIREWALL_ENABLED = "firewall_enabled"
         private const val KEY_ACTIVE_PACKAGES = "active_packages"
         private const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed"
@@ -125,7 +126,10 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
 
         loadInstalledApps()
-        updateSelectedCount()
+        
+        // Load and display saved selected count
+        val savedCount = sharedPreferences.getInt(KEY_SELECTED_COUNT, 0)
+        selectedCountText.text = "Selected: $savedCount"
         
         // Load saved firewall state and apply to toggle without triggering listener
         isFirewallEnabled = loadFirewallEnabled()
@@ -465,7 +469,11 @@ class MainActivity : AppCompatActivity() {
             // Disable animator for initial load to prevent any scrolling
             val animator = recyclerView.itemAnimator
             recyclerView.itemAnimator = null
-            appListAdapter.submitList(filteredAppList.toList()) { recyclerView.itemAnimator = animator }
+            appListAdapter.submitList(filteredAppList.toList()) { 
+                recyclerView.itemAnimator = animator
+                // Update count after apps are loaded to show actual count
+                updateSelectedCount()
+            }
         }
     }
     
@@ -487,6 +495,7 @@ class MainActivity : AppCompatActivity() {
         val selectedPackages = appList.filter { it.isSelected }.map { it.packageName }.toSet()
         sharedPreferences.edit()
             .putStringSet(KEY_SELECTED_APPS, selectedPackages)
+            .putInt(KEY_SELECTED_COUNT, selectedPackages.size)
             .apply()
     }
     
