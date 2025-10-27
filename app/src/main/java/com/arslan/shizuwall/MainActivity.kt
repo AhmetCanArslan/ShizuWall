@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
+import rikka.shizuku.Shizuku
 
 class MainActivity : AppCompatActivity() {
     
@@ -31,9 +33,23 @@ class MainActivity : AppCompatActivity() {
     
     private lateinit var sharedPreferences: SharedPreferences
     
+    private val requestPermissionResultListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
+        onRequestPermissionsResult(requestCode, grantResult)
+    }
+    
+    private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
+        checkShizukuPermission()
+    }
+    
+    private val binderDeadListener = Shizuku.OnBinderDeadListener {
+        Toast.makeText(this, "Shizuku service is dead", Toast.LENGTH_SHORT).show()
+        finish()
+    }
+    
     companion object {
         private const val PREF_NAME = "ShizuWallPrefs"
         private const val KEY_SELECTED_APPS = "selected_apps"
+        private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
     }
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,11 +64,124 @@ class MainActivity : AppCompatActivity() {
         
         sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         
+        // Check if Shizuku is available
+        if (!checkShizukuAvailable()) {
+            return
+        }
+        
+        Shizuku.addRequestPermissionResultListener(requestPermissionResultListener)
+        Shizuku.addBinderReceivedListener(binderReceivedListener)
+        Shizuku.addBinderDeadListener(binderDeadListener)
+        
         setupFirewallToggle()
         setupSearchView()
         setupRecyclerView()
         loadInstalledApps()
         updateSelectedCount()
+        
+        // Check permission on startup
+        checkShizukuPermission()
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        Shizuku.removeRequestPermissionResultListener(requestPermissionResultListener)
+        Shizuku.removeBinderReceivedListener(binderReceivedListener)
+        Shizuku.removeBinderDeadListener(binderDeadListener)
+    }
+    
+    private fun checkShizukuAvailable(): Boolean {
+        try {
+            if (Shizuku.pingBinder()) {
+                return true
+            }
+        } catch (e: Exception) {
+            // Shizuku is not available
+        }
+        
+        AlertDialog.Builder(this)
+            .setTitle("Shizuku Required")
+            .setMessage("This app requires Shizuku to be installed and running. Please install Shizuku and start the service.")
+            .setPositiveButton("OK") { _, _ ->
+                finish()
+            }
+            .setCancelable(false)
+            .show()
+        
+        return false
+    }
+    
+    private fun checkShizukuPermission() {
+        if (Shizuku.isPreV11()) {
+            AlertDialog.Builder(this)
+                .setTitle("Shizuku Update Required")
+                .setMessage("Your Shizuku version is too old. Please update Shizuku to the latest version.")
+                .setPositiveButton("OK") { _, _ ->
+                    finish()
+                }
+                .setCancelable(false)
+                .show()
+            return
+        }
+        
+        if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+            // Permission already granted
+            return
+        } else if (Shizuku.shouldShowRequestPermissionRationale()) {
+            // User denied permission permanently
+            AlertDialog.Builder(this)
+                .setTitle("Permission Required")
+                .setMessage("Shizuku permission is required for this app to work. Please grant the permission in Shizuku settings.")
+                .setPositiveButton("OK") { _, _ ->
+                    finish()
+                }
+                .setCancelable(false)
+                .show()
+        } else {
+            // Request permission
+            Shizuku.requestPermission(SHIZUKU_PERMISSION_REQUEST_CODE)
+        }
+    }
+    
+    private fun onRequestPermissionsResult(requestCode: Int, grantResult: Int) {
+        val granted = grantResult == PackageManager.PERMISSION_GRANTED
+        when (requestCode) {
+            SHIZUKU_PERMISSION_REQUEST_CODE -> {
+                if (granted) {
+                    Toast.makeText(this, "Shizuku permission granted", Toast.LENGTH_SHORT).show()
+                } else {
+                    AlertDialog.Builder(this)
+                        .setTitle("Permission Denied")
+                        .setMessage("Shizuku permission is required for this app to work. The app will now close.")
+                        .setPositiveButton("OK") { _, _ ->
+                            finish()
+                        }
+                        .setCancelable(false)
+                        .show()
+                }
+            }
+        }
+    }
+    
+    private fun checkPermission(code: Int): Boolean {
+        if (Shizuku.isPreV11()) {
+            // Pre-v11 is unsupported
+            Toast.makeText(this, "Shizuku version is too old, please update", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        
+        return if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+            // Granted
+            true
+        } else if (Shizuku.shouldShowRequestPermissionRationale()) {
+            // Users choose "Deny and don't ask again"
+            Toast.makeText(this, "Please grant Shizuku permission in settings", Toast.LENGTH_LONG).show()
+            false
+        } else {
+            // Request the permission
+            Shizuku.requestPermission(code)
+            false
+        }
     }
     
     private fun setupSearchView() {
@@ -97,6 +226,13 @@ class MainActivity : AppCompatActivity() {
                     firewallToggle.isChecked = false
                     return@setOnCheckedChangeListener
                 }
+                
+                // Check Shizuku permission before proceeding
+                if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
+                    firewallToggle.isChecked = false
+                    return@setOnCheckedChangeListener
+                }
+                
                 showFirewallConfirmDialog(selectedApps)
             } else {
                 isFirewallEnabled = false
