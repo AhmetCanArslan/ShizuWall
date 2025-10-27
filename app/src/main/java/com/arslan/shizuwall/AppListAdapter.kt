@@ -24,6 +24,15 @@ class AppListAdapter(
     private val onAppClick: (AppInfo) -> Unit
 ) : ListAdapter<AppInfo, AppListAdapter.AppViewHolder>(AppInfoDiffCallback()) {
 
+    // controls whether user can change selection
+    private var selectionEnabled: Boolean = true
+
+    fun setSelectionEnabled(enabled: Boolean) {
+        selectionEnabled = enabled
+        // force rebind so views update to disabled state
+        notifyDataSetChanged()
+    }
+
     inner class AppViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val appIcon: ImageView = itemView.findViewById(R.id.appIcon)
         val appName: TextView = itemView.findViewById(R.id.appName)
@@ -34,18 +43,27 @@ class AppListAdapter(
             appIcon.setImageDrawable(appInfo.icon)
             appName.text = appInfo.appName
             packageName.text = appInfo.packageName
-            
+
             // Avoid triggering listener when recycling views
             checkbox.setOnCheckedChangeListener(null)
             checkbox.isChecked = appInfo.isSelected
-            
-            checkbox.setOnCheckedChangeListener { _, isChecked ->
-                appInfo.isSelected = isChecked
-                onAppClick(appInfo)
-            }
-            
-            itemView.setOnClickListener {
-                checkbox.isChecked = !checkbox.isChecked
+
+            if (selectionEnabled) {
+                checkbox.isEnabled = true
+                checkbox.setOnCheckedChangeListener { _, isChecked ->
+                    appInfo.isSelected = isChecked
+                    onAppClick(appInfo)
+                }
+                itemView.isClickable = true
+                itemView.setOnClickListener {
+                    checkbox.isChecked = !checkbox.isChecked
+                }
+            } else {
+                // disable interactions while firewall active
+                checkbox.isEnabled = false
+                checkbox.setOnCheckedChangeListener(null)
+                itemView.setOnClickListener(null)
+                itemView.isClickable = false
             }
         }
     }

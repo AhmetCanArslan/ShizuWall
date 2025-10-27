@@ -24,6 +24,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
+import android.view.View
+import android.view.ViewGroup
 
 class MainActivity : AppCompatActivity() {
     
@@ -75,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -95,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         setupFirewallToggle()
         setupSearchView()
         setupRecyclerView()
+
         loadInstalledApps()
         updateSelectedCount()
         
@@ -105,6 +109,10 @@ class MainActivity : AppCompatActivity() {
         firewallToggle.isChecked = isFirewallEnabled
         suppressToggleListener = false
         
+        // Ensure adapter and dim reflect saved firewall state
+        appListAdapter.setSelectionEnabled(!isFirewallEnabled)
+        if (isFirewallEnabled) showDimOverlay() else hideDimOverlay()
+
         // Check permission on startup
         checkShizukuPermission()
     }
@@ -115,6 +123,11 @@ class MainActivity : AppCompatActivity() {
         suppressToggleListener = true
         firewallToggle.isChecked = loadFirewallEnabled()
         suppressToggleListener = false
+
+        // Reflect current firewall state in UI
+        val enabled = loadFirewallEnabled()
+        appListAdapter.setSelectionEnabled(!enabled)
+        if (enabled) showDimOverlay() else hideDimOverlay()
     }
     
     override fun onDestroy() {
@@ -234,7 +247,7 @@ class MainActivity : AppCompatActivity() {
                 val firstVisible = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                 val animator = recyclerView.itemAnimator
                 recyclerView.itemAnimator = null
-                appListAdapter.submitList(filteredAppList.toList()) {
+                appListAdapter.submitList(filteredAppList.toList()) { 
                     recyclerView.itemAnimator = animator
                     recyclerView.scrollToPosition(firstVisible)
                 }
@@ -434,12 +447,16 @@ class MainActivity : AppCompatActivity() {
             if (success) {
                 isFirewallEnabled = enable
                 saveFirewallEnabled(enable)  // Save the state
+
+                // disable selection and dim when enabled; re-enable when disabled
                 if (enable) {
                     activeFirewallPackages.clear()
                     activeFirewallPackages.addAll(packageNames)
                     saveActivePackages(activeFirewallPackages)
+                    showDimOverlay()
                     Toast.makeText(this@MainActivity, "Firewall activated for ${packageNames.size} apps", Toast.LENGTH_SHORT).show()
                 } else {
+                    hideDimOverlay()
                     Toast.makeText(this@MainActivity, "Firewall disabled", Toast.LENGTH_SHORT).show()
                     activeFirewallPackages.clear()
                     saveActivePackages(activeFirewallPackages)
@@ -497,5 +514,21 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             false
         }
+    }
+
+    // dim only the RecyclerView and disable its interactions
+    private fun showDimOverlay() {
+        // visually dim RecyclerView and block interactions
+        recyclerView.alpha = 0.5f
+        recyclerView.isEnabled = false
+        recyclerView.isClickable = false
+        appListAdapter.setSelectionEnabled(false)
+    }
+
+    private fun hideDimOverlay() {
+        recyclerView.alpha = 1.0f
+        recyclerView.isEnabled = true
+        recyclerView.isClickable = true
+        appListAdapter.setSelectionEnabled(true)
     }
 }
