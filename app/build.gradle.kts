@@ -33,8 +33,12 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        aidl = true 
+    }
 }
 
+val shizuku_version = "13.1.5"
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -47,4 +51,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation ("dev.rikka.shizuku:api:$shizuku_version")
+    implementation ("dev.rikka.shizuku:provider:$shizuku_version")
 }

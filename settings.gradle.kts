@@ -9,6 +9,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        mavenCentral()
     }
 }
 dependencyResolutionManagement {
