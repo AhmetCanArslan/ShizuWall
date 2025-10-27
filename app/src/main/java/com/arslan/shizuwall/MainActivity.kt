@@ -2,6 +2,7 @@ package com.arslan.shizuwall
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -60,12 +61,13 @@ class MainActivity : AppCompatActivity() {
     }
     
     companion object {
-        private const val PREF_NAME = "ShizuWallPrefs"
+        const val PREF_NAME = "ShizuWallPrefs"
         private const val KEY_SELECTED_APPS = "selected_apps"
         private const val KEY_FIREWALL_ENABLED = "firewall_enabled"
         private const val KEY_ACTIVE_PACKAGES = "active_packages"
         private const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed"
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
+        const val KEY_ONBOARDING_DONE = "onboarding_done"
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
                 "newProcess",
@@ -84,13 +86,20 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         
+        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        
+        // Check if onboarding is done; if not, start OnboardingActivity
+        if (!sharedPreferences.getBoolean(KEY_ONBOARDING_DONE, false)) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+            finish()
+            return
+        }
+        
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        
-        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         
         // Check if Shizuku is available
         if (!checkShizukuAvailable()) {
