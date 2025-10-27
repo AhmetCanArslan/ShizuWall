@@ -55,6 +55,10 @@ This application requires Shizuku to function. The developer is not responsible 
 Use at your own discretion and ensure you understand which apps you're blocking.
 
 
+## 📄 License
+
+*This project is Licenced under GNU General Public License v3.0 (GPLv3). For details: [LICENSE](LICENSE)*
+
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome!
