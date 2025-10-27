@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.SystemClock
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -59,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_SELECTED_APPS = "selected_apps"
         private const val KEY_FIREWALL_ENABLED = "firewall_enabled"
         private const val KEY_ACTIVE_PACKAGES = "active_packages"
+        private const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed"
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
@@ -417,13 +419,39 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun saveFirewallEnabled(enabled: Boolean) {
-        sharedPreferences.edit()
-            .putBoolean(KEY_FIREWALL_ENABLED, enabled)
-            .apply()
+        // store a boot-relative timestamp when enabling so we can detect reboots
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(KEY_FIREWALL_ENABLED, enabled)
+        if (enabled) {
+            editor.putLong(KEY_FIREWALL_SAVED_ELAPSED, SystemClock.elapsedRealtime())
+        } else {
+            editor.remove(KEY_FIREWALL_SAVED_ELAPSED)
+        }
+        editor.apply()
     }
     
     private fun loadFirewallEnabled(): Boolean {
-        return sharedPreferences.getBoolean(KEY_FIREWALL_ENABLED, false)
+        val enabled = sharedPreferences.getBoolean(KEY_FIREWALL_ENABLED, false)
+        if (!enabled) return false
+
+        val savedElapsed = sharedPreferences.getLong(KEY_FIREWALL_SAVED_ELAPSED, -1L)
+        if (savedElapsed == -1L) {
+            // no timestamp — treat as disabled and clean up
+            sharedPreferences.edit().remove(KEY_FIREWALL_ENABLED).apply()
+            return false
+        }
+
+        val currentElapsed = SystemClock.elapsedRealtime()
+        // if currentElapsed < savedElapsed a reboot happened -> clear saved state
+        if (currentElapsed < savedElapsed) {
+            sharedPreferences.edit()
+                .remove(KEY_FIREWALL_ENABLED)
+                .remove(KEY_FIREWALL_SAVED_ELAPSED)
+                .apply()
+            return false
+        }
+
+        return true
     }
     
     private fun saveActivePackages(packages: Set<String>) {
