@@ -13,7 +13,8 @@
         android:text="Enable Firewall"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:textColor="?attr/colorOnSurface" />
 
     <TextView
         android:id="@+id/dialogMessage"
@@ -21,7 +22,8 @@
         android:layout_height="wrap_content"
         android:text="Do you want to enable firewall for 0 apps listed below?"
         android:textSize="16sp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:textColor="?attr/colorOnSurface" /> 
 
     <TextView
         android:layout_width="match_parent"
@@ -29,7 +31,8 @@
         android:text="Selected Apps:"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:textColor="?attr/colorOnSurface" /> 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/selectedAppsRecyclerView"

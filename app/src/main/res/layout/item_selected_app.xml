@@ -19,6 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:textSize="14sp"
-        android:textColor="@android:color/white" />
+        android:textColor="?attr/colorOnSurface" />
 
 </LinearLayout>

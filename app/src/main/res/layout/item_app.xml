@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/white" />
+                android:textColor="?attr/colorOnSurface" />
 
             <TextView
                 android:id="@+id/packageName"
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:textSize="12sp"
-                android:textColor="@android:color/darker_gray" />
+                android:textColor="?attr/colorOnSurface" />
 
         </LinearLayout>
 
