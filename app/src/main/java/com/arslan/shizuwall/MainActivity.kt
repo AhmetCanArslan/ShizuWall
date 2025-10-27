@@ -229,9 +229,30 @@ class MainActivity : AppCompatActivity() {
             override fun onQueryTextChange(newText: String?): Boolean {
                 currentQuery = newText ?: ""
                 filterApps(currentQuery)
+                
+                // Capture scroll position and disable animator to prevent scrolling during search updates
+                val firstVisible = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                val animator = recyclerView.itemAnimator
+                recyclerView.itemAnimator = null
+                appListAdapter.submitList(filteredAppList.toList()) {
+                    recyclerView.itemAnimator = animator
+                    recyclerView.scrollToPosition(firstVisible)
+                }
                 return true
             }
         })
+    }
+    
+    private fun setupRecyclerView() {
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        appListAdapter = AppListAdapter { appInfo ->
+            // when an app is clicked
+            updateSelectedCount()
+            saveSelectedApps()
+            sortAndFilterApps()
+        }
+        recyclerView.adapter = appListAdapter
     }
     
     @SuppressLint("NotifyDataSetChanged")
@@ -246,13 +267,22 @@ class MainActivity : AppCompatActivity() {
                 it.packageName.lowercase().contains(searchQuery)
             })
         }
-        appListAdapter.notifyDataSetChanged()
+        // Removed submitList from here; handled in callers
     }
     
     private fun sortAndFilterApps() {
         val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
         appList.sortWith(compareByDescending<AppInfo> { it.isSelected }.thenBy(turkishCollator) { it.appName })
         filterApps(currentQuery)
+        
+        // Capture scroll position and disable animator to prevent scrolling during selection updates
+        val firstVisible = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+        val animator = recyclerView.itemAnimator
+        recyclerView.itemAnimator = null
+        appListAdapter.submitList(filteredAppList.toList()) {
+            recyclerView.itemAnimator = animator
+            recyclerView.scrollToPosition(firstVisible)
+        }
     }
     
     private fun setupFirewallToggle() {
@@ -329,18 +359,6 @@ class MainActivity : AppCompatActivity() {
         selectedCountText.text = "Selected: $count"
     }
     
-    private fun setupRecyclerView() {
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        appListAdapter = AppListAdapter(filteredAppList) { appInfo ->
-            // when an app is clicked
-            updateSelectedCount()
-            saveSelectedApps()
-            sortAndFilterApps()
-        }
-        recyclerView.adapter = appListAdapter
-    }
-    
     @SuppressLint("NotifyDataSetChanged")
     private fun loadInstalledApps() {
         val packageManager = packageManager
@@ -368,7 +386,10 @@ class MainActivity : AppCompatActivity() {
         filteredAppList.clear()
         filteredAppList.addAll(appList)
         
-        appListAdapter.notifyDataSetChanged()
+        // Disable animator for initial load to prevent any scrolling
+        val animator = recyclerView.itemAnimator
+        recyclerView.itemAnimator = null
+        appListAdapter.submitList(filteredAppList.toList()) { recyclerView.itemAnimator = animator }
     }
     
     private fun saveSelectedApps() {

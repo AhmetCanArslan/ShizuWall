@@ -6,12 +6,23 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
+class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
+    override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
+        return oldItem.packageName == newItem.packageName
+    }
+
+    override fun areContentsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
+        return oldItem == newItem
+    }
+}
+
 class AppListAdapter(
-    private val appList: List<AppInfo>,
     private val onAppClick: (AppInfo) -> Unit
-) : RecyclerView.Adapter<AppListAdapter.AppViewHolder>() {
+) : ListAdapter<AppInfo, AppListAdapter.AppViewHolder>(AppInfoDiffCallback()) {
 
     inner class AppViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val appIcon: ImageView = itemView.findViewById(R.id.appIcon)
@@ -46,8 +57,6 @@ class AppListAdapter(
     }
 
     override fun onBindViewHolder(holder: AppViewHolder, position: Int) {
-        holder.bind(appList[position])
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount(): Int = appList.size
 }
