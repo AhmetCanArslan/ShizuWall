@@ -23,7 +23,6 @@ class AppListAdapter(
             appIcon.setImageDrawable(appInfo.icon)
             appName.text = appInfo.appName
             packageName.text = appInfo.packageName
-            checkbox.isChecked = appInfo.isSelected
             
             // Avoid triggering listener when recycling views
             checkbox.setOnCheckedChangeListener(null)
