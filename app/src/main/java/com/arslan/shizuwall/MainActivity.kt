@@ -54,6 +54,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val PREF_NAME = "ShizuWallPrefs"
         private const val KEY_SELECTED_APPS = "selected_apps"
+        private const val KEY_FIREWALL_ENABLED = "firewall_enabled"
+        private const val KEY_ACTIVE_PACKAGES = "active_packages"
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
@@ -95,8 +97,23 @@ class MainActivity : AppCompatActivity() {
         loadInstalledApps()
         updateSelectedCount()
         
+        // Load saved firewall state and apply to toggle without triggering listener
+        isFirewallEnabled = loadFirewallEnabled()
+        activeFirewallPackages.addAll(loadActivePackages())
+        suppressToggleListener = true
+        firewallToggle.isChecked = isFirewallEnabled
+        suppressToggleListener = false
+        
         // Check permission on startup
         checkShizukuPermission()
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // Re-sync toggle with saved state without triggering listener
+        suppressToggleListener = true
+        firewallToggle.isChecked = loadFirewallEnabled()
+        suppressToggleListener = false
     }
     
     override fun onDestroy() {
@@ -356,6 +373,26 @@ class MainActivity : AppCompatActivity() {
         return sharedPreferences.getStringSet(KEY_SELECTED_APPS, emptySet()) ?: emptySet()
     }
     
+    private fun saveFirewallEnabled(enabled: Boolean) {
+        sharedPreferences.edit()
+            .putBoolean(KEY_FIREWALL_ENABLED, enabled)
+            .apply()
+    }
+    
+    private fun loadFirewallEnabled(): Boolean {
+        return sharedPreferences.getBoolean(KEY_FIREWALL_ENABLED, false)
+    }
+    
+    private fun saveActivePackages(packages: Set<String>) {
+        sharedPreferences.edit()
+            .putStringSet(KEY_ACTIVE_PACKAGES, packages)
+            .apply()
+    }
+    
+    private fun loadActivePackages(): Set<String> {
+        return sharedPreferences.getStringSet(KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
+    }
+    
     private fun applyFirewallState(enable: Boolean, packageNames: List<String>) {
         if (enable && packageNames.isEmpty()) return
         firewallToggle.isEnabled = false
@@ -366,13 +403,16 @@ class MainActivity : AppCompatActivity() {
             firewallToggle.isEnabled = true
             if (success) {
                 isFirewallEnabled = enable
+                saveFirewallEnabled(enable)  // Save the state
                 if (enable) {
                     activeFirewallPackages.clear()
                     activeFirewallPackages.addAll(packageNames)
+                    saveActivePackages(activeFirewallPackages)
                     Toast.makeText(this@MainActivity, "Firewall activated for ${packageNames.size} apps", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this@MainActivity, "Firewall disabled", Toast.LENGTH_SHORT).show()
                     activeFirewallPackages.clear()
+                    saveActivePackages(activeFirewallPackages)
                 }
             } else {
                 suppressToggleListener = true
