@@ -14,11 +14,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
+import rikka.shizuku.ShizukuRemoteProcess
 
 class MainActivity : AppCompatActivity() {
     
@@ -50,7 +55,18 @@ class MainActivity : AppCompatActivity() {
         private const val PREF_NAME = "ShizuWallPrefs"
         private const val KEY_SELECTED_APPS = "selected_apps"
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
+        private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
+            Shizuku::class.java.getDeclaredMethod(
+                "newProcess",
+                Array<String>::class.java,
+                Array<String>::class.java,
+                String::class.java
+            ).apply { isAccessible = true }
+        }
     }
+    
+    private var suppressToggleListener = false
+    private val activeFirewallPackages = mutableSetOf<String>()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -219,24 +235,34 @@ class MainActivity : AppCompatActivity() {
         selectedCountText = findViewById(R.id.selectedCountText)
         
         firewallToggle.setOnCheckedChangeListener { _, isChecked ->
+            if (suppressToggleListener) return@setOnCheckedChangeListener
             if (isChecked) {
                 val selectedApps = appList.filter { it.isSelected }
                 if (selectedApps.isEmpty()) {
                     Toast.makeText(this, "Please select at least one app", Toast.LENGTH_SHORT).show()
+                    suppressToggleListener = true
                     firewallToggle.isChecked = false
+                    suppressToggleListener = false
                     return@setOnCheckedChangeListener
                 }
-                
-                // Check Shizuku permission before proceeding
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
+                    suppressToggleListener = true
                     firewallToggle.isChecked = false
+                    suppressToggleListener = false
                     return@setOnCheckedChangeListener
                 }
-                
                 showFirewallConfirmDialog(selectedApps)
             } else {
-                isFirewallEnabled = false
-                Toast.makeText(this, "Firewall disabled", Toast.LENGTH_SHORT).show()
+                if (!isFirewallEnabled) {
+                    return@setOnCheckedChangeListener
+                }
+                if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
+                    suppressToggleListener = true
+                    firewallToggle.isChecked = true
+                    suppressToggleListener = false
+                    return@setOnCheckedChangeListener
+                }
+                applyFirewallState(false, activeFirewallPackages.toList())
             }
         }
     }
@@ -259,13 +285,14 @@ class MainActivity : AppCompatActivity() {
         selectedAppsRecyclerView.adapter = SelectedAppsAdapter(selectedApps)
         
         btnConfirm.setOnClickListener {
-            isFirewallEnabled = true
-            Toast.makeText(this, "Firewall activated for ${selectedApps.size} apps", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
+            applyFirewallState(true, selectedApps.map { it.packageName })
         }
-        
+
         btnCancel.setOnClickListener {
+            suppressToggleListener = true
             firewallToggle.isChecked = false
+            suppressToggleListener = false
             dialog.dismiss()
         }
         
@@ -327,5 +354,78 @@ class MainActivity : AppCompatActivity() {
     
     private fun loadSelectedApps(): Set<String> {
         return sharedPreferences.getStringSet(KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+    }
+    
+    private fun applyFirewallState(enable: Boolean, packageNames: List<String>) {
+        if (enable && packageNames.isEmpty()) return
+        firewallToggle.isEnabled = false
+        lifecycleScope.launch {
+            val success = withContext(Dispatchers.IO) {
+                if (enable) enableFirewall(packageNames) else disableFirewall(packageNames)
+            }
+            firewallToggle.isEnabled = true
+            if (success) {
+                isFirewallEnabled = enable
+                if (enable) {
+                    activeFirewallPackages.clear()
+                    activeFirewallPackages.addAll(packageNames)
+                    Toast.makeText(this@MainActivity, "Firewall activated for ${packageNames.size} apps", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@MainActivity, "Firewall disabled", Toast.LENGTH_SHORT).show()
+                    activeFirewallPackages.clear()
+                }
+            } else {
+                suppressToggleListener = true
+                firewallToggle.isChecked = !enable
+                suppressToggleListener = false
+                Toast.makeText(this@MainActivity, "Failed to apply firewall changes", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun enableFirewall(packageNames: List<String>): Boolean {
+        if (!runShizukuShellCommand("cmd connectivity set-chain3-enabled true")) {
+            return false
+        }
+        for (packageName in packageNames) {
+            if (!runShizukuShellCommand("cmd connectivity set-package-networking-enabled false $packageName")) {
+                runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun disableFirewall(packageNames: List<String>): Boolean {
+        var success = true
+        for (packageName in packageNames) {
+            if (!runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $packageName")) {
+                success = false
+            }
+        }
+        if (!runShizukuShellCommand("cmd connectivity set-chain3-enabled false")) {
+            success = false
+        }
+        return success
+    }
+
+    private fun runShizukuShellCommand(command: String): Boolean {
+        return try {
+            val process = SHIZUKU_NEW_PROCESS_METHOD.invoke(
+                null,
+                arrayOf("/system/bin/sh", "-c", command),
+                null,
+                null
+            ) as? ShizukuRemoteProcess ?: return false
+
+            process.outputStream.close()
+            process.inputStream.close()
+            process.errorStream.close()
+            val exitCode = process.waitFor()
+            process.destroy()
+            exitCode == 0
+        } catch (e: Exception) {
+            false
+        }
     }
 }
