@@ -49,15 +49,41 @@ class BootReceiver : BroadcastReceiver() {
         val savedElapsed = prefs.getLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, -1L)
         Log.d(TAG, "prefs: enabled=$enabled, savedElapsed=$savedElapsed")
 
-        if (!enabled || savedElapsed == -1L) {
-            Log.d(TAG, "No saved firewall state found; nothing to do.")
-            return
-        }
-
         val currentElapsed = SystemClock.elapsedRealtime()
         // A reboot occurred if currentElapsed < savedElapsed; in that case the saved flag represents state before reboot.
         if (currentElapsed < savedElapsed) {
-            Log.d(TAG, "Detected reboot since firewall was enabled. Preparing notification.")
+            Log.d(TAG, "Detected reboot since firewall was enabled. Clearing saved state and preparing notification.")
+
+            // Clear saved firewall state from device-protected prefs (if available)
+            try {
+                val dpCtx = context.createDeviceProtectedStorageContext()
+                val dpPrefs = dpCtx.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                dpPrefs.edit().apply {
+                    remove(MainActivity.KEY_FIREWALL_ENABLED)
+                    remove(MainActivity.KEY_FIREWALL_SAVED_ELAPSED)
+                    // remove active packages key by literal name (KEY_ACTIVE_PACKAGES is private in MainActivity)
+                    remove("active_packages")
+                    apply()
+                }
+                Log.d(TAG, "Cleared device-protected prefs")
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to clear device-protected prefs", e)
+            }
+
+            // Clear saved firewall state from regular prefs as well
+            try {
+                val normalPrefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                normalPrefs.edit().apply {
+                    remove(MainActivity.KEY_FIREWALL_ENABLED)
+                    remove(MainActivity.KEY_FIREWALL_SAVED_ELAPSED)
+                    remove("active_packages")
+                    apply()
+                }
+                Log.d(TAG, "Cleared normal prefs")
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to clear normal prefs", e)
+            }
+
             createChannelIfNeeded(context)
             val intentToOpen = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -81,13 +107,10 @@ class BootReceiver : BroadcastReceiver() {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
             try {
-                // Try to post the notification and log any security/permission failures
                 NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notifBuilder.build())
                 Log.d(TAG, "Posted boot notification (id=$NOTIFICATION_ID)")
             } catch (se: SecurityException) {
                 Log.w(TAG, "Failed to post notification: missing permission or security error", se)
-                // If notifications are blocked (Android 13+), the receiver cannot request permission.
-                // Log informs you to grant POST_NOTIFICATIONS (adb or UI) to allow the notification.
             } catch (e: Exception) {
                 Log.e(TAG, "Unexpected error while posting notification", e)
             }
