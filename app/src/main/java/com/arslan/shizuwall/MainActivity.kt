@@ -17,11 +17,8 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.PopupMenu
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
@@ -55,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     private val filteredAppList = mutableListOf<AppInfo>()
     private var isFirewallEnabled = false
     private var currentQuery = ""
-    private var showSystemApps = false // whether to include system apps in the list
+    private var showSystemApps = false // NEW: whether to include system apps in the list
     
     private lateinit var sharedPreferences: SharedPreferences
     
@@ -122,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         val githubIcon: ImageView = findViewById(R.id.githubIcon)
         githubIcon.setOnClickListener { openGithub() }
 
-        // three-dot menu
+        // Overflow (three-dot) menu
         val overflowButton: ImageButton? = findViewById(R.id.overflowMenu)
         overflowButton?.setOnClickListener { btn ->
             val popup = PopupMenu(this, btn)
@@ -400,11 +397,6 @@ class MainActivity : AppCompatActivity() {
                 .thenBy { it.isSystem } // false (user apps) before true (system apps)
                 .thenBy(turkishCollator) { it.appName }
         )
-        appList.sortWith(
-            compareByDescending<AppInfo> { it.isSelected }
-                .thenBy { it.isSystem } // false (user apps) before true (system apps)
-                .thenBy(turkishCollator) { it.appName }
-        )
         filterApps(currentQuery)
         
         // Capture scroll position and disable animator to prevent scrolling during selection updates
@@ -520,28 +512,8 @@ class MainActivity : AppCompatActivity() {
                     }
                     val isSelected = selectedPackages.contains(packageName)
                     temp.add(AppInfo(appName, packageName, bitmap, isSelected, isSystemApp))
-                    val isSystemApp = (packageInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-                    // include if user requested system apps, or it's a user-installed app
-                    if (!showSystemApps && isSystemApp) continue
-
-                    val appName = pm.getApplicationLabel(packageInfo).toString()
-                    val packageName = packageInfo.packageName
-                    val drawable = pm.getApplicationIcon(packageInfo)
-                    val bitmap = try {
-                        drawableToBitmap(drawable)
-                    } catch (e: Exception) {
-                        null
-                    }
-                    val isSelected = selectedPackages.contains(packageName)
-                    temp.add(AppInfo(appName, packageName, bitmap, isSelected, isSystemApp))
                 }
                 val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
-                // sort: selected first, then non-system before system, then app name
-                temp.sortWith(
-                    compareByDescending<AppInfo> { it.isSelected }
-                        .thenBy { it.isSystem } // false (user apps) before true (system apps)
-                        .thenBy(turkishCollator) { it.appName }
-                )
                 // sort: selected first, then non-system before system, then app name
                 temp.sortWith(
                     compareByDescending<AppInfo> { it.isSelected }
@@ -559,7 +531,6 @@ class MainActivity : AppCompatActivity() {
             // Disable animator for initial load to prevent any scrolling
             val animator = recyclerView.itemAnimator
             recyclerView.itemAnimator = null
-            appListAdapter.submitList(filteredAppList.toList()) {
             appListAdapter.submitList(filteredAppList.toList()) {
                 recyclerView.itemAnimator = animator
                 // Update count after apps are loaded to show actual count
