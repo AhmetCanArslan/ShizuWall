@@ -462,6 +462,20 @@ class MainActivity : AppCompatActivity() {
         
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
         selectedAppsRecyclerView.adapter = SelectedAppsAdapter(selectedApps)
+
+        // Limit the RecyclerView height to a fraction of the screen
+        val displayHeight = resources.displayMetrics.heightPixels
+        val maxRecyclerHeight = (displayHeight * 0.5).toInt() // 50% of screen height
+        selectedAppsRecyclerView.isNestedScrollingEnabled = true
+        selectedAppsRecyclerView.post {
+            val lp = selectedAppsRecyclerView.layoutParams
+            // If layout params are wrap_content or match_parent, enforce the max height; otherwise cap the current height.
+            lp.height = when (lp.height) {
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT -> maxRecyclerHeight
+                else -> minOf(lp.height, maxRecyclerHeight)
+            }
+            selectedAppsRecyclerView.layoutParams = lp
+        }
         
         btnConfirm.setOnClickListener {
             dialog.dismiss()
