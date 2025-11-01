@@ -146,6 +146,12 @@ class MainActivity : AppCompatActivity() {
             hideDimOverlay()
         }
 
+        // ensure the toggle is disabled if firewall is off AND there are no selected apps
+        // (allows the toggle to remain enabled when firewall is active)
+        if (::firewallToggle.isInitialized) {
+            firewallToggle.isEnabled = isFirewallEnabled || savedCount > 0
+        }
+
         // Check permission on startup
         checkShizukuPermission()
 
@@ -436,6 +442,12 @@ class MainActivity : AppCompatActivity() {
     private fun updateSelectedCount() {
         val count = appList.count { it.isSelected }
         selectedCountText.text = "Selected: $count"
+
+        // enable the firewall toggle if firewall is currently active (so user can disable),
+        // or if there is at least one selected app (so user can enable).
+        if (::firewallToggle.isInitialized) {
+            firewallToggle.isEnabled = isFirewallEnabled || count > 0
+        }
     }
     
     @SuppressLint("NotifyDataSetChanged")
