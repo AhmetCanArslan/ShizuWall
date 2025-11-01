@@ -5,4 +5,7 @@
     <!-- GitHub link and button description -->
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="github_button_desc">Open GitHub page</string>
+
+    <string name="show_system_apps">Show system apps</string>
+    <string name="more_options">More options</string>
 </resources>
