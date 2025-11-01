@@ -142,8 +142,6 @@ class MainActivity : AppCompatActivity() {
         appListAdapter.setSelectionEnabled(!isFirewallEnabled)
         if (isFirewallEnabled) {
             showDimOverlay()
-            // Restart notification service if firewall was enabled
-            FirewallNotificationService.startService(this, activeFirewallPackages.size)
         } else {
             hideDimOverlay()
         }
@@ -173,7 +171,7 @@ class MainActivity : AppCompatActivity() {
         Shizuku.removeRequestPermissionResultListener(requestPermissionResultListener)
         Shizuku.removeBinderReceivedListener(binderReceivedListener)
         Shizuku.removeBinderDeadListener(binderDeadListener)
-        // Don't stop the service here - it should persist even when MainActivity is destroyed
+        // Background service removed, nothing to stop here.
     }
     
     private fun checkShizukuAvailable(): Boolean {
@@ -567,18 +565,10 @@ class MainActivity : AppCompatActivity() {
                     saveActivePackages(activeFirewallPackages)
                     appListAdapter.setSelectionEnabled(false)
                     showDimOverlay()
-                    // Start notification service
-                    FirewallNotificationService.startService(this@MainActivity, packageNames.size)
-                    // Send enable notification
-                    FirewallNotificationService.sendFirewallEnabledNotification(this@MainActivity, packageNames.size)
                     Toast.makeText(this@MainActivity, "Firewall activated for ${packageNames.size} apps", Toast.LENGTH_SHORT).show()
                 } else {
                     appListAdapter.setSelectionEnabled(true)
                     hideDimOverlay()
-                    // Stop notification service
-                    FirewallNotificationService.stopService(this@MainActivity)
-                    // Cancel enable notification
-                    FirewallNotificationService.cancelFirewallEnabledNotification(this@MainActivity)
                     Toast.makeText(this@MainActivity, "Firewall disabled", Toast.LENGTH_SHORT).show()
                     activeFirewallPackages.clear()
                     saveActivePackages(activeFirewallPackages)
