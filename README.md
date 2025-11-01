@@ -22,7 +22,7 @@ A lightweight Android firewall application that blocks network connections for s
 
 - Firewall rules are automatically cleared on device reboot (Android security limitation)
 - The app detects reboots using boot-relative timestamps and automatically clears stale state
-- Only user-installed apps (non-system) are shown in the list
+- By default only user-installed apps are shown. Use the overflow menu (three dots, top-right) to "Show system apps" if you need to include system apps for selection.
 - If anything goes wrong, rebooting the phone will revert every change made by ShizuWall.
 
 
@@ -71,7 +71,7 @@ Contributions, issues, and feature requests are welcome!
 
 
 - [Shizuku](https://github.com/RikkaApps/Shizuku) - For providing the API that makes this app possible
-- Material Design 3 - For the beautiful UI components
+- Material Design 3 - For the UI components
 
 ---
 
