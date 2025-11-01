@@ -11,9 +11,12 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -103,7 +106,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_main)
-        
+
+        // GitHub icon
+        val openGithub = {
+            val url = getString(R.string.github_url)
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        }
+
+        val githubIcon: ImageView = findViewById(R.id.githubIcon)
+        githubIcon.setOnClickListener { openGithub() }
+
         sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->

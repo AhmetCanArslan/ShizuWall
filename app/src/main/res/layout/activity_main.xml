@@ -7,6 +7,19 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- GitHub icon moved to the left of the app title -->
+    <ImageView
+        android:id="@+id/githubIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/github_button_desc"
+        android:src="@drawable/ic_github"
+        android:tint="?attr/colorOnSurface"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/appTitle" />
+
     <TextView
         android:id="@+id/appTitle"
         android:layout_width="wrap_content"
@@ -14,8 +27,10 @@
         android:text="ShizuWall"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:padding="16dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/githubIcon"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -30,17 +45,6 @@
         app:layout_constraintTop_toTopOf="@id/appTitle"
         app:layout_constraintBottom_toBottomOf="@id/appTitle" />
 
-    <TextView
-        android:id="@+id/selectedCountText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Selected: 0"
-        android:textSize="12sp"
-        android:padding="4dp"
-        app:layout_constraintEnd_toStartOf="@id/firewallLabel"
-        app:layout_constraintTop_toTopOf="@id/appTitle"
-        app:layout_constraintBottom_toBottomOf="@id/appTitle" />
-
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/firewallToggle"
         android:layout_width="wrap_content"
@@ -50,6 +54,8 @@
         app:layout_constraintTop_toTopOf="@id/appTitle"
         app:layout_constraintBottom_toBottomOf="@id/appTitle" />
 
+    <!-- SearchView and selected count placed on the same horizontal row:
+         SearchView expands to available space and selectedCountText is anchored to the end -->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
         android:layout_width="0dp"
@@ -62,6 +68,21 @@
         app:iconifiedByDefault="false"
         app:layout_constraintTop_toBottomOf="@id/appTitle"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/selectedCountText"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/selectedCountText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selected: 0"
+        android:textSize="12sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:padding="4dp"
+        app:layout_constraintStart_toEndOf="@id/searchView"
+        app:layout_constraintTop_toTopOf="@id/searchView"
+        app:layout_constraintBottom_toBottomOf="@id/searchView"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView

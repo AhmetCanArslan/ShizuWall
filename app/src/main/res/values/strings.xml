@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">ShizuWall</string>
     <string name="app_icon_desc">Uygulama İkonu</string>
+
+    <!-- GitHub link and button description -->
+    <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
+    <string name="github_button_desc">Open GitHub page</string>
 </resources>
