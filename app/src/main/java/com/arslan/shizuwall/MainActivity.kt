@@ -68,9 +68,9 @@ class MainActivity : AppCompatActivity() {
         const val PREF_NAME = "ShizuWallPrefs"
         private const val KEY_SELECTED_APPS = "selected_apps"
         private const val KEY_SELECTED_COUNT = "selected_count"
-        private const val KEY_FIREWALL_ENABLED = "firewall_enabled"
+        const val KEY_FIREWALL_ENABLED = "firewall_enabled"          // made public
         private const val KEY_ACTIVE_PACKAGES = "active_packages"
-        private const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed"
+        const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed" // made public
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
         const val KEY_ONBOARDING_DONE = "onboarding_done"
         private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
@@ -155,6 +155,12 @@ class MainActivity : AppCompatActivity() {
     
     override fun onResume() {
         super.onResume()
+
+        // If views were not initialized (e.g. onCreate returned early), avoid touching them.
+        if (!::firewallToggle.isInitialized) {
+            return
+        }
+
         // Re-sync toggle with saved state without triggering listener
         suppressToggleListener = true
         firewallToggle.isChecked = loadFirewallEnabled()
@@ -503,14 +509,29 @@ class MainActivity : AppCompatActivity() {
     
     private fun saveFirewallEnabled(enabled: Boolean) {
         // store a boot-relative timestamp when enabling so we can detect reboots
-        val editor = sharedPreferences.edit()
-        editor.putBoolean(KEY_FIREWALL_ENABLED, enabled)
-        if (enabled) {
-            editor.putLong(KEY_FIREWALL_SAVED_ELAPSED, SystemClock.elapsedRealtime())
-        } else {
-            editor.remove(KEY_FIREWALL_SAVED_ELAPSED)
+        val elapsed = if (enabled) SystemClock.elapsedRealtime() else -1L
+
+        // Regular (credential-protected) prefs
+        sharedPreferences.edit().apply {
+            putBoolean(KEY_FIREWALL_ENABLED, enabled)
+            if (enabled) putLong(KEY_FIREWALL_SAVED_ELAPSED, elapsed) else remove(KEY_FIREWALL_SAVED_ELAPSED)
+            apply()
         }
-        editor.apply()
+
+        // Also persist into device-protected storage so a direct-boot receiver can read it after reboot.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            try {
+                val dpCtx = createDeviceProtectedStorageContext()
+                val dpPrefs = dpCtx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                dpPrefs.edit().apply {
+                    putBoolean(KEY_FIREWALL_ENABLED, enabled)
+                    if (enabled) putLong(KEY_FIREWALL_SAVED_ELAPSED, elapsed) else remove(KEY_FIREWALL_SAVED_ELAPSED)
+                    apply()
+                }
+            } catch (e: Exception) {
+                // ignore device-protected write failures
+            }
+        }
     }
     
     private fun loadFirewallEnabled(): Boolean {
