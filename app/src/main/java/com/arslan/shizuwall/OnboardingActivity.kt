@@ -38,7 +38,7 @@ class OnboardingActivity : AppCompatActivity() {
         pages.add(
             OnboardingPage(
                 title = "Notification Permission",
-                message = "We need notification permission to keep you informed about firewall status and blocked connections",
+                message = "We need notification permission to keep you informed about firewall status if you reboot while firewall is active.",
                 buttonText = "Grant Permission",
                 onButtonClick = { requestNotificationPermission() },
                 isPermissionPage = true
