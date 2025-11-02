@@ -11,4 +11,11 @@
 
     <!-- toggle to skip the "Are you sure?" dialog when enabling firewall -->
     <string name="skip_enable_dialog">Skip confirmation when enabling firewall</string>
+
+    <!-- category bar labels -->
+    <string name="cat_default">Default</string>
+    <string name="cat_system">System</string>
+    <string name="cat_selected">Selected</string>
+    <string name="cat_unselected">Unselected</string>
+    <string name="cat_user">User</string>
 </resources>

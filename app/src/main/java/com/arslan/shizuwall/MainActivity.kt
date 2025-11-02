@@ -34,6 +34,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,7 +43,7 @@ import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
 
 class MainActivity : AppCompatActivity() {
-    
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var appListAdapter: AppListAdapter
     private lateinit var firewallToggle: SwitchMaterial
@@ -53,22 +54,22 @@ class MainActivity : AppCompatActivity() {
     private var isFirewallEnabled = false
     private var currentQuery = ""
     private var showSystemApps = false // NEW: whether to include system apps in the list
-    
+
     private lateinit var sharedPreferences: SharedPreferences
-    
+
     private val requestPermissionResultListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
         onRequestPermissionsResult(requestCode, grantResult)
     }
-    
+
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
         checkShizukuPermission()
     }
-    
+
     private val binderDeadListener = Shizuku.OnBinderDeadListener {
         Toast.makeText(this, "Shizuku service is dead", Toast.LENGTH_SHORT).show()
         finish()
     }
-    
+
     companion object {
         const val PREF_NAME = "ShizuWallPrefs"
         private const val KEY_SELECTED_APPS = "selected_apps"
@@ -89,14 +90,16 @@ class MainActivity : AppCompatActivity() {
             ).apply { isAccessible = true }
         }
     }
-    
+
     private var suppressToggleListener = false
     private val activeFirewallPackages = mutableSetOf<String>()
-    
+    private enum class Category { DEFAULT, SYSTEM, SELECTED, UNSELECTED, USER }
+    private var currentCategory: Category = Category.DEFAULT
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
+
         // Check if onboarding is complete
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val onboardingComplete = prefs.getBoolean("onboarding_complete", false)
@@ -163,39 +166,53 @@ class MainActivity : AppCompatActivity() {
         }
 
         sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        
+
         // Check if Shizuku is available
         if (!checkShizukuAvailable()) {
             return
         }
-        
+
         Shizuku.addRequestPermissionResultListener(requestPermissionResultListener)
         Shizuku.addBinderReceivedListener(binderReceivedListener)
         Shizuku.addBinderDeadListener(binderDeadListener)
-        
+
         setupFirewallToggle()
         setupSearchView()
         setupRecyclerView()
 
+        // wire category bar AFTER views are created
+        val categoryGroup = findViewById<ChipGroup>(R.id.categoryChipGroup)
+        categoryGroup.setOnCheckedChangeListener { _, checkedId ->
+            currentCategory = when (checkedId) {
+                R.id.chip_default -> Category.DEFAULT
+                R.id.chip_system -> Category.SYSTEM
+                R.id.chip_selected -> Category.SELECTED
+                R.id.chip_unselected -> Category.UNSELECTED
+                R.id.chip_user -> Category.USER
+                else -> Category.DEFAULT
+            }
+            sortAndFilterApps()
+        }
+
         loadInstalledApps()
-        
+
         // Load and display saved selected count
         val savedCount = sharedPreferences.getInt(KEY_SELECTED_COUNT, 0)
         selectedCountText.text = "Selected: $savedCount"
-        
+
         // Load saved firewall state and apply to toggle without triggering listener
         isFirewallEnabled = loadFirewallEnabled()
         activeFirewallPackages.addAll(loadActivePackages())
         suppressToggleListener = true
         firewallToggle.isChecked = isFirewallEnabled
         suppressToggleListener = false
-        
+
         // Ensure adapter and dim reflect saved firewall state
         appListAdapter.setSelectionEnabled(!isFirewallEnabled)
         if (isFirewallEnabled) {
@@ -216,7 +233,7 @@ class MainActivity : AppCompatActivity() {
         // Check notification permission on startup
         checkNotificationPermission()
     }
-    
+
     override fun onResume() {
         super.onResume()
 
@@ -235,7 +252,7 @@ class MainActivity : AppCompatActivity() {
         appListAdapter.setSelectionEnabled(!enabled)
         if (enabled) showDimOverlay() else hideDimOverlay()
     }
-    
+
     override fun onDestroy() {
         super.onDestroy()
         Shizuku.removeRequestPermissionResultListener(requestPermissionResultListener)
@@ -243,7 +260,7 @@ class MainActivity : AppCompatActivity() {
         Shizuku.removeBinderDeadListener(binderDeadListener)
         // Background service removed, nothing to stop here.
     }
-    
+
     private fun checkShizukuAvailable(): Boolean {
         try {
             if (Shizuku.pingBinder()) {
@@ -252,7 +269,7 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             // Shizuku is not available
         }
-        
+
         AlertDialog.Builder(this)
             .setTitle("Shizuku Required")
             .setMessage("This app requires Shizuku to be installed and running. Please install Shizuku and start the service.")
@@ -261,10 +278,10 @@ class MainActivity : AppCompatActivity() {
             }
             .setCancelable(false)
             .show()
-        
+
         return false
     }
-    
+
     private fun checkShizukuPermission() {
         if (Shizuku.isPreV11()) {
             AlertDialog.Builder(this)
@@ -277,7 +294,7 @@ class MainActivity : AppCompatActivity() {
                 .show()
             return
         }
-        
+
         if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
             // Permission already granted
             return
@@ -296,7 +313,7 @@ class MainActivity : AppCompatActivity() {
             Shizuku.requestPermission(SHIZUKU_PERMISSION_REQUEST_CODE)
         }
     }
-    
+
     private fun onRequestPermissionsResult(requestCode: Int, grantResult: Int) {
         val granted = grantResult == PackageManager.PERMISSION_GRANTED
         when (requestCode) {
@@ -323,14 +340,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    
+
     private fun checkPermission(code: Int): Boolean {
         if (Shizuku.isPreV11()) {
             // Pre-v11 is unsupported
             Toast.makeText(this, "Shizuku version is too old, please update", Toast.LENGTH_SHORT).show()
             return false
         }
-        
+
         return if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
             // Granted
             true
@@ -344,7 +361,7 @@ class MainActivity : AppCompatActivity() {
             false
         }
     }
-    
+
     private fun checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
@@ -360,7 +377,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    
+
     private fun setupSearchView() {
         searchView = findViewById(R.id.searchView)
         searchView.queryHint = "Search app"
@@ -372,7 +389,7 @@ class MainActivity : AppCompatActivity() {
             override fun onQueryTextChange(newText: String?): Boolean {
                 currentQuery = newText ?: ""
                 filterApps(currentQuery)
-                
+
                 // Capture scroll position and disable animator to prevent scrolling during search updates
                 val firstVisible = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                 val animator = recyclerView.itemAnimator
@@ -385,7 +402,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-    
+
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -397,22 +414,32 @@ class MainActivity : AppCompatActivity() {
         }
         recyclerView.adapter = appListAdapter
     }
-    
+
     @SuppressLint("NotifyDataSetChanged")
     private fun filterApps(query: String) {
         filteredAppList.clear()
+
+        // Apply category filter first
+        val baseList: List<AppInfo> = when (currentCategory) {
+            Category.DEFAULT -> if (showSystemApps) appList else appList.filter { !it.isSystem }
+            Category.SYSTEM -> appList.filter { it.isSystem }
+            Category.USER -> appList.filter { !it.isSystem }
+            Category.SELECTED -> appList.filter { it.isSelected }
+            Category.UNSELECTED -> appList.filter { !it.isSelected }
+        }
+
         if (query.isEmpty()) {
-            filteredAppList.addAll(appList)
+            filteredAppList.addAll(baseList)
         } else {
             val searchQuery = query.lowercase()
-            filteredAppList.addAll(appList.filter { 
-                it.appName.lowercase().contains(searchQuery) || 
+            filteredAppList.addAll(baseList.filter {
+                it.appName.lowercase().contains(searchQuery) ||
                 it.packageName.lowercase().contains(searchQuery)
             })
         }
         // Removed submitList from here; handled in callers
     }
-    
+
     private fun sortAndFilterApps() {
         val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
         appList.sortWith(
@@ -421,7 +448,7 @@ class MainActivity : AppCompatActivity() {
                 .thenBy(turkishCollator) { it.appName }
         )
         filterApps(currentQuery)
-        
+
         // Capture scroll position and disable animator to prevent scrolling during selection updates
         val firstVisible = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         val animator = recyclerView.itemAnimator
@@ -431,11 +458,11 @@ class MainActivity : AppCompatActivity() {
             recyclerView.scrollToPosition(firstVisible)
         }
     }
-    
+
     private fun setupFirewallToggle() {
         firewallToggle = findViewById(R.id.firewallToggle)
         selectedCountText = findViewById(R.id.selectedCountText)
-        
+
         firewallToggle.setOnCheckedChangeListener { _, isChecked ->
             if (suppressToggleListener) return@setOnCheckedChangeListener
             if (isChecked) {
@@ -468,7 +495,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    
+
     private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>) {
         // If user opted to skip the confirmation, directly apply the firewall
         val prefsLocal = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -482,14 +509,14 @@ class MainActivity : AppCompatActivity() {
             .setView(dialogView)
             .setCancelable(false)
             .create()
-        
+
         val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
         val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
         val btnConfirm = dialogView.findViewById<MaterialButton>(R.id.btnConfirm)
         val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
-        
+
         dialogMessage.text = "Do you want to enable firewall for ${selectedApps.size} apps listed below?"
-        
+
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
         selectedAppsRecyclerView.adapter = SelectedAppsAdapter(selectedApps)
 
@@ -506,7 +533,7 @@ class MainActivity : AppCompatActivity() {
             }
             selectedAppsRecyclerView.layoutParams = lp
         }
-        
+
         btnConfirm.setOnClickListener {
             dialog.dismiss()
             applyFirewallState(true, selectedApps.map { it.packageName })
@@ -518,10 +545,10 @@ class MainActivity : AppCompatActivity() {
             suppressToggleListener = false
             dialog.dismiss()
         }
-        
+
         dialog.show()
     }
-    
+
     private fun updateSelectedCount() {
         val count = appList.count { it.isSelected }
         selectedCountText.text = "Selected: $count"
@@ -532,7 +559,7 @@ class MainActivity : AppCompatActivity() {
             firewallToggle.isEnabled = isFirewallEnabled || count > 0
         }
     }
-    
+
     @SuppressLint("NotifyDataSetChanged")
     private fun loadInstalledApps() {
         lifecycleScope.launch {
@@ -581,20 +608,11 @@ class MainActivity : AppCompatActivity() {
 
             appList.clear()
             appList.addAll(builtList)
-            filteredAppList.clear()
-            filteredAppList.addAll(appList)
-
-            // Disable animator for initial load to prevent any scrolling
-            val animator = recyclerView.itemAnimator
-            recyclerView.itemAnimator = null
-            appListAdapter.submitList(filteredAppList.toList()) {
-                recyclerView.itemAnimator = animator
-                // Update count after apps are loaded to show actual count
-                updateSelectedCount()
-            }
+            // Use sortAndFilterApps so the current category + search are applied and animator handling is reused
+            sortAndFilterApps()
         }
     }
-    
+
     // convert Drawable to Bitmap (used once per app)
     private fun drawableToBitmap(drawable: Drawable): Bitmap {
         if (drawable is BitmapDrawable) {
@@ -608,7 +626,7 @@ class MainActivity : AppCompatActivity() {
         drawable.draw(canvas)
         return bitmap
     }
-    
+
     private fun saveSelectedApps() {
         val selectedPackages = appList.filter { it.isSelected }.map { it.packageName }.toSet()
         sharedPreferences.edit()
@@ -616,11 +634,11 @@ class MainActivity : AppCompatActivity() {
             .putInt(KEY_SELECTED_COUNT, selectedPackages.size)
             .apply()
     }
-    
+
     private fun loadSelectedApps(): Set<String> {
         return sharedPreferences.getStringSet(KEY_SELECTED_APPS, emptySet()) ?: emptySet()
     }
-    
+
     private fun saveFirewallEnabled(enabled: Boolean) {
         // store a boot-relative timestamp when enabling so we can detect reboots
         val elapsed = if (enabled) SystemClock.elapsedRealtime() else -1L
@@ -647,7 +665,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    
+
     private fun loadFirewallEnabled(): Boolean {
         val enabled = sharedPreferences.getBoolean(KEY_FIREWALL_ENABLED, false)
         if (!enabled) return false
@@ -671,17 +689,17 @@ class MainActivity : AppCompatActivity() {
 
         return true
     }
-    
+
     private fun saveActivePackages(packages: Set<String>) {
         sharedPreferences.edit()
             .putStringSet(KEY_ACTIVE_PACKAGES, packages)
             .apply()
     }
-    
+
     private fun loadActivePackages(): Set<String> {
         return sharedPreferences.getStringSet(KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
     }
-    
+
     private fun applyFirewallState(enable: Boolean, packageNames: List<String>) {
         if (enable && packageNames.isEmpty()) return
         firewallToggle.isEnabled = false
@@ -716,7 +734,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    
+
     private fun enableFirewall(packageNames: List<String>): Boolean {
         if (!runShizukuShellCommand("cmd connectivity set-chain3-enabled true")) {
             return false
