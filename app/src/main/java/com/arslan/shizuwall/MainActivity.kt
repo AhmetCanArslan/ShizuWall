@@ -513,11 +513,23 @@ class MainActivity : AppCompatActivity() {
                 val temp = mutableListOf<AppInfo>()
                 for (packageInfo in packages) {
                     val isSystemApp = (packageInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+
+                    // skip apps that are disabled (treated as "offline" — don't show them even if system apps are enabled)
+                    if (!packageInfo.enabled) continue
+
                     // include if user requested system apps, or it's a user-installed app
                     if (!showSystemApps && isSystemApp) continue
 
-                    val appName = pm.getApplicationLabel(packageInfo).toString()
                     val packageName = packageInfo.packageName
+
+                    // skip apps that do not have internet permission (offline apps)
+                    val hasInternetPermission = pm.checkPermission(
+                        Manifest.permission.INTERNET,
+                        packageName
+                    ) == PackageManager.PERMISSION_GRANTED
+                    if (!hasInternetPermission) continue
+
+                    val appName = pm.getApplicationLabel(packageInfo).toString()
                     val drawable = pm.getApplicationIcon(packageInfo)
                     val bitmap = try {
                         drawableToBitmap(drawable)
