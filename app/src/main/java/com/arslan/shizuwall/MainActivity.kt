@@ -79,6 +79,7 @@ class MainActivity : AppCompatActivity() {
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
         const val KEY_ONBOARDING_DONE = "onboarding_done"
         private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
+        private const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
                 "newProcess",
@@ -123,18 +124,40 @@ class MainActivity : AppCompatActivity() {
         val overflowButton: ImageButton? = findViewById(R.id.overflowMenu)
         overflowButton?.setOnClickListener { btn ->
             val popup = PopupMenu(this, btn)
-            val menuItemId = 1
-            popup.menu.add(0, menuItemId, 0, getString(R.string.show_system_apps)).apply {
+            val menuItemIdShowSystem = 1
+            val menuItemIdSkipConfirm = 2
+            popup.menu.add(0, menuItemIdShowSystem, 0, getString(R.string.show_system_apps)).apply {
                 isCheckable = true
                 isChecked = showSystemApps
             }
+
+            // menu item to allow skipping the enable-confirm dialog
+            val prefsLocal = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            popup.menu.add(0, menuItemIdSkipConfirm, 1, getString(R.string.skip_enable_dialog)).apply {
+                isCheckable = true
+                isChecked = prefsLocal.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)
+            }
+
             popup.setOnMenuItemClickListener { item ->
-                if (item.itemId == menuItemId) {
-                    showSystemApps = !showSystemApps
-                    item.isChecked = showSystemApps
-                    loadInstalledApps() // refresh list
-                    true
-                } else false
+                when (item.itemId) {
+                    menuItemIdShowSystem -> {
+                        showSystemApps = !showSystemApps
+                        item.isChecked = showSystemApps
+                        loadInstalledApps() // refresh list
+                        true
+                    }
+                    menuItemIdSkipConfirm -> {
+                        val newVal = !item.isChecked
+                        item.isChecked = newVal
+                        // persist preference
+                        getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                            .edit()
+                            .putBoolean(KEY_SKIP_ENABLE_CONFIRM, newVal)
+                            .apply()
+                        true
+                    }
+                    else -> false
+                }
             }
             popup.show()
         }
@@ -447,6 +470,13 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>) {
+        // If user opted to skip the confirmation, directly apply the firewall
+        val prefsLocal = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        if (prefsLocal.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
+            applyFirewallState(true, selectedApps.map { it.packageName })
+            return
+        }
+
         val dialogView = layoutInflater.inflate(R.layout.dialog_firewall_confirm, null)
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
