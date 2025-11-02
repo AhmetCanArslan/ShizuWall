@@ -81,6 +81,8 @@ class MainActivity : AppCompatActivity() {
         const val KEY_ONBOARDING_DONE = "onboarding_done"
         private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         private const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
+        // preference key to persist "show system apps" state
+        const val KEY_SHOW_SYSTEM_APPS = "show_system_apps"
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
                 "newProcess",
@@ -146,6 +148,11 @@ class MainActivity : AppCompatActivity() {
                     menuItemIdShowSystem -> {
                         showSystemApps = !showSystemApps
                         item.isChecked = showSystemApps
+                        // persist the user's choice
+                        getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                            .edit()
+                            .putBoolean(KEY_SHOW_SYSTEM_APPS, showSystemApps)
+                            .apply()
                         loadInstalledApps() // refresh list
                         true
                     }
@@ -166,6 +173,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
