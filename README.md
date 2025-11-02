@@ -1,34 +1,28 @@
 # ShizuWall
 
-A lightweight Android firewall application that blocks network connections for selected apps **without requiring root access or VPN**. ShizuWall leverages Shizuku to provide powerful network control capabilities. Requires Android 11 (API 30) or higher.
-
+A lightweight, privacy focused Android firewall application that blocks network connections for selected apps **without requiring root access or VPN**. ShizuWall leverages Shizuku to provide powerful network control capabilities. Requires Android 11 (API 30) or higher. 
 
 ### [Download from releases](https://github.com/ahmetcanarslan/shizuwall/releases) 
 
 ## Why ShizuWall is Different
 
-1. **Shizuku-Only Approach**: Most Android firewalls require either Root access or VPN service, ShizuWall uses **only Shizuku**, providing native system-level control without drawbacks.
-
-2. **True System Integration**: Uses Android's `connectivity` service directly via Shizuku to enable/disable networking per-app with the help of chain-3, rather than packet filtering.
-
-
-3. **Zero Performance Impact**: No VPN tunnel means:
-   - No battery drain from packet inspection
-   - No connection speed reduction
-   - No DNS leaks or routing issues
+1. **Shizuku-Only Approach**: Most Android firewalls require either Root access or a VPN service. ShizuWall uses **only Shizuku**, providing native system-level control without the common VPN drawbacks.
+2. **Per-app System Networking Control**: Uses Android's `connectivity` service (chain-3) via Shizuku to enable/disable networking on a per-app basis — no packet interception, no VPN tunnel.
+3. **Privacy-first Design**: The app is offline-first and does not phone home. There is no analytics, no tracking and no telemetry.
 
 
-## Important Notes
+## Notes
 
-- Firewall rules are automatically cleared on device reboot (Android security limitation)
-- The app detects reboots using boot-relative timestamps and automatically clears stale state
+- Firewall rules are applied using platform commands and are automatically cleared on device reboot (Android security limitation).
+- The app detects reboots using a boot-relative timestamp and automatically clears stale saved state so you won't be left with stale "enabled" flags after reboot.
 - By default only user-installed apps are shown. Use the overflow menu (three dots, top-right) to "Show system apps" if you need to include system apps for selection.
-- If anything goes wrong, rebooting the phone will revert every change made by ShizuWall.
-
+- If anything goes wrong, rebooting the device will revert every change made by ShizuWall.
+- The app persists minimal preferences locally (selected apps, enabled flag) and stores a small boot-relative timestamp in device-protected storage so the app can detect reboots safely without exposing data.
+- No network calls from the app itself — it does not send any data to external services and has no internet access.
 
 ## Firewall Implementation
 
-ShizuWall uses the following command structure via Shizuku:
+(what the app runs via Shizuku)
 
 ```bash
 # Enable firewall framework
@@ -61,18 +55,8 @@ Use at your own discretion and ensure you understand which apps you're blocking.
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome!
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-
-- [Shizuku](https://github.com/RikkaApps/Shizuku) - For providing the API that makes this app possible
-- Material Design 3 - For the UI components
+Contributions, issues, and feature requests are welcome! Please see the repository for contribution guidelines.
 
 ---
 
-**Note**: This is an unofficial application. It is not affiliated with Google, Android, or the Shizuku project.
+- [Shizuku](https://github.com/RikkaApps/Shizuku) - For providing the API that makes this app possible
