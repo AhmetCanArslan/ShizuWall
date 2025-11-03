@@ -14,6 +14,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
@@ -121,6 +122,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Add export/import launchers
+    private val createDocumentLauncher = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri: Uri? ->
+        uri?.let { lifecycleScope.launch { exportToUri(it) } }
+    }
+
+    private val openDocumentLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uris: Uri? ->
+        uris?.let { lifecycleScope.launch { importFromUri(it) } }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -154,6 +168,9 @@ class MainActivity : AppCompatActivity() {
             val popup = PopupMenu(this, btn)
             val menuItemIdShowSystem = 1
             val menuItemIdSkipConfirm = 2
+            val menuItemIdExport = 3
+            val menuItemIdImport = 4
+
             popup.menu.add(0, menuItemIdShowSystem, 0, getString(R.string.show_system_apps)).apply {
                 isCheckable = true
                 isChecked = showSystemApps
@@ -165,6 +182,9 @@ class MainActivity : AppCompatActivity() {
                 isCheckable = true
                 isChecked = prefsLocal.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)
             }
+
+            popup.menu.add(0, menuItemIdExport, 2, "Export settings")
+            popup.menu.add(0, menuItemIdImport, 3, "Import settings")
 
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -187,6 +207,15 @@ class MainActivity : AppCompatActivity() {
                             .edit()
                             .putBoolean(KEY_SKIP_ENABLE_CONFIRM, newVal)
                             .apply()
+                        true
+                    }
+                    menuItemIdExport -> {
+                        val suggested = "shizuwall_settings"
+                        createDocumentLauncher.launch(suggested)
+                        true
+                    }
+                    menuItemIdImport -> {
+                        openDocumentLauncher.launch(arrayOf("application/json", "text/*", "*/*"))
                         true
                     }
                     else -> false
@@ -975,6 +1004,75 @@ class MainActivity : AppCompatActivity() {
                 appList.add(appInfo)
                 sortAndFilterApps()
                 updateSelectedCount()
+            }
+        }
+    }
+
+    // Export settings to provided Uri (file chosen by user)
+    private suspend fun exportToUri(uri: Uri) {
+        withContext(Dispatchers.IO) {
+            try {
+                val selected = loadSelectedApps().toList()
+                val exportJson = org.json.JSONObject().apply {
+                    put("version", 1)
+                    put("selected", org.json.JSONArray(selected))
+                    put("show_system_apps", sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false))
+                    put("skip_enable_confirm", sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false))
+                }
+                contentResolver.openOutputStream(uri)?.use { out ->
+                    out.write(exportJson.toString().toByteArray(Charsets.UTF_8))
+                    out.flush()
+                } ?: throw IllegalStateException("Unable to open output stream")
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, "Export successful", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    // Import settings from provided Uri and apply them
+    private suspend fun importFromUri(uri: Uri) {
+        withContext(Dispatchers.IO) {
+            try {
+                val content = contentResolver.openInputStream(uri)?.use { input ->
+                    input.readBytes().toString(Charsets.UTF_8)
+                } ?: throw IllegalStateException("Unable to open input stream")
+
+                val obj = org.json.JSONObject(content)
+                val selectedJson = obj.optJSONArray("selected") ?: org.json.JSONArray()
+                val selectedSet = mutableSetOf<String>()
+                for (i in 0 until selectedJson.length()) {
+                    val v = selectedJson.optString(i, null)
+                    if (!v.isNullOrEmpty()) selectedSet.add(v)
+                }
+                val showSys = obj.optBoolean("show_system_apps", false)
+                val skipConfirm = obj.optBoolean("skip_enable_confirm", false)
+
+                // Persist settings
+                sharedPreferences.edit().apply {
+                    putStringSet(KEY_SELECTED_APPS, selectedSet)
+                    putInt(KEY_SELECTED_COUNT, selectedSet.size)
+                    putBoolean(KEY_SHOW_SYSTEM_APPS, showSys)
+                    putBoolean(KEY_SKIP_ENABLE_CONFIRM, skipConfirm)
+                    apply()
+                }
+
+                // Update in-memory flags and UI on main thread
+                withContext(Dispatchers.Main) {
+                    showSystemApps = showSys
+                    // reload apps to reflect new selection and showSystemApps setting
+                    loadInstalledApps()
+                    updateSelectedCount()
+                    Toast.makeText(this@MainActivity, "Import successful", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, "Import failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
