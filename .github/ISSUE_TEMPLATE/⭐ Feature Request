@@ -1,0 +1,15 @@
+name: ⭐ Feature Request
+description: Share You Ideas To Improve Our App
+title: "[Feature Request]"
+labels: bug
+
+body:
+  - type: textarea
+    id: describe
+    attributes:
+      label: |
+        Describe You Idea
+      description: |
+        What Do You Want To Add in The App ?
+    validations:
+      required: true
