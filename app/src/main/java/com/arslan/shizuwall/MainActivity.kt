@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity() {
     private var isFirewallEnabled = false
     private var currentQuery = ""
     private var showSystemApps = false // NEW: whether to include system apps in the list
+    private var moveSelectedTop = true // whether selected apps move to top
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -86,6 +87,9 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
         // preference key to persist "show system apps" state
         const val KEY_SHOW_SYSTEM_APPS = "show_system_apps"
+        // preference key to persist "move selected apps to top" state
+        const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
+
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
                 "newProcess",
@@ -170,6 +174,7 @@ class MainActivity : AppCompatActivity() {
             val menuItemIdSkipConfirm = 2
             val menuItemIdExport = 3
             val menuItemIdImport = 4
+            val menuItemIdMoveSelectedTop = 5
 
             popup.menu.add(0, menuItemIdShowSystem, 0, getString(R.string.show_system_apps)).apply {
                 isCheckable = true
@@ -183,8 +188,13 @@ class MainActivity : AppCompatActivity() {
                 isChecked = prefsLocal.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)
             }
 
-            popup.menu.add(0, menuItemIdExport, 2, "Export settings")
-            popup.menu.add(0, menuItemIdImport, 3, "Import settings")
+            popup.menu.add(0, menuItemIdMoveSelectedTop, 2, "Move selected apps to top").apply {
+                isCheckable = true
+                isChecked = moveSelectedTop
+            }
+
+            popup.menu.add(0, menuItemIdExport, 3, "Export settings")
+            popup.menu.add(0, menuItemIdImport, 4, "Import settings")
 
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -209,6 +219,19 @@ class MainActivity : AppCompatActivity() {
                             .apply()
                         true
                     }
+                    menuItemIdMoveSelectedTop -> {
+                        val newVal = !item.isChecked
+                        item.isChecked = newVal
+                        moveSelectedTop = newVal
+                        // persist preference
+                        getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                            .edit()
+                            .putBoolean(KEY_MOVE_SELECTED_TOP, newVal)
+                            .apply()
+                        // resort the list according to new preference
+                        sortAndFilterApps()
+                        true
+                    }
                     menuItemIdExport -> {
                         val suggested = "shizuwall_settings"
                         createDocumentLauncher.launch(suggested)
@@ -226,6 +249,7 @@ class MainActivity : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
+        moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -532,11 +556,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun sortAndFilterApps() {
         val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
-        appList.sortWith(
-            compareByDescending<AppInfo> { it.isSelected }
-                .thenBy { it.isSystem } // false (user apps) before true (system apps)
-                .thenBy(turkishCollator) { it.appName }
-        )
+        if (moveSelectedTop) {
+            appList.sortWith(
+                compareByDescending<AppInfo> { it.isSelected }
+                    .thenBy { it.isSystem } // false (user apps) before true (system apps)
+                    .thenBy(turkishCollator) { it.appName }
+            )
+        } else {
+            // Do not prioritize selected apps; sort by user/system then name
+            appList.sortWith(
+                compareBy<AppInfo> { it.isSystem } // false (user apps) before true (system apps)
+                    .thenBy(turkishCollator) { it.appName }
+            )
+        }
+
         filterApps(currentQuery)
 
         // Capture scroll position and disable animator to prevent scrolling during selection updates
@@ -1018,6 +1051,7 @@ class MainActivity : AppCompatActivity() {
                     put("selected", org.json.JSONArray(selected))
                     put("show_system_apps", sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false))
                     put("skip_enable_confirm", sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false))
+                    put("move_selected_top", sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)) 
                 }
                 contentResolver.openOutputStream(uri)?.use { out ->
                     out.write(exportJson.toString().toByteArray(Charsets.UTF_8))
@@ -1051,6 +1085,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 val showSys = obj.optBoolean("show_system_apps", false)
                 val skipConfirm = obj.optBoolean("skip_enable_confirm", false)
+                val moveTop = obj.optBoolean("move_selected_top", true) 
 
                 // Persist settings
                 sharedPreferences.edit().apply {
@@ -1058,12 +1093,14 @@ class MainActivity : AppCompatActivity() {
                     putInt(KEY_SELECTED_COUNT, selectedSet.size)
                     putBoolean(KEY_SHOW_SYSTEM_APPS, showSys)
                     putBoolean(KEY_SKIP_ENABLE_CONFIRM, skipConfirm)
+                    putBoolean(KEY_MOVE_SELECTED_TOP, moveTop) 
                     apply()
                 }
 
                 // Update in-memory flags and UI on main thread
                 withContext(Dispatchers.Main) {
                     showSystemApps = showSys
+                    moveSelectedTop = moveTop
                     // reload apps to reflect new selection and showSystemApps setting
                     loadInstalledApps()
                     updateSelectedCount()
