@@ -457,6 +457,7 @@ class MainActivity : AppCompatActivity() {
                 appListAdapter.submitList(filteredAppList.toList()) { 
                     recyclerView.itemAnimator = animator
                     recyclerView.scrollToPosition(firstVisible)
+                    updateSelectedCount()
                 }
                 return true
             }
@@ -516,6 +517,7 @@ class MainActivity : AppCompatActivity() {
         appListAdapter.submitList(filteredAppList.toList()) {
             recyclerView.itemAnimator = animator
             recyclerView.scrollToPosition(firstVisible)
+            updateSelectedCount()
         }
     }
 
