@@ -13,21 +13,6 @@ body:
         What Did You Do To Show This Bug ?
     validations:
       required: true
-name: Bug report
-description: Create a report to help us improve
-title: "[BUG]"
-labels: bug
-
-body:
-  - type: textarea
-    id: describe
-    attributes:
-      label: |
-        Describe the bug
-      description: |
-        A clear and concise description of what the bug is.
-    validations:
-      required: true
 
   - type: textarea
     id: recurrence
@@ -47,10 +32,10 @@ body:
     id: screenshots
     attributes:
       label: |
-        Screenshots or ScreenCAP
+        Screenshots Or Screen Recording
       description: |
-        A picture or video is worth a thousand words.
-        If Applicable, Drag And Drop Screenshots Or a Screen Recording To Help Explain Your Problem.
+        A ScreenShot Ot Screen Recording is Worth a Thousand Words.
+        If Applicable, Drag And Drop Screenshots Or a Screen To Help Explain Your Problem.
         If Your File is Too Big For Github To Accept, Try To Compress it (ZIP file), Or Paste a Link From Other Websites (Like MediaFire).
     validations:
     
