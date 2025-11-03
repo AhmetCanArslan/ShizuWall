@@ -259,6 +259,7 @@ class MainActivity : AppCompatActivity() {
         val enabled = loadFirewallEnabled()
         appListAdapter.setSelectionEnabled(!enabled)
         if (enabled) showDimOverlay() else hideDimOverlay()
+        loadInstalledApps()
     }
 
     override fun onDestroy() {
