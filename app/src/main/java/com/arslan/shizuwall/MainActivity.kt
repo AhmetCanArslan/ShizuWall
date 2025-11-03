@@ -2,8 +2,10 @@ package com.arslan.shizuwall
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -97,6 +99,27 @@ class MainActivity : AppCompatActivity() {
     private val activeFirewallPackages = mutableSetOf<String>()
     private enum class Category { DEFAULT, SYSTEM, SELECTED, UNSELECTED, USER }
     private var currentCategory: Category = Category.DEFAULT
+
+    // receiver to handle package add/remove/replace events
+    private val packageBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent?) {
+            val action = intent?.action ?: return
+            val pkg = intent.data?.schemeSpecificPart ?: return
+
+            when (action) {
+                Intent.ACTION_PACKAGE_REMOVED -> {
+                    // ignore when package is being replaced (i.e. during an update)
+                    val replacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
+                    if (replacing) return
+                    handlePackageRemoved(pkg)
+                }
+                Intent.ACTION_PACKAGE_ADDED, Intent.ACTION_PACKAGE_REPLACED -> {
+                    // reload apps to show newly installed/updated app
+                    handlePackageAdded(pkg)
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -207,7 +230,7 @@ class MainActivity : AppCompatActivity() {
             }
             sortAndFilterApps()
         }
-
+       
         loadInstalledApps()
 
         // Load and display saved selected count
@@ -260,6 +283,34 @@ class MainActivity : AppCompatActivity() {
         appListAdapter.setSelectionEnabled(!enabled)
         if (enabled) showDimOverlay() else hideDimOverlay()
         loadInstalledApps()
+
+        // Register package change receiver so installs/uninstalls/updates immediately refresh the list.
+        // Wrapped in try/catch to avoid IllegalArgumentException if already registered.
+        try {
+            val filter = android.content.IntentFilter().apply {
+                addAction(Intent.ACTION_PACKAGE_ADDED)
+                addAction(Intent.ACTION_PACKAGE_REMOVED)
+                addAction(Intent.ACTION_PACKAGE_REPLACED)
+                addDataScheme("package")
+            }
+            registerReceiver(packageBroadcastReceiver, filter)
+        } catch (e: IllegalArgumentException) {
+            // already registered or other issue; ignore
+        } catch (e: Exception) {
+            // ignore other registration errors
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Unregister package receiver to avoid leaks; ignore if not registered.
+        try {
+            unregisterReceiver(packageBroadcastReceiver)
+        } catch (e: IllegalArgumentException) {
+            // not registered
+        } catch (e: Exception) {
+            // ignore
+        }
     }
 
     override fun onDestroy() {
@@ -605,13 +656,6 @@ class MainActivity : AppCompatActivity() {
                     val isSelected = selectedPackages.contains(packageName)
                     temp.add(AppInfo(appName, packageName, bitmap, isSelected, isSystemApp))
                 }
-                val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
-                // sort: selected first, then non-system before system, then app name
-                temp.sortWith(
-                    compareByDescending<AppInfo> { it.isSelected }
-                        .thenBy { it.isSystem } // false (user apps) before true (system apps)
-                        .thenBy(turkishCollator) { it.appName }
-                )
                 temp
             }
 
@@ -713,35 +757,93 @@ class MainActivity : AppCompatActivity() {
         if (enable && packageNames.isEmpty()) return
         firewallToggle.isEnabled = false
         lifecycleScope.launch {
-            val success = withContext(Dispatchers.IO) {
-                if (enable) enableFirewall(packageNames) else disableFirewall(packageNames)
-            }
-            firewallToggle.isEnabled = true
-            if (success) {
-                isFirewallEnabled = enable
-                saveFirewallEnabled(enable)
-
+            // perform package existence checks and run enable/disable on IO thread
+            val (success, installed, missing) = withContext(Dispatchers.IO) {
+                val (installedList, missingList) = filterInstalledPackages(packageNames)
                 if (enable) {
+                    if (installedList.isEmpty()) {
+                        // nothing to enable
+                        return@withContext Triple(false, installedList, missingList)
+                    }
+                    val ok = enableFirewall(installedList)
+                    return@withContext Triple(ok, installedList, missingList)
+                } else {
+                    // disabling: ignore missing ones but still disable chain3 framework
+                    val ok = disableFirewall(installedList)
+                    return@withContext Triple(ok, installedList, missingList)
+                }
+            }
+
+            firewallToggle.isEnabled = true
+
+            // If enabling and none of the chosen packages remain installed -> abort
+            if (enable && installed.isEmpty()) {
+                Toast.makeText(this@MainActivity, "None of the selected apps are installed. Aborting.", Toast.LENGTH_SHORT).show()
+                suppressToggleListener = true
+                firewallToggle.isChecked = false
+                suppressToggleListener = false
+                return@launch
+            }
+
+            // Inform about ignored (missing) packages when appropriate
+            if (missing.isNotEmpty()) {
+                Toast.makeText(this@MainActivity, "${missing.size} selected apps are not installed and were ignored.", Toast.LENGTH_SHORT).show()
+            }
+
+            if (success) {
+                if (enable) {
+                    isFirewallEnabled = true
+                    // persist only installed ones as active
                     activeFirewallPackages.clear()
-                    activeFirewallPackages.addAll(packageNames)
+                    activeFirewallPackages.addAll(installed)
                     saveActivePackages(activeFirewallPackages)
+                    saveFirewallEnabled(true)
+
                     appListAdapter.setSelectionEnabled(false)
                     showDimOverlay()
-                    Toast.makeText(this@MainActivity, "Firewall activated for ${packageNames.size} apps", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Firewall activated for ${installed.size} apps", Toast.LENGTH_SHORT).show()
                 } else {
-                    appListAdapter.setSelectionEnabled(true)
-                    hideDimOverlay()
-                    Toast.makeText(this@MainActivity, "Firewall disabled", Toast.LENGTH_SHORT).show()
                     activeFirewallPackages.clear()
                     saveActivePackages(activeFirewallPackages)
+
+                    isFirewallEnabled = false
+                    appListAdapter.setSelectionEnabled(true)
+                    hideDimOverlay()
+                    saveFirewallEnabled(false)
+                    Toast.makeText(this@MainActivity, "Firewall disabled", Toast.LENGTH_SHORT).show()
                 }
             } else {
+                // operation failed -> revert toggle and notify
                 suppressToggleListener = true
                 firewallToggle.isChecked = !enable
                 suppressToggleListener = false
                 Toast.makeText(this@MainActivity, "Failed to apply firewall changes", Toast.LENGTH_SHORT).show()
+
+                // If disabling failed, still clean stored active packages from missing entries
+                if (!enable && missing.isNotEmpty()) {
+                    activeFirewallPackages.removeAll(missing)
+                    saveActivePackages(activeFirewallPackages)
+                }
             }
         }
+    }
+
+    private fun filterInstalledPackages(packageNames: List<String>): Pair<List<String>, List<String>> {
+        val installed = mutableListOf<String>()
+        val missing = mutableListOf<String>()
+        val pm = packageManager
+        for (pkg in packageNames) {
+            try {
+                pm.getPackageInfo(pkg, 0)
+                installed.add(pkg)
+            } catch (e: PackageManager.NameNotFoundException) {
+                missing.add(pkg)
+            } catch (e: Exception) {
+                // defensively treat errors as missing
+                missing.add(pkg)
+            }
+        }
+        return Pair(installed, missing)
     }
 
     private fun enableFirewall(packageNames: List<String>): Boolean {
@@ -804,5 +906,74 @@ class MainActivity : AppCompatActivity() {
         recyclerView.isEnabled = true
         recyclerView.isClickable = true
         appListAdapter.setSelectionEnabled(true)
+    }
+
+    // Called by packageBroadcastReceiver when a package is removed.
+    private fun handlePackageRemoved(pkg: String) {
+        runOnUiThread {
+            var changed = false
+            val it = appList.iterator()
+            while (it.hasNext()) {
+                val ai = it.next()
+                if (ai.packageName == pkg) {
+                    it.remove()
+                    changed = true
+                }
+            }
+            if (changed) {
+                // update filtered list and UI
+                filteredAppList.removeAll { it.packageName == pkg }
+
+                // Remove from active firewall set and persist
+                activeFirewallPackages.remove(pkg)
+                saveActivePackages(activeFirewallPackages)
+
+                // Remove from selected set and persist
+                val currentSelected = sharedPreferences.getStringSet(KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
+                if (currentSelected.remove(pkg)) {
+                    sharedPreferences.edit().apply {
+                        putStringSet(KEY_SELECTED_APPS, currentSelected)
+                        putInt(KEY_SELECTED_COUNT, currentSelected.size)
+                        apply()
+                    }
+                }
+
+                updateSelectedCount()
+                sortAndFilterApps()
+            }
+        }
+    }
+
+    // Called by packageBroadcastReceiver when a package is added/updated.
+    private fun handlePackageAdded(pkg: String) {
+        // Load the single package on IO and add it to the list if it matches current filters.
+        lifecycleScope.launch {
+            val maybeApp = withContext(Dispatchers.IO) {
+                try {
+                    val pm = packageManager
+                    val ai = pm.getApplicationInfo(pkg, 0)
+                    if (!ai.enabled) return@withContext null
+                    val isSystemApp = (ai.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                    if (!showSystemApps && isSystemApp) return@withContext null
+                    val hasInternet = pm.checkPermission(Manifest.permission.INTERNET, pkg) == PackageManager.PERMISSION_GRANTED
+                    if (!hasInternet) return@withContext null
+                    val appName = pm.getApplicationLabel(ai).toString()
+                    val drawable = pm.getApplicationIcon(ai)
+                    val bitmap = try { drawableToBitmap(drawable) } catch (e: Exception) { null }
+                    val isSelected = loadSelectedApps().contains(pkg)
+                    AppInfo(appName, pkg, bitmap, isSelected, isSystemApp)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+
+            maybeApp?.let { appInfo ->
+                // Avoid duplicates (in case it was already present)
+                if (appList.any { it.packageName == appInfo.packageName }) return@let
+                appList.add(appInfo)
+                sortAndFilterApps()
+                updateSelectedCount()
+            }
+        }
     }
 }
