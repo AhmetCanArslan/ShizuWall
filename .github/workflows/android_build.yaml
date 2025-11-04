@@ -45,4 +45,4 @@ jobs:
       with:
         name: ShizuWall-debug.apk
         # The path to the APK file. This might change depending on your project structure.
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: app/build/outputs/apk/debug/app-universal-debug.apk
