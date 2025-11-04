@@ -822,23 +822,9 @@ class MainActivity : AppCompatActivity() {
         firewallToggle.isEnabled = false
         lifecycleScope.launch {
             // perform package existence checks and run enable/disable on IO thread
-            val (success, installed, missing) = withContext(Dispatchers.IO) {
-                val (installedList, missingList) = filterInstalledPackages(packageNames)
-                if (enable) {
-                    if (installedList.isEmpty()) {
-                        // nothing to enable
-                        return@withContext Triple(false, installedList, missingList)
-                    }
-                    val ok = enableFirewall(installedList)
-                    return@withContext Triple(ok, installedList, missingList)
-                } else {
-                    // disabling: ignore missing ones but still disable chain3 framework
-                    val ok = disableFirewall(installedList)
-                    return@withContext Triple(ok, installedList, missingList)
-                }
+            val (installed, missing) = withContext(Dispatchers.IO) {
+                filterInstalledPackages(packageNames)
             }
-
-            firewallToggle.isEnabled = true
 
             // If enabling and none of the chosen packages remain installed -> abort
             if (enable && installed.isEmpty()) {
@@ -846,6 +832,7 @@ class MainActivity : AppCompatActivity() {
                 suppressToggleListener = true
                 firewallToggle.isChecked = false
                 suppressToggleListener = false
+                firewallToggle.isEnabled = true
                 return@launch
             }
 
@@ -854,40 +841,59 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "${missing.size} selected apps are not installed and were ignored.", Toast.LENGTH_SHORT).show()
             }
 
-            if (success) {
+            val (successful, failed) = withContext(Dispatchers.IO) {
                 if (enable) {
+                    enableFirewall(installed)
+                } else {
+                    disableFirewall(installed)
+                }
+            }
+
+            firewallToggle.isEnabled = true
+
+            // Handle successes
+            if (enable) {
+                if (successful.isNotEmpty()) {
                     isFirewallEnabled = true
-                    // persist only installed ones as active
                     activeFirewallPackages.clear()
-                    activeFirewallPackages.addAll(installed)
+                    activeFirewallPackages.addAll(successful)
                     saveActivePackages(activeFirewallPackages)
                     saveFirewallEnabled(true)
-
                     appListAdapter.setSelectionEnabled(false)
                     showDimOverlay()
-                    Toast.makeText(this@MainActivity, "Firewall activated for ${installed.size} apps", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Firewall activated for ${successful.size} apps", Toast.LENGTH_SHORT).show()
                 } else {
-                    activeFirewallPackages.clear()
-                    saveActivePackages(activeFirewallPackages)
-
-                    isFirewallEnabled = false
-                    appListAdapter.setSelectionEnabled(true)
-                    hideDimOverlay()
-                    saveFirewallEnabled(false)
-                    Toast.makeText(this@MainActivity, "Firewall disabled", Toast.LENGTH_SHORT).show()
+                    // None succeeded, revert toggle
+                    suppressToggleListener = true
+                    firewallToggle.isChecked = false
+                    suppressToggleListener = false
+                    Toast.makeText(this@MainActivity, "Failed to enable firewall for any apps", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                // operation failed -> revert toggle and notify
-                suppressToggleListener = true
-                firewallToggle.isChecked = !enable
-                suppressToggleListener = false
-                Toast.makeText(this@MainActivity, "Failed to apply firewall changes", Toast.LENGTH_SHORT).show()
-
-                // If disabling failed, still clean stored active packages from missing entries
-                if (!enable && missing.isNotEmpty()) {
-                    activeFirewallPackages.removeAll(missing)
+                if (successful.isNotEmpty()) {
+                    activeFirewallPackages.removeAll(successful)
                     saveActivePackages(activeFirewallPackages)
+                    if (activeFirewallPackages.isEmpty()) {
+                        isFirewallEnabled = false
+                        saveFirewallEnabled(false)
+                        appListAdapter.setSelectionEnabled(true)
+                        hideDimOverlay()
+                    }
+                    Toast.makeText(this@MainActivity, "Firewall disabled for ${successful.size} apps", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@MainActivity, "Failed to disable firewall for any apps", Toast.LENGTH_SHORT).show()
                 }
+            }
+
+            // Handle failures: unselect failed apps and show error dialog
+            if (failed.isNotEmpty()) {
+                for (pkg in failed) {
+                    appList.find { it.packageName == pkg }?.isSelected = false
+                }
+                updateSelectedCount()
+                saveSelectedApps()
+                sortAndFilterApps()
+                showOperationErrorsDialog(failed)
             }
         }
     }
@@ -910,30 +916,38 @@ class MainActivity : AppCompatActivity() {
         return Pair(installed, missing)
     }
 
-    private fun enableFirewall(packageNames: List<String>): Boolean {
+    private fun enableFirewall(packageNames: List<String>): Pair<List<String>, List<String>> {
+        val successful = mutableListOf<String>()
+        val failed = mutableListOf<String>()
         if (!runShizukuShellCommand("cmd connectivity set-chain3-enabled true")) {
-            return false
+            // If chain3 enable fails, all packages fail
+            failed.addAll(packageNames)
+            return Pair(successful, failed)
         }
         for (packageName in packageNames) {
-            if (!runShizukuShellCommand("cmd connectivity set-package-networking-enabled false $packageName")) {
-                runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
-                return false
+            if (runShizukuShellCommand("cmd connectivity set-package-networking-enabled false $packageName")) {
+                successful.add(packageName)
+            } else {
+                failed.add(packageName)
             }
         }
-        return true
+        // No rollback; allow partial success
+        return Pair(successful, failed)
     }
 
-    private fun disableFirewall(packageNames: List<String>): Boolean {
-        var success = true
+    private fun disableFirewall(packageNames: List<String>): Pair<List<String>, List<String>> {
+        val successful = mutableListOf<String>()
+        val failed = mutableListOf<String>()
         for (packageName in packageNames) {
-            if (!runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $packageName")) {
-                success = false
+            if (runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $packageName")) {
+                successful.add(packageName)
+            } else {
+                failed.add(packageName)
             }
         }
-        if (!runShizukuShellCommand("cmd connectivity set-chain3-enabled false")) {
-            success = false
-        }
-        return success
+        // Disable chain3 regardless of individual results
+        runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
+        return Pair(successful, failed)
     }
 
     private fun runShizukuShellCommand(command: String): Boolean {
@@ -1112,5 +1126,45 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun showOperationErrorsDialog(failedPackages: List<String>) {
+        val failedApps = appList.filter { it.packageName in failedPackages }
+        if (failedApps.isEmpty()) return
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_firewall_confirm, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
+        val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
+        val btnConfirm = dialogView.findViewById<MaterialButton>(R.id.btnConfirm)
+        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
+
+        dialogMessage.text = "Operation failed for the following ${failedApps.size} apps. They have been unselected."
+
+        selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
+        selectedAppsRecyclerView.adapter = SelectedAppsAdapter(failedApps)
+
+        // Limit the RecyclerView height to a fraction of the screen
+        val displayHeight = resources.displayMetrics.heightPixels
+        val maxRecyclerHeight = (displayHeight * 0.5).toInt() // 50% of screen height
+        selectedAppsRecyclerView.isNestedScrollingEnabled = true
+        selectedAppsRecyclerView.post {
+            val lp = selectedAppsRecyclerView.layoutParams
+            lp.height = when (lp.height) {
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT -> maxRecyclerHeight
+                else -> minOf(lp.height, maxRecyclerHeight)
+            }
+            selectedAppsRecyclerView.layoutParams = lp
+        }
+
+        btnConfirm.text = "OK"
+        btnConfirm.setOnClickListener { dialog.dismiss() }
+        btnCancel.visibility = View.GONE // Hide cancel button for error dialog
+
+        dialog.show()
     }
 }
