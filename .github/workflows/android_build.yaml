@@ -1,0 +1,48 @@
+# Name of the workflow
+name: Android CI - Nightly Build
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push events but only for the "main" branch
+  push:
+    branches: [ main ] # Change this if your main branch is "master"
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Step: Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 2. Step: Set up Java JDK 17
+    # Required for modern Android builds
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'gradle'
+
+    # 3. Step: Grant execute permission to gradlew
+    # (Required in Linux environments to run the script)
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    # 4. Step: Build the 'debug' APK using Gradle
+    - name: Build with Gradle (assembleDebug)
+      run: ./gradlew assembleDebug
+
+    # 5. Step: Upload the generated APK as an "Artifact"
+    # This makes it downloadable from the Actions summary page
+    - name: Upload APK as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ShizuWall-debug.apk
+        # The path to the APK file. This might change depending on your project structure.
+        path: app/build/outputs/apk/debug/app-debug.apk
