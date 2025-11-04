@@ -4,9 +4,9 @@ A lightweight, privacy focused Android firewall application that blocks network 
 
 ### [Download from releases](https://github.com/ahmetcanarslan/shizuwall/releases) 
 
-<img src="assets/screenShots/v2.2/1.png" alt="Screenshot" width="200">
-<img src="assets/screenShots/v2.2/2.png" alt="Screenshot" width="200">
-<img src="assets/screenShots/v2.2/3.png" alt="Screenshot" width="200">
+<img src="assets/screenShots/v2.2/1.png" alt="Screenshot" width="150">
+<img src="assets/screenShots/v2.2/2.png" alt="Screenshot" width="150">
+<img src="assets/screenShots/v2.2/3.png" alt="Screenshot" width="150">
 
 
 ## Why ShizuWall is Different
