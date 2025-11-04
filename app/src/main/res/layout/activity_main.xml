@@ -99,18 +99,7 @@
         app:layout_constraintBottom_toBottomOf="@id/searchView"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/searchView"
-        app:layout_constraintBottom_toTopOf="@id/categoryContainer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_app" />
-
-    <!-- Bottom category bar container -->
+    <!-- Category bar moved below search bar -->
     <HorizontalScrollView
         android:id="@+id/categoryContainer"
         android:layout_width="0dp"
@@ -120,7 +109,7 @@
         android:clipToPadding="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/searchView">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/categoryChipGroup"
@@ -168,5 +157,16 @@
                 android:text="@string/cat_user" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/categoryContainer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_app" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
