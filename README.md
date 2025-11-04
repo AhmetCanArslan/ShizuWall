@@ -4,6 +4,11 @@ A lightweight, privacy focused Android firewall application that blocks network 
 
 ### [Download from releases](https://github.com/ahmetcanarslan/shizuwall/releases) 
 
+<img src="assets/screenShots/v2.2/1.png" alt="Screenshot" width="200">
+<img src="assets/screenShots/v2.2/2.png" alt="Screenshot" width="200">
+<img src="assets/screenShots/v2.2/3.png" alt="Screenshot" width="200">
+
+
 ## Why ShizuWall is Different
 
 1. **Shizuku-Only Approach**: Most Android firewalls require either Root access or a VPN service. ShizuWall uses **only Shizuku**, providing native system-level control without the common VPN drawbacks.
