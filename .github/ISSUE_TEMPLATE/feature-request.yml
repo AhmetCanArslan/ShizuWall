@@ -1,0 +1,14 @@
+name: "⭐ Feature request"
+description: "Share your ideas to improve the app"
+title: "[Feature Request]"
+labels: enhancement
+body:
+  - type: textarea
+    id: describe
+    attributes:
+      label: |
+        Describe your idea
+      description: |
+        What would you like to add to the app?
+    validations:
+      required: true
