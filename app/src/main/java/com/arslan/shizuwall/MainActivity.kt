@@ -175,6 +175,7 @@ class MainActivity : AppCompatActivity() {
             val menuItemIdExport = 3
             val menuItemIdImport = 4
             val menuItemIdMoveSelectedTop = 5
+            val menuItemIdDonate = 6
 
             popup.menu.add(0, menuItemIdShowSystem, 0, getString(R.string.show_system_apps)).apply {
                 isCheckable = true
@@ -195,6 +196,7 @@ class MainActivity : AppCompatActivity() {
 
             popup.menu.add(0, menuItemIdExport, 3, "Export settings")
             popup.menu.add(0, menuItemIdImport, 4, "Import settings")
+            popup.menu.add(0, menuItemIdDonate, 5, getString(R.string.donate))
 
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -239,6 +241,12 @@ class MainActivity : AppCompatActivity() {
                     }
                     menuItemIdImport -> {
                         openDocumentLauncher.launch(arrayOf("application/json", "text/*", "*/*"))
+                        true
+                    }
+                    menuItemIdDonate -> {
+                        val url = getString(R.string.buymeacoffee_url)
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        startActivity(intent)
                         true
                     }
                     else -> false

@@ -1,18 +1,13 @@
 <resources>
     <string name="app_name">ShizuWall</string>
-    <string name="app_icon_desc">Uygulama İkonu</string>
-
-    <!-- GitHub link and button description -->
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
-    <string name="github_button_desc">Open GitHub page</string>
-
+    <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
+    <string name="donate">Donate</string>
     <string name="show_system_apps">Show system apps</string>
+    <string name="skip_enable_dialog">Skip enable confirmation</string>
     <string name="more_options">More options</string>
-
-    <!-- toggle to skip the "Are you sure?" dialog when enabling firewall -->
-    <string name="skip_enable_dialog">Skip confirmation when enabling firewall</string>
-
-    <!-- category bar labels -->
+    <string name="github_button_desc">Open GitHub repository</string>
+    <string name="app_icon_desc">App icon</string>
     <string name="cat_default">Default</string>
     <string name="cat_system">System</string>
     <string name="cat_selected">Selected</string>

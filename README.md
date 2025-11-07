@@ -1,5 +1,6 @@
 # ShizuWall
 
+
 A lightweight, privacy focused Android firewall application that blocks network connections for selected apps **without requiring root access or VPN**. ShizuWall leverages Shizuku to provide powerful network control capabilities. Requires Android 11 (API 30) or higher. 
 
 ### [Download from releases](https://github.com/ahmetcanarslan/shizuwall/releases) 
@@ -9,6 +10,7 @@ A lightweight, privacy focused Android firewall application that blocks network 
   <img src="assets/screenShots/v2.2/2.png" width="30%">
   <img src="assets/screenShots/v2.2/3.png" width="30%">
 </p>
+[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://www.buymeacoffee.com/ahmetcanarslan)
 
 ## Why ShizuWall is Different
 
@@ -66,3 +68,7 @@ Contributions, issues, and feature requests are welcome! Please see the reposito
 ---
 
 - [Shizuku](https://github.com/RikkaApps/Shizuku) - For providing the API that makes this app possible
+
+## Donate
+
+If you find ShizuWall useful, consider buying me a coffee: [Buy Me a Coffee](https://buymeacoffee.com/ahmetcanarslan)
