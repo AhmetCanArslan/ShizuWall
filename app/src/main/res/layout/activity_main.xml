@@ -15,10 +15,10 @@
         android:layout_marginStart="16dp"
         android:contentDescription="@string/github_button_desc"
         android:src="@drawable/ic_github"
-        android:tint="?attr/colorOnSurface"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/appTitle" />
+        app:layout_constraintBottom_toBottomOf="@+id/appTitle"
+        app:tint="?attr/colorOnSurface" />
 
     <TextView
         android:id="@+id/appTitle"
@@ -37,7 +37,7 @@
         android:id="@+id/firewallLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enable Firewall"
+        android:text="@string/enable_firewall"
         android:textSize="14dp"
         android:paddingEnd="8dp"
         android:paddingStart="16dp"
@@ -89,7 +89,7 @@
         android:id="@+id/selectedCountText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Selected: 0"
+        android:text="@string/selected_0"
         android:textSize="12sp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
