@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.chip.Chip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -209,6 +210,7 @@ class MainActivity : AppCompatActivity() {
                             .putBoolean(KEY_SHOW_SYSTEM_APPS, showSystemApps)
                             .apply()
                         loadInstalledApps() // refresh list
+                        updateCategoryChips()
                         true
                     }
                     menuItemIdSkipConfirm -> {
@@ -291,6 +293,9 @@ class MainActivity : AppCompatActivity() {
             }
             sortAndFilterApps()
         }
+
+        // ensure the category chips reflect the saved "show system apps" preference
+        updateCategoryChips()
        
         loadInstalledApps()
 
@@ -1125,6 +1130,7 @@ class MainActivity : AppCompatActivity() {
                     moveSelectedTop = moveTop
                     // reload apps to reflect new selection and showSystemApps setting
                     loadInstalledApps()
+                    updateCategoryChips()
                     updateSelectedCount()
                     Toast.makeText(this@MainActivity, "Import successful", Toast.LENGTH_SHORT).show()
                 }
@@ -1133,6 +1139,19 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, "Import failed: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
+        }
+    }
+    private fun updateCategoryChips() {
+        // guard: views may not be initialized in some lifecycle flows
+        val categoryGroup = findViewById<ChipGroup?>(R.id.categoryChipGroup) ?: return
+        val chipSystem = findViewById<Chip?>(R.id.chip_system)
+        chipSystem?.visibility = if (showSystemApps) View.VISIBLE else View.GONE
+
+        // if we hid the system chip and it was selected, fall back to default
+        if (!showSystemApps && categoryGroup.checkedChipId == R.id.chip_system) {
+            categoryGroup.check(R.id.chip_default)
+            currentCategory = Category.DEFAULT
+            sortAndFilterApps()
         }
     }
 
