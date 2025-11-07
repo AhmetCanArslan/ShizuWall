@@ -22,7 +22,7 @@ class OnboardingActivity : AppCompatActivity() {
         viewPager = findViewById(R.id.viewPager)
 
         setupPages()
-        viewPager.adapter = OnboardingPagerAdapter(pages, this)
+        viewPager.adapter = OnboardingPageAdapter(pages, this) // use the renamed adapter class
     }
 
     private fun setupPages() {
@@ -31,7 +31,8 @@ class OnboardingActivity : AppCompatActivity() {
                 title = "Welcome to ShizuWall",
                 message = "Block unwanted network connections without root or vpn",
                 buttonText = "Next",
-                onButtonClick = { goToNextPage() }
+                onButtonClick = { goToNextPage() },
+                imageResId = R.mipmap.ic_launcher // app icon
             )
         )
 
@@ -41,7 +42,8 @@ class OnboardingActivity : AppCompatActivity() {
                 message = "We need notification permission to keep you informed about firewall status if you reboot while firewall is active.",
                 buttonText = "Grant Permission",
                 onButtonClick = { requestNotificationPermission() },
-                isPermissionPage = true
+                isPermissionPage = true,
+                imageResId = android.R.drawable.ic_menu_info_details
             )
         )
 
@@ -50,7 +52,8 @@ class OnboardingActivity : AppCompatActivity() {
                 title = "Shizuku Required",
                 message = "Shizuku is required for this application to run. Therefore, the developer is not responsible for any negative consequences. Please install and activate Shizuku before proceeding.",
                 buttonText = "Get Started",
-                onButtonClick = { finishOnboarding() }
+                onButtonClick = { finishOnboarding() },
+                imageResId = R.drawable.ic_shizuku
             )
         )
     }
@@ -112,5 +115,6 @@ data class OnboardingPage(
     val message: String,
     val buttonText: String,
     val onButtonClick: () -> Unit,
-    val isPermissionPage: Boolean = false
+    val isPermissionPage: Boolean = false,
+    val imageResId: Int? = null
 )

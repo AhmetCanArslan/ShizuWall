@@ -6,6 +6,15 @@
     android:orientation="vertical"
     android:padding="32dp">
 
+    <ImageView
+        android:id="@+id/page_image"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/app_icon_desc"
+        android:src="@mipmap/ic_launcher"
+        android:scaleType="centerCrop" />
+
     <TextView
         android:id="@+id/page_title"
         android:layout_width="wrap_content"
