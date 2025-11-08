@@ -932,7 +932,16 @@ class MainActivity : AppCompatActivity() {
             // Handle failures: unselect failed apps and show error dialog
             if (failed.isNotEmpty()) {
                 for (pkg in failed) {
-                    appList.find { it.packageName == pkg }?.isSelected = false
+                    val idx = appList.indexOfFirst { it.packageName == pkg }
+                    if (idx != -1) {
+                        val ai = appList[idx]
+                        try {
+                            appList[idx] = ai.copy(isSelected = false)
+                        } catch (e: Exception) {
+                            ai.isSelected = false
+                            appListAdapter.notifyDataSetChanged()
+                        }
+                    }
                 }
                 updateSelectedCount()
                 saveSelectedApps()
