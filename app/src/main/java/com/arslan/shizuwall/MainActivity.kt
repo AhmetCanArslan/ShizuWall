@@ -267,11 +267,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // Check if Shizuku is available
-        if (!checkShizukuAvailable()) {
-            return
-        }
-
         Shizuku.addRequestPermissionResultListener(requestPermissionResultListener)
         Shizuku.addBinderReceivedListener(binderReceivedListener)
         Shizuku.addBinderDeadListener(binderDeadListener)
@@ -324,11 +319,6 @@ class MainActivity : AppCompatActivity() {
             firewallToggle.isEnabled = isFirewallEnabled || savedCount > 0
         }
 
-        // Check permission on startup
-        checkShizukuPermission()
-
-        // Check notification permission on startup
-        checkNotificationPermission()
     }
 
     override fun onResume() {
@@ -468,6 +458,47 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkPermission(code: Int): Boolean {
+        // First ensure Shizuku binder is reachable. If it's not running, show a friendly dialog prompting the user to start/install Shizuku.
+        try {
+            if (!Shizuku.pingBinder()) {
+                AlertDialog.Builder(this)
+                    .setTitle("Shizuku not running")
+                    .setMessage("Shizuku is not currently running. Start the Shizuku service (or install it) before enabling the firewall.")
+                    .setPositiveButton("Open Shizuku") { _, _ ->
+                        // Try to open the Shizuku app if present, otherwise open Play Store, otherwise fallback to GitHub.
+                        val pm = packageManager
+                        val candidates = listOf("moe.shizuku.privileged.api", "moe.shizuku.manager")
+                        var launched = false
+                        for (pkg in candidates) {
+                            val launch = pm.getLaunchIntentForPackage(pkg)
+                            if (launch != null) {
+                                startActivity(launch)
+                                launched = true
+                                break
+                            }
+                        }
+                        if (!launched) {
+                            try {
+                                val playIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${candidates.getOrNull(1) ?: candidates[0]}"))
+                                startActivity(playIntent)
+                            } catch (e: Exception) {
+                                try {
+                                    val web = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/RikkaApps/Shizuku"))
+                                    startActivity(web)
+                                } catch (_: Exception) {
+                                    // ignore
+                                }
+                            }
+                        }
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+                return false
+            }
+        } catch (e: Exception) {
+            // If ping fails unexpectedly, fall back to permission flow below.
+        }
+
         if (Shizuku.isPreV11()) {
             // Pre-v11 is unsupported
             Toast.makeText(this, "Shizuku version is too old, please update", Toast.LENGTH_SHORT).show()
@@ -478,11 +509,11 @@ class MainActivity : AppCompatActivity() {
             // Granted
             true
         } else if (Shizuku.shouldShowRequestPermissionRationale()) {
-            // Users choose "Deny and don't ask again"
+            // Users chose "Deny and don't ask again"
             Toast.makeText(this, "Please grant Shizuku permission in settings", Toast.LENGTH_LONG).show()
             false
         } else {
-            // Request the permission
+            // Request the permission (this will show the Shizuku permission dialog)
             Shizuku.requestPermission(code)
             false
         }
