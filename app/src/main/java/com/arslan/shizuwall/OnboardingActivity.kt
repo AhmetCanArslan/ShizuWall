@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
+import android.content.res.Configuration
 
 class OnboardingActivity : AppCompatActivity() {
 
@@ -53,7 +54,7 @@ class OnboardingActivity : AppCompatActivity() {
                 message = "Shizuku is required for this application to run. Therefore, the developer is not responsible for any negative consequences. Please install and activate Shizuku before proceeding.",
                 buttonText = "Get Started",
                 onButtonClick = { finishOnboarding() },
-                imageResId = R.drawable.ic_shizuku
+                imageResId = getShizukuIconRes()
             )
         )
     }
@@ -88,6 +89,15 @@ class OnboardingActivity : AppCompatActivity() {
         } else {
             // No permission needed for Android 12 and below
             goToNextPage()
+        }
+    }
+
+    private fun getShizukuIconRes(): Int {
+        val nightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return if (nightMode == Configuration.UI_MODE_NIGHT_YES) {
+            R.drawable.ic_shizuku_white
+        } else {
+            R.drawable.ic_shizuku_black
         }
     }
 
