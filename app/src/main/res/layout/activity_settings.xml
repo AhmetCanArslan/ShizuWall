@@ -50,6 +50,13 @@
                 android:text="Move selected apps to top"
                 android:padding="16dp" />
 
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchUseDynamicColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Use dynamic color"
+                android:padding="16dp" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

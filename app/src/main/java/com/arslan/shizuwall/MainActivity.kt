@@ -93,11 +93,10 @@ class MainActivity : AppCompatActivity() {
         const val KEY_ONBOARDING_DONE = "onboarding_done"
         private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         private const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
-        // preference key to persist "show system apps" state
         const val KEY_SHOW_SYSTEM_APPS = "show_system_apps"
-        // preference key to persist "move selected apps to top" state
         const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
         const val KEY_SELECTED_FONT = "selected_font"
+        const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
 
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
@@ -153,10 +152,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DynamicColors.applyToActivityIfAvailable(this)
-        enableEdgeToEdge()
-
+        
         sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        
+        // Apply theme before any UI is created
+        val useDynamicColor = sharedPreferences.getBoolean(KEY_USE_DYNAMIC_COLOR, true)
+        if (useDynamicColor) {
+            DynamicColors.applyToActivityIfAvailable(this)
+        }
+        
+        enableEdgeToEdge()
 
         // Check if onboarding is complete
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)

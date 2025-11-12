@@ -2,10 +2,15 @@ package com.arslan.shizuwall
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,16 +23,17 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
-import android.view.View
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var switchShowSystemApps: SwitchMaterial
     private lateinit var switchMoveSelectedTop: SwitchMaterial
     private lateinit var switchSkipConfirm: SwitchMaterial
@@ -36,6 +42,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var btnExport: MaterialButton
     private lateinit var btnImport: MaterialButton
     private lateinit var btnDonate: MaterialButton
+    private lateinit var switchUseDynamicColor: SwitchMaterial
 
     private val createDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -51,7 +58,14 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DynamicColors.applyToActivityIfAvailable(this)
+        
+        sharedPreferences = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        
+        val useDynamicColor = sharedPreferences.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
+        if (useDynamicColor) {
+            DynamicColors.applyToActivityIfAvailable(this)
+        }
+        
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
 
@@ -83,6 +97,7 @@ class SettingsActivity : AppCompatActivity() {
         btnExport = findViewById(R.id.btnExport)
         btnImport = findViewById(R.id.btnImport)
         btnDonate = findViewById(R.id.btnDonate)
+        switchUseDynamicColor = findViewById(R.id.switchUseDynamicColor)
     }
 
     private fun loadSettings() {
@@ -94,6 +109,7 @@ class SettingsActivity : AppCompatActivity() {
         
         val currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         tvCurrentFont.text = if (currentFont == "ndot") "Ndot" else "Default"
+        switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
     }
 
     private fun setupListeners() {
@@ -129,6 +145,13 @@ class SettingsActivity : AppCompatActivity() {
             val url = getString(R.string.buymeacoffee_url)
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
+        }
+
+        switchUseDynamicColor.setOnCheckedChangeListener { _, isChecked ->
+            sharedPreferences.edit()
+                .putBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, isChecked)
+                .apply()
+            showThemeRestartNotice()
         }
     }
 
@@ -269,5 +292,19 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun showThemeRestartNotice() {
+        AlertDialog.Builder(this)
+            .setTitle("Theme Changed")
+            .setMessage("The theme has been updated. Please restart the app to apply the changes.")
+            .setPositiveButton("Restart Now") { _, _ ->
+                val intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton("Later", null)
+            .show()
     }
 }
