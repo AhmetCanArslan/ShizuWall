@@ -14,6 +14,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.content.ActivityNotFoundException
 import androidx.activity.result.contract.ActivityResultContracts
 import android.os.Build
 import android.os.Bundle
@@ -501,15 +502,31 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                         if (!launched) {
-                            try {
-                                val playIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${candidates.getOrNull(1) ?: candidates[0]}"))
-                                startActivity(playIntent)
-                            } catch (e: Exception) {
+                            var openedPlay = false
+                            for (pkgId in candidates) {
                                 try {
-                                    val web = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/RikkaApps/Shizuku"))
-                                    startActivity(web)
-                                } catch (_: Exception) {
-                                    // ignore
+                                    val playIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$pkgId"))
+                                    startActivity(playIntent)
+                                    openedPlay = true
+                                    break
+                                } catch (e: ActivityNotFoundException) {
+                                    // Play Store app not available on device, will fallback to web below
+                                } catch (e: Exception) {
+                                    // details page not found or other error, try next candidate
+                                }
+                            }
+                            if (!openedPlay) {
+                                try {
+                                    // Open Play Store search for "Shizuku" to avoid "not found" detail pages
+                                    val searchIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=Shizuku"))
+                                    startActivity(searchIntent)
+                                } catch (e: Exception) {
+                                    try {
+                                        val web = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/RikkaApps/Shizuku"))
+                                        startActivity(web)
+                                    } catch (_: Exception) {
+                                        // ignore
+                                    }
                                 }
                             }
                         }
