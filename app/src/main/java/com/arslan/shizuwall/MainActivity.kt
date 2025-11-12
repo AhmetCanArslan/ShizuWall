@@ -543,11 +543,14 @@ class MainActivity : AppCompatActivity() {
         selectAllCheckbox.setOnCheckedChangeListener { _, isChecked ->
             if (suppressSelectAllListener) return@setOnCheckedChangeListener
             
-            // Select/deselect all apps in the current filtered list
             val changed = filteredAppList.any { it.isSelected != isChecked }
             if (changed) {
-                for (app in filteredAppList) {
-                    app.isSelected = isChecked
+                val filteredPackages = filteredAppList.map { it.packageName }.toSet()
+                for (i in appList.indices) {
+                    val ai = appList[i]
+                    if (ai.packageName in filteredPackages) {
+                        appList[i] = ai.copy(isSelected = isChecked)
+                    }
                 }
                 updateSelectedCount()
                 saveSelectedApps()
