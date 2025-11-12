@@ -113,8 +113,8 @@ class MainActivity : AppCompatActivity() {
     private var suppressToggleListener = false
     private var suppressSelectAllListener = false
     private val activeFirewallPackages = mutableSetOf<String>()
-    private enum class Category { DEFAULT, SYSTEM, SELECTED, UNSELECTED, USER }
-    private var currentCategory: Category = Category.DEFAULT
+    private enum class Category { NONE, SYSTEM, SELECTED, UNSELECTED, USER }
+    private var currentCategory: Category = Category.NONE
     
     // Track if we're waiting for Shizuku permission due to toggle attempt
     private var pendingToggleEnable = false
@@ -219,12 +219,12 @@ class MainActivity : AppCompatActivity() {
         val categoryGroup = findViewById<ChipGroup>(R.id.categoryChipGroup)
         categoryGroup.setOnCheckedChangeListener { _, checkedId ->
             currentCategory = when (checkedId) {
-                R.id.chip_default -> Category.DEFAULT
                 R.id.chip_system -> Category.SYSTEM
                 R.id.chip_selected -> Category.SELECTED
                 R.id.chip_unselected -> Category.UNSELECTED
                 R.id.chip_user -> Category.USER
-                else -> Category.DEFAULT
+                -1 -> Category.NONE // no selection
+                else -> Category.NONE
             }
             sortAndFilterApps()
         }
@@ -579,7 +579,7 @@ class MainActivity : AppCompatActivity() {
 
         // Apply category filter first
         val baseList: List<AppInfo> = when (currentCategory) {
-            Category.DEFAULT -> if (showSystemApps) appList else appList.filter { !it.isSystem }
+            Category.NONE -> if (showSystemApps) appList else appList.filter { !it.isSystem }
             Category.SYSTEM -> appList.filter { it.isSystem }
             Category.USER -> appList.filter { !it.isSystem }
             Category.SELECTED -> appList.filter { it.isSelected }
@@ -1145,10 +1145,10 @@ class MainActivity : AppCompatActivity() {
         val chipSystem = findViewById<Chip?>(R.id.chip_system)
         chipSystem?.visibility = if (showSystemApps) View.VISIBLE else View.GONE
 
-        // if we hid the system chip and it was selected, fall back to default
+        // if we hid the system chip and it was selected, clear the selection (do NOT switch to a removed default)
         if (!showSystemApps && categoryGroup.checkedChipId == R.id.chip_system) {
-            categoryGroup.check(R.id.chip_default)
-            currentCategory = Category.DEFAULT
+            categoryGroup.clearCheck()
+            currentCategory = Category.NONE
             sortAndFilterApps()
         }
     }

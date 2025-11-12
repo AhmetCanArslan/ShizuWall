@@ -117,16 +117,7 @@
             android:layout_height="wrap_content"
             app:singleSelection="true"
             android:layout_marginBottom="0dp"
-            android:layout_marginTop="4dp"
-            android:checkedButton="@id/chip_default">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_default"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/cat_default"
-                android:checked="true" />
+            android:layout_marginTop="4dp">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_system"

@@ -8,7 +8,6 @@
     <string name="more_options">More options</string>
     <string name="github_button_desc">Open GitHub repository</string>
     <string name="app_icon_desc">App icon</string>
-    <string name="cat_default">Default</string>
     <string name="cat_system">System</string>
     <string name="cat_selected">Selected</string>
     <string name="cat_unselected">Unselected</string>
