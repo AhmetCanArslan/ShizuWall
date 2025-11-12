@@ -30,6 +30,8 @@
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
         android:layout_marginStart="8dp"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintStart_toEndOf="@id/githubIcon"
         app:layout_constraintTop_toTopOf="parent" />
 

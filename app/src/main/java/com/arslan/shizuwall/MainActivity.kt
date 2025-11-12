@@ -191,6 +191,9 @@ class MainActivity : AppCompatActivity() {
         val githubIcon: ImageView = findViewById(R.id.githubIcon)
         githubIcon.setOnClickListener { openGithub() }
 
+        val appTitle: TextView = findViewById(R.id.appTitle)
+        appTitle.setOnClickListener { openGithub() }
+
         val settingsButton: FloatingActionButton? = findViewById(R.id.settingsButton)
         settingsButton?.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
