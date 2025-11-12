@@ -1143,7 +1143,11 @@ class MainActivity : AppCompatActivity() {
         // guard: views may not be initialized in some lifecycle flows
         val categoryGroup = findViewById<ChipGroup?>(R.id.categoryChipGroup) ?: return
         val chipSystem = findViewById<Chip?>(R.id.chip_system)
+        val chipSelected = findViewById<Chip?>(R.id.chip_selected)
+
         chipSystem?.visibility = if (showSystemApps) View.VISIBLE else View.GONE
+
+        chipSelected?.visibility = if (moveSelectedTop) View.GONE else View.VISIBLE
 
         // if we hid the system chip and it was selected, clear the selection (do NOT switch to a removed default)
         if (!showSystemApps && categoryGroup.checkedChipId == R.id.chip_system) {
