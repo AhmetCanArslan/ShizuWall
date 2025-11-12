@@ -43,6 +43,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.chip.Chip
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -137,17 +138,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Add export/import launchers
-    private val createDocumentLauncher = registerForActivityResult(
-        ActivityResultContracts.CreateDocument("application/json")
-    ) { uri: Uri? ->
-        uri?.let { lifecycleScope.launch { exportToUri(it) } }
-    }
-
-    private val openDocumentLauncher = registerForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uris: Uri? ->
-        uris?.let { lifecycleScope.launch { importFromUri(it) } }
+    private val settingsLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            // Reload settings and refresh the app list
+            showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
+            moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
+            loadInstalledApps()
+            updateCategoryChips()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -181,100 +181,10 @@ class MainActivity : AppCompatActivity() {
         val githubIcon: ImageView = findViewById(R.id.githubIcon)
         githubIcon.setOnClickListener { openGithub() }
 
-        // Overflow (three-dot) menu
-        val overflowButton: ImageButton? = findViewById(R.id.overflowMenu)
-        overflowButton?.setOnClickListener { btn ->
-            val popup = PopupMenu(this, btn)
-            val menuItemIdShowSystem = 1
-            val menuItemIdSkipConfirm = 2
-            val menuItemIdExport = 3
-            val menuItemIdImport = 4
-            val menuItemIdMoveSelectedTop = 5
-            val menuItemIdDonate = 6
-            val menuItemIdChangeFont = 7
-
-            popup.menu.add(0, menuItemIdShowSystem, 0, getString(R.string.show_system_apps)).apply {
-                isCheckable = true
-                isChecked = showSystemApps
-            }
-
-            // menu item to allow skipping the enable-confirm dialog
-            val prefsLocal = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-            popup.menu.add(0, menuItemIdSkipConfirm, 1, getString(R.string.skip_enable_dialog)).apply {
-                isCheckable = true
-                isChecked = prefsLocal.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)
-            }
-
-            popup.menu.add(0, menuItemIdMoveSelectedTop, 2, "Move selected apps to top").apply {
-                isCheckable = true
-                isChecked = moveSelectedTop
-            }
-
-            popup.menu.add(0, menuItemIdExport, 3, "Export settings")
-            popup.menu.add(0, menuItemIdImport, 4, "Import settings")
-            popup.menu.add(0, menuItemIdChangeFont, 5, getString(R.string.change_font))
-            popup.menu.add(0, menuItemIdDonate, 6, getString(R.string.donate))
-
-            popup.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    menuItemIdShowSystem -> {
-                        showSystemApps = !showSystemApps
-                        item.isChecked = showSystemApps
-                        // persist the user's choice
-                        getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                            .edit()
-                            .putBoolean(KEY_SHOW_SYSTEM_APPS, showSystemApps)
-                            .apply()
-                        loadInstalledApps() // refresh list
-                        updateCategoryChips()
-                        true
-                    }
-                    menuItemIdSkipConfirm -> {
-                        val newVal = !item.isChecked
-                        item.isChecked = newVal
-                        // persist preference
-                        getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                            .edit()
-                            .putBoolean(KEY_SKIP_ENABLE_CONFIRM, newVal)
-                            .apply()
-                        true
-                    }
-                    menuItemIdMoveSelectedTop -> {
-                        val newVal = !item.isChecked
-                        item.isChecked = newVal
-                        moveSelectedTop = newVal
-                        // persist preference
-                        getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                            .edit()
-                            .putBoolean(KEY_MOVE_SELECTED_TOP, newVal)
-                            .apply()
-                        // resort the list according to new preference
-                        sortAndFilterApps()
-                        true
-                    }
-                    menuItemIdExport -> {
-                        val suggested = "shizuwall_settings"
-                        createDocumentLauncher.launch(suggested)
-                        true
-                    }
-                    menuItemIdImport -> {
-                        openDocumentLauncher.launch(arrayOf("application/json", "text/*", "*/*"))
-                        true
-                    }
-                    menuItemIdChangeFont -> {
-                        showFontSelectorDialog()
-                        true
-                    }
-                    menuItemIdDonate -> {
-                        val url = getString(R.string.buymeacoffee_url)
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                        startActivity(intent)
-                        true
-                    }
-                    else -> false
-                }
-            }
-            popup.show()
+        val settingsButton: FloatingActionButton? = findViewById(R.id.settingsButton)
+        settingsButton?.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            settingsLauncher.launch(intent)
         }
 
         showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
@@ -1180,79 +1090,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Export settings to provided Uri (file chosen by user)
-    private suspend fun exportToUri(uri: Uri) {
-        withContext(Dispatchers.IO) {
-            try {
-                val selected = loadSelectedApps().toList()
-                val exportJson = org.json.JSONObject().apply {
-                    put("version", 1)
-                    put("selected", org.json.JSONArray(selected))
-                    put("show_system_apps", sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false))
-                    put("skip_enable_confirm", sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false))
-                    put("move_selected_top", sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)) 
-                }
-                contentResolver.openOutputStream(uri)?.use { out ->
-                    out.write(exportJson.toString().toByteArray(Charsets.UTF_8))
-                    out.flush()
-                } ?: throw IllegalStateException("Unable to open output stream")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "Export successful", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
-
-    // Import settings from provided Uri and apply them
-    private suspend fun importFromUri(uri: Uri) {
-        withContext(Dispatchers.IO) {
-            try {
-                val content = contentResolver.openInputStream(uri)?.use { input ->
-                    input.readBytes().toString(Charsets.UTF_8)
-                } ?: throw IllegalStateException("Unable to open input stream")
-
-                val obj = org.json.JSONObject(content)
-                val selectedJson = obj.optJSONArray("selected") ?: org.json.JSONArray()
-                val selectedSet = mutableSetOf<String>()
-                for (i in 0 until selectedJson.length()) {
-                    val v = selectedJson.optString(i, null)
-                    if (!v.isNullOrEmpty()) selectedSet.add(v)
-                }
-                val showSys = obj.optBoolean("show_system_apps", false)
-                val skipConfirm = obj.optBoolean("skip_enable_confirm", false)
-                val moveTop = obj.optBoolean("move_selected_top", true) 
-
-                // Persist settings
-                sharedPreferences.edit().apply {
-                    putStringSet(KEY_SELECTED_APPS, selectedSet)
-                    putInt(KEY_SELECTED_COUNT, selectedSet.size)
-                    putBoolean(KEY_SHOW_SYSTEM_APPS, showSys)
-                    putBoolean(KEY_SKIP_ENABLE_CONFIRM, skipConfirm)
-                    putBoolean(KEY_MOVE_SELECTED_TOP, moveTop) 
-                    apply()
-                }
-
-                // Update in-memory flags and UI on main thread
-                withContext(Dispatchers.Main) {
-                    showSystemApps = showSys
-                    moveSelectedTop = moveTop
-                    // reload apps to reflect new selection and showSystemApps setting
-                    loadInstalledApps()
-                    updateCategoryChips()
-                    updateSelectedCount()
-                    Toast.makeText(this@MainActivity, "Import successful", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "Import failed: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
     private fun updateCategoryChips() {
         // guard: views may not be initialized in some lifecycle flows
         val categoryGroup = findViewById<ChipGroup?>(R.id.categoryChipGroup) ?: return
@@ -1333,52 +1170,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun showFontSelectorDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_font_selector, null)
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
-
-        val radioGroup = dialogView.findViewById<RadioGroup>(R.id.fontRadioGroup)
-        val btnApply = dialogView.findViewById<MaterialButton>(R.id.btnApplyFont)
-        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancelFont)
-
-        // Select current font
-        val currentFont = sharedPreferences.getString(KEY_SELECTED_FONT, "default") ?: "default"
-        when (currentFont) {
-            "ndot" -> radioGroup.check(R.id.radio_ndot)
-            else -> radioGroup.check(R.id.radio_default)
-        }
-
-        btnApply.setOnClickListener {
-            val selectedId = radioGroup.checkedRadioButtonId
-            val fontKey = when (selectedId) {
-                R.id.radio_ndot -> "ndot"
-                else -> "default"
-            }
-
-            sharedPreferences.edit()
-                .putString(KEY_SELECTED_FONT, fontKey)
-                .apply()
-
-            dialog.dismiss()
-            
-            Toast.makeText(this, "Font changed. Restarting app...", Toast.LENGTH_SHORT).show()
-            
-            val intent = Intent(this, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
-            finish()
-        }
-
-        btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
     }
 
     private fun getSelectedTypeface(): Typeface? {

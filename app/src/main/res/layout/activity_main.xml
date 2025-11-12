@@ -38,9 +38,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/enable_firewall"
-        android:textSize="14dp"
+        android:textSize="12dp"
         android:paddingEnd="8dp"
-        android:paddingStart="16dp"
         app:layout_constraintEnd_toStartOf="@id/firewallToggle"
         app:layout_constraintTop_toTopOf="@id/appTitle"
         app:layout_constraintBottom_toBottomOf="@id/appTitle" />
@@ -50,20 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        app:layout_constraintEnd_toStartOf="@id/overflowMenu"
-        app:layout_constraintTop_toTopOf="@id/appTitle"
-        app:layout_constraintBottom_toBottomOf="@id/appTitle" />
-
-    <!-- Overflow / three-dot menu (top-right) -->
-    <ImageButton
-        android:id="@+id/overflowMenu"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
         android:layout_marginEnd="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/more_options"
-        android:src="@android:drawable/ic_menu_more"
-        app:tint="?attr/colorOnSurface"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/appTitle"
         app:layout_constraintBottom_toBottomOf="@id/appTitle" />
@@ -172,5 +158,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/item_app" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/settingsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="Settings"
+        android:src="@android:drawable/ic_menu_manage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
