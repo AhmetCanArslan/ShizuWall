@@ -151,7 +151,7 @@ class SettingsActivity : AppCompatActivity() {
             sharedPreferences.edit()
                 .putBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, isChecked)
                 .apply()
-            showThemeRestartNotice()
+            showRestartNotice("Theme Changed", "The theme has been updated. Please restart the app to apply the changes.")
         }
     }
 
@@ -187,7 +187,7 @@ class SettingsActivity : AppCompatActivity() {
             tvCurrentFont.text = if (fontKey == "ndot") "Ndot" else "Default"
 
             dialog.dismiss()
-            Toast.makeText(this, "Font changed. Please restart the app.", Toast.LENGTH_SHORT).show()
+            showRestartNotice("Font Changed", "The font has been updated. Please restart the app to apply the changes.")
         }
 
         btnCancel.setOnClickListener {
@@ -294,10 +294,10 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun showThemeRestartNotice() {
+    private fun showRestartNotice(title: String, message: String) {
         AlertDialog.Builder(this)
-            .setTitle("Theme Changed")
-            .setMessage("The theme has been updated. Please restart the app to apply the changes.")
+            .setTitle(title)
+            .setMessage(message)
             .setPositiveButton("Restart Now") { _, _ ->
                 val intent = Intent(this, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
