@@ -105,6 +105,10 @@ class MainActivity : AppCompatActivity() {
     private val activeFirewallPackages = mutableSetOf<String>()
     private enum class Category { DEFAULT, SYSTEM, SELECTED, UNSELECTED, USER }
     private var currentCategory: Category = Category.DEFAULT
+    
+    // Track if we're waiting for Shizuku permission due to toggle attempt
+    private var pendingToggleEnable = false
+    private var pendingToggleDisable = false
 
     // receiver to handle package add/remove/replace events
     private val packageBroadcastReceiver = object : BroadcastReceiver() {
@@ -430,7 +434,34 @@ class MainActivity : AppCompatActivity() {
             SHIZUKU_PERMISSION_REQUEST_CODE -> {
                 if (granted) {
                     Toast.makeText(this, "Shizuku permission granted", Toast.LENGTH_SHORT).show()
+                    // If permission was requested due to toggle attempt, resume the enable flow
+                    if (pendingToggleEnable) {
+                        pendingToggleEnable = false
+                        val selectedApps = appList.filter { it.isSelected }
+                        if (selectedApps.isNotEmpty()) {
+                            // Set toggle to ON before showing confirmation dialog
+                            suppressToggleListener = true
+                            firewallToggle.isChecked = true
+                            suppressToggleListener = false
+                            showFirewallConfirmDialog(selectedApps)
+                        } else {
+                            suppressToggleListener = true
+                            firewallToggle.isChecked = false
+                            suppressToggleListener = false
+                        }
+                    } else if (pendingToggleDisable) {
+                        pendingToggleDisable = false
+                        // Proceed with disabling the firewall
+                        applyFirewallState(false, activeFirewallPackages.toList())
+                    }
                 } else {
+                    // Permission denied, revert toggle to its previous state
+                    pendingToggleEnable = false
+                    pendingToggleDisable = false
+                    suppressToggleListener = true
+                    // If we were trying to enable, revert to off; if trying to disable, revert to on
+                    firewallToggle.isChecked = isFirewallEnabled
+                    suppressToggleListener = false
                     AlertDialog.Builder(this)
                         .setTitle("Permission Denied")
                         .setMessage("Shizuku permission is required for this app to work. Please grant the permission in Shizuku settings.")
@@ -635,22 +666,30 @@ class MainActivity : AppCompatActivity() {
                     return@setOnCheckedChangeListener
                 }
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
+                    // Permission not granted, mark that we're waiting for it
+                    pendingToggleEnable = true
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
                     return@setOnCheckedChangeListener
                 }
+                // Permission already granted, proceed
+                pendingToggleEnable = false
                 showFirewallConfirmDialog(selectedApps)
             } else {
                 if (!isFirewallEnabled) {
                     return@setOnCheckedChangeListener
                 }
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
+                    // Permission not granted, mark that we're waiting for it
+                    pendingToggleDisable = true
                     suppressToggleListener = true
                     firewallToggle.isChecked = true
                     suppressToggleListener = false
                     return@setOnCheckedChangeListener
                 }
+                // Permission already granted, proceed
+                pendingToggleDisable = false
                 applyFirewallState(false, activeFirewallPackages.toList())
             }
         }
@@ -895,6 +934,10 @@ class MainActivity : AppCompatActivity() {
                     activeFirewallPackages.addAll(successful)
                     saveActivePackages(activeFirewallPackages)
                     saveFirewallEnabled(true)
+                    // Ensure toggle stays ON
+                    suppressToggleListener = true
+                    firewallToggle.isChecked = true
+                    suppressToggleListener = false
                     appListAdapter.setSelectionEnabled(false)
                     showDimOverlay()
                     Toast.makeText(this@MainActivity, "Firewall activated for ${successful.size} apps", Toast.LENGTH_SHORT).show()
@@ -912,6 +955,10 @@ class MainActivity : AppCompatActivity() {
                     if (activeFirewallPackages.isEmpty()) {
                         isFirewallEnabled = false
                         saveFirewallEnabled(false)
+                        // Ensure toggle stays OFF
+                        suppressToggleListener = true
+                        firewallToggle.isChecked = false
+                        suppressToggleListener = false
                         appListAdapter.setSelectionEnabled(true)
                         hideDimOverlay()
                     }
