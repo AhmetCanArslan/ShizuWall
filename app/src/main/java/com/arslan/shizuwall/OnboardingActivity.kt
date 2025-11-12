@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import android.content.res.Configuration
+import com.google.android.material.color.DynamicColors
 
 class OnboardingActivity : AppCompatActivity() {
 
@@ -18,6 +19,7 @@ class OnboardingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DynamicColors.applyToActivityIfAvailable(this)
         setContentView(R.layout.activity_onboarding)
 
         viewPager = findViewById(R.id.viewPager)
