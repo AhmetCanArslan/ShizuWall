@@ -24,6 +24,8 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupMenu
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -46,6 +48,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
+import android.graphics.Typeface
+import androidx.core.content.res.ResourcesCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -91,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         const val KEY_SHOW_SYSTEM_APPS = "show_system_apps"
         // preference key to persist "move selected apps to top" state
         const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
+        const val KEY_SELECTED_FONT = "selected_font"
 
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
@@ -149,6 +154,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
         // Check if onboarding is complete
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val onboardingComplete = prefs.getBoolean("onboarding_complete", false)
@@ -161,6 +168,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_main)
+
+        applyFontToViews(findViewById(android.R.id.content))
 
         // GitHub icon
         val openGithub = {
@@ -182,6 +191,7 @@ class MainActivity : AppCompatActivity() {
             val menuItemIdImport = 4
             val menuItemIdMoveSelectedTop = 5
             val menuItemIdDonate = 6
+            val menuItemIdChangeFont = 7
 
             popup.menu.add(0, menuItemIdShowSystem, 0, getString(R.string.show_system_apps)).apply {
                 isCheckable = true
@@ -202,7 +212,8 @@ class MainActivity : AppCompatActivity() {
 
             popup.menu.add(0, menuItemIdExport, 3, "Export settings")
             popup.menu.add(0, menuItemIdImport, 4, "Import settings")
-            popup.menu.add(0, menuItemIdDonate, 5, getString(R.string.donate))
+            popup.menu.add(0, menuItemIdChangeFont, 5, getString(R.string.change_font))
+            popup.menu.add(0, menuItemIdDonate, 6, getString(R.string.donate))
 
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -250,6 +261,10 @@ class MainActivity : AppCompatActivity() {
                         openDocumentLauncher.launch(arrayOf("application/json", "text/*", "*/*"))
                         true
                     }
+                    menuItemIdChangeFont -> {
+                        showFontSelectorDialog()
+                        true
+                    }
                     menuItemIdDonate -> {
                         val url = getString(R.string.buymeacoffee_url)
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -262,7 +277,6 @@ class MainActivity : AppCompatActivity() {
             popup.show()
         }
 
-        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
         moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
 
@@ -604,12 +618,14 @@ class MainActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        appListAdapter = AppListAdapter { appInfo ->
-            // when an app is clicked
-            updateSelectedCount()
-            saveSelectedApps()
-            sortAndFilterApps()
-        }
+        appListAdapter = AppListAdapter(
+            onAppClick = { appInfo ->
+                updateSelectedCount()
+                saveSelectedApps()
+                sortAndFilterApps()
+            },
+            typeface = getSelectedTypeface()
+        )
         recyclerView.adapter = appListAdapter
     }
 
@@ -734,7 +750,7 @@ class MainActivity : AppCompatActivity() {
         dialogMessage.text = "Do you want to enable firewall for ${selectedApps.size} apps listed below?"
 
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
-        selectedAppsRecyclerView.adapter = SelectedAppsAdapter(selectedApps)
+        selectedAppsRecyclerView.adapter = SelectedAppsAdapter(selectedApps, getSelectedTypeface())
 
         // Limit the RecyclerView height to a fraction of the screen
         val displayHeight = resources.displayMetrics.heightPixels
@@ -1269,7 +1285,7 @@ class MainActivity : AppCompatActivity() {
         dialogMessage.text = "Operation failed for the following ${failedApps.size} apps. They have been unselected."
 
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
-        selectedAppsRecyclerView.adapter = SelectedAppsAdapter(failedApps)
+        selectedAppsRecyclerView.adapter = SelectedAppsAdapter(failedApps, getSelectedTypeface())
 
         // Limit the RecyclerView height to a fraction of the screen
         val displayHeight = resources.displayMetrics.heightPixels
@@ -1289,5 +1305,90 @@ class MainActivity : AppCompatActivity() {
         btnCancel.visibility = View.GONE // Hide cancel button for error dialog
 
         dialog.show()
+    }
+
+    private fun applyFontToViews(view: View) {
+        val savedFont = sharedPreferences.getString(KEY_SELECTED_FONT, "default") ?: "default"
+        if (savedFont == "default") return
+        
+        val typeface = try {
+            ResourcesCompat.getFont(this, R.font.ndot)
+        } catch (e: Exception) {
+            return
+        }
+        
+        applyTypefaceRecursively(view, typeface)
+    }
+
+    private fun applyTypefaceRecursively(view: View, typeface: Typeface?) {
+        if (typeface == null) return
+        
+        when (view) {
+            is TextView -> {
+                view.typeface = typeface
+            }
+            is ViewGroup -> {
+                for (i in 0 until view.childCount) {
+                    applyTypefaceRecursively(view.getChildAt(i), typeface)
+                }
+            }
+        }
+    }
+
+    private fun showFontSelectorDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_font_selector, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        val radioGroup = dialogView.findViewById<RadioGroup>(R.id.fontRadioGroup)
+        val btnApply = dialogView.findViewById<MaterialButton>(R.id.btnApplyFont)
+        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancelFont)
+
+        // Select current font
+        val currentFont = sharedPreferences.getString(KEY_SELECTED_FONT, "default") ?: "default"
+        when (currentFont) {
+            "ndot" -> radioGroup.check(R.id.radio_ndot)
+            else -> radioGroup.check(R.id.radio_default)
+        }
+
+        btnApply.setOnClickListener {
+            val selectedId = radioGroup.checkedRadioButtonId
+            val fontKey = when (selectedId) {
+                R.id.radio_ndot -> "ndot"
+                else -> "default"
+            }
+
+            sharedPreferences.edit()
+                .putString(KEY_SELECTED_FONT, fontKey)
+                .apply()
+
+            dialog.dismiss()
+            
+            Toast.makeText(this, "Font changed. Restarting app...", Toast.LENGTH_SHORT).show()
+            
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
+            finish()
+        }
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun getSelectedTypeface(): Typeface? {
+        val savedFont = sharedPreferences.getString(KEY_SELECTED_FONT, "default") ?: "default"
+        if (savedFont == "default") return null
+        
+        return try {
+            ResourcesCompat.getFont(this, R.font.ndot)
+        } catch (e: Exception) {
+            null
+        }
     }
 }

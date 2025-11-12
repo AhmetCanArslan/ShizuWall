@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import android.graphics.Bitmap
+import android.graphics.Typeface
 
 class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
     override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
@@ -22,7 +23,8 @@ class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
 }
 
 class AppListAdapter(
-    private val onAppClick: (AppInfo) -> Unit
+    private val onAppClick: (AppInfo) -> Unit,
+    private val typeface: Typeface? = null
 ) : ListAdapter<AppInfo, AppListAdapter.AppViewHolder>(AppInfoDiffCallback()) {
 
     // controls whether user can change selection
@@ -39,6 +41,13 @@ class AppListAdapter(
         val appName: TextView = itemView.findViewById(R.id.appName)
         val packageName: TextView = itemView.findViewById(R.id.packageName)
         val checkbox: CheckBox = itemView.findViewById(R.id.appCheckbox)
+
+        init {
+            typeface?.let {
+                appName.typeface = it
+                packageName.typeface = it
+            }
+        }
 
         fun bind(appInfo: AppInfo) {
             // use cached bitmap (fast) instead of resolving drawable each bind

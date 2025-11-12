@@ -15,4 +15,7 @@
     <string name="cat_user">User</string>
     <string name="enable_firewall">Enable Firewall</string>
     <string name="selected_0">Selected: 0</string>
+    <string name="change_font">Change Font</string>
+    <string name="font_default">Default</string>
+    <string name="font_ndot">Ndot</string>
 </resources>
