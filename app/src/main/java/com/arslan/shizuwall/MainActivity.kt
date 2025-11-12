@@ -389,10 +389,8 @@ class MainActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle("Shizuku Required")
             .setMessage("This app requires Shizuku to be installed and running. Please install Shizuku and start the service.")
-            .setPositiveButton("OK") { _, _ ->
-                finish()
-            }
-            .setCancelable(false)
+            .setPositiveButton("OK", null) // just dismiss dialog, do not close app
+            .setCancelable(true)
             .show()
 
         return false
@@ -403,10 +401,8 @@ class MainActivity : AppCompatActivity() {
             AlertDialog.Builder(this)
                 .setTitle("Shizuku Update Required")
                 .setMessage("Your Shizuku version is too old. Please update Shizuku to the latest version.")
-                .setPositiveButton("OK") { _, _ ->
-                    finish()
-                }
-                .setCancelable(false)
+                .setPositiveButton("OK", null) // do not close app, just dismiss
+                .setCancelable(true)
                 .show()
             return
         }
@@ -419,10 +415,8 @@ class MainActivity : AppCompatActivity() {
             AlertDialog.Builder(this)
                 .setTitle("Permission Required")
                 .setMessage("Shizuku permission is required for this app to work. Please grant the permission in Shizuku settings.")
-                .setPositiveButton("OK") { _, _ ->
-                    finish()
-                }
-                .setCancelable(false)
+                .setPositiveButton("OK", null) // do not close app
+                .setCancelable(true)
                 .show()
         } else {
             // Request permission
@@ -439,11 +433,9 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     AlertDialog.Builder(this)
                         .setTitle("Permission Denied")
-                        .setMessage("Shizuku permission is required for this app to work. The app will now close.")
-                        .setPositiveButton("OK") { _, _ ->
-                            finish()
-                        }
-                        .setCancelable(false)
+                        .setMessage("Shizuku permission is required for this app to work. Please grant the permission in Shizuku settings.")
+                        .setPositiveButton("OK", null) // just dismiss dialog
+                        .setCancelable(true)
                         .show()
                 }
             }
