@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupMenu
@@ -60,6 +61,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var firewallToggle: SwitchMaterial
     private lateinit var searchView: SearchView
     private lateinit var selectedCountText: TextView
+    private lateinit var selectAllCheckbox: CheckBox
     private val appList = mutableListOf<AppInfo>()
     private val filteredAppList = mutableListOf<AppInfo>()
     private var isFirewallEnabled = false
@@ -109,6 +111,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var suppressToggleListener = false
+    private var suppressSelectAllListener = false
     private val activeFirewallPackages = mutableSetOf<String>()
     private enum class Category { DEFAULT, SYSTEM, SELECTED, UNSELECTED, USER }
     private var currentCategory: Category = Category.DEFAULT
@@ -209,6 +212,7 @@ class MainActivity : AppCompatActivity() {
 
         setupFirewallToggle()
         setupSearchView()
+        setupSelectAllCheckbox()
         setupRecyclerView()
 
         // wire category bar AFTER views are created
@@ -232,7 +236,7 @@ class MainActivity : AppCompatActivity() {
 
         // Load and display saved selected count
         val savedCount = sharedPreferences.getInt(KEY_SELECTED_COUNT, 0)
-        selectedCountText.text = "Selected: $savedCount"
+        selectedCountText.text = savedCount.toString()
 
         // Load saved firewall state and apply to toggle without triggering listener
         isFirewallEnabled = loadFirewallEnabled()
@@ -532,6 +536,26 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun setupSelectAllCheckbox() {
+        selectAllCheckbox = findViewById(R.id.selectAllCheckbox)
+        selectedCountText = findViewById(R.id.selectedCountText)
+        
+        selectAllCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            if (suppressSelectAllListener) return@setOnCheckedChangeListener
+            
+            // Select/deselect all apps in the current filtered list
+            val changed = filteredAppList.any { it.isSelected != isChecked }
+            if (changed) {
+                for (app in filteredAppList) {
+                    app.isSelected = isChecked
+                }
+                updateSelectedCount()
+                saveSelectedApps()
+                sortAndFilterApps()
+            }
+        }
+    }
+
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -568,6 +592,7 @@ class MainActivity : AppCompatActivity() {
                 it.packageName.lowercase().contains(searchQuery)
             })
         }
+        updateSelectAllCheckbox()
         // Removed submitList from here; handled in callers
     }
 
@@ -597,6 +622,7 @@ class MainActivity : AppCompatActivity() {
             recyclerView.itemAnimator = animator
             recyclerView.scrollToPosition(firstVisible)
             updateSelectedCount()
+            updateSelectAllCheckbox()
         }
     }
 
@@ -700,13 +726,26 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateSelectedCount() {
         val count = appList.count { it.isSelected }
-        selectedCountText.text = "Selected: $count"
+        selectedCountText.text = count.toString()
 
         // enable the firewall toggle if firewall is currently active (so user can disable),
         // or if there is at least one selected app (so user can enable).
         if (::firewallToggle.isInitialized) {
             firewallToggle.isEnabled = isFirewallEnabled || count > 0
         }
+        
+        updateSelectAllCheckbox()
+    }
+
+    private fun updateSelectAllCheckbox() {
+        if (!::selectAllCheckbox.isInitialized || filteredAppList.isEmpty()) return
+        
+        suppressSelectAllListener = true
+        val allSelected = filteredAppList.all { it.isSelected }
+        val noneSelected = filteredAppList.none { it.isSelected }
+        
+        selectAllCheckbox.isChecked = allSelected
+        suppressSelectAllListener = false
     }
 
     @SuppressLint("NotifyDataSetChanged")

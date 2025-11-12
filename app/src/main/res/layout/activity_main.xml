@@ -54,8 +54,6 @@
         app:layout_constraintTop_toTopOf="@id/appTitle"
         app:layout_constraintBottom_toBottomOf="@id/appTitle" />
 
-    <!-- SearchView and selected count placed on the same horizontal row:
-         SearchView expands to available space and selectedCountText is anchored to the end -->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
         android:layout_width="0dp"
@@ -68,24 +66,36 @@
         app:iconifiedByDefault="false"
         app:layout_constraintTop_toBottomOf="@id/appTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/selectedCountText"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <TextView
-        android:id="@+id/selectedCountText"
+    <LinearLayout
+        android:id="@+id/selectAllContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/selected_0"
-        android:textSize="12sp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:padding="4dp"
-        app:layout_constraintStart_toEndOf="@id/searchView"
-        app:layout_constraintTop_toTopOf="@id/searchView"
-        app:layout_constraintBottom_toBottomOf="@id/searchView"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchView">
 
-    <!-- Category bar moved below search bar -->
+        <CheckBox
+            android:id="@+id/selectAllCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/select_all" />
+
+        <TextView
+            android:id="@+id/selectedCountText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="14sp"
+            android:minWidth="24dp"
+            android:gravity="center" />
+    </LinearLayout>
+
     <HorizontalScrollView
         android:id="@+id/categoryContainer"
         android:layout_width="0dp"
@@ -96,8 +106,8 @@
         android:paddingTop="0dp"
         android:paddingBottom="0dp"
         android:clipToPadding="false"
-        android:layout_marginTop="0dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toEndOf="@id/selectAllContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchView">
 

@@ -40,7 +40,7 @@
                 android:id="@+id/switchShowSystemApps"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Show system apps"
+                android:text="@string/show_system_apps"
                 android:padding="16dp" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
