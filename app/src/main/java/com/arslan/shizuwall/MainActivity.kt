@@ -101,6 +101,10 @@ class MainActivity : AppCompatActivity() {
         const val KEY_SELECTED_FONT = "selected_font"
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
 
+        const val ACTION_FIREWALL_STATE_CHANGED = "com.arslan.shizuwall.ACTION_FIREWALL_STATE_CHANGED"
+        const val EXTRA_FIREWALL_ENABLED = "com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED"
+        const val EXTRA_ACTIVE_PACKAGES = "com.arslan.shizuwall.EXTRA_ACTIVE_PACKAGES"
+
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
                 "newProcess",
@@ -299,6 +303,18 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             // ignore other registration errors
         }
+
+        // Register firewall state broadcast receiver so UI updates when quick tile toggles firewall.
+        try {
+            val filter = IntentFilter().apply {
+                addAction(ACTION_FIREWALL_STATE_CHANGED)
+            }
+            registerReceiver(firewallStateReceiver, filter)
+        } catch (e: IllegalArgumentException) {
+            // already registered or other issue; ignore
+        } catch (e: Exception) {
+            // ignore other registration errors
+        }
     }
 
     override fun onPause() {
@@ -306,6 +322,15 @@ class MainActivity : AppCompatActivity() {
         // Unregister package receiver to avoid leaks; ignore if not registered.
         try {
             unregisterReceiver(packageBroadcastReceiver)
+        } catch (e: IllegalArgumentException) {
+            // not registered
+        } catch (e: Exception) {
+            // ignore
+        }
+
+        // Unregister firewall state receiver
+        try {
+            unregisterReceiver(firewallStateReceiver)
         } catch (e: IllegalArgumentException) {
             // not registered
         } catch (e: Exception) {
@@ -1237,6 +1262,37 @@ class MainActivity : AppCompatActivity() {
             ResourcesCompat.getFont(this, R.font.ndot)
         } catch (e: Exception) {
             null
+        }
+    }
+
+    // Receiver to react to firewall state changes (e.g. from quick tile)
+    private val firewallStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent == null) return
+            // Prefer explicit extras; fall back to reading prefs when absent
+            val enabled = intent.getBooleanExtra(EXTRA_FIREWALL_ENABLED, loadFirewallEnabled())
+            val packagesList = intent.getStringArrayListExtra(EXTRA_ACTIVE_PACKAGES)?.toSet() ?: loadActivePackages()
+
+            runOnUiThread {
+                // Update internal state and UI without triggering toggle listener
+                isFirewallEnabled = enabled
+                activeFirewallPackages.clear()
+                activeFirewallPackages.addAll(packagesList)
+
+                if (::firewallToggle.isInitialized) {
+                    suppressToggleListener = true
+                    firewallToggle.isChecked = enabled
+                    suppressToggleListener = false
+                }
+
+                // selection allowed only when firewall is not active
+                appListAdapter.setSelectionEnabled(!enabled)
+                if (enabled) showDimOverlay() else hideDimOverlay()
+
+                // refresh counts / checkboxes
+                updateSelectedCount()
+                updateSelectAllCheckbox()
+            }
         }
     }
 }

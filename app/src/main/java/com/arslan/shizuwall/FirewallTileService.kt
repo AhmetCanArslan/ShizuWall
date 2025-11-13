@@ -1,6 +1,7 @@
 package com.arslan.shizuwall
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.Icon
 import android.os.Build
@@ -110,6 +111,12 @@ class FirewallTileService : TileService() {
                 saveFirewallEnabled(true)
                 saveActivePackages(successful.toSet())
             }
+            // Broadcast state so the UI can update immediately
+            val intent = Intent(MainActivity.ACTION_FIREWALL_STATE_CHANGED).apply {
+                putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, successful.isNotEmpty())
+                putStringArrayListExtra(MainActivity.EXTRA_ACTIVE_PACKAGES, ArrayList(successful))
+            }
+            sendBroadcast(intent)
         }
         updateTile()
         Toast.makeText(this@FirewallTileService, "Firewall enabled", Toast.LENGTH_SHORT).show()
@@ -121,6 +128,12 @@ class FirewallTileService : TileService() {
             disableFirewall(activePackages.toList())
             saveFirewallEnabled(false)
             saveActivePackages(emptySet())
+            // Broadcast state so the UI can update immediately
+            val intent = Intent(MainActivity.ACTION_FIREWALL_STATE_CHANGED).apply {
+                putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, false)
+                putStringArrayListExtra(MainActivity.EXTRA_ACTIVE_PACKAGES, ArrayList(emptyList<String>()))
+            }
+            sendBroadcast(intent)
         }
         updateTile()
         Toast.makeText(this@FirewallTileService, "Firewall disabled", Toast.LENGTH_SHORT).show()
