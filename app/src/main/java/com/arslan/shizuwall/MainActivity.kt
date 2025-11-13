@@ -53,12 +53,13 @@ import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
 import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
+import androidx.appcompat.widget.SwitchCompat
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var appListAdapter: AppListAdapter
-    private lateinit var firewallToggle: SwitchMaterial
+    private lateinit var firewallToggle: SwitchCompat
     private lateinit var searchView: SearchView
     private lateinit var selectedCountText: TextView
     private lateinit var selectAllCheckbox: CheckBox
@@ -86,10 +87,10 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val PREF_NAME = "ShizuWallPrefs"
-        private const val KEY_SELECTED_APPS = "selected_apps"
-        private const val KEY_SELECTED_COUNT = "selected_count"
+        const val KEY_SELECTED_APPS = "selected_apps"
+        const val KEY_SELECTED_COUNT = "selected_count"
         const val KEY_FIREWALL_ENABLED = "firewall_enabled"          // made public
-        private const val KEY_ACTIVE_PACKAGES = "active_packages"
+        const val KEY_ACTIVE_PACKAGES = "active_packages"
         const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed" // made public
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
         const val KEY_ONBOARDING_DONE = "onboarding_done"

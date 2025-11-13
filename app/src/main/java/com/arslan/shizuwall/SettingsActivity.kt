@@ -30,19 +30,20 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
+import androidx.appcompat.widget.SwitchCompat
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var switchShowSystemApps: SwitchMaterial
-    private lateinit var switchMoveSelectedTop: SwitchMaterial
-    private lateinit var switchSkipConfirm: SwitchMaterial
+    private lateinit var switchShowSystemApps: SwitchCompat
+    private lateinit var switchMoveSelectedTop: SwitchCompat
+    private lateinit var switchSkipConfirm: SwitchCompat
     private lateinit var layoutChangeFont: LinearLayout
     private lateinit var tvCurrentFont: TextView
     private lateinit var btnExport: MaterialButton
     private lateinit var btnImport: MaterialButton
     private lateinit var btnDonate: MaterialButton
-    private lateinit var switchUseDynamicColor: SwitchMaterial
+    private lateinit var switchUseDynamicColor: SwitchCompat
 
     private val createDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")

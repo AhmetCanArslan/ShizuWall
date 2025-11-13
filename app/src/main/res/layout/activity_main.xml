@@ -46,7 +46,7 @@
         app:layout_constraintTop_toTopOf="@id/appTitle"
         app:layout_constraintBottom_toBottomOf="@id/appTitle" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/firewallToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
