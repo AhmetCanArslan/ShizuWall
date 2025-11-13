@@ -52,6 +52,35 @@ cmd connectivity set-package-networking-enabled true <package.name>
 cmd connectivity set-chain3-enabled false
 ```
 
+## Control via broadcast (adb / automation)
+
+ShizuWall supports a simple broadcast interface so you can enable/disable the firewall from adb or automation tools.
+
+- Action: com.arslan.shizuwall.ACTION_FIREWALL_CONTROL
+- Extras:
+  - com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED (boolean) — true = enable, false = disable
+  - com.arslan.shizuwall.EXTRA_PACKAGES_CSV (string, optional) — comma-separated package list to operate on. If omitted the app falls back to the saved "selected apps" set.
+
+Examples:
+
+- Enable firewall for selected apps:
+  adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED true -p com.arslan.shizuwall
+
+- Disable firewall for selected apps
+  adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED false -p com.arslan.shizuwall
+
+
+- Enable firewall for specific packages (CSV):
+  adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED true --es com.arslan.shizuwall.EXTRA_PACKAGES_CSV "com.example.app1,com.example.app2" -p com.arslan.shizuwall
+
+- Disable firewall for specific packages:
+  adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED false --es com.arslan.shizuwall.EXTRA_PACKAGES_CSV "com.example.app1,com.example.app2" -p com.arslan.shizuwall
+
+Notes for those want to use boradcasts:
+- The receiver is exported to allow adb and automation; prefer targeting the app explicitly with -p com.arslan.shizuwall to avoid accidental external broadcasts.
+- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.
+- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.
+
 ## ⚠️ Disclaimer
 
 This application requires Shizuku to function. The developer is not responsible for any issues arising from:

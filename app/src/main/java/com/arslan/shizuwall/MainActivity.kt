@@ -105,6 +105,9 @@ class MainActivity : AppCompatActivity() {
         const val EXTRA_FIREWALL_ENABLED = "com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED"
         const val EXTRA_ACTIVE_PACKAGES = "com.arslan.shizuwall.EXTRA_ACTIVE_PACKAGES"
 
+        const val ACTION_FIREWALL_CONTROL = "com.arslan.shizuwall.ACTION_FIREWALL_CONTROL"
+        const val EXTRA_PACKAGES_CSV = "com.arslan.shizuwall.EXTRA_PACKAGES_CSV"
+
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
                 "newProcess",
@@ -315,6 +318,16 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             // ignore other registration errors
         }
+
+        // Register firewall control receiver so external broadcasts forwarded into the process
+        try {
+            val filter = IntentFilter().apply {
+                addAction(ACTION_FIREWALL_CONTROL)
+            }
+            registerReceiver(firewallControlReceiver, filter)
+        } catch (e: IllegalArgumentException) {
+        } catch (e: Exception) {
+        }
     }
 
     override fun onPause() {
@@ -335,6 +348,13 @@ class MainActivity : AppCompatActivity() {
             // not registered
         } catch (e: Exception) {
             // ignore
+        }
+
+        // Unregister firewall control receiver
+        try {
+            unregisterReceiver(firewallControlReceiver)
+        } catch (e: IllegalArgumentException) {
+        } catch (e: Exception) {
         }
     }
 
@@ -1292,6 +1312,26 @@ class MainActivity : AppCompatActivity() {
                 // refresh counts / checkboxes
                 updateSelectedCount()
                 updateSelectAllCheckbox()
+            }
+        }
+    }
+
+    // Receiver to react to external control broadcasts forwarded into the app.
+    private val firewallControlReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent == null) return
+            // parse desired state and packages (CSV or fallback to saved selection)
+            val enable = intent.getBooleanExtra(EXTRA_FIREWALL_ENABLED, false)
+            val csv = intent.getStringExtra(EXTRA_PACKAGES_CSV)
+            val packages = if (!csv.isNullOrBlank()) {
+                csv.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+            } else {
+                loadSelectedApps().toList()
+            }
+
+            // Call the existing UI method which performs checks / shows dialogs / runs Shizuku commands.
+            runOnUiThread {
+                applyFirewallState(enable, packages)
             }
         }
     }

@@ -55,6 +55,14 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".FirewallControlReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.arslan.shizuwall.ACTION_FIREWALL_CONTROL" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".FirewallTileService"
             android:label="Firewall Toggle"
