@@ -78,9 +78,10 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchView">
+        app:layout_constraintTop_toBottomOf="@id/searchView"
+        app:layout_constraintBottom_toBottomOf="@id/categoryContainer">
 
         <CheckBox
             android:id="@+id/selectAllCheckbox"
@@ -105,10 +106,10 @@
         android:fillViewport="true"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         android:clipToPadding="false"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toEndOf="@id/selectAllContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchView">
@@ -117,9 +118,7 @@
             android:id="@+id/categoryChipGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:singleSelection="true"
-            android:layout_marginBottom="0dp"
-            android:layout_marginTop="4dp">
+            app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_system"
