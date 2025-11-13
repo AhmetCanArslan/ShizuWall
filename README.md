@@ -56,6 +56,7 @@ cmd connectivity set-chain3-enabled false
 
 ShizuWall supports a simple broadcast interface so you can enable/disable the firewall from adb or automation tools.
 
+```bash
 - Action: com.arslan.shizuwall.ACTION_FIREWALL_CONTROL
 - Extras:
   - com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED (boolean) — true = enable, false = disable
@@ -75,6 +76,8 @@ Examples:
 
 - Disable firewall for specific packages:
   adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED false --es com.arslan.shizuwall.EXTRA_PACKAGES_CSV "com.example.app1,com.example.app2" -p com.arslan.shizuwall
+
+```
 
 Notes for those want to use boradcasts:
 - The receiver is exported to allow adb and automation; prefer targeting the app explicitly with -p com.arslan.shizuwall to avoid accidental external broadcasts.
