@@ -227,7 +227,8 @@ class MainActivity : AppCompatActivity() {
 
         // wire category bar AFTER views are created
         val categoryGroup = findViewById<ChipGroup>(R.id.categoryChipGroup)
-        categoryGroup.setOnCheckedChangeListener { _, checkedId ->
+        categoryGroup.setOnCheckedStateChangeListener { _, checkedIds ->
+            val checkedId = if (checkedIds.isEmpty()) -1 else checkedIds[0]
             currentCategory = when (checkedId) {
                 R.id.chip_system -> Category.SYSTEM
                 R.id.chip_selected -> Category.SELECTED
