@@ -32,6 +32,17 @@ class FirewallTileService : TileService() {
         }
     }
 
+    // SharedPreferences listener to update tile whenever relevant prefs change
+    private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == MainActivity.KEY_FIREWALL_ENABLED ||
+            key == MainActivity.KEY_ACTIVE_PACKAGES ||
+            key == MainActivity.KEY_FIREWALL_SAVED_ELAPSED
+        ) {
+            // update UI to reflect new saved state
+            updateTile()
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         sharedPreferences = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
@@ -40,6 +51,23 @@ class FirewallTileService : TileService() {
     override fun onStartListening() {
         super.onStartListening()
         updateTile()
+        // register prefs listener so tile updates without broadcasts
+        try {
+            sharedPreferences.registerOnSharedPreferenceChangeListener(prefsListener)
+        } catch (e: Exception) {
+            // ignore
+        }
+    }
+
+    override fun onStopListening() {
+        super.onStopListening()
+        try {
+            sharedPreferences.unregisterOnSharedPreferenceChangeListener(prefsListener)
+        } catch (e: IllegalArgumentException) {
+            // not registered
+        } catch (e: Exception) {
+            // ignore
+        }
     }
 
     override fun onClick() {
@@ -67,6 +95,9 @@ class FirewallTileService : TileService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        try {
+            sharedPreferences.unregisterOnSharedPreferenceChangeListener(prefsListener)
+        } catch (_: Exception) {}
         job.cancel()
     }
 
@@ -111,12 +142,6 @@ class FirewallTileService : TileService() {
                 saveFirewallEnabled(true)
                 saveActivePackages(successful.toSet())
             }
-            // Broadcast state so the UI can update immediately
-            val intent = Intent(MainActivity.ACTION_FIREWALL_STATE_CHANGED).apply {
-                putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, successful.isNotEmpty())
-                putStringArrayListExtra(MainActivity.EXTRA_ACTIVE_PACKAGES, ArrayList(successful))
-            }
-            sendBroadcast(intent)
         }
         updateTile()
         Toast.makeText(this@FirewallTileService, "Firewall enabled", Toast.LENGTH_SHORT).show()
@@ -128,12 +153,6 @@ class FirewallTileService : TileService() {
             disableFirewall(activePackages.toList())
             saveFirewallEnabled(false)
             saveActivePackages(emptySet())
-            // Broadcast state so the UI can update immediately
-            val intent = Intent(MainActivity.ACTION_FIREWALL_STATE_CHANGED).apply {
-                putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, false)
-                putStringArrayListExtra(MainActivity.EXTRA_ACTIVE_PACKAGES, ArrayList(emptyList<String>()))
-            }
-            sendBroadcast(intent)
         }
         updateTile()
         Toast.makeText(this@FirewallTileService, "Firewall disabled", Toast.LENGTH_SHORT).show()

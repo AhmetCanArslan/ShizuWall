@@ -331,18 +331,6 @@ class MainActivity : AppCompatActivity() {
             // ignore other registration errors
         }
 
-        // Register firewall state broadcast receiver so UI updates when quick tile toggles firewall.
-        try {
-            val filter = IntentFilter().apply {
-                addAction(ACTION_FIREWALL_STATE_CHANGED)
-            }
-            registerReceiver(firewallStateReceiver, filter)
-        } catch (e: IllegalArgumentException) {
-            // already registered or other issue; ignore
-        } catch (e: Exception) {
-            // ignore other registration errors
-        }
-
         // Register firewall control receiver so external broadcasts forwarded into the process
         try {
             val filter = IntentFilter().apply {
@@ -359,15 +347,6 @@ class MainActivity : AppCompatActivity() {
         // Unregister package receiver to avoid leaks; ignore if not registered.
         try {
             unregisterReceiver(packageBroadcastReceiver)
-        } catch (e: IllegalArgumentException) {
-            // not registered
-        } catch (e: Exception) {
-            // ignore
-        }
-
-        // Unregister firewall state receiver
-        try {
-            unregisterReceiver(firewallStateReceiver)
         } catch (e: IllegalArgumentException) {
             // not registered
         } catch (e: Exception) {
@@ -997,7 +976,6 @@ class MainActivity : AppCompatActivity() {
                         appListAdapter.setSelectionEnabled(true)
                         hideDimOverlay()
                     }
-                    Toast.makeText(this@MainActivity, "Firewall disabled for ${successful.size} apps", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this@MainActivity, "Failed to disable firewall for any apps", Toast.LENGTH_SHORT).show()
                 }
@@ -1276,37 +1254,6 @@ class MainActivity : AppCompatActivity() {
             ResourcesCompat.getFont(this, R.font.ndot)
         } catch (e: Exception) {
             null
-        }
-    }
-
-    // Receiver to react to firewall state changes (e.g. from quick tile)
-    private val firewallStateReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent == null) return
-            // Prefer explicit extras; fall back to reading prefs when absent
-            val enabled = intent.getBooleanExtra(EXTRA_FIREWALL_ENABLED, loadFirewallEnabled())
-            val packagesList = intent.getStringArrayListExtra(EXTRA_ACTIVE_PACKAGES)?.toSet() ?: loadActivePackages()
-
-            runOnUiThread {
-                // Update internal state and UI without triggering toggle listener
-                isFirewallEnabled = enabled
-                activeFirewallPackages.clear()
-                activeFirewallPackages.addAll(packagesList)
-
-                if (::firewallToggle.isInitialized) {
-                    suppressToggleListener = true
-                    firewallToggle.isChecked = enabled
-                    suppressToggleListener = false
-                }
-
-                // selection allowed only when firewall is not active
-                appListAdapter.setSelectionEnabled(!enabled)
-                if (enabled) showDimOverlay() else hideDimOverlay()
-
-                // refresh counts / checkboxes
-                updateSelectedCount()
-                updateSelectAllCheckbox()
-            }
         }
     }
 
