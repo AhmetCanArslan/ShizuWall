@@ -44,7 +44,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.chip.Chip
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -202,7 +201,7 @@ class MainActivity : AppCompatActivity() {
         val appTitle: TextView = findViewById(R.id.appTitle)
         appTitle.setOnClickListener { openGithub() }
 
-        val settingsButton: FloatingActionButton? = findViewById(R.id.settingsButton)
+        val settingsButton: MaterialButton? = findViewById(R.id.settingsButton)
         settingsButton?.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             settingsLauncher.launch(intent)
