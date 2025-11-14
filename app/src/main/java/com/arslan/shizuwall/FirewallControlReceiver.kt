@@ -94,15 +94,10 @@ class FirewallControlReceiver : BroadcastReceiver() {
                         remove(MainActivity.KEY_FIREWALL_SAVED_ELAPSED)
                         putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
                     }
+                    putLong(MainActivity.KEY_FIREWALL_UPDATE_TS, System.currentTimeMillis())
                     apply()
                 }
 
-                // Notify running UI (if any) to refresh
-                val update = Intent(MainActivity.ACTION_FIREWALL_STATE_CHANGED).apply {
-                    putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, enabled && successful.isNotEmpty())
-                    putStringArrayListExtra(MainActivity.EXTRA_ACTIVE_PACKAGES, ArrayList(successful))
-                }
-                context.sendBroadcast(update)
             } catch (_: Throwable) {
                 // best-effort: swallow errors to avoid crashing receiver
             } finally {

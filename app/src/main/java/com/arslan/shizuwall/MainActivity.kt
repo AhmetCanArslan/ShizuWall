@@ -33,8 +33,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -55,35 +53,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var appListAdapter: AppListAdapter
-    private lateinit var firewallToggle: SwitchCompat
-    private lateinit var searchView: SearchView
-    private lateinit var selectedCountText: TextView
-    private lateinit var selectAllCheckbox: CheckBox
-    private val appList = mutableListOf<AppInfo>()
-    private val filteredAppList = mutableListOf<AppInfo>()
-    private var isFirewallEnabled = false
-    private var currentQuery = ""
-    private var showSystemApps = false // NEW: whether to include system apps in the list
-    private var moveSelectedTop = true // whether selected apps move to top
-
-    private lateinit var sharedPreferences: SharedPreferences
-
-    private val requestPermissionResultListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
-        onRequestPermissionsResult(requestCode, grantResult)
-    }
-
-    private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
-        checkShizukuPermission()
-    }
-
-    private val binderDeadListener = Shizuku.OnBinderDeadListener {
-        Toast.makeText(this, "Shizuku service is dead", Toast.LENGTH_SHORT).show()
-        finish()
-    }
-
     companion object {
         const val PREF_NAME = "ShizuWallPrefs"
         const val KEY_SELECTED_APPS = "selected_apps"
@@ -107,6 +76,8 @@ class MainActivity : AppCompatActivity() {
         const val ACTION_FIREWALL_CONTROL = "com.arslan.shizuwall.ACTION_FIREWALL_CONTROL"
         const val EXTRA_PACKAGES_CSV = "com.arslan.shizuwall.EXTRA_PACKAGES_CSV"
 
+        const val KEY_FIREWALL_UPDATE_TS = "firewall_update_ts"
+
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
             Shizuku::class.java.getDeclaredMethod(
                 "newProcess",
@@ -115,6 +86,36 @@ class MainActivity : AppCompatActivity() {
                 String::class.java
             ).apply { isAccessible = true }
         }
+    }
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var appListAdapter: AppListAdapter
+    private lateinit var firewallToggle: SwitchCompat
+    private lateinit var searchView: SearchView
+    private lateinit var selectedCountText: TextView
+    private lateinit var selectAllCheckbox: CheckBox
+    private val appList = mutableListOf<AppInfo>()
+    private val filteredAppList = mutableListOf<AppInfo>()
+    private var isFirewallEnabled = false
+    private var currentQuery = ""
+    private var showSystemApps = false 
+    private var moveSelectedTop = true
+
+    private lateinit var sharedPreferences: SharedPreferences
+
+    private lateinit var firewallRepo: FirewallStateRepository
+
+    private val requestPermissionResultListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
+        onRequestPermissionsResult(requestCode, grantResult)
+    }
+
+    private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
+        checkShizukuPermission()
+    }
+
+    private val binderDeadListener = Shizuku.OnBinderDeadListener {
+        Toast.makeText(this, "Shizuku service is dead", Toast.LENGTH_SHORT).show()
+        finish()
     }
 
     private var suppressToggleListener = false
@@ -219,6 +220,29 @@ class MainActivity : AppCompatActivity() {
         Shizuku.addRequestPermissionResultListener(requestPermissionResultListener)
         Shizuku.addBinderReceivedListener(binderReceivedListener)
         Shizuku.addBinderDeadListener(binderDeadListener)
+
+        firewallRepo = FirewallStateRepository(applicationContext)
+        lifecycleScope.launchWhenStarted {
+            firewallRepo.state.collect { state ->
+                runOnUiThread {
+                    isFirewallEnabled = state.enabled
+                    activeFirewallPackages.clear()
+                    activeFirewallPackages.addAll(state.activePackages)
+
+                    if (::firewallToggle.isInitialized) {
+                        suppressToggleListener = true
+                        firewallToggle.isChecked = state.enabled
+                        suppressToggleListener = false
+                    }
+
+                    appListAdapter.setSelectionEnabled(!state.enabled)
+                    if (state.enabled) showDimOverlay() else hideDimOverlay()
+
+                    updateSelectedCount()
+                    updateSelectAllCheckbox()
+                }
+            }
+        }
 
         setupFirewallToggle()
         setupSearchView()
@@ -363,26 +387,8 @@ class MainActivity : AppCompatActivity() {
         Shizuku.removeRequestPermissionResultListener(requestPermissionResultListener)
         Shizuku.removeBinderReceivedListener(binderReceivedListener)
         Shizuku.removeBinderDeadListener(binderDeadListener)
+        firewallRepo.close()
         // Background service removed, nothing to stop here.
-    }
-
-    private fun checkShizukuAvailable(): Boolean {
-        try {
-            if (Shizuku.pingBinder()) {
-                return true
-            }
-        } catch (e: Exception) {
-            // Shizuku is not available
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("Shizuku Required")
-            .setMessage("This app requires Shizuku to be installed and running. Please install Shizuku and start the service.")
-            .setPositiveButton("OK", null) // just dismiss dialog, do not close app
-            .setCancelable(true)
-            .show()
-
-        return false
     }
 
     private fun checkShizukuPermission() {
@@ -540,22 +546,6 @@ class MainActivity : AppCompatActivity() {
             // Request the permission (this will show the Shizuku permission dialog)
             Shizuku.requestPermission(code)
             false
-        }
-    }
-
-    private fun checkNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    NOTIFICATION_PERMISSION_REQUEST_CODE
-                )
-            }
         }
     }
 
@@ -880,6 +870,7 @@ class MainActivity : AppCompatActivity() {
         sharedPreferences.edit().apply {
             putBoolean(KEY_FIREWALL_ENABLED, enabled)
             if (enabled) putLong(KEY_FIREWALL_SAVED_ELAPSED, elapsed) else remove(KEY_FIREWALL_SAVED_ELAPSED)
+            putLong(KEY_FIREWALL_UPDATE_TS, System.currentTimeMillis())
             apply()
         }
 
@@ -891,6 +882,7 @@ class MainActivity : AppCompatActivity() {
                 dpPrefs.edit().apply {
                     putBoolean(KEY_FIREWALL_ENABLED, enabled)
                     if (enabled) putLong(KEY_FIREWALL_SAVED_ELAPSED, elapsed) else remove(KEY_FIREWALL_SAVED_ELAPSED)
+                    putLong(KEY_FIREWALL_UPDATE_TS, System.currentTimeMillis()) 
                     apply()
                 }
             } catch (e: Exception) {
@@ -924,9 +916,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveActivePackages(packages: Set<String>) {
-        sharedPreferences.edit()
-            .putStringSet(KEY_ACTIVE_PACKAGES, packages)
-            .apply()
+        sharedPreferences.edit().apply {
+            putStringSet(KEY_ACTIVE_PACKAGES, packages)
+            putLong(KEY_FIREWALL_UPDATE_TS, System.currentTimeMillis()) 
+            apply()
+        }
     }
 
     private fun loadActivePackages(): Set<String> {
