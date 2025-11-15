@@ -65,17 +65,17 @@ ShizuWall supports a simple broadcast interface so you can enable/disable the fi
 Examples:
 
 - Enable firewall for selected apps:
-  adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED true -p com.arslan.shizuwall
+adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED true -p com.arslan.shizuwall
 
 - Disable firewall for selected apps
-  adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED false -p com.arslan.shizuwall
+adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED false -p com.arslan.shizuwall
 
 
 - Enable firewall for specific packages (CSV):
-  adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED true --es com.arslan.shizuwall.EXTRA_PACKAGES_CSV "com.example.app1,com.example.app2" -p com.arslan.shizuwall
+adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED true --es com.arslan.shizuwall.EXTRA_PACKAGES_CSV "com.example.app1,com.example.app2" -p com.arslan.shizuwall
 
 - Disable firewall for specific packages:
-  adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED false --es com.arslan.shizuwall.EXTRA_PACKAGES_CSV "com.example.app1,com.example.app2" -p com.arslan.shizuwall
+adb shell am broadcast -a com.arslan.shizuwall.ACTION_FIREWALL_CONTROL --ez com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED false --es com.arslan.shizuwall.EXTRA_PACKAGES_CSV "com.example.app1,com.example.app2" -p com.arslan.shizuwall
 
 ```
 
