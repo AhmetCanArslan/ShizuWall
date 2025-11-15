@@ -46,6 +46,16 @@
 
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/favoriteIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:src="@android:drawable/btn_star_big_on"
+            android:contentDescription="Favorite"
+            android:visibility="gone"
+            app:tint="?attr/colorPrimary" />
+
         <CheckBox
             android:id="@+id/appCheckbox"
             android:layout_width="wrap_content"

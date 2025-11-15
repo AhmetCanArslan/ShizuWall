@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         const val PREF_NAME = "ShizuWallPrefs"
         const val KEY_SELECTED_APPS = "selected_apps"
         const val KEY_SELECTED_COUNT = "selected_count"
+        const val KEY_FAVORITE_APPS = "favorite_apps"
         const val KEY_FIREWALL_ENABLED = "firewall_enabled"          // made public
         const val KEY_ACTIVE_PACKAGES = "active_packages"
         const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed" // made public
@@ -122,7 +123,7 @@ class MainActivity : AppCompatActivity() {
     private var suppressToggleListener = false
     private var suppressSelectAllListener = false
     private val activeFirewallPackages = mutableSetOf<String>()
-    private enum class Category { NONE, SYSTEM, SELECTED, UNSELECTED, USER }
+    private enum class Category { NONE, FAVORITES, SYSTEM, SELECTED, UNSELECTED, USER }
     private var currentCategory: Category = Category.NONE
     
     // Track if we're waiting for Shizuku permission due to toggle attempt
@@ -255,11 +256,12 @@ class MainActivity : AppCompatActivity() {
         categoryGroup.setOnCheckedStateChangeListener { _, checkedIds ->
             val checkedId = if (checkedIds.isEmpty()) -1 else checkedIds[0]
             currentCategory = when (checkedId) {
+                R.id.chip_favorites -> Category.FAVORITES
                 R.id.chip_system -> Category.SYSTEM
                 R.id.chip_selected -> Category.SELECTED
                 R.id.chip_unselected -> Category.UNSELECTED
                 R.id.chip_user -> Category.USER
-                -1 -> Category.NONE // no selection
+                -1 -> Category.NONE
                 else -> Category.NONE
             }
             sortAndFilterApps()
@@ -583,13 +585,68 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         appListAdapter = AppListAdapter(
             onAppClick = { appInfo ->
+                val idx = appList.indexOfFirst { it.packageName == appInfo.packageName }
+                if (idx != -1) {
+                    appList[idx] = appList[idx].copy(isSelected = appInfo.isSelected)
+                }
                 updateSelectedCount()
                 saveSelectedApps()
                 sortAndFilterApps()
             },
+            onAppLongClick = { appInfo ->
+                toggleFavorite(appInfo)
+            },
             typeface = getSelectedTypeface()
         )
         recyclerView.adapter = appListAdapter
+    }
+
+    private fun toggleFavorite(appInfo: AppInfo) {
+        val idx = appList.indexOfFirst { it.packageName == appInfo.packageName }
+        if (idx != -1) {
+            val newFavoriteState = !appList[idx].isFavorite
+            appList[idx] = appList[idx].copy(isFavorite = newFavoriteState)
+            
+            saveFavoriteApps()
+            
+            // If we're viewing favorites and removed this item, remove it from filtered list
+            if (currentCategory == Category.FAVORITES && !newFavoriteState) {
+                filteredAppList.removeAll { it.packageName == appInfo.packageName }
+            } else if (currentCategory == Category.FAVORITES && newFavoriteState) {
+                // If we're viewing favorites and added this item, it should already be there
+                // but let's update it to be safe
+                val filteredIdx = filteredAppList.indexOfFirst { it.packageName == appInfo.packageName }
+                if (filteredIdx != -1) {
+                    filteredAppList[filteredIdx] = appList[idx]
+                }
+            } else {
+                // For other categories, just update the item in place
+                val filteredIdx = filteredAppList.indexOfFirst { it.packageName == appInfo.packageName }
+                if (filteredIdx != -1) {
+                    filteredAppList[filteredIdx] = appList[idx]
+                }
+            }
+            
+            // Force adapter to update by submitting a new list
+            appListAdapter.submitList(filteredAppList.toList())
+            
+            Toast.makeText(
+                this,
+                if (newFavoriteState) "Added to favorites" else "Removed from favorites",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun saveFavoriteApps() {
+        val favoritePackages = appList.filter { it.isFavorite }.map { it.packageName }.toSet()
+        sharedPreferences.edit()
+            .putStringSet(KEY_FAVORITE_APPS, favoritePackages)
+            .apply()
+    }
+
+    private fun loadFavoriteApps(): Set<String> {
+        return sharedPreferences.getStringSet(KEY_FAVORITE_APPS, emptySet()) ?: emptySet()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -599,6 +656,7 @@ class MainActivity : AppCompatActivity() {
         // Apply category filter first
         val baseList: List<AppInfo> = when (currentCategory) {
             Category.NONE -> if (showSystemApps) appList else appList.filter { !it.isSystem }
+            Category.FAVORITES -> appList.filter { it.isFavorite }
             Category.SYSTEM -> appList.filter { it.isSystem }
             Category.USER -> appList.filter { !it.isSystem }
             Category.SELECTED -> appList.filter { it.isSelected }
@@ -777,6 +835,7 @@ class MainActivity : AppCompatActivity() {
                 val pm = packageManager
                 val packages = pm.getInstalledApplications(0)
                 val selectedPackages = loadSelectedApps()
+                val favoritePackages = loadFavoriteApps()
                 val temp = mutableListOf<AppInfo>()
                 for (packageInfo in packages) {
                     val isSystemApp = (packageInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
@@ -804,14 +863,14 @@ class MainActivity : AppCompatActivity() {
                         null
                     }
                     val isSelected = selectedPackages.contains(packageName)
-                    temp.add(AppInfo(appName, packageName, bitmap, isSelected, isSystemApp))
+                    val isFavorite = favoritePackages.contains(packageName)
+                    temp.add(AppInfo(appName, packageName, bitmap, isSelected, isSystemApp, isFavorite))
                 }
                 temp
             }
 
             appList.clear()
             appList.addAll(builtList)
-            // Use sortAndFilterApps so the current category + search are applied and animator handling is reused
             sortAndFilterApps()
         }
     }
@@ -987,13 +1046,7 @@ class MainActivity : AppCompatActivity() {
                 for (pkg in failed) {
                     val idx = appList.indexOfFirst { it.packageName == pkg }
                     if (idx != -1) {
-                        val ai = appList[idx]
-                        try {
-                            appList[idx] = ai.copy(isSelected = false)
-                        } catch (e: Exception) {
-                            ai.isSelected = false
-                            appListAdapter.notifyDataSetChanged()
-                        }
+                        appList[idx] = appList[idx].copy(isSelected = false)
                     }
                 }
                 updateSelectedCount()
@@ -1130,7 +1183,6 @@ class MainActivity : AppCompatActivity() {
 
     // Called by packageBroadcastReceiver when a package is added/updated.
     private fun handlePackageAdded(pkg: String) {
-        // Load the single package on IO and add it to the list if it matches current filters.
         lifecycleScope.launch {
             val maybeApp = withContext(Dispatchers.IO) {
                 try {
@@ -1145,12 +1197,12 @@ class MainActivity : AppCompatActivity() {
                     val drawable = pm.getApplicationIcon(ai)
                     val bitmap = try { drawableToBitmap(drawable) } catch (e: Exception) { null }
                     val isSelected = loadSelectedApps().contains(pkg)
-                    AppInfo(appName, pkg, bitmap, isSelected, isSystemApp)
+                    val isFavorite = loadFavoriteApps().contains(pkg)
+                    AppInfo(appName, pkg, bitmap, isSelected, isSystemApp, isFavorite)
                 } catch (e: Exception) {
                     null
                 }
             }
-
             maybeApp?.let { appInfo ->
                 // Avoid duplicates (in case it was already present)
                 if (appList.any { it.packageName == appInfo.packageName }) return@let
@@ -1166,6 +1218,7 @@ class MainActivity : AppCompatActivity() {
         val categoryGroup = findViewById<ChipGroup?>(R.id.categoryChipGroup) ?: return
         val chipSystem = findViewById<Chip?>(R.id.chip_system)
         val chipSelected = findViewById<Chip?>(R.id.chip_selected)
+        val chipUnselected = findViewById<Chip?>(R.id.chip_unselected)
 
         chipSystem?.visibility = if (showSystemApps) View.VISIBLE else View.GONE
 
@@ -1173,6 +1226,11 @@ class MainActivity : AppCompatActivity() {
 
         // if we hid the system chip and it was selected, clear the selection (do NOT switch to a removed default)
         if (!showSystemApps && categoryGroup.checkedChipId == R.id.chip_system) {
+            categoryGroup.clearCheck()
+            currentCategory = Category.NONE
+            sortAndFilterApps()
+        }
+        if (moveSelectedTop && (categoryGroup.checkedChipId == R.id.chip_selected || categoryGroup.checkedChipId == R.id.chip_unselected)) {
             categoryGroup.clearCheck()
             currentCategory = Category.NONE
             sortAndFilterApps()

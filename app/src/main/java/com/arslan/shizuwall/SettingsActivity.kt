@@ -215,9 +215,11 @@ class SettingsActivity : AppCompatActivity() {
             try {
                 val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
                 val selected = prefs.getStringSet("selected_apps", emptySet())?.toList() ?: emptyList()
+                val favorites = prefs.getStringSet(MainActivity.KEY_FAVORITE_APPS, emptySet())?.toList() ?: emptyList()
                 val exportJson = org.json.JSONObject().apply {
                     put("version", 1)
                     put("selected", org.json.JSONArray(selected))
+                    put("favorites", org.json.JSONArray(favorites))
                     put("show_system_apps", prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false))
                     put("skip_enable_confirm", prefs.getBoolean("skip_enable_confirm", false))
                     put("move_selected_top", prefs.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, true))
@@ -251,6 +253,14 @@ class SettingsActivity : AppCompatActivity() {
                     val v = selectedJson.optString(i, null)
                     if (!v.isNullOrEmpty()) selectedSet.add(v)
                 }
+                
+                val favoritesJson = obj.optJSONArray("favorites") ?: org.json.JSONArray()
+                val favoritesSet = mutableSetOf<String>()
+                for (i in 0 until favoritesJson.length()) {
+                    val v = favoritesJson.optString(i, null)
+                    if (!v.isNullOrEmpty()) favoritesSet.add(v)
+                }
+                
                 val showSys = obj.optBoolean("show_system_apps", false)
                 val skipConfirm = obj.optBoolean("skip_enable_confirm", false)
                 val moveTop = obj.optBoolean("move_selected_top", true)
@@ -259,6 +269,7 @@ class SettingsActivity : AppCompatActivity() {
                 prefs.edit().apply {
                     putStringSet("selected_apps", selectedSet)
                     putInt("selected_count", selectedSet.size)
+                    putStringSet(MainActivity.KEY_FAVORITE_APPS, favoritesSet)
                     putBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, showSys)
                     putBoolean("skip_enable_confirm", skipConfirm)
                     putBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, moveTop)

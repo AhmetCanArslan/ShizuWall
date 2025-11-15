@@ -24,6 +24,7 @@ class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
 
 class AppListAdapter(
     private val onAppClick: (AppInfo) -> Unit,
+    private val onAppLongClick: (AppInfo) -> Unit,
     private val typeface: Typeface? = null
 ) : ListAdapter<AppInfo, AppListAdapter.AppViewHolder>(AppInfoDiffCallback()) {
 
@@ -32,7 +33,6 @@ class AppListAdapter(
 
     fun setSelectionEnabled(enabled: Boolean) {
         selectionEnabled = enabled
-        // force rebind so views update to disabled state
         notifyDataSetChanged()
     }
 
@@ -41,6 +41,7 @@ class AppListAdapter(
         val appName: TextView = itemView.findViewById(R.id.appName)
         val packageName: TextView = itemView.findViewById(R.id.packageName)
         val checkbox: CheckBox = itemView.findViewById(R.id.appCheckbox)
+        val favoriteIcon: ImageView = itemView.findViewById(R.id.favoriteIcon)
 
         init {
             typeface?.let {
@@ -60,6 +61,8 @@ class AppListAdapter(
             appName.text = appInfo.appName
             packageName.text = appInfo.packageName
 
+            favoriteIcon.visibility = if (appInfo.isFavorite) View.VISIBLE else View.GONE
+
             // Avoid triggering listener when recycling views
             checkbox.setOnCheckedChangeListener(null)
             checkbox.isChecked = appInfo.isSelected
@@ -67,18 +70,22 @@ class AppListAdapter(
             if (selectionEnabled) {
                 checkbox.isEnabled = true
                 checkbox.setOnCheckedChangeListener { _, isChecked ->
-                    appInfo.isSelected = isChecked
-                    onAppClick(appInfo)
+                    onAppClick(appInfo.copy(isSelected = isChecked))
                 }
                 itemView.isClickable = true
                 itemView.setOnClickListener {
                     checkbox.isChecked = !checkbox.isChecked
+                }
+                itemView.setOnLongClickListener {
+                    onAppLongClick(appInfo)
+                    true
                 }
             } else {
                 // disable interactions while firewall active
                 checkbox.isEnabled = false
                 checkbox.setOnCheckedChangeListener(null)
                 itemView.setOnClickListener(null)
+                itemView.setOnLongClickListener(null)
                 itemView.isClickable = false
             }
         }

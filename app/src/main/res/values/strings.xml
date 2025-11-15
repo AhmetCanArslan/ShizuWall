@@ -18,4 +18,5 @@
     <string name="font_default">Default</string>
     <string name="font_ndot">Ndot</string>
     <string name="select_all">Select all</string>
+    <string name="cat_favorites">Favorites</string>
 </resources>
