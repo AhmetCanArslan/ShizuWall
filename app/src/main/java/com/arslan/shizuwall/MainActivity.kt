@@ -108,6 +108,8 @@ class MainActivity : AppCompatActivity() {
     private var firewallRepo: FirewallStateRepository? = null
     private var shizukuListenersAdded = false
 
+    private var defaultItemAnimator: RecyclerView.ItemAnimator? = null
+
     private val requestPermissionResultListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
         onRequestPermissionsResult(requestCode, grantResult)
     }
@@ -555,10 +557,9 @@ class MainActivity : AppCompatActivity() {
 
                 // Capture scroll position and disable animator to prevent scrolling during search updates
                 val firstVisible = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                val animator = recyclerView.itemAnimator
                 recyclerView.itemAnimator = null
                 appListAdapter.submitList(filteredAppList.toList()) { 
-                    recyclerView.itemAnimator = animator
+                    recyclerView.itemAnimator = defaultItemAnimator
                     recyclerView.scrollToPosition(firstVisible)
                     updateSelectedCount()
                 }
@@ -609,6 +610,7 @@ class MainActivity : AppCompatActivity() {
             typeface = getSelectedTypeface()
         )
         recyclerView.adapter = appListAdapter
+        defaultItemAnimator = recyclerView.itemAnimator
     }
 
     private fun toggleFavorite(appInfo: AppInfo) {
@@ -706,10 +708,9 @@ class MainActivity : AppCompatActivity() {
 
         // Capture scroll position and disable animator to prevent scrolling during selection updates
         val firstVisible = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-        val animator = recyclerView.itemAnimator
         recyclerView.itemAnimator = null
         appListAdapter.submitList(filteredAppList.toList()) {
-            recyclerView.itemAnimator = animator
+            recyclerView.itemAnimator = defaultItemAnimator
             recyclerView.scrollToPosition(firstVisible)
             updateSelectedCount()
             updateSelectAllCheckbox()
