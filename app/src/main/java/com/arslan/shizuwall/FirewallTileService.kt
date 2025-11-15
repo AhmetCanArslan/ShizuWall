@@ -105,7 +105,7 @@ class FirewallTileService : TileService() {
         val tile = qsTile ?: return
         val isEnabled = loadFirewallEnabled()
         tile.state = if (isEnabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.label = if (isEnabled) "Firewall On" else "Firewall Off"
+        tile.label = "Firewall"
         tile.icon = Icon.createWithResource(this, R.drawable.ic_quick_tile)
         tile.updateTile()
     }
@@ -144,7 +144,6 @@ class FirewallTileService : TileService() {
             }
         }
         updateTile()
-        Toast.makeText(this@FirewallTileService, "Firewall enabled", Toast.LENGTH_SHORT).show()
     }
 
     private suspend fun applyDisableFirewall() {
@@ -155,7 +154,6 @@ class FirewallTileService : TileService() {
             saveActivePackages(emptySet())
         }
         updateTile()
-        Toast.makeText(this@FirewallTileService, "Firewall disabled", Toast.LENGTH_SHORT).show()
     }
 
     private fun enableFirewall(packageNames: List<String>): List<String> {
