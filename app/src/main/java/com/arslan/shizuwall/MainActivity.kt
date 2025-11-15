@@ -105,7 +105,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
 
-    private lateinit var firewallRepo: FirewallStateRepository
+    private var firewallRepo: FirewallStateRepository? = null
+    private var shizukuListenersAdded = false
 
     private val requestPermissionResultListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
         onRequestPermissionsResult(requestCode, grantResult)
@@ -222,29 +223,32 @@ class MainActivity : AppCompatActivity() {
         Shizuku.addRequestPermissionResultListener(requestPermissionResultListener)
         Shizuku.addBinderReceivedListener(binderReceivedListener)
         Shizuku.addBinderDeadListener(binderDeadListener)
+        shizukuListenersAdded = true
 
         firewallRepo = FirewallStateRepository(applicationContext)
-        lifecycleScope.launchWhenStarted {
-            firewallRepo.state.collect { state ->
-                runOnUiThread {
-                    isFirewallEnabled = state.enabled
-                    activeFirewallPackages.clear()
-                    activeFirewallPackages.addAll(state.activePackages)
-
-                    if (::firewallToggle.isInitialized) {
-                        suppressToggleListener = true
-                        firewallToggle.isChecked = state.enabled
-                        suppressToggleListener = false
-                    }
-
-                    appListAdapter.setSelectionEnabled(!state.enabled)
-                    if (state.enabled) showDimOverlay() else hideDimOverlay()
-
-                    updateSelectedCount()
-                    updateSelectAllCheckbox()
-                }
-            }
-        }
+        firewallRepo?.let { repo ->
+            lifecycleScope.launchWhenStarted {
+                repo.state.collect { state ->
+                     runOnUiThread {
+                         isFirewallEnabled = state.enabled
+                         activeFirewallPackages.clear()
+                         activeFirewallPackages.addAll(state.activePackages)
+ 
+                         if (::firewallToggle.isInitialized) {
+                             suppressToggleListener = true
+                             firewallToggle.isChecked = state.enabled
+                             suppressToggleListener = false
+                         }
+ 
+                         appListAdapter.setSelectionEnabled(!state.enabled)
+                         if (state.enabled) showDimOverlay() else hideDimOverlay()
+ 
+                         updateSelectedCount()
+                         updateSelectAllCheckbox()
+                     }
+                 }
+             }
+         }
 
         setupFirewallToggle()
         setupSearchView()
@@ -366,10 +370,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Shizuku.removeRequestPermissionResultListener(requestPermissionResultListener)
-        Shizuku.removeBinderReceivedListener(binderReceivedListener)
-        Shizuku.removeBinderDeadListener(binderDeadListener)
-        firewallRepo.close()
+        if (shizukuListenersAdded) {
+            try {
+                Shizuku.removeRequestPermissionResultListener(requestPermissionResultListener)
+                Shizuku.removeBinderReceivedListener(binderReceivedListener)
+                Shizuku.removeBinderDeadListener(binderDeadListener)
+            } catch (_: Exception) {
+                // ignore if not registered or removal fails
+            }
+        }
+        firewallRepo?.close()
         // Background service removed, nothing to stop here.
     }
 
