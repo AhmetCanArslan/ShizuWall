@@ -51,6 +51,7 @@ import rikka.shizuku.ShizukuRemoteProcess
 import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -372,7 +373,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkShizukuPermission() {
         if (Shizuku.isPreV11()) {
-            AlertDialog.Builder(this)
+            MaterialAlertDialogBuilder(this)
                 .setTitle("Shizuku Update Required")
                 .setMessage("Your Shizuku version is too old. Please update Shizuku to the latest version.")
                 .setPositiveButton("OK", null) // do not close app, just dismiss
@@ -386,7 +387,7 @@ class MainActivity : AppCompatActivity() {
             return
         } else if (Shizuku.shouldShowRequestPermissionRationale()) {
             // User denied permission permanently
-            AlertDialog.Builder(this)
+            MaterialAlertDialogBuilder(this)
                 .setTitle("Permission Required")
                 .setMessage("Shizuku permission is required for this app to work. Please grant the permission in Shizuku settings.")
                 .setPositiveButton("OK", null) // do not close app
@@ -432,7 +433,7 @@ class MainActivity : AppCompatActivity() {
                     // If we were trying to enable, revert to off; if trying to disable, revert to on
                     firewallToggle.isChecked = isFirewallEnabled
                     suppressToggleListener = false
-                    AlertDialog.Builder(this)
+                    MaterialAlertDialogBuilder(this)
                         .setTitle("Permission Denied")
                         .setMessage("Shizuku permission is required for this app to work. Please grant the permission in Shizuku settings.")
                         .setPositiveButton("OK", null) // just dismiss dialog
@@ -454,7 +455,7 @@ class MainActivity : AppCompatActivity() {
         // First ensure Shizuku binder is reachable. If it's not running, show a friendly dialog prompting the user to start/install Shizuku.
         try {
             if (!Shizuku.pingBinder()) {
-                AlertDialog.Builder(this)
+                MaterialAlertDialogBuilder(this)
                     .setTitle("Shizuku not running")
                     .setMessage("Shizuku is not currently running. Start the Shizuku service (or install it) before enabling the firewall.")
                     .setPositiveButton("Open Shizuku") { _, _ ->
@@ -701,10 +702,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_firewall_confirm, null)
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
+        val dialog = MaterialAlertDialogBuilder(this)
+             .setView(dialogView)
+             .setCancelable(false)
+             .create()
 
         val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
         val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
@@ -1183,10 +1184,10 @@ class MainActivity : AppCompatActivity() {
         if (failedApps.isEmpty()) return
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_firewall_confirm, null)
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
+        val dialog = MaterialAlertDialogBuilder(this)
+             .setView(dialogView)
+             .setCancelable(true)
+             .create()
 
         val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
         val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
