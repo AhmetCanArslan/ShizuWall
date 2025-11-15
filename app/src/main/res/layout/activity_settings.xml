@@ -129,6 +129,45 @@
 
             </LinearLayout>
 
+             <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"
+                android:layout_marginVertical="16dp" />
+
+            <TextView
+                android:id="@+id/tvAdbBroadcastTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ADB Broadcast Usage"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/layoutAdbBroadcastUsage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:background="?attr/selectableItemBackground">
+
+
+                <TextView
+                    android:id="@+id/tvAdbBroadcastSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Quick guide to use adb to control firewall (tap to view examples)"
+                    android:textSize="14sp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="4dp" />
+
+            </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

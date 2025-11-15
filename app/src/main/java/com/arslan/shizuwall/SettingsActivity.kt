@@ -5,12 +5,16 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.Gravity
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,6 +35,7 @@ import kotlinx.coroutines.withContext
 import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -44,6 +49,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var btnImport: MaterialButton
     private lateinit var btnDonate: MaterialButton
     private lateinit var switchUseDynamicColor: SwitchCompat
+
+    private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
 
     private val createDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -59,14 +66,14 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         sharedPreferences = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        
+
         val useDynamicColor = sharedPreferences.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
         if (useDynamicColor) {
             DynamicColors.applyToActivityIfAvailable(this)
         }
-        
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
 
@@ -84,7 +91,7 @@ class SettingsActivity : AppCompatActivity() {
         initializeViews()
         loadSettings()
         setupListeners()
-        
+
         // Apply custom font to all views
         applyFontToViews(findViewById(android.R.id.content))
     }
@@ -99,15 +106,18 @@ class SettingsActivity : AppCompatActivity() {
         btnImport = findViewById(R.id.btnImport)
         btnDonate = findViewById(R.id.btnDonate)
         switchUseDynamicColor = findViewById(R.id.switchUseDynamicColor)
+
+        // new: bind XML item
+        layoutAdbBroadcastUsage = findViewById(R.id.layoutAdbBroadcastUsage)
     }
 
     private fun loadSettings() {
         val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        
+
         switchShowSystemApps.isChecked = prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
         switchMoveSelectedTop.isChecked = prefs.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, true)
         switchSkipConfirm.isChecked = prefs.getBoolean("skip_enable_confirm", false)
-        
+
         val currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         tvCurrentFont.text = if (currentFont == "ndot") "Ndot" else "Default"
         switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
@@ -154,11 +164,13 @@ class SettingsActivity : AppCompatActivity() {
                 .apply()
             showRestartNotice("Theme Changed", "The theme has been updated. Please restart the app to apply the changes.")
         }
+
+        layoutAdbBroadcastUsage.setOnClickListener { showAdbBroadcastDialog() }
     }
 
     private fun showFontSelectorDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_font_selector, null)
-        val dialog = AlertDialog.Builder(this)
+        val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setCancelable(true)
             .create()
@@ -270,19 +282,19 @@ class SettingsActivity : AppCompatActivity() {
         val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         val savedFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         if (savedFont == "default") return
-        
+
         val typeface = try {
             ResourcesCompat.getFont(this, R.font.ndot)
         } catch (e: Exception) {
             return
         }
-        
+
         applyTypefaceRecursively(view, typeface)
     }
 
     private fun applyTypefaceRecursively(view: View, typeface: Typeface?) {
         if (typeface == null) return
-        
+
         when (view) {
             is TextView -> {
                 view.typeface = typeface
@@ -296,7 +308,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun showRestartNotice(title: String, message: String) {
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle(title)
             .setMessage(message)
             .setPositiveButton("Restart Now") { _, _ ->
@@ -306,6 +318,79 @@ class SettingsActivity : AppCompatActivity() {
                 finish()
             }
             .setNegativeButton("Later", null)
+            .show()
+    }
+
+    private fun showAdbBroadcastDialog() {
+        // Compose the instructions using the same constants the app uses so examples stay correct.
+        val pkg = "com.arslan.shizuwall"
+        val action = MainActivity.ACTION_FIREWALL_CONTROL
+        val extraEnabled = MainActivity.EXTRA_FIREWALL_ENABLED
+        val extraCsv = MainActivity.EXTRA_PACKAGES_CSV
+
+        val adbUsageText = StringBuilder().apply {
+            appendLine("Action:\n$action")
+            appendLine()
+            appendLine("Extras:")
+            appendLine()
+            appendLine("$extraEnabled (boolean) — true = enable, false = disable")
+            appendLine()
+            appendLine("$extraCsv (string, optional) — comma-separated package list to operate on. If omitted, app falls back to saved selected apps.")
+            appendLine()
+            appendLine()
+            appendLine("Examples:")
+            appendLine()
+            appendLine("Enable firewall for selected (selected in ShizuWall) apps:")
+            appendLine()
+            appendLine("adb shell am broadcast -a $action --ez $extraEnabled true -p $pkg")
+            appendLine()
+            appendLine()
+            appendLine("Disable firewall for selected (selected in ShizuWall) apps:")
+            appendLine()
+            appendLine("adb shell am broadcast -a $action --ez $extraEnabled false -p $pkg")
+            appendLine()
+            appendLine("Enable firewall for specific packages (CSV):")
+            appendLine()
+            appendLine("adb shell am broadcast -a $action --ez $extraEnabled true --es $extraCsv \"com.example.app1,com.example.app2\" -p $pkg")
+            appendLine()
+            appendLine("Disable firewall for specific packages (CSV):")
+            appendLine()
+            appendLine("adb shell am broadcast -a $action --ez $extraEnabled false --es $extraCsv \"com.example.app1,com.example.app2\" -p $pkg")
+            appendLine()
+            appendLine()
+            appendLine("Notes:")
+            appendLine()
+            appendLine("- The receiver is exported for adb automation; prefer targeting the app explicitly with -p $pkg to avoid external broadcasts.")
+            appendLine()
+            appendLine("- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.")
+            appendLine()
+            appendLine("- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.")
+        }.toString()
+
+        val tv = TextView(this).apply {
+            setTextIsSelectable(true)
+            typeface = android.graphics.Typeface.MONOSPACE
+            setPadding(
+                (16 * resources.displayMetrics.density).toInt(),
+                (8 * resources.displayMetrics.density).toInt(),
+                (16 * resources.displayMetrics.density).toInt(),
+                (8 * resources.displayMetrics.density).toInt()
+            )
+            // Ensure text is set and TextView spans dialog width
+            text = adbUsageText
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
+        val scroll = ScrollView(this).apply {
+            addView(tv)
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("ADB Broadcast Usage (Copiable)")
+            .setView(scroll)
+            .setPositiveButton("OK", null)
             .show()
     }
 }
