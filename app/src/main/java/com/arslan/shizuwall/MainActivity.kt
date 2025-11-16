@@ -649,12 +649,6 @@ class MainActivity : AppCompatActivity() {
             
             // Force adapter to update by submitting a new list
             appListAdapter.submitList(filteredAppList.toList())
-            
-            Toast.makeText(
-                this,
-                if (newFavoriteState) "Added to favorites" else "Removed from favorites",
-                Toast.LENGTH_SHORT
-            ).show()
         }
     }
 
