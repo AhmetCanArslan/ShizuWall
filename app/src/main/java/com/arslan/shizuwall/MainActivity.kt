@@ -387,12 +387,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkShizukuPermission() {
         if (Shizuku.isPreV11()) {
-            MaterialAlertDialogBuilder(this)
+            val d = MaterialAlertDialogBuilder(this)
                 .setTitle("Shizuku Update Required")
                 .setMessage("Your Shizuku version is too old. Please update Shizuku to the latest version.")
                 .setPositiveButton("OK", null) // do not close app, just dismiss
                 .setCancelable(true)
-                .show()
+                .create()
+            d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
+            d.show()
             return
         }
 
@@ -401,12 +403,14 @@ class MainActivity : AppCompatActivity() {
             return
         } else if (Shizuku.shouldShowRequestPermissionRationale()) {
             // User denied permission permanently
-            MaterialAlertDialogBuilder(this)
+            val d = MaterialAlertDialogBuilder(this)
                 .setTitle("Permission Required")
                 .setMessage("Shizuku permission is required for this app to work. Please grant the permission in Shizuku settings.")
                 .setPositiveButton("OK", null) // do not close app
                 .setCancelable(true)
-                .show()
+                .create()
+            d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
+            d.show()
         } else {
             // Request permission
             Shizuku.requestPermission(SHIZUKU_PERMISSION_REQUEST_CODE)
@@ -447,12 +451,14 @@ class MainActivity : AppCompatActivity() {
                     // If we were trying to enable, revert to off; if trying to disable, revert to on
                     firewallToggle.isChecked = isFirewallEnabled
                     suppressToggleListener = false
-                    MaterialAlertDialogBuilder(this)
+                    val d = MaterialAlertDialogBuilder(this)
                         .setTitle("Permission Denied")
                         .setMessage("Shizuku permission is required for this app to work. Please grant the permission in Shizuku settings.")
                         .setPositiveButton("OK", null) // just dismiss dialog
                         .setCancelable(true)
-                        .show()
+                        .create()
+                    d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
+                    d.show()
                 }
             }
             NOTIFICATION_PERMISSION_REQUEST_CODE -> {
@@ -469,10 +475,10 @@ class MainActivity : AppCompatActivity() {
         // First ensure Shizuku binder is reachable. If it's not running, show a friendly dialog prompting the user to start/install Shizuku.
         try {
             if (!Shizuku.pingBinder()) {
-                MaterialAlertDialogBuilder(this)
-                    .setTitle("Shizuku not running")
-                    .setMessage("Shizuku is not currently running. Start the Shizuku service (or install it) before enabling the firewall.")
-                    .setPositiveButton("Open Shizuku") { _, _ ->
+                val d = MaterialAlertDialogBuilder(this)
+                     .setTitle("Shizuku not running")
+                     .setMessage("Shizuku is not currently running. Start the Shizuku service (or install it) before enabling the firewall.")
+                     .setPositiveButton("Open Shizuku") { _, _ ->
                         // Try to open the Shizuku app if present, otherwise open Play Store, otherwise fallback to GitHub.
                         val pm = packageManager
                         val candidates = listOf("moe.shizuku.privileged.api", "moe.shizuku.manager")
@@ -515,8 +521,10 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    .setNegativeButton("Cancel", null)
-                    .show()
+                     .setNegativeButton("Cancel", null)
+                     .create()
+                d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
+                d.show()
                 return false
             }
         } catch (e: Exception) {
@@ -772,14 +780,24 @@ class MainActivity : AppCompatActivity() {
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_firewall_confirm, null)
         val dialog = MaterialAlertDialogBuilder(this)
-             .setView(dialogView)
-             .setCancelable(false)
-             .create()
+            .setView(dialogView)
+            .setCancelable(false)
+            .setPositiveButton("Enable") { _, _ ->
+                applyFirewallState(true, selectedApps.map { it.packageName })
+            }
+            .setNegativeButton("Cancel") { _, _ ->
+                suppressToggleListener = true
+                firewallToggle.isChecked = false
+                suppressToggleListener = false
+            }
+            .create()
 
+        applyFontToViews(dialogView)
+        dialog.setOnShowListener {
+            dialog.window?.decorView?.let { applyFontToViews(it) }
+        }
         val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
         val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
-        val btnConfirm = dialogView.findViewById<MaterialButton>(R.id.btnConfirm)
-        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
 
         dialogMessage.text = "Do you want to enable firewall for ${selectedApps.size} apps listed below?"
 
@@ -800,17 +818,6 @@ class MainActivity : AppCompatActivity() {
             selectedAppsRecyclerView.layoutParams = lp
         }
 
-        btnConfirm.setOnClickListener {
-            dialog.dismiss()
-            applyFirewallState(true, selectedApps.map { it.packageName })
-        }
-
-        btnCancel.setOnClickListener {
-            suppressToggleListener = true
-            firewallToggle.isChecked = false
-            suppressToggleListener = false
-            dialog.dismiss()
-        }
 
         dialog.show()
     }
@@ -1254,14 +1261,17 @@ class MainActivity : AppCompatActivity() {
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_firewall_confirm, null)
         val dialog = MaterialAlertDialogBuilder(this)
-             .setView(dialogView)
-             .setCancelable(true)
-             .create()
+            .setView(dialogView)
+            .setCancelable(true)
+            .setPositiveButton("OK", null)
+            .create()
+        applyFontToViews(dialogView)
+        dialog.setOnShowListener {
+            dialog.window?.decorView?.let { applyFontToViews(it) }
+        }
 
         val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
         val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
-        val btnConfirm = dialogView.findViewById<MaterialButton>(R.id.btnConfirm)
-        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
 
         dialogMessage.text = "Operation failed for the following ${failedApps.size} apps. They have been unselected."
 
@@ -1281,9 +1291,6 @@ class MainActivity : AppCompatActivity() {
             selectedAppsRecyclerView.layoutParams = lp
         }
 
-        btnConfirm.text = "OK"
-        btnConfirm.setOnClickListener { dialog.dismiss() }
-        btnCancel.visibility = View.GONE // Hide cancel button for error dialog
 
         dialog.show()
     }
