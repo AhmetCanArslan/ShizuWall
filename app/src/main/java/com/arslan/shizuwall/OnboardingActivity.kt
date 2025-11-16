@@ -52,6 +52,16 @@ class OnboardingActivity : AppCompatActivity() {
 
         pages.add(
             OnboardingPage(
+                title = "Favorites",
+                message = "Long press on an app to add it to your favorites for quick access.",
+                buttonText = "Next",
+                onButtonClick = { goToNextPage() },
+                imageResId = R.drawable.ic_favorite
+            )
+        )
+
+        pages.add(
+            OnboardingPage(
                 title = "Shizuku Required",
                 message = "Shizuku is required for this application to run. Therefore, the developer is not responsible for any negative consequences. Please install and activate Shizuku before proceeding.",
                 buttonText = "Get Started",
