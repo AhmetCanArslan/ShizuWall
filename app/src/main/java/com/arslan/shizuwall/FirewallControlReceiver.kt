@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.SystemClock
+import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,6 +51,12 @@ class FirewallControlReceiver : BroadcastReceiver() {
         } else {
             val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
             prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList()
+        }
+
+        if (enabled && packages.isEmpty()) {
+            Toast.makeText(context, "No apps selected", Toast.LENGTH_SHORT).show()
+            pending.finish()
+            return
         }
 
         CoroutineScope(Dispatchers.IO).launch {
