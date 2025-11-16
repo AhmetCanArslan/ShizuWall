@@ -46,7 +46,7 @@ class OnboardingActivity : AppCompatActivity() {
                 buttonText = "Grant Permission",
                 onButtonClick = { requestNotificationPermission() },
                 isPermissionPage = true,
-                imageResId = android.R.drawable.ic_menu_info_details
+                imageResId = R.drawable.ic_notification
             )
         )
 
