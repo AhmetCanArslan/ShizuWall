@@ -7,9 +7,9 @@ A lightweight, privacy focused Android firewall application that blocks network 
 ### [Download from releases](https://github.com/ahmetcanarslan/shizuwall/releases) 
 
 <p align="center">
-  <img src="assets/screenShots/v2.2/1.png" width="30%">
-  <img src="assets/screenShots/v2.2/2.png" width="30%">
-  <img src="assets/screenShots/v2.2/3.png" width="30%">
+  <img src="assets/screenShots/v3.0/1.png" width="30%">
+  <img src="assets/screenShots/v3.0/2.png" width="30%">
+  <img src="assets/screenShots/v3.0/3.png" width="30%">
 </p>
 
 <p align="center">
@@ -54,7 +54,7 @@ cmd connectivity set-chain3-enabled false
 
 ## Control via broadcast (adb / automation)
 
-ShizuWall supports a simple broadcast interface so you can enable/disable the firewall from adb or automation tools. (Will be available on next build)
+ShizuWall supports a simple broadcast interface so you can enable/disable the firewall from adb or automation tools.
 
 ```bash
 - Action: com.arslan.shizuwall.ACTION_FIREWALL_CONTROL
