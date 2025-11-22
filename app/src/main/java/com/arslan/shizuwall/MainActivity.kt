@@ -553,12 +553,10 @@ class MainActivity : AppCompatActivity() {
                 currentQuery = newText ?: ""
                 filterApps(currentQuery)
 
-                // Capture scroll position and disable animator to prevent scrolling during search updates
-                val firstVisible = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                // Disable animator to prevent visual clutter during search filtering
                 recyclerView.itemAnimator = null
                 appListAdapter.submitList(filteredAppList.toList()) { 
                     recyclerView.itemAnimator = defaultItemAnimator
-                    recyclerView.scrollToPosition(firstVisible)
                     updateSelectedCount()
                 }
                 return true
@@ -698,12 +696,10 @@ class MainActivity : AppCompatActivity() {
 
         filterApps(currentQuery)
 
-        // Capture scroll position and disable animator to prevent scrolling during selection updates
-        val firstVisible = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+        // Disable animator to prevent visual clutter during list updates
         recyclerView.itemAnimator = null
         appListAdapter.submitList(filteredAppList.toList()) {
             recyclerView.itemAnimator = defaultItemAnimator
-            recyclerView.scrollToPosition(firstVisible)
             updateSelectedCount()
             updateSelectAllCheckbox()
         }
@@ -866,9 +862,12 @@ class MainActivity : AppCompatActivity() {
                 temp
             }
 
-            appList.clear()
-            appList.addAll(builtList)
-            sortAndFilterApps()
+            // Only update if the list has changed to prevent UI sliding/glitches on resume
+            if (appList != builtList) {
+                appList.clear()
+                appList.addAll(builtList)
+                sortAndFilterApps()
+            }
         }
     }
 
