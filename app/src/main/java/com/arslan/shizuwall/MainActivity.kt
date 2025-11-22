@@ -678,11 +678,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         filterApps(currentQuery)
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        val firstVisible = layoutManager.findFirstVisibleItemPosition()
+        val offset = layoutManager.findViewByPosition(firstVisible)?.top ?: 0
 
         // Disable animator to prevent visual clutter during list updates
         recyclerView.itemAnimator = null
         appListAdapter.submitList(filteredAppList.toList()) {
             recyclerView.itemAnimator = defaultItemAnimator
+            
+            if (firstVisible != RecyclerView.NO_POSITION) {
+                layoutManager.scrollToPositionWithOffset(firstVisible, offset)
+            }
+            
             updateSelectedCount()
             updateSelectAllCheckbox()
         }
