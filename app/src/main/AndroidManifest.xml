@@ -4,11 +4,10 @@
 
     <!-- permission for querying all packages -->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
+        tools:ignore="PackageVisibilityPolicy,QueryAllPackagesPermission" />
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.BIND_QUICK_SETTINGS_TILE" />
 
     <application
         android:allowBackup="true"
@@ -57,7 +56,8 @@
 
         <receiver
             android:name=".FirewallControlReceiver"
-            android:exported="true">
+            android:exported="true"
+            android:permission="TODO">
             <intent-filter>
                 <action android:name="com.arslan.shizuwall.ACTION_FIREWALL_CONTROL" />
             </intent-filter>
