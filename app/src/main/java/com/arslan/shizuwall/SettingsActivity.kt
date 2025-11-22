@@ -79,6 +79,12 @@ class SettingsActivity : AppCompatActivity() {
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationOnClickListener { finish() }
+
+        toolbar.menu.add("Reset Settings").setOnMenuItemClickListener {
+            showResetConfirmationDialog()
+            true
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settingsRoot)) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             // Apply top margin to toolbar to account for status bar
@@ -403,5 +409,36 @@ class SettingsActivity : AppCompatActivity() {
             .setView(scroll)
             .setPositiveButton("OK", null)
             .show()
+    }
+
+    private fun showResetConfirmationDialog() {
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle("Reset Settings")
+            .setMessage("Are you sure you want to reset all settings to default? This will not affect your selected apps or favorites.")
+            .setPositiveButton("Reset") { _, _ ->
+                resetSettings()
+            }
+            .setNegativeButton("Cancel", null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.window?.decorView?.let { applyFontToViews(it) }
+        }
+        dialog.show()
+    }
+
+    private fun resetSettings() {
+        val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        prefs.edit().apply {
+            remove(MainActivity.KEY_SHOW_SYSTEM_APPS)
+            remove(MainActivity.KEY_MOVE_SELECTED_TOP)
+            remove("skip_enable_confirm")
+            remove(MainActivity.KEY_SELECTED_FONT)
+            remove(MainActivity.KEY_USE_DYNAMIC_COLOR)
+            apply()
+        }
+
+        loadSettings()
+        showRestartNotice("Settings Reset", "Settings have been reset. Please restart the app to apply changes.")
     }
 }
