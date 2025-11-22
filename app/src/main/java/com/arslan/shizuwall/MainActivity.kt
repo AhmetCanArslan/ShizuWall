@@ -26,7 +26,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -219,28 +221,28 @@ class MainActivity : AppCompatActivity() {
 
         firewallRepo = FirewallStateRepository(applicationContext)
         firewallRepo?.let { repo ->
-            lifecycleScope.launchWhenStarted {
-                repo.state.collect { state ->
-                     runOnUiThread {
-                         isFirewallEnabled = state.enabled
-                         activeFirewallPackages.clear()
-                         activeFirewallPackages.addAll(state.activePackages)
- 
-                         if (::firewallToggle.isInitialized) {
-                             suppressToggleListener = true
-                             firewallToggle.isChecked = state.enabled
-                             suppressToggleListener = false
-                         }
- 
-                         appListAdapter.setSelectionEnabled(!state.enabled)
-                         if (state.enabled) showDimOverlay() else hideDimOverlay()
- 
-                         updateSelectedCount()
-                         updateSelectAllCheckbox()
-                     }
-                 }
-             }
-         }
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    repo.state.collect { state ->
+                        isFirewallEnabled = state.enabled
+                        activeFirewallPackages.clear()
+                        activeFirewallPackages.addAll(state.activePackages)
+
+                        if (::firewallToggle.isInitialized) {
+                            suppressToggleListener = true
+                            firewallToggle.isChecked = state.enabled
+                            suppressToggleListener = false
+                        }
+
+                        appListAdapter.setSelectionEnabled(!state.enabled)
+                        if (state.enabled) showDimOverlay() else hideDimOverlay()
+
+                        updateSelectedCount()
+                        updateSelectAllCheckbox()
+                    }
+                }
+            }
+        }
 
         setupFirewallToggle()
         setupSearchView()
