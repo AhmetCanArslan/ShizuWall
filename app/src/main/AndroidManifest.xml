@@ -56,8 +56,7 @@
 
         <receiver
             android:name=".FirewallControlReceiver"
-            android:exported="true"
-            android:permission="TODO">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.arslan.shizuwall.ACTION_FIREWALL_CONTROL" />
             </intent-filter>
