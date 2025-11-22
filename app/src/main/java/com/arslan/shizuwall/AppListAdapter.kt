@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.core.graphics.createBitmap
 
 class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
     override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
@@ -50,8 +51,10 @@ class AppListAdapter(
     private var selectionEnabled: Boolean = true
 
     fun setSelectionEnabled(enabled: Boolean) {
-        selectionEnabled = enabled
-        notifyDataSetChanged()
+        if (selectionEnabled != enabled) {
+            selectionEnabled = enabled
+            notifyItemRangeChanged(0, itemCount)
+        }
     }
 
     inner class AppViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -89,7 +92,7 @@ class AppListAdapter(
                                 appIcon.setImageBitmap(bitmap)
                             }
                         }
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         // ignore
                     }
                 }
@@ -134,7 +137,7 @@ class AppListAdapter(
         }
         val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else 48
         val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else 48
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(width, height)
         val canvas = Canvas(bitmap)
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
