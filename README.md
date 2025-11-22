@@ -32,7 +32,7 @@ A lightweight, privacy focused Android firewall application that blocks network 
 - By default only user-installed apps are shown. Use the overflow menu (three dots, top-right) to "Show system apps" if you need to include system apps for selection.
 - If anything goes wrong, rebooting the device will revert every change made by ShizuWall.
 - The app persists minimal preferences locally (selected apps, enabled flag) and stores a small boot-relative timestamp in device-protected storage so the app can detect reboots safely without exposing data.
-- No network calls from the app itself — it does not send any data to external services and has no internet access.
+- No network calls from the app itself — it does not send any data to external services. The application does not request android.permission.INTERNET in its manifest. While Shizuku itself has shell privileges (which include network access), ShizuWall is designed to operate locally and does not initiate any network connections.
 
 ## Firewall Implementation
 
