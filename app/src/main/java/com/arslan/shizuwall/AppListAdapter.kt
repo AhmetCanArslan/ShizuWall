@@ -1,16 +1,25 @@
 package com.arslan.shizuwall
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.util.LruCache
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import android.graphics.Bitmap
-import android.graphics.Typeface
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
     override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
@@ -27,6 +36,15 @@ class AppListAdapter(
     private val onAppLongClick: (AppInfo) -> Unit,
     private val typeface: Typeface? = null
 ) : ListAdapter<AppInfo, AppListAdapter.AppViewHolder>(AppInfoDiffCallback()) {
+
+    // Cache icons to avoid reloading. Max size 1/8th of available memory.
+    private val iconCache = object : LruCache<String, Bitmap>(
+        (Runtime.getRuntime().maxMemory() / 1024 / 8).toInt()
+    ) {
+        override fun sizeOf(key: String, value: Bitmap): Int {
+            return value.byteCount / 1024
+        }
+    }
 
     // controls whether user can change selection
     private var selectionEnabled: Boolean = true
@@ -51,11 +69,30 @@ class AppListAdapter(
         }
 
         fun bind(appInfo: AppInfo) {
-            // use cached bitmap (fast) instead of resolving drawable each bind
-            if (appInfo.iconBitmap != null) {
-                appIcon.setImageBitmap(appInfo.iconBitmap)
+            // Load icon async
+            val pkg = appInfo.packageName
+            appIcon.tag = pkg
+            appIcon.setImageDrawable(null) // Clear previous
+
+            val cached = iconCache.get(pkg)
+            if (cached != null) {
+                appIcon.setImageBitmap(cached)
             } else {
-                appIcon.setImageDrawable(null)
+                getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
+                    try {
+                        val pm = itemView.context.packageManager
+                        val drawable = pm.getApplicationIcon(pkg)
+                        val bitmap = drawableToBitmap(drawable)
+                        iconCache.put(pkg, bitmap)
+                        withContext(Dispatchers.Main) {
+                            if (appIcon.tag == pkg) {
+                                appIcon.setImageBitmap(bitmap)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // ignore
+                    }
+                }
             }
 
             appName.text = appInfo.appName
@@ -89,6 +126,28 @@ class AppListAdapter(
                 itemView.isClickable = false
             }
         }
+    }
+
+    private fun drawableToBitmap(drawable: Drawable): Bitmap {
+        if (drawable is BitmapDrawable) {
+            drawable.bitmap?.let { return it }
+        }
+        val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else 48
+        val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else 48
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return bitmap
+    }
+
+    private fun getLifecycleOwner(context: android.content.Context): LifecycleOwner? {
+        var ctx = context
+        while (ctx is android.content.ContextWrapper) {
+            if (ctx is LifecycleOwner) return ctx
+            ctx = ctx.baseContext
+        }
+        return null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {

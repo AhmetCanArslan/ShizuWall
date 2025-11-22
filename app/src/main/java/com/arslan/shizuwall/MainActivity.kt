@@ -9,10 +9,6 @@ import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.content.ActivityNotFoundException
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,15 +18,10 @@ import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
@@ -40,7 +31,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.Dispatchers
@@ -868,15 +858,10 @@ class MainActivity : AppCompatActivity() {
                     if (!hasInternetPermission) continue
 
                     val appName = pm.getApplicationLabel(packageInfo).toString()
-                    val drawable = pm.getApplicationIcon(packageInfo)
-                    val bitmap = try {
-                        drawableToBitmap(drawable)
-                    } catch (e: Exception) {
-                        null
-                    }
+                    // Removed bitmap loading to save RAM
                     val isSelected = selectedPackages.contains(packageName)
                     val isFavorite = favoritePackages.contains(packageName)
-                    temp.add(AppInfo(appName, packageName, bitmap, isSelected, isSystemApp, isFavorite))
+                    temp.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite))
                 }
                 temp
             }
@@ -885,20 +870,6 @@ class MainActivity : AppCompatActivity() {
             appList.addAll(builtList)
             sortAndFilterApps()
         }
-    }
-
-    // convert Drawable to Bitmap (used once per app)
-    private fun drawableToBitmap(drawable: Drawable): Bitmap {
-        if (drawable is BitmapDrawable) {
-            drawable.bitmap?.let { return it }
-        }
-        val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else 48
-        val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else 48
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return bitmap
     }
 
     private fun saveSelectedApps() {
@@ -1206,11 +1177,9 @@ class MainActivity : AppCompatActivity() {
                     val hasInternet = pm.checkPermission(Manifest.permission.INTERNET, pkg) == PackageManager.PERMISSION_GRANTED
                     if (!hasInternet) return@withContext null
                     val appName = pm.getApplicationLabel(ai).toString()
-                    val drawable = pm.getApplicationIcon(ai)
-                    val bitmap = try { drawableToBitmap(drawable) } catch (e: Exception) { null }
                     val isSelected = loadSelectedApps().contains(pkg)
                     val isFavorite = loadFavoriteApps().contains(pkg)
-                    AppInfo(appName, pkg, bitmap, isSelected, isSystemApp, isFavorite)
+                    AppInfo(appName, pkg, isSelected, isSystemApp, isFavorite)
                 } catch (e: Exception) {
                     null
                 }
