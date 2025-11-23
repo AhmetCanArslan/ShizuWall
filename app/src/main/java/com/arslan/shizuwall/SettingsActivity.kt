@@ -93,6 +93,8 @@ class SettingsActivity : AppCompatActivity() {
             val toolbarParams = toolbar.layoutParams as ViewGroup.MarginLayoutParams
             toolbarParams.topMargin = systemBars.top
             toolbar.layoutParams = toolbarParams
+            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
+
             insets
         }
 
@@ -261,14 +263,14 @@ class SettingsActivity : AppCompatActivity() {
                     val v = selectedJson.optString(i, null)
                     if (!v.isNullOrEmpty()) selectedSet.add(v)
                 }
-                
+
                 val favoritesJson = obj.optJSONArray("favorites") ?: org.json.JSONArray()
                 val favoritesSet = mutableSetOf<String>()
                 for (i in 0 until favoritesJson.length()) {
                     val v = favoritesJson.optString(i, null)
                     if (!v.isNullOrEmpty()) favoritesSet.add(v)
                 }
-                
+
                 val showSys = obj.optBoolean("show_system_apps", false)
                 val skipConfirm = obj.optBoolean("skip_enable_confirm", false)
                 val moveTop = obj.optBoolean("move_selected_top", true)
@@ -433,7 +435,7 @@ class SettingsActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-                
+
                 // If firewall is enabled, try to disable it first to revert system changes
                 if (prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)) {
                     val activePackages = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
@@ -447,7 +449,7 @@ class SettingsActivity : AppCompatActivity() {
                             if (Shizuku.pingBinder() && Shizuku.checkSelfPermission() == android.content.pm.PackageManager.PERMISSION_GRANTED) {
                                 // 1. Disable global chain first (most important to restore internet)
                                 runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
-                                
+
                                 // 2. Clean up individual package rules
                                 for (pkg in allPackages) {
                                     runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $pkg")
@@ -468,7 +470,7 @@ class SettingsActivity : AppCompatActivity() {
 
                 // Clear main prefs
                 prefs.edit().clear().commit()
-                
+
                 // Clear onboarding prefs
                 getSharedPreferences("app_prefs", Context.MODE_PRIVATE).edit().clear().commit()
 
@@ -482,10 +484,10 @@ class SettingsActivity : AppCompatActivity() {
                 }
 
                 Toast.makeText(this@SettingsActivity, "App reset complete. Closing...", Toast.LENGTH_SHORT).show()
-                
+
                 // Close all activities
                 finishAffinity()
-                
+
                 // Kill process to ensure fresh start
                 android.os.Process.killProcess(android.os.Process.myPid())
                 System.exit(0)
