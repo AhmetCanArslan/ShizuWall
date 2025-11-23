@@ -36,6 +36,8 @@ import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import rikka.shizuku.Shizuku
+import rikka.shizuku.ShizukuRemoteProcess
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -80,7 +82,7 @@ class SettingsActivity : AppCompatActivity() {
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationOnClickListener { finish() }
 
-        toolbar.menu.add("Reset Settings").setOnMenuItemClickListener {
+        toolbar.menu.add("Reset App").setOnMenuItemClickListener {
             showResetConfirmationDialog()
             true
         }
@@ -413,10 +415,10 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun showResetConfirmationDialog() {
         val dialog = MaterialAlertDialogBuilder(this)
-            .setTitle("Reset Settings")
-            .setMessage("Are you sure you want to reset all settings to default? This will not affect your selected apps or favorites.")
+            .setTitle("Reset App")
+            .setMessage("Are you sure you want to reset the app? This will disable the firewall (if active), clear all data, and close the app.")
             .setPositiveButton("Reset") { _, _ ->
-                resetSettings()
+                resetApp()
             }
             .setNegativeButton("Cancel", null)
             .create()
@@ -427,18 +429,96 @@ class SettingsActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun resetSettings() {
-        val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        prefs.edit().apply {
-            remove(MainActivity.KEY_SHOW_SYSTEM_APPS)
-            remove(MainActivity.KEY_MOVE_SELECTED_TOP)
-            remove("skip_enable_confirm")
-            remove(MainActivity.KEY_SELECTED_FONT)
-            remove(MainActivity.KEY_USE_DYNAMIC_COLOR)
-            apply()
-        }
+    private fun resetApp() {
+        lifecycleScope.launch {
+            try {
+                val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                
+                // If firewall is enabled, try to disable it first to revert system changes
+                if (prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)) {
+                    val activePackages = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
+                    val selectedApps = prefs.getStringSet("selected_apps", emptySet()) ?: emptySet()
+                    // Combine lists to ensure we catch everything
+                    val allPackages = activePackages + selectedApps
 
-        loadSettings()
-        showRestartNotice("Settings Reset", "Settings have been reset. Please restart the app to apply changes.")
+                    var cleanupPerformed = false
+                    withContext(Dispatchers.IO) {
+                        try {
+                            if (Shizuku.pingBinder() && Shizuku.checkSelfPermission() == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                                // 1. Disable global chain first (most important to restore internet)
+                                runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
+                                
+                                // 2. Clean up individual package rules
+                                for (pkg in allPackages) {
+                                    runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $pkg")
+                                }
+                                cleanupPerformed = true
+                            }
+                        } catch (e: Exception) {
+                            // Proceed with reset even if cleanup fails
+                        }
+                    }
+
+                    if (!cleanupPerformed) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@SettingsActivity, "Warning: Firewall cleanup failed. Please REBOOT your device to restore internet access.", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+
+                // Clear main prefs
+                prefs.edit().clear().commit()
+                
+                // Clear onboarding prefs
+                getSharedPreferences("app_prefs", Context.MODE_PRIVATE).edit().clear().commit()
+
+                // Clear device protected prefs if applicable
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    try {
+                        createDeviceProtectedStorageContext().getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE).edit().clear().commit()
+                    } catch (e: Exception) {
+                        // ignore
+                    }
+                }
+
+                Toast.makeText(this@SettingsActivity, "App reset complete. Closing...", Toast.LENGTH_SHORT).show()
+                
+                // Close all activities
+                finishAffinity()
+                
+                // Kill process to ensure fresh start
+                android.os.Process.killProcess(android.os.Process.myPid())
+                System.exit(0)
+            } catch (e: Exception) {
+                Toast.makeText(this@SettingsActivity, "Failed to reset app: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun runShizukuShellCommand(command: String): Boolean {
+        return try {
+            val method = Shizuku::class.java.getDeclaredMethod(
+                "newProcess",
+                Array<String>::class.java,
+                Array<String>::class.java,
+                String::class.java
+            ).apply { isAccessible = true }
+
+            val process = method.invoke(
+                null,
+                arrayOf("/system/bin/sh", "-c", command),
+                null,
+                null
+            ) as? ShizukuRemoteProcess ?: return false
+
+            process.outputStream.close()
+            process.inputStream.close()
+            process.errorStream.close()
+            val exitCode = process.waitFor()
+            process.destroy()
+            exitCode == 0
+        } catch (e: Exception) {
+            false
+        }
     }
 }
