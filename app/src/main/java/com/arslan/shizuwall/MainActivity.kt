@@ -570,6 +570,28 @@ class MainActivity : AppCompatActivity() {
                 sortAndFilterApps()
             }
         }
+
+        selectAllCheckbox.setOnLongClickListener {
+            if (appList.any { it.isSelected }) {
+                MaterialAlertDialogBuilder(this@MainActivity)
+                    .setTitle("Unselect All")
+                    .setMessage("Deselect all apps?")
+                    .setPositiveButton("Unselect") { _, _ ->
+                        for (i in appList.indices) {
+                            appList[i] = appList[i].copy(isSelected = false)
+                        }
+                        updateSelectedCount()
+                        saveSelectedApps()
+                        sortAndFilterApps()
+                        Toast.makeText(this@MainActivity, "All apps unselected", Toast.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+                true
+            } else {
+                false
+            }
+        }
     }
 
     private fun setupRecyclerView() {
