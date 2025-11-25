@@ -58,6 +58,8 @@ class MainActivity : AppCompatActivity() {
         const val KEY_ONBOARDING_DONE = "onboarding_done"
         private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         private const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
+        const val KEY_SKIP_ERROR_DIALOG = "skip_error_dialog"
+        const val KEY_KEEP_ERROR_APPS_SELECTED = "keep_error_apps_selected"
         const val KEY_SHOW_SYSTEM_APPS = "show_system_apps"
         const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
         const val KEY_SELECTED_FONT = "selected_font"
@@ -1050,15 +1052,21 @@ class MainActivity : AppCompatActivity() {
 
             // Handle failures: unselect failed apps and show error dialog
             if (failed.isNotEmpty()) {
-                for (pkg in failed) {
-                    val idx = appList.indexOfFirst { it.packageName == pkg }
-                    if (idx != -1) {
-                        appList[idx] = appList[idx].copy(isSelected = false)
+                val skipErrorDialog = sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)
+                val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
+                
+                // Only unselect if user hasn't opted to keep them selected
+                if (!(skipErrorDialog && keepErrorAppsSelected)) {
+                    for (pkg in failed) {
+                        val idx = appList.indexOfFirst { it.packageName == pkg }
+                        if (idx != -1) {
+                            appList[idx] = appList[idx].copy(isSelected = false)
+                        }
                     }
+                    updateSelectedCount()
+                    saveSelectedApps()
+                    sortAndFilterApps(preserveScrollPosition = false)
                 }
-                updateSelectedCount()
-                saveSelectedApps()
-                sortAndFilterApps(preserveScrollPosition = false)
                 showOperationErrorsDialog(failed)
             }
         }
@@ -1245,6 +1253,11 @@ class MainActivity : AppCompatActivity() {
     private fun showOperationErrorsDialog(failedPackages: List<String>) {
         val failedApps = appList.filter { it.packageName in failedPackages }
         if (failedApps.isEmpty()) return
+
+        // Check if user opted to skip error dialogs
+        if (sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)) {
+            return
+        }
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_firewall_confirm, null)
         val dialog = MaterialAlertDialogBuilder(this)

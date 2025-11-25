@@ -45,6 +45,9 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var switchShowSystemApps: SwitchCompat
     private lateinit var switchMoveSelectedTop: SwitchCompat
     private lateinit var switchSkipConfirm: SwitchCompat
+    private lateinit var switchSkipErrorDialog: SwitchCompat
+    private lateinit var layoutKeepErrorApps: LinearLayout
+    private lateinit var switchKeepErrorAppsSelected: SwitchCompat
     private lateinit var layoutChangeFont: LinearLayout
     private lateinit var tvCurrentFont: TextView
     private lateinit var btnExport: MaterialButton
@@ -110,6 +113,9 @@ class SettingsActivity : AppCompatActivity() {
         switchShowSystemApps = findViewById(R.id.switchShowSystemApps)
         switchMoveSelectedTop = findViewById(R.id.switchMoveSelectedTop)
         switchSkipConfirm = findViewById(R.id.switchSkipConfirm)
+        switchSkipErrorDialog = findViewById(R.id.switchSkipErrorDialog)
+        layoutKeepErrorApps = findViewById(R.id.layoutKeepErrorApps)
+        switchKeepErrorAppsSelected = findViewById(R.id.switchKeepErrorAppsSelected)
         layoutChangeFont = findViewById(R.id.layoutChangeFont)
         tvCurrentFont = findViewById(R.id.tvCurrentFont)
         btnExport = findViewById(R.id.btnExport)
@@ -127,6 +133,12 @@ class SettingsActivity : AppCompatActivity() {
         switchShowSystemApps.isChecked = prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
         switchMoveSelectedTop.isChecked = prefs.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, true)
         switchSkipConfirm.isChecked = prefs.getBoolean("skip_enable_confirm", false)
+        switchSkipErrorDialog.isChecked = prefs.getBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, false)
+        switchKeepErrorAppsSelected.isChecked = prefs.getBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false)
+        
+        // Enable/disable keep error apps option based on skip error dialog state
+        switchKeepErrorAppsSelected.isEnabled = switchSkipErrorDialog.isChecked
+        layoutKeepErrorApps.alpha = if (switchSkipErrorDialog.isChecked) 1.0f else 0.5f
 
         val currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         tvCurrentFont.text = if (currentFont == "ndot") "Ndot" else "Default"
@@ -148,6 +160,22 @@ class SettingsActivity : AppCompatActivity() {
 
         switchSkipConfirm.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean("skip_enable_confirm", isChecked).apply()
+        }
+
+        switchSkipErrorDialog.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, isChecked).apply()
+            // Enable/disable the keep error apps option
+            switchKeepErrorAppsSelected.isEnabled = isChecked
+            layoutKeepErrorApps.alpha = if (isChecked) 1.0f else 0.5f
+            // If disabling skip error dialog, also disable keep error apps selected
+            if (!isChecked) {
+                switchKeepErrorAppsSelected.isChecked = false
+                prefs.edit().putBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false).apply()
+            }
+        }
+
+        switchKeepErrorAppsSelected.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, isChecked).apply()
         }
 
         layoutChangeFont.setOnClickListener {
