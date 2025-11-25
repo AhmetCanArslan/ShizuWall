@@ -262,7 +262,7 @@ class MainActivity : AppCompatActivity() {
                 -1 -> Category.NONE
                 else -> Category.NONE
             }
-            sortAndFilterApps()
+            sortAndFilterApps(preserveScrollPosition = false)
         }
 
         // ensure the category chips reflect the saved "show system apps" preference
@@ -567,7 +567,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 updateSelectedCount()
                 saveSelectedApps()
-                sortAndFilterApps()
+                sortAndFilterApps(preserveScrollPosition = true)
             }
         }
 
@@ -582,7 +582,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         updateSelectedCount()
                         saveSelectedApps()
-                        sortAndFilterApps()
+                        sortAndFilterApps(preserveScrollPosition = true)
                         Toast.makeText(this@MainActivity, "All apps unselected", Toast.LENGTH_SHORT).show()
                     }
                     .setNegativeButton("Cancel", null)
@@ -605,7 +605,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 updateSelectedCount()
                 saveSelectedApps()
-                sortAndFilterApps()
+                sortAndFilterApps(preserveScrollPosition = true)
             },
             onAppLongClick = { appInfo ->
                 toggleFavorite(appInfo)
@@ -685,7 +685,7 @@ class MainActivity : AppCompatActivity() {
         // Removed submitList from here; handled in callers
     }
 
-    private fun sortAndFilterApps() {
+    private fun sortAndFilterApps(preserveScrollPosition: Boolean = false) {
         val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
         if (moveSelectedTop) {
             appList.sortWith(
@@ -703,15 +703,21 @@ class MainActivity : AppCompatActivity() {
 
         filterApps(currentQuery)
         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-        val firstVisible = layoutManager.findFirstVisibleItemPosition()
-        val offset = layoutManager.findViewByPosition(firstVisible)?.top ?: 0
+        
+        var firstVisible = RecyclerView.NO_POSITION
+        var offset = 0
+
+        if (preserveScrollPosition && moveSelectedTop) {
+            firstVisible = layoutManager.findFirstVisibleItemPosition()
+            offset = layoutManager.findViewByPosition(firstVisible)?.top ?: 0
+        }
 
         // Disable animator to prevent visual clutter during list updates
         recyclerView.itemAnimator = null
         appListAdapter.submitList(filteredAppList.toList()) {
             recyclerView.itemAnimator = defaultItemAnimator
             
-            if (firstVisible != RecyclerView.NO_POSITION) {
+            if (preserveScrollPosition && moveSelectedTop && firstVisible != RecyclerView.NO_POSITION) {
                 layoutManager.scrollToPositionWithOffset(firstVisible, offset)
             }
             
@@ -885,7 +891,7 @@ class MainActivity : AppCompatActivity() {
             if (appList != builtList) {
                 appList.clear()
                 appList.addAll(builtList)
-                sortAndFilterApps()
+                sortAndFilterApps(preserveScrollPosition = false)
             }
         }
     }
@@ -1052,7 +1058,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 updateSelectedCount()
                 saveSelectedApps()
-                sortAndFilterApps()
+                sortAndFilterApps(preserveScrollPosition = false)
                 showOperationErrorsDialog(failed)
             }
         }
@@ -1177,7 +1183,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 updateSelectedCount()
-                sortAndFilterApps()
+                sortAndFilterApps(preserveScrollPosition = false)
             }
         }
     }
@@ -1206,7 +1212,7 @@ class MainActivity : AppCompatActivity() {
                 // Avoid duplicates (in case it was already present)
                 if (appList.any { it.packageName == appInfo.packageName }) return@let
                 appList.add(appInfo)
-                sortAndFilterApps()
+                sortAndFilterApps(preserveScrollPosition = false)
                 updateSelectedCount()
             }
         }
@@ -1227,12 +1233,12 @@ class MainActivity : AppCompatActivity() {
         if (!showSystemApps && categoryGroup.checkedChipId == R.id.chip_system) {
             categoryGroup.clearCheck()
             currentCategory = Category.NONE
-            sortAndFilterApps()
+            sortAndFilterApps(preserveScrollPosition = false)
         }
         if (moveSelectedTop && (categoryGroup.checkedChipId == R.id.chip_selected || categoryGroup.checkedChipId == R.id.chip_unselected)) {
             categoryGroup.clearCheck()
             currentCategory = Category.NONE
-            sortAndFilterApps()
+            sortAndFilterApps(preserveScrollPosition = false)
         }
     }
 
