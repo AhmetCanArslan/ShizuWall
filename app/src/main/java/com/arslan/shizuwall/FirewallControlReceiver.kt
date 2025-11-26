@@ -56,7 +56,10 @@ class FirewallControlReceiver : BroadcastReceiver() {
         // filter out any Shizuku packages from incoming list
         val packages = rawPackages.filterNot { it == "moe.shizuku.privileged.api" }
 
-        if (enabled && packages.isEmpty()) {
+        val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        val adaptiveMode = prefs.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
+
+        if (enabled && packages.isEmpty() && !adaptiveMode) {
             Toast.makeText(context, "No apps selected", Toast.LENGTH_SHORT).show()
             pending.finish()
             return
@@ -88,21 +91,46 @@ class FirewallControlReceiver : BroadcastReceiver() {
                                 successful.add(pkg)
                             }
                         }
-                        runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
+                        val isGlobalDisable = csv.isNullOrBlank()
+                        if (!adaptiveMode || isGlobalDisable) {
+                            runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
+                        }
                     }
                 }
 
                 // Persist state to shared prefs (same keys MainActivity uses)
-                val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                // val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
                 prefs.edit().apply {
-                    if (enabled && successful.isNotEmpty()) {
+                    if (enabled && (successful.isNotEmpty() || adaptiveMode)) {
                         putBoolean(MainActivity.KEY_FIREWALL_ENABLED, true)
                         putLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, SystemClock.elapsedRealtime())
                         putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, successful.toSet())
+                        
+                        // In Adaptive Mode, sync the selected apps list with what was just enabled
+                        if (adaptiveMode && successful.isNotEmpty()) {
+                            val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
+                            currentSelected.addAll(successful)
+                            putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)
+                            putInt(MainActivity.KEY_SELECTED_COUNT, currentSelected.size)
+                        }
                     } else {
-                        putBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
-                        remove(MainActivity.KEY_FIREWALL_SAVED_ELAPSED)
-                        putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+                        val isGlobalDisable = csv.isNullOrBlank()
+                        if (!adaptiveMode || isGlobalDisable) {
+                            putBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
+                            remove(MainActivity.KEY_FIREWALL_SAVED_ELAPSED)
+                            putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+                        } else {
+                            // Partial disable (unblock specific apps), firewall stays ON
+                            val currentActive = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
+                            currentActive.removeAll(successful)
+                            putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, currentActive)
+                            
+                            // Also update selected apps to reflect unblocking
+                            val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
+                            currentSelected.removeAll(successful)
+                            putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)
+                            putInt(MainActivity.KEY_SELECTED_COUNT, currentSelected.size)
+                        }
                     }
                     putLong(MainActivity.KEY_FIREWALL_UPDATE_TS, System.currentTimeMillis())
                     apply()

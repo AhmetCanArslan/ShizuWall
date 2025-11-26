@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
         const val KEY_SELECTED_FONT = "selected_font"
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
+        const val KEY_ADAPTIVE_MODE = "adaptive_mode"
 
         const val ACTION_FIREWALL_STATE_CHANGED = "com.arslan.shizuwall.ACTION_FIREWALL_STATE_CHANGED"
         const val EXTRA_FIREWALL_ENABLED = "com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED"
@@ -96,6 +97,7 @@ class MainActivity : AppCompatActivity() {
     private var currentQuery = ""
     private var showSystemApps = false 
     private var moveSelectedTop = true
+    private var adaptiveMode = false
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -155,8 +157,14 @@ class MainActivity : AppCompatActivity() {
             // Reload settings and refresh the app list
             showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
             moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
+            adaptiveMode = sharedPreferences.getBoolean(KEY_ADAPTIVE_MODE, false)
             loadInstalledApps()
             updateCategoryChips()
+            
+            if (isFirewallEnabled) {
+                if (adaptiveMode) hideDimOverlay() else showDimOverlay()
+                appListAdapter.setSelectionEnabled(adaptiveMode || !isFirewallEnabled)
+            }
         }
     }
 
@@ -209,6 +217,7 @@ class MainActivity : AppCompatActivity() {
 
         showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
         moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
+        adaptiveMode = sharedPreferences.getBoolean(KEY_ADAPTIVE_MODE, false)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -236,7 +245,7 @@ class MainActivity : AppCompatActivity() {
                             suppressToggleListener = false
                         }
 
-                        appListAdapter.setSelectionEnabled(!state.enabled)
+                        appListAdapter.setSelectionEnabled(!state.enabled || adaptiveMode)
                         if (state.enabled) showDimOverlay() else hideDimOverlay()
 
                         updateSelectedCount()
@@ -314,7 +323,7 @@ class MainActivity : AppCompatActivity() {
 
         // Reflect current firewall state in UI
         val enabled = loadFirewallEnabled()
-        appListAdapter.setSelectionEnabled(!enabled)
+        appListAdapter.setSelectionEnabled(!enabled || adaptiveMode)
         if (enabled) showDimOverlay() else hideDimOverlay()
         loadInstalledApps()
 
@@ -558,9 +567,11 @@ class MainActivity : AppCompatActivity() {
         selectAllCheckbox.setOnCheckedChangeListener { _, isChecked ->
             if (suppressSelectAllListener) return@setOnCheckedChangeListener
             
-            val changed = filteredAppList.any { it.isSelected != isChecked }
-            if (changed) {
+            val changedApps = filteredAppList.filter { it.isSelected != isChecked }
+            if (changedApps.isNotEmpty()) {
+                val packagesToUpdate = changedApps.map { it.packageName }
                 val filteredPackages = filteredAppList.map { it.packageName }.toSet()
+                
                 for (i in appList.indices) {
                     val ai = appList[i]
                     if (ai.packageName in filteredPackages) {
@@ -570,6 +581,63 @@ class MainActivity : AppCompatActivity() {
                 updateSelectedCount()
                 saveSelectedApps()
                 sortAndFilterApps(preserveScrollPosition = true)
+
+                // Adaptive Mode apply rules immediately if firewall is enabled
+                if (isFirewallEnabled && adaptiveMode) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val successful = mutableListOf<String>()
+                        val failed = mutableListOf<String>()
+                        
+                        for (pkg in packagesToUpdate) {
+                            val cmd = if (isChecked) {
+                                "cmd connectivity set-package-networking-enabled false $pkg"
+                            } else {
+                                "cmd connectivity set-package-networking-enabled true $pkg"
+                            }
+                            
+                            if (runShizukuShellCommand(cmd)) {
+                                successful.add(pkg)
+                            } else {
+                                failed.add(pkg)
+                            }
+                        }
+                        
+                        withContext(Dispatchers.Main) {
+                            if (successful.isNotEmpty()) {
+                                if (isChecked) {
+                                    activeFirewallPackages.addAll(successful)
+                                } else {
+                                    activeFirewallPackages.removeAll(successful)
+                                }
+                                saveActivePackages(activeFirewallPackages)
+                            }
+                            
+                            // Handle failures
+                            if (failed.isNotEmpty()) {
+                                if (isChecked) {
+                                    // We tried to enable firewall (select) but failed. Revert selection.
+                                    val skipErrorDialog = sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)
+                                    val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
+                                    
+                                    if (!(skipErrorDialog && keepErrorAppsSelected)) {
+                                        for (pkg in failed) {
+                                            val idx = appList.indexOfFirst { it.packageName == pkg }
+                                            if (idx != -1) {
+                                                appList[idx] = appList[idx].copy(isSelected = false)
+                                            }
+                                        }
+                                        updateSelectedCount()
+                                        saveSelectedApps()
+                                        sortAndFilterApps(preserveScrollPosition = true)
+                                    }
+                                    showOperationErrorsDialog(failed)
+                                } else {
+                                    Toast.makeText(this@MainActivity, "Failed to update rules for ${failed.size} apps", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -579,12 +647,41 @@ class MainActivity : AppCompatActivity() {
                     .setTitle("Unselect All")
                     .setMessage("Deselect all apps?")
                     .setPositiveButton("Unselect") { _, _ ->
+                        val previouslySelected = appList.filter { it.isSelected }.map { it.packageName }
+
                         for (i in appList.indices) {
                             appList[i] = appList[i].copy(isSelected = false)
                         }
                         updateSelectedCount()
                         saveSelectedApps()
                         sortAndFilterApps(preserveScrollPosition = true)
+                        
+                        // Unblock all previously selected apps
+                        if (isFirewallEnabled && adaptiveMode && previouslySelected.isNotEmpty()) {
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                val successful = mutableListOf<String>()
+                                val failed = mutableListOf<String>()
+                                
+                                for (pkg in previouslySelected) {
+                                    if (runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $pkg")) {
+                                        successful.add(pkg)
+                                    } else {
+                                        failed.add(pkg)
+                                    }
+                                }
+                                
+                                withContext(Dispatchers.Main) {
+                                    if (successful.isNotEmpty()) {
+                                        activeFirewallPackages.removeAll(successful)
+                                        saveActivePackages(activeFirewallPackages)
+                                    }
+                                    if (failed.isNotEmpty()) {
+                                        Toast.makeText(this@MainActivity, "Failed to unblock ${failed.size} apps", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }
+
                         Toast.makeText(this@MainActivity, "All apps unselected", Toast.LENGTH_SHORT).show()
                     }
                     .setNegativeButton("Cancel", null)
@@ -608,6 +705,59 @@ class MainActivity : AppCompatActivity() {
                 updateSelectedCount()
                 saveSelectedApps()
                 sortAndFilterApps(preserveScrollPosition = true)
+
+                // Apply rule immediately if firewall is enabled
+                if (isFirewallEnabled && adaptiveMode) {
+                    val pkg = appInfo.packageName
+                    val isSelected = appInfo.isSelected
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val success = if (isSelected) {
+                            runShizukuShellCommand("cmd connectivity set-package-networking-enabled false $pkg")
+                        } else {
+                            runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $pkg")
+                        }
+                        
+                        withContext(Dispatchers.Main) {
+                            if (success) {
+                                if (isSelected) {
+                                    activeFirewallPackages.add(pkg)
+                                } else {
+                                    activeFirewallPackages.remove(pkg)
+                                }
+                                saveActivePackages(activeFirewallPackages)
+                            } else {
+                                // Operation failed
+                                if (isSelected) {
+                                    // Failed to block (select)
+                                    val skipErrorDialog = sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)
+                                    val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
+
+                                    if (!(skipErrorDialog && keepErrorAppsSelected)) {
+                                        val revertIdx = appList.indexOfFirst { it.packageName == pkg }
+                                        if (revertIdx != -1) {
+                                            appList[revertIdx] = appList[revertIdx].copy(isSelected = false)
+                                        }
+                                        updateSelectedCount()
+                                        saveSelectedApps()
+                                        sortAndFilterApps(preserveScrollPosition = true)
+                                    }
+                                    showOperationErrorsDialog(listOf(pkg))
+                                } else {
+                                    // Failed to unblock (unselect)
+                                    val revertIdx = appList.indexOfFirst { it.packageName == pkg }
+                                    if (revertIdx != -1) {
+                                        appList[revertIdx] = appList[revertIdx].copy(isSelected = true)
+                                    }
+                                    updateSelectedCount()
+                                    saveSelectedApps()
+                                    sortAndFilterApps(preserveScrollPosition = true)
+                                    
+                                    Toast.makeText(this@MainActivity, "Failed to unblock ${appInfo.appName}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
+                }
             },
             onAppLongClick = { appInfo ->
                 toggleFavorite(appInfo)
@@ -736,7 +886,7 @@ class MainActivity : AppCompatActivity() {
             if (suppressToggleListener) return@setOnCheckedChangeListener
             if (isChecked) {
                 val selectedApps = appList.filter { it.isSelected }
-                if (selectedApps.isEmpty()) {
+                if (selectedApps.isEmpty() && !adaptiveMode) {
                     Toast.makeText(this, "Please select at least one app", Toast.LENGTH_SHORT).show()
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
@@ -836,7 +986,7 @@ class MainActivity : AppCompatActivity() {
         // enable the firewall toggle if firewall is currently active (so user can disable),
         // or if there is at least one selected app (so user can enable).
         if (::firewallToggle.isInitialized) {
-            firewallToggle.isEnabled = isFirewallEnabled || count > 0
+            firewallToggle.isEnabled = isFirewallEnabled || count > 0 || adaptiveMode
         }
         
         updateSelectAllCheckbox()
@@ -856,7 +1006,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun loadInstalledApps() {
         lifecycleScope.launch {
-            val (builtList, cleanedActivePackages) = withContext(Dispatchers.IO) {
+            val result = withContext(Dispatchers.IO) {
                 val pm = packageManager
                 val packages = pm.getInstalledApplications(0)
                 
@@ -864,7 +1014,9 @@ class MainActivity : AppCompatActivity() {
 
                 val savedActive = loadActivePackages().toMutableSet()
                 val activeToRemove = savedActive.filter { !installedPackageNames.contains(it) }
-                if (activeToRemove.isNotEmpty()) {
+                val appsWereRemoved = activeToRemove.isNotEmpty()
+
+                if (appsWereRemoved) {
                     savedActive.removeAll(activeToRemove)
                     saveActivePackages(savedActive)
                 }
@@ -908,14 +1060,19 @@ class MainActivity : AppCompatActivity() {
                     val isFavorite = favoritePackages.contains(packageName)
                     temp.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite))
                 }
-                Pair(temp, savedActive)
+                Triple(temp, savedActive, appsWereRemoved)
             }
+
+            val builtList = result.first
+            val cleanedActivePackages = result.second
+            val appsWereRemoved = result.third
 
             activeFirewallPackages.clear()
             activeFirewallPackages.addAll(cleanedActivePackages)
 
             // If firewall is enabled but no packages are active (e.g. all uninstalled), disable it
-            if (isFirewallEnabled && activeFirewallPackages.isEmpty()) {
+            // In Adaptive Mode, we allow firewall to stay ON even with 0 active packages
+            if (isFirewallEnabled && activeFirewallPackages.isEmpty() && !adaptiveMode) {
                 isFirewallEnabled = false
                 saveFirewallEnabled(false)
                 // Update UI to reflect disabled state
@@ -924,7 +1081,12 @@ class MainActivity : AppCompatActivity() {
                 suppressToggleListener = false
                 appListAdapter.setSelectionEnabled(true)
                 hideDimOverlay()
-                Toast.makeText(this@MainActivity, "Firewall disabled (active apps uninstalled)", Toast.LENGTH_SHORT).show()
+                
+                if (appsWereRemoved) {
+                    Toast.makeText(this@MainActivity, "Firewall disabled (active apps uninstalled)", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@MainActivity, "Firewall disabled (no apps selected)", Toast.LENGTH_SHORT).show()
+                }
             }
 
             // Only update if the list has changed to prevent UI sliding/glitches on resume
@@ -1008,7 +1170,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun saveActivePackages(packages: Set<String>) {
         sharedPreferences.edit().apply {
-            putStringSet(KEY_ACTIVE_PACKAGES, packages)
+            putStringSet(KEY_ACTIVE_PACKAGES, packages.toSet())
             putLong(KEY_FIREWALL_UPDATE_TS, System.currentTimeMillis()) 
             apply()
         }
@@ -1019,7 +1181,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun applyFirewallState(enable: Boolean, packageNames: List<String>) {
-        if (enable && packageNames.isEmpty()) return
+        if (enable && packageNames.isEmpty() && !adaptiveMode) return
         firewallToggle.isEnabled = false
         lifecycleScope.launch {
             // perform package existence checks and run enable/disable on IO thread
@@ -1028,7 +1190,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             // If enabling and none of the chosen packages remain installed -> abort
-            if (enable && installed.isEmpty()) {
+            // In Adaptive Mode, allow enabling with empty list
+            if (enable && installed.isEmpty() && !adaptiveMode) {
                 Toast.makeText(this@MainActivity, "None of the selected apps are installed. Aborting.", Toast.LENGTH_SHORT).show()
                 suppressToggleListener = true
                 firewallToggle.isChecked = false
@@ -1054,7 +1217,7 @@ class MainActivity : AppCompatActivity() {
 
             // Handle successes
             if (enable) {
-                if (successful.isNotEmpty()) {
+                if (successful.isNotEmpty() || adaptiveMode) {
                     isFirewallEnabled = true
                     activeFirewallPackages.clear()
                     activeFirewallPackages.addAll(successful)
@@ -1064,9 +1227,17 @@ class MainActivity : AppCompatActivity() {
                     suppressToggleListener = true
                     firewallToggle.isChecked = true
                     suppressToggleListener = false
-                    appListAdapter.setSelectionEnabled(false)
-                    showDimOverlay()
-                    Toast.makeText(this@MainActivity, "Firewall activated for ${successful.size} apps", Toast.LENGTH_SHORT).show()
+                    
+                    if (adaptiveMode) {
+                        appListAdapter.setSelectionEnabled(true)
+                        hideDimOverlay()
+                    } else {
+                        appListAdapter.setSelectionEnabled(false)
+                        showDimOverlay()
+                    }
+                    
+                    val msg = if (successful.isEmpty()) "Firewall activated (Adaptive Mode)" else "Firewall activated for ${successful.size} apps"
+                    Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
                 } else {
                     // None succeeded, revert toggle
                     suppressToggleListener = true
@@ -1195,6 +1366,8 @@ class MainActivity : AppCompatActivity() {
     // dim only the RecyclerView and disable its interactions
     private fun showDimOverlay() {
         // visually dim RecyclerView and block interactions
+        if (adaptiveMode) return // do not dim in Adaptive Mode
+
         recyclerView.alpha = 0.5f
         recyclerView.isEnabled = false
         recyclerView.isClickable = false
@@ -1307,6 +1480,7 @@ class MainActivity : AppCompatActivity() {
 
         // Check if user opted to skip error dialogs
         if (sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)) {
+            Toast.makeText(this, "Operation failed for ${failedApps.size} apps", Toast.LENGTH_SHORT).show()
             return
         }
 

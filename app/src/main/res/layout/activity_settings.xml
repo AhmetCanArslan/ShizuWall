@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:text="Move selected apps to top"
                 android:padding="16dp" />
-
+            
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchUseDynamicColor"
                 android:layout_width="match_parent"
@@ -79,6 +79,42 @@
                 android:layout_height="wrap_content"
                 android:text="Skip enable confirmation"
                 android:padding="16dp" />
+
+             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Adaptive Mode"
+                        android:textSize="16sp"
+                        android:textColor="?android:attr/textColorPrimary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Apply rules instantly. Firewall stays on even if no apps are selected."
+                        android:textSize="12sp"
+                        android:textColor="?android:attr/textColorSecondary" />
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchAdaptiveMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

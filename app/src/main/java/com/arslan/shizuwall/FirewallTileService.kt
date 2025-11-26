@@ -82,7 +82,9 @@ class FirewallTileService : TileService() {
         } else {
             // Enable firewall
             val selectedApps = loadSelectedApps()
-            if (selectedApps.isEmpty()) {
+            val adaptiveMode = sharedPreferences.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
+            
+            if (selectedApps.isEmpty() && !adaptiveMode) {
                 Toast.makeText(this@FirewallTileService, "No apps selected", Toast.LENGTH_SHORT).show()
                 return
             }

@@ -44,6 +44,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var switchShowSystemApps: SwitchCompat
     private lateinit var switchMoveSelectedTop: SwitchCompat
+    private lateinit var switchAdaptiveMode: SwitchCompat
     private lateinit var switchSkipConfirm: SwitchCompat
     private lateinit var switchSkipErrorDialog: SwitchCompat
     private lateinit var layoutKeepErrorApps: LinearLayout
@@ -112,6 +113,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun initializeViews() {
         switchShowSystemApps = findViewById(R.id.switchShowSystemApps)
         switchMoveSelectedTop = findViewById(R.id.switchMoveSelectedTop)
+        switchAdaptiveMode = findViewById(R.id.switchAdaptiveMode)
         switchSkipConfirm = findViewById(R.id.switchSkipConfirm)
         switchSkipErrorDialog = findViewById(R.id.switchSkipErrorDialog)
         layoutKeepErrorApps = findViewById(R.id.layoutKeepErrorApps)
@@ -132,6 +134,7 @@ class SettingsActivity : AppCompatActivity() {
 
         switchShowSystemApps.isChecked = prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
         switchMoveSelectedTop.isChecked = prefs.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, true)
+        switchAdaptiveMode.isChecked = prefs.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
         switchSkipConfirm.isChecked = prefs.getBoolean("skip_enable_confirm", false)
         switchSkipErrorDialog.isChecked = prefs.getBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, false)
         switchKeepErrorAppsSelected.isChecked = prefs.getBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false)
@@ -155,6 +158,11 @@ class SettingsActivity : AppCompatActivity() {
 
         switchMoveSelectedTop.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, isChecked).apply()
+            setResult(RESULT_OK)
+        }
+
+        switchAdaptiveMode.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean(MainActivity.KEY_ADAPTIVE_MODE, isChecked).apply()
             setResult(RESULT_OK)
         }
 
@@ -259,6 +267,7 @@ class SettingsActivity : AppCompatActivity() {
                     put("selected", org.json.JSONArray(selected))
                     put("favorites", org.json.JSONArray(favorites))
                     put("show_system_apps", prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false))
+                    put("adaptive_mode", prefs.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false))
                     put("skip_enable_confirm", prefs.getBoolean("skip_enable_confirm", false))
                     put("move_selected_top", prefs.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, true))
                 }
@@ -303,6 +312,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
 
                 val showSys = obj.optBoolean("show_system_apps", false)
+                val adaptive = obj.optBoolean("adaptive_mode", false)
                 val skipConfirm = obj.optBoolean("skip_enable_confirm", false)
                 val moveTop = obj.optBoolean("move_selected_top", true)
 
@@ -312,6 +322,7 @@ class SettingsActivity : AppCompatActivity() {
                     putInt("selected_count", filteredSelectedSet.size)
                     putStringSet(MainActivity.KEY_FAVORITE_APPS, favoritesSet)
                     putBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, showSys)
+                    putBoolean(MainActivity.KEY_ADAPTIVE_MODE, adaptive)
                     putBoolean("skip_enable_confirm", skipConfirm)
                     putBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, moveTop)
                     apply()
