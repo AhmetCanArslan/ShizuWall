@@ -31,9 +31,9 @@ class OnboardingActivity : AppCompatActivity() {
     private fun setupPages() {
         pages.add(
             OnboardingPage(
-                title = "Welcome to ShizuWall",
-                message = "Block unwanted network connections without root or vpn",
-                buttonText = "Next",
+                title = getString(R.string.welcome_title),
+                message = getString(R.string.welcome_message),
+                buttonText = getString(R.string.next),
                 onButtonClick = { goToNextPage() },
                 imageResId = R.mipmap.ic_launcher // app icon
             )
@@ -41,9 +41,9 @@ class OnboardingActivity : AppCompatActivity() {
 
         pages.add(
             OnboardingPage(
-                title = "Notification Permission",
-                message = "We need notification permission to keep you informed about firewall status if you reboot while firewall is active.",
-                buttonText = "Grant Permission",
+                title = getString(R.string.notification_permission_title),
+                message = getString(R.string.notification_permission_message),
+                buttonText = getString(R.string.grant_permission),
                 onButtonClick = { requestNotificationPermission() },
                 isPermissionPage = true,
                 imageResId = R.drawable.ic_notification
@@ -52,9 +52,9 @@ class OnboardingActivity : AppCompatActivity() {
 
         pages.add(
             OnboardingPage(
-                title = "Favorites",
-                message = "Long press on an app to add it to your favorites for quick access.",
-                buttonText = "Next",
+                title = getString(R.string.favorites_title),
+                message = getString(R.string.favorites_message),
+                buttonText = getString(R.string.next),
                 onButtonClick = { goToNextPage() },
                 imageResId = R.drawable.ic_favorite
             )
@@ -62,9 +62,9 @@ class OnboardingActivity : AppCompatActivity() {
 
         pages.add(
             OnboardingPage(
-                title = "Shizuku Required",
-                message = "Shizuku is required for this application to run. Therefore, the developer is not responsible for any negative consequences. Please install and activate Shizuku before proceeding.",
-                buttonText = "Get Started",
+                title = getString(R.string.shizuku_required_title),
+                message = getString(R.string.shizuku_required_message),
+                buttonText = getString(R.string.get_started),
                 onButtonClick = { finishOnboarding() },
                 imageResId = getShizukuIconRes()
             )
