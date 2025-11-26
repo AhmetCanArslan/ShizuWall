@@ -73,6 +73,18 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".FirewallWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.arslan.shizuwall.ACTION_FIREWALL_STATE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/firewall_widget_info" />
+        </receiver>
+
         <!-- ...existing code... -->
     </application>
 
