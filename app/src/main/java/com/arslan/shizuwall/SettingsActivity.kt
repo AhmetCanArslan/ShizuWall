@@ -143,6 +143,16 @@ class SettingsActivity : AppCompatActivity() {
         switchKeepErrorAppsSelected.isEnabled = switchSkipErrorDialog.isChecked
         layoutKeepErrorApps.alpha = if (switchSkipErrorDialog.isChecked) 1.0f else 0.5f
 
+        // Adaptive Mode dependency: if enabled, force "Skip Confirm" to true and disable it
+        if (switchAdaptiveMode.isChecked) {
+            switchSkipConfirm.isEnabled = false
+            switchSkipConfirm.alpha = 0.5f
+            if (!switchSkipConfirm.isChecked) {
+                switchSkipConfirm.isChecked = true
+                prefs.edit().putBoolean("skip_enable_confirm", true).apply()
+            }
+        }
+
         val currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         tvCurrentFont.text = if (currentFont == "ndot") "Ndot" else "Default"
         switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
@@ -164,6 +174,19 @@ class SettingsActivity : AppCompatActivity() {
         switchAdaptiveMode.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean(MainActivity.KEY_ADAPTIVE_MODE, isChecked).apply()
             setResult(RESULT_OK)
+
+            if (isChecked) {
+                // When Adaptive Mode is enabled, force Skip Confirm to ON and disable the switch
+                if (!switchSkipConfirm.isChecked) {
+                    switchSkipConfirm.isChecked = true
+                }
+                switchSkipConfirm.isEnabled = false
+                switchSkipConfirm.alpha = 0.5f
+            } else {
+                // When Adaptive Mode is disabled, re-enable the switch (keep current checked state)
+                switchSkipConfirm.isEnabled = true
+                switchSkipConfirm.alpha = 1.0f
+            }
         }
 
         switchSkipConfirm.setOnCheckedChangeListener { _, isChecked ->
