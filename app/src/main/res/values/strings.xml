@@ -41,4 +41,8 @@
     <string name="adb_broadcast_usage_title">ADB Broadcast Usage (Copiable)</string>
     <string name="ok">OK</string>
     <string name="adb_broadcast_usage_text">Action:\n%s\n\nExtras:\n\n%s (boolean) — true = enable, false = disable\n\n%s (string, optional) — comma-separated package list to operate on. If omitted, app falls back to saved selected apps.\n\n\nExamples:\n\nEnable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %s --ez %s true -p %s\n\n\nDisable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %s --ez %s false -p %s\n\nEnable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %s --ez %s true --es %s \"com.example.app1,com.example.app2\" -p %s\n\nDisable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %s --ez %s false --es %s \"com.example.app1,com.example.app2\" -p %s\n\n\nNotes:\n\n- The receiver is exported for adb automation; prefer targeting the app explicitly with -p %s to avoid external broadcasts.\n\n- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.\n\n- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.</string>
+    <string name="no_apps_selected">No apps selected</string>
+    <string name="shizuku_not_running">Shizuku not running</string>
+    <string name="shizuku_permission_required">Shizuku permission required</string>
+    <string name="firewall">Firewall</string>
 </resources>

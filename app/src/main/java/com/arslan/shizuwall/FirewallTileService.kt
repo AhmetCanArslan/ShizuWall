@@ -85,7 +85,7 @@ class FirewallTileService : TileService() {
             val adaptiveMode = sharedPreferences.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
             
             if (selectedApps.isEmpty() && !adaptiveMode) {
-                Toast.makeText(this@FirewallTileService, "No apps selected", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@FirewallTileService, getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
                 return
             }
             if (!checkPermission()) return
@@ -107,7 +107,7 @@ class FirewallTileService : TileService() {
         val tile = qsTile ?: return
         val isEnabled = loadFirewallEnabled()
         tile.state = if (isEnabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.label = "Firewall"
+        tile.label = getString(R.string.firewall)
         tile.icon = Icon.createWithResource(this, R.drawable.ic_quick_tile)
         tile.updateTile()
     }
@@ -129,11 +129,11 @@ class FirewallTileService : TileService() {
 
     private fun checkPermission(): Boolean {
         if (!Shizuku.pingBinder()) {
-            Toast.makeText(this, "Shizuku not running", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.shizuku_not_running), Toast.LENGTH_SHORT).show()
             return false
         }
         if (Shizuku.checkSelfPermission() != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Shizuku permission required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.shizuku_permission_required), Toast.LENGTH_SHORT).show()
             return false
         }
         return true
