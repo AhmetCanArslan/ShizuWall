@@ -20,4 +20,25 @@
     <string name="select_all">Select all</string>
     <string name="cat_favorites">Favorites</string>
     <string name="made_by">Made with ❤️ by Ahmet Can Arslan</string>
+    <string name="reset_app_menu">Reset App</string>
+    <string name="theme_changed_title">Theme Changed</string>
+    <string name="theme_changed_message">The theme has been updated. Please restart the app to apply the changes.</string>
+    <string name="font_changed_title">Font Changed</string>
+    <string name="font_changed_message">The font has been updated. Please restart the app to apply the changes.</string>
+    <string name="restart_now">Restart Now</string>
+    <string name="later">Later</string>
+    <string name="export_successful">Export successful</string>
+    <string name="export_failed">Export failed: %s</string>
+    <string name="import_successful">Import successful. Please restart the app.</string>
+    <string name="import_failed">Import failed: %s</string>
+    <string name="reset_app_title">Reset App</string>
+    <string name="reset_app_message">Are you sure you want to reset the app? This will disable the firewall (if active), clear all data, and close the app.</string>
+    <string name="reset">Reset</string>
+    <string name="cancel">Cancel</string>
+    <string name="firewall_cleanup_warning">Warning: Firewall cleanup failed. Please REBOOT your device to restore internet access.</string>
+    <string name="app_reset_complete">App reset complete. Closing...</string>
+    <string name="reset_app_failed">Failed to reset app: %s</string>
+    <string name="adb_broadcast_usage_title">ADB Broadcast Usage (Copiable)</string>
+    <string name="ok">OK</string>
+    <string name="adb_broadcast_usage_text">Action:\n%s\n\nExtras:\n\n%s (boolean) — true = enable, false = disable\n\n%s (string, optional) — comma-separated package list to operate on. If omitted, app falls back to saved selected apps.\n\n\nExamples:\n\nEnable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %s --ez %s true -p %s\n\n\nDisable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %s --ez %s false -p %s\n\nEnable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %s --ez %s true --es %s \"com.example.app1,com.example.app2\" -p %s\n\nDisable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %s --ez %s false --es %s \"com.example.app1,com.example.app2\" -p %s\n\n\nNotes:\n\n- The receiver is exported for adb automation; prefer targeting the app explicitly with -p %s to avoid external broadcasts.\n\n- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.\n\n- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.</string>
 </resources>

@@ -88,7 +88,7 @@ class SettingsActivity : AppCompatActivity() {
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationOnClickListener { finish() }
 
-        toolbar.menu.add("Reset App").setOnMenuItemClickListener {
+        toolbar.menu.add(getString(R.string.reset_app_menu)).setOnMenuItemClickListener {
             showResetConfirmationDialog()
             true
         }
@@ -244,7 +244,7 @@ class SettingsActivity : AppCompatActivity() {
             sharedPreferences.edit()
                 .putBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, isChecked)
                 .apply()
-            showRestartNotice("Theme Changed", "The theme has been updated. Please restart the app to apply the changes.")
+            showRestartNotice(getString(R.string.theme_changed_title), getString(R.string.theme_changed_message))
         }
 
         layoutAdbBroadcastUsage.setOnClickListener { showAdbBroadcastDialog() }
@@ -282,7 +282,7 @@ class SettingsActivity : AppCompatActivity() {
             tvCurrentFont.text = if (fontKey == "ndot") "Ndot" else "Default"
 
             dialog.dismiss()
-            showRestartNotice("Font Changed", "The font has been updated. Please restart the app to apply the changes.")
+            showRestartNotice(getString(R.string.font_changed_title), getString(R.string.font_changed_message))
         }
 
         btnCancel.setOnClickListener {
@@ -312,11 +312,11 @@ class SettingsActivity : AppCompatActivity() {
                     out.flush()
                 } ?: throw IllegalStateException("Unable to open output stream")
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@SettingsActivity, "Export successful", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@SettingsActivity, getString(R.string.export_successful), Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@SettingsActivity, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@SettingsActivity, getString(R.string.export_failed, e.message), Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -367,11 +367,11 @@ class SettingsActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     loadSettings()
                     setResult(RESULT_OK)
-                    Toast.makeText(this@SettingsActivity, "Import successful. Please restart the app.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@SettingsActivity, getString(R.string.import_successful), Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@SettingsActivity, "Import failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@SettingsActivity, getString(R.string.import_failed, e.message), Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -415,13 +415,13 @@ class SettingsActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle(title)
             .setMessage(message)
-            .setPositiveButton("Restart Now") { _, _ ->
+            .setPositiveButton(getString(R.string.restart_now)) { _, _ ->
                 val intent = Intent(this, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
                 finish()
             }
-            .setNegativeButton("Later", null)
+            .setNegativeButton(getString(R.string.later), null)
             .show()
     }
 
@@ -432,44 +432,7 @@ class SettingsActivity : AppCompatActivity() {
         val extraEnabled = MainActivity.EXTRA_FIREWALL_ENABLED
         val extraCsv = MainActivity.EXTRA_PACKAGES_CSV
 
-        val adbUsageText = StringBuilder().apply {
-            appendLine("Action:\n$action")
-            appendLine()
-            appendLine("Extras:")
-            appendLine()
-            appendLine("$extraEnabled (boolean) — true = enable, false = disable")
-            appendLine()
-            appendLine("$extraCsv (string, optional) — comma-separated package list to operate on. If omitted, app falls back to saved selected apps.")
-            appendLine()
-            appendLine()
-            appendLine("Examples:")
-            appendLine()
-            appendLine("Enable firewall for selected (selected in ShizuWall) apps:")
-            appendLine()
-            appendLine("adb shell am broadcast -a $action --ez $extraEnabled true -p $pkg")
-            appendLine()
-            appendLine()
-            appendLine("Disable firewall for selected (selected in ShizuWall) apps:")
-            appendLine()
-            appendLine("adb shell am broadcast -a $action --ez $extraEnabled false -p $pkg")
-            appendLine()
-            appendLine("Enable firewall for specific packages (CSV):")
-            appendLine()
-            appendLine("adb shell am broadcast -a $action --ez $extraEnabled true --es $extraCsv \"com.example.app1,com.example.app2\" -p $pkg")
-            appendLine()
-            appendLine("Disable firewall for specific packages (CSV):")
-            appendLine()
-            appendLine("adb shell am broadcast -a $action --ez $extraEnabled false --es $extraCsv \"com.example.app1,com.example.app2\" -p $pkg")
-            appendLine()
-            appendLine()
-            appendLine("Notes:")
-            appendLine()
-            appendLine("- The receiver is exported for adb automation; prefer targeting the app explicitly with -p $pkg to avoid external broadcasts.")
-            appendLine()
-            appendLine("- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.")
-            appendLine()
-            appendLine("- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.")
-        }.toString()
+        val adbUsageText = getString(R.string.adb_broadcast_usage_text, action, extraEnabled, extraCsv, action, extraEnabled, pkg, action, extraEnabled, pkg, action, extraEnabled, extraCsv, pkg, action, extraEnabled, extraCsv, pkg, pkg)
 
         val tv = TextView(this).apply {
             setTextIsSelectable(true)
@@ -492,20 +455,20 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         MaterialAlertDialogBuilder(this)
-            .setTitle("ADB Broadcast Usage (Copiable)")
+            .setTitle(getString(R.string.adb_broadcast_usage_title))
             .setView(scroll)
-            .setPositiveButton("OK", null)
+            .setPositiveButton(getString(R.string.ok), null)
             .show()
     }
 
     private fun showResetConfirmationDialog() {
         val dialog = MaterialAlertDialogBuilder(this)
-            .setTitle("Reset App")
-            .setMessage("Are you sure you want to reset the app? This will disable the firewall (if active), clear all data, and close the app.")
-            .setPositiveButton("Reset") { _, _ ->
+            .setTitle(getString(R.string.reset_app_title))
+            .setMessage(getString(R.string.reset_app_message))
+            .setPositiveButton(getString(R.string.reset)) { _, _ ->
                 resetApp()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .create()
 
         dialog.setOnShowListener {
@@ -546,7 +509,7 @@ class SettingsActivity : AppCompatActivity() {
 
                     if (!cleanupPerformed) {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(this@SettingsActivity, "Warning: Firewall cleanup failed. Please REBOOT your device to restore internet access.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@SettingsActivity, getString(R.string.firewall_cleanup_warning), Toast.LENGTH_LONG).show()
                         }
                     }
                 }
@@ -566,7 +529,7 @@ class SettingsActivity : AppCompatActivity() {
                     }
                 }
 
-                Toast.makeText(this@SettingsActivity, "App reset complete. Closing...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@SettingsActivity, getString(R.string.app_reset_complete), Toast.LENGTH_SHORT).show()
 
                 // Close all activities
                 finishAffinity()
@@ -575,7 +538,7 @@ class SettingsActivity : AppCompatActivity() {
                 android.os.Process.killProcess(android.os.Process.myPid())
                 System.exit(0)
             } catch (e: Exception) {
-                Toast.makeText(this@SettingsActivity, "Failed to reset app: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@SettingsActivity, getString(R.string.reset_app_failed, e.message), Toast.LENGTH_SHORT).show()
             }
         }
     }
