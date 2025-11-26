@@ -51,9 +51,9 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var switchKeepErrorAppsSelected: SwitchCompat
     private lateinit var layoutChangeFont: LinearLayout
     private lateinit var tvCurrentFont: TextView
-    private lateinit var btnExport: MaterialButton
-    private lateinit var btnImport: MaterialButton
-    private lateinit var btnDonate: MaterialButton
+    private lateinit var btnExport: LinearLayout
+    private lateinit var btnImport: LinearLayout
+    private lateinit var btnDonate: LinearLayout
     private lateinit var switchUseDynamicColor: SwitchCompat
 
     private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
