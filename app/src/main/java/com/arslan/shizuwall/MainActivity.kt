@@ -567,6 +567,13 @@ class MainActivity : AppCompatActivity() {
         selectAllCheckbox.setOnCheckedChangeListener { _, isChecked ->
             if (suppressSelectAllListener) return@setOnCheckedChangeListener
             
+            if (adaptiveMode && isFirewallEnabled && !checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
+                suppressSelectAllListener = true
+                selectAllCheckbox.isChecked = !isChecked
+                suppressSelectAllListener = false
+                return@setOnCheckedChangeListener
+            }
+            
             val changedApps = filteredAppList.filter { it.isSelected != isChecked }
             if (changedApps.isNotEmpty()) {
                 val packagesToUpdate = changedApps.map { it.packageName }
@@ -698,6 +705,11 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         appListAdapter = AppListAdapter(
             onAppClick = { appInfo ->
+                if (adaptiveMode && isFirewallEnabled && !checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
+                    appListAdapter.notifyDataSetChanged()
+                    return@AppListAdapter
+                }
+
                 val idx = appList.indexOfFirst { it.packageName == appInfo.packageName }
                 if (idx != -1) {
                     appList[idx] = appList[idx].copy(isSelected = appInfo.isSelected)
