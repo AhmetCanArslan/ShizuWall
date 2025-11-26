@@ -54,6 +54,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var btnExport: LinearLayout
     private lateinit var btnImport: LinearLayout
     private lateinit var btnDonate: LinearLayout
+    private lateinit var btnGithub: LinearLayout
+    private lateinit var tvVersion: TextView
     private lateinit var switchUseDynamicColor: SwitchCompat
 
     private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
@@ -106,6 +108,9 @@ class SettingsActivity : AppCompatActivity() {
         loadSettings()
         setupListeners()
 
+        val packageInfo = packageManager.getPackageInfo(packageName, 0)
+        tvVersion.text = "Version ${packageInfo.versionName}"
+
         // Apply custom font to all views
         applyFontToViews(findViewById(android.R.id.content))
     }
@@ -123,6 +128,8 @@ class SettingsActivity : AppCompatActivity() {
         btnExport = findViewById(R.id.btnExport)
         btnImport = findViewById(R.id.btnImport)
         btnDonate = findViewById(R.id.btnDonate)
+        btnGithub = findViewById(R.id.btnGithub)
+        tvVersion = findViewById(R.id.tvVersion)
         switchUseDynamicColor = findViewById(R.id.switchUseDynamicColor)
 
         // new: bind XML item
@@ -223,6 +230,12 @@ class SettingsActivity : AppCompatActivity() {
 
         btnDonate.setOnClickListener {
             val url = getString(R.string.buymeacoffee_url)
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        }
+
+        btnGithub.setOnClickListener {
+            val url = getString(R.string.github_url)
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
         }
