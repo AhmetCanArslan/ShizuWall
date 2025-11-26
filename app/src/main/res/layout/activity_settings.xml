@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
-        app:title="Settings"
+        app:title="@string/settings_title"
         app:navigationIcon="?attr/homeAsUpIndicator"
         app:titleTextColor="?android:attr/textColorPrimary" />
 
@@ -30,7 +30,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Display"
+                android:text="@string/display_section"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
@@ -81,7 +81,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Include system applications in the list"
+                            android:text="@string/show_system_apps_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -133,14 +133,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Move selected apps to top"
+                            android:text="@string/move_selected_top"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Show selected apps at the beginning"
+                            android:text="@string/move_selected_top_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -192,14 +192,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Use dynamic color"
+                            android:text="@string/use_dynamic_color"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Apply wallpaper colors to app theme"
+                            android:text="@string/use_dynamic_color_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -220,7 +220,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Firewall"
+                android:text="@string/firewall_section"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
@@ -264,14 +264,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Skip enable confirmation"
+                            android:text="@string/skip_enable_dialog"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Don't ask when enabling firewall"
+                            android:text="@string/skip_enable_confirmation_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -323,14 +323,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Adaptive Mode"
+                            android:text="@string/adaptive_mode"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Apply rules instantly. Firewall stays on."
+                            android:text="@string/adaptive_mode_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -382,14 +382,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Skip error dialog"
+                            android:text="@string/skip_error_dialog"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Don't show warning on failure"
+                            android:text="@string/skip_error_dialog_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -442,14 +442,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Keep failed apps selected"
+                            android:text="@string/keep_failed_apps_selected"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Don't unselect apps on failure"
+                            android:text="@string/keep_failed_apps_selected_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -470,7 +470,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Appearance"
+                android:text="@string/appearance_section"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
@@ -518,7 +518,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Font"
+                            android:text="@string/font"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
@@ -526,7 +526,7 @@
                             android:id="@+id/tvCurrentFont"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Default"
+                            android:text="@string/font_default"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -543,7 +543,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Advanced"
+                android:text="@string/advanced_section"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
@@ -592,7 +592,7 @@
                             android:id="@+id/tvAdbBroadcastTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="ADB Broadcast Usage"
+                            android:text="@string/adb_broadcast_usage_title"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
@@ -600,7 +600,7 @@
                             android:id="@+id/tvAdbBroadcastSummary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Quick guide to use adb to control firewall"
+                            android:text="@string/adb_broadcast_usage_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -612,7 +612,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Data Management"
+                android:text="@string/data_management_section"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
@@ -660,14 +660,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Export settings"
+                            android:text="@string/export_settings"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Save your configuration to a file"
+                            android:text="@string/export_settings_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -713,14 +713,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Import settings"
+                            android:text="@string/import_settings"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Restore configuration from a file"
+                            android:text="@string/import_settings_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -731,7 +731,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Others"
+                android:text="@string/others_section"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary"
@@ -786,7 +786,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Support the developer"
+                            android:text="@string/support_developer_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
@@ -832,14 +832,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="GitHub"
+                            android:text="@string/github"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="View source code and contribute"
+                            android:text="@string/github_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
