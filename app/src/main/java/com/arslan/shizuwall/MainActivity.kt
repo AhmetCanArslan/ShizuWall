@@ -856,10 +856,29 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun loadInstalledApps() {
         lifecycleScope.launch {
-            val builtList = withContext(Dispatchers.IO) {
+            val (builtList, cleanedActivePackages) = withContext(Dispatchers.IO) {
                 val pm = packageManager
                 val packages = pm.getInstalledApplications(0)
-                val selectedPackages = loadSelectedApps()
+                
+                val installedPackageNames = packages.map { it.packageName }.toSet()
+
+                val savedActive = loadActivePackages().toMutableSet()
+                val activeToRemove = savedActive.filter { !installedPackageNames.contains(it) }
+                if (activeToRemove.isNotEmpty()) {
+                    savedActive.removeAll(activeToRemove)
+                    saveActivePackages(savedActive)
+                }
+
+                val savedSelected = loadSelectedApps().toMutableSet()
+                val selectedToRemove = savedSelected.filter { !installedPackageNames.contains(it) }
+                if (selectedToRemove.isNotEmpty()) {
+                    savedSelected.removeAll(selectedToRemove)
+                    sharedPreferences.edit()
+                        .putStringSet(KEY_SELECTED_APPS, savedSelected)
+                        .putInt(KEY_SELECTED_COUNT, savedSelected.size)
+                        .apply()
+                }
+
                 val favoritePackages = loadFavoriteApps()
                 val temp = mutableListOf<AppInfo>()
                 for (packageInfo in packages) {
@@ -885,11 +904,27 @@ class MainActivity : AppCompatActivity() {
 
                     val appName = pm.getApplicationLabel(packageInfo).toString()
                     // Removed bitmap loading to save RAM
-                    val isSelected = selectedPackages.contains(packageName)
+                    val isSelected = savedSelected.contains(packageName)
                     val isFavorite = favoritePackages.contains(packageName)
                     temp.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite))
                 }
-                temp
+                Pair(temp, savedActive)
+            }
+
+            activeFirewallPackages.clear()
+            activeFirewallPackages.addAll(cleanedActivePackages)
+
+            // If firewall is enabled but no packages are active (e.g. all uninstalled), disable it
+            if (isFirewallEnabled && activeFirewallPackages.isEmpty()) {
+                isFirewallEnabled = false
+                saveFirewallEnabled(false)
+                // Update UI to reflect disabled state
+                suppressToggleListener = true
+                firewallToggle.isChecked = false
+                suppressToggleListener = false
+                appListAdapter.setSelectionEnabled(true)
+                hideDimOverlay()
+                Toast.makeText(this@MainActivity, "Firewall disabled (active apps uninstalled)", Toast.LENGTH_SHORT).show()
             }
 
             // Only update if the list has changed to prevent UI sliding/glitches on resume
@@ -898,6 +933,8 @@ class MainActivity : AppCompatActivity() {
                 appList.addAll(builtList)
                 sortAndFilterApps(preserveScrollPosition = false)
             }
+            
+            updateSelectedCount()
         }
     }
 
