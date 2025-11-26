@@ -961,7 +961,7 @@ class MainActivity : AppCompatActivity() {
         // Calculate constraints BEFORE showing dialog to prevent visual jumping/sliding
         val displayMetrics = resources.displayMetrics
         val displayHeight = displayMetrics.heightPixels
-        val maxRecyclerHeight = (displayHeight * 0.5).toInt() // 50% of screen height
+        val maxRecyclerHeight = (displayHeight * 0.4).toInt() // 40% of screen height
         
         // Estimate height: ~72dp per item. If total exceeds max, fix the height.
         val estimatedItemHeight = (72 * displayMetrics.density).toInt()
@@ -974,7 +974,7 @@ class MainActivity : AppCompatActivity() {
             lp.height = ViewGroup.LayoutParams.WRAP_CONTENT
         }
         selectedAppsRecyclerView.layoutParams = lp
-        selectedAppsRecyclerView.isNestedScrollingEnabled = true
+        selectedAppsRecyclerView.isNestedScrollingEnabled = false
 
         dialog.show()
     }
@@ -1514,7 +1514,7 @@ class MainActivity : AppCompatActivity() {
         // Limit the RecyclerView height to a fraction of the screen
         val displayMetrics = resources.displayMetrics
         val displayHeight = displayMetrics.heightPixels
-        val maxRecyclerHeight = (displayHeight * 0.5).toInt() // 50% of screen height
+        val maxRecyclerHeight = (displayHeight * 0.4).toInt() // 40% of screen height
         
         val estimatedItemHeight = (72 * displayMetrics.density).toInt()
         val estimatedContentHeight = estimatedItemHeight * failedApps.size
@@ -1526,7 +1526,7 @@ class MainActivity : AppCompatActivity() {
             lp.height = ViewGroup.LayoutParams.WRAP_CONTENT
         }
         selectedAppsRecyclerView.layoutParams = lp
-        selectedAppsRecyclerView.isNestedScrollingEnabled = true
+        selectedAppsRecyclerView.isNestedScrollingEnabled = false
 
         dialog.show()
     }
