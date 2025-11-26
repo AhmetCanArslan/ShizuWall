@@ -117,4 +117,6 @@
     <string name="support_developer_description">Support the developer</string>
     <string name="github">GitHub</string>
     <string name="github_description">View source code and contribute</string>
+    <string name="settings">Settings</string>
+    <string name="selected_count_zero">0</string>
 </resources>
