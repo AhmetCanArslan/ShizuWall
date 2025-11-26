@@ -292,6 +292,9 @@ class SettingsActivity : AppCompatActivity() {
                     if (!v.isNullOrEmpty()) selectedSet.add(v)
                 }
 
+                // Ensure imported selection cannot include Shizuku packages
+                val filteredSelectedSet = selectedSet.filterNot { isShizukuPackage(it) }.toMutableSet()
+
                 val favoritesJson = obj.optJSONArray("favorites") ?: org.json.JSONArray()
                 val favoritesSet = mutableSetOf<String>()
                 for (i in 0 until favoritesJson.length()) {
@@ -305,8 +308,8 @@ class SettingsActivity : AppCompatActivity() {
 
                 val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
                 prefs.edit().apply {
-                    putStringSet("selected_apps", selectedSet)
-                    putInt("selected_count", selectedSet.size)
+                    putStringSet("selected_apps", filteredSelectedSet)
+                    putInt("selected_count", filteredSelectedSet.size)
                     putStringSet(MainActivity.KEY_FAVORITE_APPS, favoritesSet)
                     putBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, showSys)
                     putBoolean("skip_enable_confirm", skipConfirm)
@@ -339,6 +342,11 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         applyTypefaceRecursively(view, typeface)
+    }
+
+    // helper to detect shizuku packages (match exact privileged API package only)
+    private fun isShizukuPackage(pkg: String): Boolean {
+        return pkg == "moe.shizuku.privileged.api"
     }
 
     private fun applyTypefaceRecursively(view: View, typeface: Typeface?) {

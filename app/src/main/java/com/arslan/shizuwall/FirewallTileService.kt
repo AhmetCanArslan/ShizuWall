@@ -120,7 +120,9 @@ class FirewallTileService : TileService() {
     }
 
     private fun loadSelectedApps(): List<String> {
-        return sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList()
+        return sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())
+            ?.filterNot { it == "moe.shizuku.privileged.api" }
+            ?.toList() ?: emptyList()
     }
 
     private fun checkPermission(): Boolean {

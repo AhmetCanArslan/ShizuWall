@@ -46,12 +46,15 @@ class FirewallControlReceiver : BroadcastReceiver() {
         val csv = intent.getStringExtra(MainActivity.EXTRA_PACKAGES_CSV)
 
         // Resolve package list: CSV -> saved selected apps
-        val packages = if (!csv.isNullOrBlank()) {
+        val rawPackages = if (!csv.isNullOrBlank()) {
             csv.split(",").map { it.trim() }.filter { it.isNotEmpty() }
         } else {
             val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
             prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList()
         }
+
+        // filter out any Shizuku packages from incoming list
+        val packages = rawPackages.filterNot { it == "moe.shizuku.privileged.api" }
 
         if (enabled && packages.isEmpty()) {
             Toast.makeText(context, "No apps selected", Toast.LENGTH_SHORT).show()

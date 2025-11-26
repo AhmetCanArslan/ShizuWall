@@ -873,6 +873,9 @@ class MainActivity : AppCompatActivity() {
 
                     val packageName = packageInfo.packageName
 
+                    // never show Shizuku app(s) in the list
+                    if (packageName == "moe.shizuku.privileged.api") continue
+
                     // skip apps that do not have internet permission (offline apps)
                     val hasInternetPermission = pm.checkPermission(
                         Manifest.permission.INTERNET,
@@ -899,7 +902,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveSelectedApps() {
-        val selectedPackages = appList.filter { it.isSelected }.map { it.packageName }.toSet()
+        val selectedPackages = appList
+            .filter { it.isSelected && it.packageName != "moe.shizuku.privileged.api" }
+            .map { it.packageName }
+            .toSet()
         sharedPreferences.edit()
             .putStringSet(KEY_SELECTED_APPS, selectedPackages)
             .putInt(KEY_SELECTED_COUNT, selectedPackages.size)
@@ -1077,6 +1083,11 @@ class MainActivity : AppCompatActivity() {
         val missing = mutableListOf<String>()
         val pm = packageManager
         for (pkg in packageNames) {
+            // Treat Shizuku packages as "missing" / never-operable
+            if (pkg == "moe.shizuku.privileged.api") {
+                missing.add(pkg)
+                continue
+            }
             try {
                 pm.getPackageInfo(pkg, 0)
                 installed.add(pkg)
@@ -1217,6 +1228,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             maybeApp?.let { appInfo ->
+                // skip Shizuku packages entirely
+                if (appInfo.packageName == "moe.shizuku.privileged.api") return@let
+
                 // Avoid duplicates (in case it was already present)
                 if (appList.any { it.packageName == appInfo.packageName }) return@let
                 appList.add(appInfo)
