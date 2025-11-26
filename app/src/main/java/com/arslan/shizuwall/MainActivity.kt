@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val binderDeadListener = Shizuku.OnBinderDeadListener {
-        Toast.makeText(this, "Shizuku service is dead", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.shizuku_service_dead), Toast.LENGTH_SHORT).show()
         finish()
     }
 
@@ -374,9 +374,9 @@ class MainActivity : AppCompatActivity() {
     private fun checkShizukuPermission() {
         if (Shizuku.isPreV11()) {
             val d = MaterialAlertDialogBuilder(this)
-                .setTitle("Shizuku Update Required")
-                .setMessage("Your Shizuku version is too old. Please update Shizuku to the latest version.")
-                .setPositiveButton("OK", null) // do not close app, just dismiss
+                .setTitle(getString(R.string.shizuku_update_required))
+                .setMessage(getString(R.string.shizuku_version_too_old))
+                .setPositiveButton(getString(R.string.ok), null) // do not close app, just dismiss
                 .setCancelable(true)
                 .create()
             d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
@@ -390,9 +390,9 @@ class MainActivity : AppCompatActivity() {
         } else if (Shizuku.shouldShowRequestPermissionRationale()) {
             // User denied permission permanently
             val d = MaterialAlertDialogBuilder(this)
-                .setTitle("Permission Required")
-                .setMessage("Shizuku permission is required for this app to work. Please grant the permission in Shizuku settings.")
-                .setPositiveButton("OK", null) // do not close app
+                .setTitle(getString(R.string.permission_required))
+                .setMessage(getString(R.string.shizuku_permission_required_message))
+                .setPositiveButton(getString(R.string.ok), null) // do not close app
                 .setCancelable(true)
                 .create()
             d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
@@ -408,7 +408,7 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             SHIZUKU_PERMISSION_REQUEST_CODE -> {
                 if (granted) {
-                    Toast.makeText(this, "Shizuku permission granted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.shizuku_permission_granted), Toast.LENGTH_SHORT).show()
                     // If permission was requested due to toggle attempt, resume the enable flow
                     if (pendingToggleEnable) {
                         pendingToggleEnable = false
@@ -438,9 +438,9 @@ class MainActivity : AppCompatActivity() {
                     firewallToggle.isChecked = isFirewallEnabled
                     suppressToggleListener = false
                     val d = MaterialAlertDialogBuilder(this)
-                        .setTitle("Permission Denied")
-                        .setMessage("Shizuku permission is required for this app to work. Please grant the permission in Shizuku settings.")
-                        .setPositiveButton("OK", null) // just dismiss dialog
+                        .setTitle(getString(R.string.permission_denied))
+                        .setMessage(getString(R.string.shizuku_permission_required_message))
+                        .setPositiveButton(getString(R.string.ok), null) // just dismiss dialog
                         .setCancelable(true)
                         .create()
                     d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
@@ -449,9 +449,9 @@ class MainActivity : AppCompatActivity() {
             }
             NOTIFICATION_PERMISSION_REQUEST_CODE -> {
                 if (granted) {
-                    Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.notification_permission_granted), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this, "Notification permission denied. You won't see firewall status notifications.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.notification_permission_denied), Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -462,9 +462,9 @@ class MainActivity : AppCompatActivity() {
         try {
             if (!Shizuku.pingBinder()) {
                 val d = MaterialAlertDialogBuilder(this)
-                     .setTitle("Shizuku not running")
-                     .setMessage("Shizuku is not currently running. Start the Shizuku service (or install it) before enabling the firewall.")
-                     .setPositiveButton("Open Shizuku") { _, _ ->
+                     .setTitle(getString(R.string.shizuku_not_running_title))
+                     .setMessage(getString(R.string.shizuku_not_running_message))
+                     .setPositiveButton(getString(R.string.open_shizuku)) { _, _ ->
                         // Try to open the Shizuku app if present, otherwise open Play Store, otherwise fallback to GitHub.
                         val pm = packageManager
                         val candidates = listOf("moe.shizuku.privileged.api", "moe.shizuku.manager")
@@ -519,7 +519,7 @@ class MainActivity : AppCompatActivity() {
 
         if (Shizuku.isPreV11()) {
             // Pre-v11 is unsupported
-            Toast.makeText(this, "Shizuku version is too old, please update", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.shizuku_version_old_toast), Toast.LENGTH_SHORT).show()
             return false
         }
 
@@ -528,7 +528,7 @@ class MainActivity : AppCompatActivity() {
             true
         } else if (Shizuku.shouldShowRequestPermissionRationale()) {
             // Users chose "Deny and don't ask again"
-            Toast.makeText(this, "Please grant Shizuku permission in settings", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.grant_shizuku_permission_settings), Toast.LENGTH_LONG).show()
             false
         } else {
             // Request the permission (this will show the Shizuku permission dialog)
@@ -539,7 +539,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSearchView() {
         searchView = findViewById(R.id.searchView)
-        searchView.queryHint = "Search app"
+        searchView.queryHint = getString(R.string.search_app)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -651,9 +651,9 @@ class MainActivity : AppCompatActivity() {
         selectAllCheckbox.setOnLongClickListener {
             if (appList.any { it.isSelected }) {
                 MaterialAlertDialogBuilder(this@MainActivity)
-                    .setTitle("Unselect All")
-                    .setMessage("Deselect all apps?")
-                    .setPositiveButton("Unselect") { _, _ ->
+                    .setTitle(getString(R.string.unselect_all))
+                    .setMessage(getString(R.string.deselect_all_apps))
+                    .setPositiveButton(getString(R.string.unselect)) { _, _ ->
                         val previouslySelected = appList.filter { it.isSelected }.map { it.packageName }
 
                         for (i in appList.indices) {
@@ -899,7 +899,7 @@ class MainActivity : AppCompatActivity() {
             if (isChecked) {
                 val selectedApps = appList.filter { it.isSelected }
                 if (selectedApps.isEmpty() && !adaptiveMode) {
-                    Toast.makeText(this, "Please select at least one app", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.select_at_least_one_app), Toast.LENGTH_SHORT).show()
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
@@ -947,10 +947,10 @@ class MainActivity : AppCompatActivity() {
         val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setCancelable(false)
-            .setPositiveButton("Enable") { _, _ ->
+            .setPositiveButton(getString(R.string.enable)) { _, _ ->
                 applyFirewallState(true, selectedApps.map { it.packageName })
             }
-            .setNegativeButton("Cancel") { _, _ ->
+            .setNegativeButton(getString(R.string.cancel)) { _, _ ->
                 suppressToggleListener = true
                 firewallToggle.isChecked = false
                 suppressToggleListener = false
@@ -964,7 +964,7 @@ class MainActivity : AppCompatActivity() {
         val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
         val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
 
-        dialogMessage.text = "Do you want to enable firewall for ${selectedApps.size} apps listed below?"
+        dialogMessage.text = getString(R.string.enable_firewall_confirm, selectedApps.size)
 
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
         selectedAppsRecyclerView.adapter = SelectedAppsAdapter(selectedApps, getSelectedTypeface())
@@ -1095,9 +1095,9 @@ class MainActivity : AppCompatActivity() {
                 hideDimOverlay()
                 
                 if (appsWereRemoved) {
-                    Toast.makeText(this@MainActivity, "Firewall disabled (active apps uninstalled)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.firewall_disabled_active_uninstalled), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this@MainActivity, "Firewall disabled (no apps selected)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.firewall_disabled_no_apps), Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -1204,7 +1204,7 @@ class MainActivity : AppCompatActivity() {
             // If enabling and none of the chosen packages remain installed -> abort
             // In Adaptive Mode, allow enabling with empty list
             if (enable && installed.isEmpty() && !adaptiveMode) {
-                Toast.makeText(this@MainActivity, "None of the selected apps are installed. Aborting.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, getString(R.string.none_selected_apps_installed), Toast.LENGTH_SHORT).show()
                 suppressToggleListener = true
                 firewallToggle.isChecked = false
                 suppressToggleListener = false
@@ -1214,7 +1214,7 @@ class MainActivity : AppCompatActivity() {
 
             // Inform about ignored (missing) packages when appropriate
             if (missing.isNotEmpty()) {
-                Toast.makeText(this@MainActivity, "${missing.size} selected apps are not installed and were ignored.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, getString(R.string.selected_apps_not_installed, missing.size), Toast.LENGTH_SHORT).show()
             }
 
             val (successful, failed) = withContext(Dispatchers.IO) {
@@ -1248,14 +1248,14 @@ class MainActivity : AppCompatActivity() {
                         showDimOverlay()
                     }
                     
-                    val msg = if (successful.isEmpty()) "Firewall activated (Adaptive Mode)" else "Firewall activated for ${successful.size} apps"
+                    val msg = if (successful.isEmpty()) getString(R.string.firewall_enabled_adaptive) else getString(R.string.firewall_enabled_for_apps, successful.size)
                     Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
                 } else {
                     // None succeeded, revert toggle
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
-                    Toast.makeText(this@MainActivity, "Failed to enable firewall for any apps", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()
                 }
             } else {
                 if (successful.isNotEmpty()) {
@@ -1280,7 +1280,7 @@ class MainActivity : AppCompatActivity() {
                         saveActivePackages(activeFirewallPackages)
                     }
                 } else {
-                    Toast.makeText(this@MainActivity, "Failed to disable firewall for any apps", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.failed_to_disable_firewall), Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -1500,7 +1500,7 @@ class MainActivity : AppCompatActivity() {
 
         // Check if user opted to skip error dialogs
         if (sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)) {
-            Toast.makeText(this, "Operation failed for ${failedApps.size} apps", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.operation_failed_for_apps, failedApps.size), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -1518,7 +1518,7 @@ class MainActivity : AppCompatActivity() {
         val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
         val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
 
-        dialogMessage.text = "Operation failed for the following ${failedApps.size} apps. They have been unselected."
+        dialogMessage.text = getString(R.string.operation_failed_message, failedApps.size)
 
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
         selectedAppsRecyclerView.adapter = SelectedAppsAdapter(failedApps, getSelectedTypeface())
