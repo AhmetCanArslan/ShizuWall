@@ -1249,15 +1249,23 @@ class MainActivity : AppCompatActivity() {
                 if (successful.isNotEmpty()) {
                     activeFirewallPackages.removeAll(successful)
                     saveActivePackages(activeFirewallPackages)
-                    if (activeFirewallPackages.isEmpty()) {
-                        isFirewallEnabled = false
-                        saveFirewallEnabled(false)
-                        // Ensure toggle stays OFF
-                        suppressToggleListener = true
-                        firewallToggle.isChecked = false
-                        suppressToggleListener = false
-                        appListAdapter.setSelectionEnabled(true)
-                        hideDimOverlay()
+                }
+
+                // If we successfully unblocked apps OR there were no apps to unblock (e.g. Adaptive Mode empty, or all uninstalled)
+                // We consider it disabled because disableFirewall() disables the global chain.
+                if (successful.isNotEmpty() || installed.isEmpty()) {
+                    isFirewallEnabled = false
+                    saveFirewallEnabled(false)
+                    // Ensure toggle stays OFF
+                    suppressToggleListener = true
+                    firewallToggle.isChecked = false
+                    suppressToggleListener = false
+                    appListAdapter.setSelectionEnabled(true)
+                    hideDimOverlay()
+
+                    if (installed.isEmpty()) {
+                        activeFirewallPackages.clear()
+                        saveActivePackages(activeFirewallPackages)
                     }
                 } else {
                     Toast.makeText(this@MainActivity, "Failed to disable firewall for any apps", Toast.LENGTH_SHORT).show()
