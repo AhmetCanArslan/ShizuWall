@@ -34,15 +34,6 @@ android {
         }
     }
 
-    // generate per-ABI APKs to avoid shipping unused native libs in a single fat APK
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = true // generate a universal APK as well
-        }
-    }
 
     // strip unneeded files from APK
     packagingOptions {
