@@ -4,6 +4,10 @@
 
 A lightweight, privacy focused Android firewall application that blocks network connections for selected apps **without requiring root access or VPN**. ShizuWall leverages Shizuku to provide powerful network control capabilities. Requires Android 11 (API 30) or higher. 
 
+## I need testers for Google Play Store Release
+
+If you want to help me, please join this [google group](https://groups.google.com/g/shizuwall-testers/). Instructions are there. Thank you!
+
 ### [Download from releases](https://github.com/ahmetcanarslan/shizuwall/releases) 
 
 <p align="center">
