@@ -6,7 +6,7 @@ A lightweight, privacy focused Android firewall application that blocks network 
 
 ## I need testers for Google Play Store Release
 
-If you want to help me, please join this [google group](https://groups.google.com/g/shizuwall-testers/). Instructions are there. Thank you!
+If you want to help me, please fill this [google form](https://forms.gle/bJ1vNxTa75wojk4n6) Instructions will be sent. Thank you!
 
 ### [Download from releases](https://github.com/ahmetcanarslan/shizuwall/releases) 
 
