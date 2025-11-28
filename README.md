@@ -7,8 +7,8 @@ A lightweight, privacy focused Android firewall application that blocks network 
 ### [Download from releases](https://github.com/ahmetcanarslan/shizuwall/releases) 
 
 <p align="center">
-  <img src="assets/screenShots/v3.0/1.png" width="30%">
-  <img src="assets/screenShots/v3.0/2.png" width="30%">
+  <img src="assets/screenShots/v3.0.2/1.png" width="30%">
+  <img src="assets/screenShots/v3.0.2/2.png" width="30%">
 </p>
 
 <p align="center">
