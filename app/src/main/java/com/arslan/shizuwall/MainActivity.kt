@@ -67,11 +67,11 @@ class MainActivity : AppCompatActivity() {
         const val KEY_ADAPTIVE_MODE = "adaptive_mode"
 
         const val ACTION_FIREWALL_STATE_CHANGED = "com.arslan.shizuwall.ACTION_FIREWALL_STATE_CHANGED"
-        const val EXTRA_FIREWALL_ENABLED = "com.arslan.shizuwall.EXTRA_FIREWALL_ENABLED"
+        const val EXTRA_FIREWALL_ENABLED = "state" 
         const val EXTRA_ACTIVE_PACKAGES = "com.arslan.shizuwall.EXTRA_ACTIVE_PACKAGES"
 
-        const val ACTION_FIREWALL_CONTROL = "com.arslan.shizuwall.ACTION_FIREWALL_CONTROL"
-        const val EXTRA_PACKAGES_CSV = "com.arslan.shizuwall.EXTRA_PACKAGES_CSV"
+        const val ACTION_FIREWALL_CONTROL = "shizuwall.CONTROL" 
+        const val EXTRA_PACKAGES_CSV = "apps" 
 
         const val KEY_FIREWALL_UPDATE_TS = "firewall_update_ts"
 

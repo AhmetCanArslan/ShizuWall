@@ -38,6 +38,10 @@ class FirewallControlReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
+        
+        // Log received action to help debug ADB commands
+        android.util.Log.d("FirewallControl", "Received action: ${intent.action}")
+        
         if (intent.action != MainActivity.ACTION_FIREWALL_CONTROL) return
 
         // Use goAsync pattern via coroutine to avoid blocking receiver thread.
@@ -72,6 +76,14 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     Shizuku.pingBinder() && Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
                 } catch (t: Throwable) {
                     false
+                }
+
+                if (!shizukuAvailable) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Shizuku not available or permission denied", Toast.LENGTH_SHORT).show()
+                    }
+                    pending.finish()
+                    return@launch
                 }
 
                 val successful = mutableListOf<String>()
@@ -141,8 +153,10 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 updateIntent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
                 context.sendBroadcast(updateIntent)
 
-            } catch (_: Throwable) {
-                // best-effort: swallow errors to avoid crashing receiver
+            } catch (t: Throwable) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
             } finally {
                 pending.finish()
             }
