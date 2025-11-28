@@ -203,6 +203,11 @@ class FirewallTileService : TileService() {
             .putBoolean(MainActivity.KEY_FIREWALL_ENABLED, enabled)
             .putLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, elapsed)
             .apply()
+
+        // Notify widget to update
+        val intent = Intent(this, FirewallWidgetProvider::class.java)
+        intent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
+        sendBroadcast(intent)
     }
 
     private fun saveActivePackages(packages: Set<String>) {

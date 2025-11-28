@@ -136,6 +136,11 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     apply()
                 }
 
+                // Notify widget to update
+                val updateIntent = Intent(context, FirewallWidgetProvider::class.java)
+                updateIntent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
+                context.sendBroadcast(updateIntent)
+
             } catch (_: Throwable) {
                 // best-effort: swallow errors to avoid crashing receiver
             } finally {

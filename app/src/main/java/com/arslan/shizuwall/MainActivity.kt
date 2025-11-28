@@ -1154,6 +1154,11 @@ class MainActivity : AppCompatActivity() {
                 // ignore device-protected write failures
             }
         }
+
+        // Notify widget to update
+        val intent = Intent(this, FirewallWidgetProvider::class.java)
+        intent.action = ACTION_FIREWALL_STATE_CHANGED
+        sendBroadcast(intent)
     }
 
     private fun loadFirewallEnabled(): Boolean {
