@@ -6,8 +6,10 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.widget.RemoteViews
 import android.widget.Toast
+import rikka.shizuku.Shizuku
 
 class FirewallWidgetProvider : AppWidgetProvider() {
 
@@ -24,6 +26,11 @@ class FirewallWidgetProvider : AppWidgetProvider() {
             val sharedPreferences = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
             val isEnabled = loadFirewallEnabled(sharedPreferences)
             val newState = !isEnabled
+
+            // Check Shizuku permission first
+            if (!checkShizukuPermission(context)) {
+                return
+            }
 
             // Check constraints before enabling
             var selectedApps: List<String> = emptyList()
@@ -98,6 +105,22 @@ class FirewallWidgetProvider : AppWidgetProvider() {
             return sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())
                 ?.filterNot { it == "moe.shizuku.privileged.api" }
                 ?.toList() ?: emptyList()
+        }
+
+        private fun checkShizukuPermission(context: Context): Boolean {
+            try {
+                if (!Shizuku.pingBinder()) {
+                    Toast.makeText(context, context.getString(R.string.shizuku_not_running), Toast.LENGTH_SHORT).show()
+                    return false
+                }
+                if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(context, context.getString(R.string.shizuku_permission_required), Toast.LENGTH_SHORT).show()
+                    return false
+                }
+            } catch (e: Throwable) {
+                return false
+            }
+            return true
         }
     }
 }
