@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.widget.RemoteViews
+import android.widget.Toast
 
 class FirewallWidgetProvider : AppWidgetProvider() {
 
@@ -24,6 +25,18 @@ class FirewallWidgetProvider : AppWidgetProvider() {
             val isEnabled = loadFirewallEnabled(sharedPreferences)
             val newState = !isEnabled
 
+            // Check constraints before enabling
+            var selectedApps: List<String> = emptyList()
+            if (newState) {
+                selectedApps = loadSelectedApps(sharedPreferences)
+                val adaptiveMode = sharedPreferences.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
+
+                if (selectedApps.isEmpty() && !adaptiveMode) {
+                    Toast.makeText(context, context.getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
+                    return
+                }
+            }
+
             // Optimistically update widget immediately
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val componentName = android.content.ComponentName(context, FirewallWidgetProvider::class.java)
@@ -37,7 +50,6 @@ class FirewallWidgetProvider : AppWidgetProvider() {
                 action = MainActivity.ACTION_FIREWALL_CONTROL
                 putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, newState)
                 if (newState) {
-                    val selectedApps = loadSelectedApps(sharedPreferences)
                     putExtra(MainActivity.EXTRA_PACKAGES_CSV, selectedApps.joinToString(","))
                 }
             }
