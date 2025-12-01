@@ -166,6 +166,7 @@ class MainActivity : AppCompatActivity() {
             if (isFirewallEnabled) {
                 if (adaptiveMode) hideDimOverlay() else showDimOverlay()
                 appListAdapter.setSelectionEnabled(adaptiveMode || !isFirewallEnabled)
+                updateInteractiveViews()
             }
         }
     }
@@ -252,6 +253,7 @@ class MainActivity : AppCompatActivity() {
 
                         updateSelectedCount()
                         updateSelectAllCheckbox()
+                        updateInteractiveViews()
                     }
                 }
             }
@@ -296,6 +298,7 @@ class MainActivity : AppCompatActivity() {
 
         // Ensure adapter and dim reflect saved firewall state
         appListAdapter.setSelectionEnabled(!isFirewallEnabled)
+        updateInteractiveViews()
         if (isFirewallEnabled) {
             showDimOverlay()
         } else {
@@ -326,6 +329,7 @@ class MainActivity : AppCompatActivity() {
         // Reflect current firewall state in UI
         val enabled = loadFirewallEnabled()
         appListAdapter.setSelectionEnabled(!enabled || adaptiveMode)
+        updateInteractiveViews()
         if (enabled) showDimOverlay() else hideDimOverlay()
         loadInstalledApps()
 
@@ -568,6 +572,7 @@ class MainActivity : AppCompatActivity() {
         
         selectAllCheckbox.setOnCheckedChangeListener { _, isChecked ->
             if (suppressSelectAllListener) return@setOnCheckedChangeListener
+            if (!selectAllCheckbox.isEnabled) return@setOnCheckedChangeListener
             
             if (adaptiveMode && isFirewallEnabled && !checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
                 suppressSelectAllListener = true
@@ -653,6 +658,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         selectAllCheckbox.setOnLongClickListener {
+            if (!selectAllCheckbox.isEnabled) return@setOnLongClickListener false
+
             if (appList.any { it.isSelected }) {
                 MaterialAlertDialogBuilder(this@MainActivity)
                     .setTitle(getString(R.string.unselect_all))
@@ -1012,6 +1019,15 @@ class MainActivity : AppCompatActivity() {
         }
         
         updateSelectAllCheckbox()
+        updateInteractiveViews()
+    }
+
+    private fun updateInteractiveViews() {
+        // The select-all checkbox should be disabled when the firewall is enabled and
+        // Adaptive Mode is turned OFF. Otherwise it can be used.
+        if (::selectAllCheckbox.isInitialized) {
+            selectAllCheckbox.isEnabled = !isFirewallEnabled || adaptiveMode
+        }
     }
 
     private fun updateSelectAllCheckbox() {
@@ -1257,9 +1273,11 @@ class MainActivity : AppCompatActivity() {
                     
                     if (adaptiveMode) {
                         appListAdapter.setSelectionEnabled(true)
+                        updateInteractiveViews()
                         hideDimOverlay()
                     } else {
                         appListAdapter.setSelectionEnabled(false)
+                        updateInteractiveViews()
                         showDimOverlay()
                     }
                     
@@ -1280,7 +1298,7 @@ class MainActivity : AppCompatActivity() {
 
                 // If we successfully unblocked apps OR there were no apps to unblock (e.g. Adaptive Mode empty, or all uninstalled)
                 // We consider it disabled because disableFirewall() disables the global chain.
-                if (successful.isNotEmpty() || installed.isEmpty()) {
+                    if (successful.isNotEmpty() || installed.isEmpty()) {
                     isFirewallEnabled = false
                     saveFirewallEnabled(false)
                     // Ensure toggle stays OFF
@@ -1288,6 +1306,7 @@ class MainActivity : AppCompatActivity() {
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
                     appListAdapter.setSelectionEnabled(true)
+                    updateInteractiveViews()
                     hideDimOverlay()
 
                     if (installed.isEmpty()) {
@@ -1427,6 +1446,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.isEnabled = false
         recyclerView.isClickable = false
         appListAdapter.setSelectionEnabled(false)
+        updateInteractiveViews()
     }
 
     private fun hideDimOverlay() {
@@ -1434,6 +1454,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.isEnabled = true
         recyclerView.isClickable = true
         appListAdapter.setSelectionEnabled(true)
+        updateInteractiveViews()
     }
 
     // Called by packageBroadcastReceiver when a package is removed.
