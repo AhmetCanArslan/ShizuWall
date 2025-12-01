@@ -89,6 +89,11 @@
     <string name="firewall_disabled">Firewall disabled</string>
     <string name="operation_failed_for_apps">Operation failed for %d apps</string>
     <string name="operation_failed_message">Operation failed for the following %d apps. They have been unselected.</string>
+    <string name="details">Details</string>
+    <string name="copy">Copy</string>
+    <string name="error_details_title">Error Details</string>
+    <string name="no_error_details">No additional details are available.</string>
+    <string name="close">Close</string>
     <string name="settings_title">Settings</string>
     <string name="display_section">Display</string>
     <string name="show_system_apps_description">Include system applications in the list</string>

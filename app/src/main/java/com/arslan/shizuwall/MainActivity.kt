@@ -122,6 +122,8 @@ class MainActivity : AppCompatActivity() {
     private var suppressToggleListener = false
     private var suppressSelectAllListener = false
     private val activeFirewallPackages = mutableSetOf<String>()
+    // store the last operation and its console output per package so we can show details dialogs
+    private val lastOperationErrorDetails = mutableMapOf<String, String>()
     private enum class Category { NONE, FAVORITES, SYSTEM, SELECTED, UNSELECTED, USER }
     private var currentCategory: Category = Category.NONE
     
@@ -594,6 +596,7 @@ class MainActivity : AppCompatActivity() {
                     lifecycleScope.launch(Dispatchers.IO) {
                         val successful = mutableListOf<String>()
                         val failed = mutableListOf<String>()
+                        lastOperationErrorDetails.clear()
                         
                         for (pkg in packagesToUpdate) {
                             val cmd = if (isChecked) {
@@ -601,11 +604,12 @@ class MainActivity : AppCompatActivity() {
                             } else {
                                 "cmd connectivity set-package-networking-enabled true $pkg"
                             }
-                            
-                            if (runShizukuShellCommand(cmd)) {
+                            val res = runShizukuShellCommandDetailed(cmd)
+                            if (res.success) {
                                 successful.add(pkg)
                             } else {
                                 failed.add(pkg)
+                                lastOperationErrorDetails[pkg] = res.stderr.ifEmpty { res.stdout }
                             }
                         }
                         
@@ -637,7 +641,7 @@ class MainActivity : AppCompatActivity() {
                                         saveSelectedApps()
                                         sortAndFilterApps(preserveScrollPosition = true)
                                     }
-                                    showOperationErrorsDialog(failed)
+                                    showOperationErrorsDialog(failed, lastOperationErrorDetails)
                                 } else {
                                     Toast.makeText(this@MainActivity, "Failed to update rules for ${failed.size} apps", Toast.LENGTH_SHORT).show()
                                 }
@@ -668,12 +672,15 @@ class MainActivity : AppCompatActivity() {
                             lifecycleScope.launch(Dispatchers.IO) {
                                 val successful = mutableListOf<String>()
                                 val failed = mutableListOf<String>()
+                                lastOperationErrorDetails.clear()
                                 
                                 for (pkg in previouslySelected) {
-                                    if (runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $pkg")) {
+                                    val res = runShizukuShellCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
+                                    if (res.success) {
                                         successful.add(pkg)
                                     } else {
                                         failed.add(pkg)
+                                        lastOperationErrorDetails[pkg] = res.stderr.ifEmpty { res.stdout }
                                     }
                                 }
                                 
@@ -723,14 +730,16 @@ class MainActivity : AppCompatActivity() {
                     val pkg = appInfo.packageName
                     val isSelected = appInfo.isSelected
                     lifecycleScope.launch(Dispatchers.IO) {
-                        val success = if (isSelected) {
-                            runShizukuShellCommand("cmd connectivity set-package-networking-enabled false $pkg")
-                        } else {
-                            runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $pkg")
-                        }
+                        lastOperationErrorDetails.clear()
+                        val res = if (isSelected) {
+                                runShizukuShellCommandDetailed("cmd connectivity set-package-networking-enabled false $pkg")
+                            } else {
+                                runShizukuShellCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
+                            }
+                        val success = res.success
                         
                         withContext(Dispatchers.Main) {
-                            if (success) {
+                                    if (success) {
                                 if (isSelected) {
                                     activeFirewallPackages.add(pkg)
                                 } else {
@@ -739,7 +748,7 @@ class MainActivity : AppCompatActivity() {
                                 saveActivePackages(activeFirewallPackages)
                             } else {
                                 // Operation failed
-                                if (isSelected) {
+                                        if (isSelected) {
                                     // Failed to block (select)
                                     val skipErrorDialog = sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)
                                     val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
@@ -753,7 +762,8 @@ class MainActivity : AppCompatActivity() {
                                         saveSelectedApps()
                                         sortAndFilterApps(preserveScrollPosition = true)
                                     }
-                                    showOperationErrorsDialog(listOf(pkg))
+                                    lastOperationErrorDetails[pkg] = res.stderr.ifEmpty { res.stdout }
+                                    showOperationErrorsDialog(listOf(pkg), lastOperationErrorDetails)
                                 } else {
                                     // Failed to unblock (unselect)
                                     val revertIdx = appList.indexOfFirst { it.packageName == pkg }
@@ -1306,7 +1316,7 @@ class MainActivity : AppCompatActivity() {
                     saveSelectedApps()
                     sortAndFilterApps(preserveScrollPosition = false)
                 }
-                showOperationErrorsDialog(failed)
+                showOperationErrorsDialog(failed, lastOperationErrorDetails)
             }
         }
     }
@@ -1337,16 +1347,25 @@ class MainActivity : AppCompatActivity() {
     private fun enableFirewall(packageNames: List<String>): Pair<List<String>, List<String>> {
         val successful = mutableListOf<String>()
         val failed = mutableListOf<String>()
-        if (!runShizukuShellCommand("cmd connectivity set-chain3-enabled true")) {
-            // If chain3 enable fails, all packages fail
-            failed.addAll(packageNames)
+        lastOperationErrorDetails.clear()
+
+        val chain3Result = runShizukuShellCommandDetailed("cmd connectivity set-chain3-enabled true")
+        if (!chain3Result.success) {
+            // If chain3 enable fails, all packages fail; record the error message once with a key like "_chain3"
+            val msg = chain3Result.stderr.ifEmpty { chain3Result.stdout }
+            for (pkg in packageNames) {
+                lastOperationErrorDetails[pkg] = msg
+                failed.add(pkg)
+            }
             return Pair(successful, failed)
         }
         for (packageName in packageNames) {
-            if (runShizukuShellCommand("cmd connectivity set-package-networking-enabled false $packageName")) {
+            val res = runShizukuShellCommandDetailed("cmd connectivity set-package-networking-enabled false $packageName")
+            if (res.success) {
                 successful.add(packageName)
             } else {
                 failed.add(packageName)
+                lastOperationErrorDetails[packageName] = res.stderr.ifEmpty { res.stdout }
             }
         }
         // No rollback; allow partial success
@@ -1356,11 +1375,14 @@ class MainActivity : AppCompatActivity() {
     private fun disableFirewall(packageNames: List<String>): Pair<List<String>, List<String>> {
         val successful = mutableListOf<String>()
         val failed = mutableListOf<String>()
+        lastOperationErrorDetails.clear()
         for (packageName in packageNames) {
-            if (runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $packageName")) {
+            val res = runShizukuShellCommandDetailed("cmd connectivity set-package-networking-enabled true $packageName")
+            if (res.success) {
                 successful.add(packageName)
             } else {
                 failed.add(packageName)
+                lastOperationErrorDetails[packageName] = res.stderr.ifEmpty { res.stdout }
             }
         }
         // Disable chain3 regardless of individual results
@@ -1368,24 +1390,32 @@ class MainActivity : AppCompatActivity() {
         return Pair(successful, failed)
     }
 
-    private fun runShizukuShellCommand(command: String): Boolean {
+    private data class ShellResult(val exitCode: Int, val stdout: String, val stderr: String) {
+        val success: Boolean get() = exitCode == 0
+    }
+
+    private fun runShizukuShellCommandDetailed(command: String): ShellResult {
         return try {
             val process = SHIZUKU_NEW_PROCESS_METHOD.invoke(
                 null,
                 arrayOf("/system/bin/sh", "-c", command),
                 null,
                 null
-            ) as? ShizukuRemoteProcess ?: return false
+            ) as? ShizukuRemoteProcess ?: return ShellResult(-1, "", "no-process")
 
+            val stdout = process.inputStream.bufferedReader().use { it.readText() }
+            val stderr = process.errorStream.bufferedReader().use { it.readText() }
             process.outputStream.close()
-            process.inputStream.close()
-            process.errorStream.close()
             val exitCode = process.waitFor()
             process.destroy()
-            exitCode == 0
+            ShellResult(exitCode, stdout, stderr)
         } catch (e: Exception) {
-            false
+            ShellResult(-1, "", e.message ?: "")
         }
+    }
+
+    private fun runShizukuShellCommand(command: String): Boolean {
+        return runShizukuShellCommandDetailed(command).success
     }
 
     // dim only the RecyclerView and disable its interactions
@@ -1499,7 +1529,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showOperationErrorsDialog(failedPackages: List<String>) {
+    private fun showOperationErrorsDialog(failedPackages: List<String>, errorDetails: Map<String, String> = emptyMap()) {
         val failedApps = appList.filter { it.packageName in failedPackages }
         if (failedApps.isEmpty()) return
 
@@ -1510,11 +1540,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_firewall_confirm, null)
-        val dialog = MaterialAlertDialogBuilder(this)
+        val builder = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .setCancelable(true)
-            .setPositiveButton("OK", null)
-            .create()
+            .setPositiveButton(getString(R.string.ok), null)
+
+        // show details button only if we have any details for the failed packages
+        val hasDetails = failedPackages.any { errorDetails[it]?.isNotEmpty() == true } || errorDetails.containsKey("_chain3")
+        if (hasDetails) {
+            builder.setNeutralButton(getString(R.string.details)) { _, _ ->
+                showErrorDetailsDialog(failedPackages, errorDetails)
+            }
+        }
+        val dialog = builder.create()
         applyFontToViews(dialogView)
         dialog.setOnShowListener {
             dialog.window?.decorView?.let { applyFontToViews(it) }
@@ -1544,6 +1582,57 @@ class MainActivity : AppCompatActivity() {
         }
         selectedAppsRecyclerView.layoutParams = lp
         selectedAppsRecyclerView.isNestedScrollingEnabled = false
+
+        dialog.show()
+    }
+
+    private fun showErrorDetailsDialog(failedPackages: List<String>, errorDetails: Map<String, String> = emptyMap()) {
+        val failedApps = appList.filter { it.packageName in failedPackages }
+        if (failedApps.isEmpty()) return
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_error_details, null)
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+        applyFontToViews(dialogView)
+        dialog.setOnShowListener {
+            dialog.window?.decorView?.let { applyFontToViews(it) }
+        }
+
+        val messageView = dialogView.findViewById<TextView>(R.id.dialogErrorDetailsMessage)
+        val recyclerView = dialogView.findViewById<RecyclerView>(R.id.errorDetailsRecyclerView)
+        val btnCopy = dialogView.findViewById<android.widget.Button>(R.id.btnCopy)
+        val btnClose = dialogView.findViewById<android.widget.Button>(R.id.btnClose)
+
+        messageView.text = getString(R.string.operation_failed_message, failedApps.size)
+
+        val list = failedApps.map { ai ->
+            val err = errorDetails[ai.packageName] ?: errorDetails["_chain3"] ?: getString(R.string.no_error_details)
+            ErrorEntry(ai.appName, ai.packageName, err)
+        }
+
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = ErrorDetailsAdapter(list, getSelectedTypeface())
+
+        btnCopy.setOnClickListener {
+            val sb = StringBuilder()
+            for (entry in list) {
+                sb.append(entry.appName)
+                sb.append(" (")
+                sb.append(entry.packageName)
+                sb.append("):\n")
+                sb.append(entry.errorText)
+                sb.append("\n\n")
+            }
+            val cm = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = android.content.ClipData.newPlainText("error_details", sb.toString())
+            cm.setPrimaryClip(clip)
+            Toast.makeText(this, getString(R.string.copy) + "!", Toast.LENGTH_SHORT).show()
+        }
+
+        btnClose.setOnClickListener { dialog.dismiss() }
+        // continue was removed — close handles dialog dismissal
 
         dialog.show()
     }
