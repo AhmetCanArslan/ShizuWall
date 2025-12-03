@@ -431,8 +431,15 @@ class SettingsActivity : AppCompatActivity() {
         val action = MainActivity.ACTION_FIREWALL_CONTROL
         val extraEnabled = MainActivity.EXTRA_FIREWALL_ENABLED
         val extraCsv = MainActivity.EXTRA_PACKAGES_CSV
+        val component = "$pkg/.FirewallControlReceiver"
 
-        val adbUsageText = getString(R.string.adb_broadcast_usage_text, action, extraEnabled, extraCsv, action, extraEnabled, pkg, action, extraEnabled, pkg, action, extraEnabled, extraCsv, pkg, action, extraEnabled, extraCsv, pkg, pkg)
+        val adbUsageText = getString(
+            R.string.adb_broadcast_usage_text,
+            action,
+            component,
+            extraEnabled,
+            extraCsv
+        )
 
         val tv = TextView(this).apply {
             setTextIsSelectable(true)
