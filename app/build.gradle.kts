@@ -11,8 +11,8 @@ android {
         applicationId = "com.arslan.shizuwall"
         minSdk = 30
         targetSdk = 36
-        versionCode = 11
-        versionName = "3.0.3"
+        versionCode = 12
+        versionName = "3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
