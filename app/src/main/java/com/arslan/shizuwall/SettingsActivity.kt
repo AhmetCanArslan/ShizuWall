@@ -248,6 +248,41 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         layoutAdbBroadcastUsage.setOnClickListener { showAdbBroadcastDialog() }
+
+        // Make the whole card area toggle the corresponding switches when tapped
+        makeCardClickableForSwitch(switchShowSystemApps)
+        makeCardClickableForSwitch(switchMoveSelectedTop)
+        makeCardClickableForSwitch(switchUseDynamicColor)
+        makeCardClickableForSwitch(switchSkipConfirm)
+        makeCardClickableForSwitch(switchAdaptiveMode)
+        makeCardClickableForSwitch(switchSkipErrorDialog)
+        makeCardClickableForSwitch(switchKeepErrorAppsSelected)
+    }
+
+   
+    private fun makeCardClickableForSwitch(switch: SwitchCompat) {
+        try {
+            val parent = switch.parent as? View ?: return
+
+            // Apply ripple/selectable background so the row gives visual feedback when tapped
+            val typedValue = TypedValue()
+            if (theme.resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true)) {
+                parent.setBackgroundResource(typedValue.resourceId)
+            }
+
+            parent.isClickable = true
+            parent.isFocusable = true
+
+            parent.setOnClickListener {
+                // Only toggle if the switch is enabled (respect dependencies)
+                if (switch.isEnabled) {
+                    // Flip checked state; this will trigger the switch's change listener
+                    switch.isChecked = !switch.isChecked
+                }
+            }
+        } catch (e: Exception) {
+            // Don't crash if layout assumptions differ; silently ignore
+        }
     }
 
     private fun showFontSelectorDialog() {
