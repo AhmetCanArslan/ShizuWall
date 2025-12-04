@@ -130,6 +130,9 @@ class MainActivity : AppCompatActivity() {
     // Track if we're waiting for Shizuku permission due to toggle attempt
     private var pendingToggleEnable = false
     private var pendingToggleDisable = false
+    // Store pending selections/packages when waiting for Shizuku permission
+    private var pendingEnableSelectedApps: List<String>? = null
+    private var pendingDisableActivePackages: List<String>? = null
 
     // receiver to handle package add/remove/replace events
     private val packageBroadcastReceiver = object : BroadcastReceiver() {
@@ -418,7 +421,9 @@ class MainActivity : AppCompatActivity() {
                     // If permission was requested due to toggle attempt, resume the enable flow
                     if (pendingToggleEnable) {
                         pendingToggleEnable = false
-                        val selectedApps = appList.filter { it.isSelected }
+                        val selectedAppPkgs = pendingEnableSelectedApps ?: appList.filter { it.isSelected }.map { it.packageName }
+                        val selectedApps = appList.filter { selectedAppPkgs.contains(it.packageName) }
+                        pendingEnableSelectedApps = null
                         if (selectedApps.isNotEmpty()) {
                             // Set toggle to ON before showing confirmation dialog
                             suppressToggleListener = true
@@ -432,13 +437,18 @@ class MainActivity : AppCompatActivity() {
                         }
                     } else if (pendingToggleDisable) {
                         pendingToggleDisable = false
+                        // Use the active package list captured when the disable was requested; fallback to current active set
+                        val pkgs = pendingDisableActivePackages ?: activeFirewallPackages.toList()
+                        pendingDisableActivePackages = null
                         // Proceed with disabling the firewall
-                        applyFirewallState(false, activeFirewallPackages.toList())
+                        applyFirewallState(false, pkgs)
                     }
                 } else {
                     // Permission denied, revert toggle to its previous state
                     pendingToggleEnable = false
                     pendingToggleDisable = false
+                    pendingEnableSelectedApps = null
+                    pendingDisableActivePackages = null
                     suppressToggleListener = true
                     // If we were trying to enable, revert to off; if trying to disable, revert to on
                     firewallToggle.isChecked = isFirewallEnabled
@@ -925,6 +935,7 @@ class MainActivity : AppCompatActivity() {
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
                     // Permission not granted, mark that we're waiting for it
                     pendingToggleEnable = true
+                    pendingEnableSelectedApps = appList.filter { it.isSelected }.map { it.packageName }
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
@@ -940,6 +951,7 @@ class MainActivity : AppCompatActivity() {
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
                     // Permission not granted, mark that we're waiting for it
                     pendingToggleDisable = true
+                    pendingDisableActivePackages = activeFirewallPackages.toList()
                     suppressToggleListener = true
                     firewallToggle.isChecked = true
                     suppressToggleListener = false
@@ -971,6 +983,7 @@ class MainActivity : AppCompatActivity() {
                 suppressToggleListener = true
                 firewallToggle.isChecked = false
                 suppressToggleListener = false
+                pendingEnableSelectedApps = null
             }
             .create()
 
