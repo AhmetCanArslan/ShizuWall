@@ -104,6 +104,8 @@
     <string name="skip_error_dialog_description">Keine Warnung bei Fehler anzeigen</string>
     <string name="keep_failed_apps_selected">Fehlgeschlagene Apps ausgewählt lassen</string>
     <string name="keep_failed_apps_selected_description">Apps bei Fehler nicht abwählen</string>
+    <string name="auto_enable_on_shizuku_start">Firewall automatisch aktivieren, wenn Shizuku gestartet wird</string>
+    <string name="auto_enable_on_shizuku_start_description">Firewall automatisch aktivieren, wenn der Shizuku-Dienst verfügbar wird</string>
     <string name="appearance_section">Erscheinungsbild</string>
     <string name="font">Schriftart</string>
     <string name="advanced_section">Erweitert</string>

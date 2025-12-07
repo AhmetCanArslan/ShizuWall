@@ -104,6 +104,8 @@
     <string name="skip_error_dialog_description">Başarısız olan uygulamaları gösterme</string>
     <string name="keep_failed_apps_selected">Başarısız uygulamaları seçili tut</string>
     <string name="keep_failed_apps_selected_description">Başarısız olan uygulamaların seçimini kaldırma</string>
+    <string name="auto_enable_on_shizuku_start">Shizuku başlatıldığında güvenlik duvarını otomatik olarak etkinleştir</string>
+    <string name="auto_enable_on_shizuku_start_description">Shizuku hizmeti kullanılabilir hale geldiğinde güvenlik duvarını otomatik olarak etkinleştir</string>
     <string name="appearance_section">Görünüm</string>
     <string name="font">Yazı Tipi</string>
     <string name="advanced_section">Gelişmiş</string>

@@ -109,6 +109,8 @@
     <string name="skip_error_dialog_description">Don\'t show warning on failure</string>
     <string name="keep_failed_apps_selected">Keep failed apps selected</string>
     <string name="keep_failed_apps_selected_description">Don\'t unselect apps on failure</string>
+    <string name="auto_enable_on_shizuku_start">Auto-enable firewall when Shizuku starts</string>
+    <string name="auto_enable_on_shizuku_start_description">Automatically enable the firewall when the Shizuku service becomes available</string>
     <string name="appearance_section">Appearance</string>
     <string name="font">Font</string>
     <string name="advanced_section">Advanced</string>

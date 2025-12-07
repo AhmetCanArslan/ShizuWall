@@ -104,6 +104,8 @@
     <string name="skip_error_dialog_description">失败时不显示警告</string>
     <string name="keep_failed_apps_selected">保持失败的应用选中</string>
     <string name="keep_failed_apps_selected_description">失败时不取消选择应用</string>
+    <string name="auto_enable_on_shizuku_start">Shizuku 启动时自动启用防火墙</string>
+    <string name="auto_enable_on_shizuku_start_description">当 Shizuku 服务可用时自动启用防火墙</string>
     <string name="appearance_section">外观</string>
     <string name="font">字体</string>
     <string name="advanced_section">高级</string>
