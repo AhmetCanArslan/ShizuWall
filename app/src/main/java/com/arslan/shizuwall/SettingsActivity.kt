@@ -57,6 +57,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var btnGithub: LinearLayout
     private lateinit var tvVersion: TextView
     private lateinit var switchUseDynamicColor: SwitchCompat
+    private lateinit var switchAutoEnableOnShizukuStart: SwitchCompat
 
     private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
 
@@ -134,6 +135,8 @@ class SettingsActivity : AppCompatActivity() {
 
         // new: bind XML item
         layoutAdbBroadcastUsage = findViewById(R.id.layoutAdbBroadcastUsage)
+        // Auto-enable switch (new)
+        switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
     }
 
     private fun loadSettings() {
@@ -163,6 +166,7 @@ class SettingsActivity : AppCompatActivity() {
         val currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         tvCurrentFont.text = if (currentFont == "ndot") "Ndot" else "Default"
         switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
+        switchAutoEnableOnShizukuStart.isChecked = prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
     }
 
     private fun setupListeners() {
@@ -247,6 +251,11 @@ class SettingsActivity : AppCompatActivity() {
             showRestartNotice(getString(R.string.theme_changed_title), getString(R.string.theme_changed_message))
         }
 
+        switchAutoEnableOnShizukuStart.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, isChecked).apply()
+            setResult(RESULT_OK)
+        }
+
         layoutAdbBroadcastUsage.setOnClickListener { showAdbBroadcastDialog() }
 
         // Make the whole card area toggle the corresponding switches when tapped
@@ -257,6 +266,7 @@ class SettingsActivity : AppCompatActivity() {
         makeCardClickableForSwitch(switchAdaptiveMode)
         makeCardClickableForSwitch(switchSkipErrorDialog)
         makeCardClickableForSwitch(switchKeepErrorAppsSelected)
+        makeCardClickableForSwitch(switchAutoEnableOnShizukuStart)
     }
 
    
