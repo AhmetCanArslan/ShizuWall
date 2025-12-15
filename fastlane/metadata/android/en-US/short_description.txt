@@ -1,0 +1,1 @@
+Lightweight no root, no vpn firewall solution powered by Shizuku

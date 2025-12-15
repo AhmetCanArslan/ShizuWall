@@ -1,0 +1,79 @@
+A lightweight, privacy focused Android firewall application that blocks network connections for selected apps **without requiring root access or VPN**. ShizuWall leverages Shizuku to provide powerful network control capabilities. Requires Android 11 (API 30) or higher. 
+
+## Why ShizuWall is Different
+
+1. **Shizuku-Only Approach**: Most Android firewalls require either Root access or a VPN service. ShizuWall uses **only Shizuku**, providing native system-level control without the common VPN drawbacks.
+2. **Per-app System Networking Control**: Uses Android's `connectivity` service (chain-3) via Shizuku to enable/disable networking on a per-app basis — no packet interception, no VPN tunnel.
+3. **Privacy-first Design**: The app is offline-first and does not phone home. There is no analytics, no tracking and no telemetry.
+
+
+## Notes
+
+- Firewall rules are applied using platform commands and are automatically cleared on device reboot (Android security limitation).
+- The app detects reboots using a boot-relative timestamp and automatically clears stale saved state so you won't be left with stale "enabled" flags after reboot.
+- By default only user-installed apps are shown. Use the overflow menu (three dots, top-right) to "Show system apps" if you need to include system apps for selection.
+- If anything goes wrong, rebooting the device will revert every change made by ShizuWall.
+- The app persists minimal preferences locally (selected apps, enabled flag) and stores a small boot-relative timestamp in device-protected storage so the app can detect reboots safely without exposing data.
+- No network calls from the app itself — it does not send any data to external services. The application does not request android.permission.INTERNET in its manifest. While Shizuku itself has shell privileges (which include network access), ShizuWall is designed to operate locally and does not initiate any network connections.
+
+## Firewall Implementation
+
+(what the app runs via Shizuku)
+
+```bash
+# Enable firewall framework
+cmd connectivity set-chain3-enabled true
+
+# Block specific app
+cmd connectivity set-package-networking-enabled false <package.name>
+
+# Unblock specific app
+cmd connectivity set-package-networking-enabled true <package.name>
+
+# Disable firewall framework
+cmd connectivity set-chain3-enabled false
+```
+
+## Control via broadcast (adb / automation)
+
+ShizuWall supports a simple broadcast interface so you can enable/disable the firewall from adb or automation tools.
+
+```bash
+- Action: shizuwall.CONTROL
+- Component: com.arslan.shizuwall/.FirewallControlReceiver
+- Extras:
+  - state (boolean) — true = enable, false = disable
+  - apps (string, optional) — comma-separated package list to operate on. If omitted the app falls back to the saved "selected apps" set.
+
+Examples:
+
+- Enable firewall for selected apps:
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.FirewallControlReceiver --ez state true
+
+- Disable firewall for selected apps
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.FirewallControlReceiver --ez state false
+
+
+- Enable firewall for specific packages (CSV):
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.FirewallControlReceiver --ez state true --es apps "com.example.app1,com.example.app2"
+
+- Disable firewall for specific packages:
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.FirewallControlReceiver --ez state false --es apps "com.example.app1,com.example.app2"
+
+```
+
+Notes for those want to use broadcasts:
+- The receiver is exported to allow adb and automation.
+- Using `-n com.arslan.shizuwall/.FirewallControlReceiver` targets the receiver directly, bypassing intent filters.
+- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.
+- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.
+
+## ⚠️ Disclaimer
+
+This application requires Shizuku to function. The developer is not responsible for any issues arising from:
+- Shizuku usage or configuration
+- Network blocking affecting system functionality
+- Data loss or service disruption
+- Any negative consequences mentioned in the onboarding process
+
+Use at your own discretion and ensure you understand which apps you're blocking.

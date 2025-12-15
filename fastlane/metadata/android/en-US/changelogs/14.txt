@@ -1,0 +1,3 @@
+Added auto enable firewall when shizuku service is stared #43 
+Added compatibility dialog for devices using Android 11 #45 
+Initialized F-droid Repo status
