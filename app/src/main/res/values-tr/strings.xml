@@ -38,6 +38,10 @@
     <string name="firewall_cleanup_warning">Uyarı: Güvenlik duvarı temizliği başarısız oldu. İnternet erişimini geri yüklemek için lütfen CİHAZINIZI YENİDEN BAŞLATIN.</string>
     <string name="app_reset_complete">Uygulama sıfırlama tamamlandı. Kapanıyor…</string>
     <string name="reset_app_failed">Uygulama sıfırlama başarısız: %s</string>
+    <string name="android11_unsupported_title">Android 11 uyumluluğu</string>
+    <string name="android11_unsupported_message">Android 11'deki bazı cihazlar ShizuWall'i desteklemiyor. Aşağıdaki gibi bir hata görürseniz:\n - no command found set chain3 - \nbu, cihazınızın desteklenmediği ve şu anda yapılacak bir şey olmadığı anlamına gelir.</string>
+    <string name="dont_show_again">Bir daha gösterme</string>
+    <string name="android11_unsupported_hint">Hata -no command found set chain 3- içeriyorsa, cihazınızın bu Android sürümünde muhtemelen desteklenmediği anlamına gelir.</string>
     <string name="adb_broadcast_usage_title">ADB Yayın Kullanımı (Kopyalanabilir)</string>
     <string name="ok">Tamam</string>
     <string name="adb_broadcast_usage_text">Eylem:\n%1$s\n\nBileşen:\n%2$s\n\nEkstralar:\n\n%3$s (boolean) - true = etkinleştir, false = devre dışı bırak\n\n%4$s (string, isteğe bağlı) - üzerinde işlem yapılacak virgülle ayrılmış paket listesi. Atlanırsa, uygulama kaydedilen seçili uygulamalara geri döner.\n\n\nÖrnekler:\n\nSeçili (ShizuWallda seçili) uygulamalar için güvenlik duvarını etkinleştir:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nSeçili (ShizuWallda seçili) uygulamalar için güvenlik duvarını devre dışı bırak:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nBelirli paketler için güvenlik duvarını etkinleştir (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\nBelirli paketler için güvenlik duvarını devre dışı bırak (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\nNotlar:\n\n- Alıcı, adb otomasyonu için dışa aktarılır; harici yayınlardan kaçınmak için alıcıyı açıkça hedeflemek için -n %2$s kullanın.\n\n- Shizukunun çalışıyor olması ve uygulamanın Shizuku iznine sahip olması gerekir.\n\n- Alıcı, UI ile aynı komutları uygular (cmd connectivity …). Dikkatli kullanın.</string>
@@ -89,6 +93,11 @@
     <string name="firewall_disabled">Güvenlik duvarı devre dışı</string>
     <string name="operation_failed_for_apps">%d uygulama için işlem başarısız</string>
     <string name="operation_failed_message">Aşağıdaki %d uygulama için işlem başarısız oldu. Seçimleri kaldırıldı.</string>
+    <string name="details">Detaylar</string>
+    <string name="copy">Kopyala</string>
+    <string name="error_details_title">Hata Detayları</string>
+    <string name="no_error_details">Ek ayrıntı yok.</string>
+    <string name="close">Kapat</string>
     <string name="settings_title">Ayarlar</string>
     <string name="display_section">Görüntü</string>
     <string name="show_system_apps_description">Sistem uygulamalarını listeye dahil et</string>
@@ -121,4 +130,5 @@
     <string name="github_description">Kaynak kodunu görüntüle ve katkıda bulun</string>
     <string name="settings">Ayarlar</string>
     <string name="selected_count_zero">0</string>
+    <string name="firewall_enabled">Etkin</string>
 </resources>

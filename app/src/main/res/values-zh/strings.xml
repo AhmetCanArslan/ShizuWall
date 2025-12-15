@@ -38,6 +38,10 @@
     <string name="firewall_cleanup_warning">警告：防火墙清理失败。请重新启动您的设备以恢复互联网访问。</string>
     <string name="app_reset_complete">应用重置完成。正在关闭…</string>
     <string name="reset_app_failed">重置应用失败：%s</string>
+    <string name="android11_unsupported_title">Android 11 兼容性</string>
+    <string name="android11_unsupported_message">某些运行 Android 11 的设备不支持 ShizuWall。如果您看到如下错误：\n - no command found set chain3 - \n这意味着您的设备不受支持，目前无能为力。</string>
+    <string name="dont_show_again">不再显示</string>
+    <string name="android11_unsupported_hint">如果错误包含 -no command found set chain 3-，则您的设备很可能不支持此 Android 版本。</string>
     <string name="adb_broadcast_usage_title">ADB 广播使用（可复制）</string>
     <string name="ok">确定</string>
     <string name="adb_broadcast_usage_text" formatted="false">操作：\n%1$s\n\n组件：\n%2$s\n\n额外：\n\n%3$s (boolean) — true = 启用，false = 禁用\n\n%4$s (string，可选) — 要操作的逗号分隔包列表。如果省略，应用将回退到保存的选定应用。\n\n\n示例：\n\n为选定应用启用防火墙（在 ShizuWall 中选定）：\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\n为选定应用禁用防火墙（在 ShizuWall 中选定）：\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\n为特定包启用防火墙 (CSV)：\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n为特定包禁用防火墙 (CSV)：\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\n注意：\n\n- 接收器为 ADB 自动化导出；首选使用 -n %2$s 明确针对接收器以避免外部广播。\n\n- Shizuku 必须运行且应用必须有 Shizuku 权限，这些广播才能成功。\n\n- 接收器应用与 UI 相同的命令 (cmd connectivity …)。谨慎使用。</string>
@@ -89,6 +93,11 @@
     <string name="firewall_disabled">防火墙已禁用</string>
     <string name="operation_failed_for_apps">为 %d 个应用操作失败</string>
     <string name="operation_failed_message">为以下 %d 个应用操作失败。它们已被取消选择。</string>
+    <string name="details">详细信息</string>
+    <string name="copy">复制</string>
+    <string name="error_details_title">错误详情</string>
+    <string name="no_error_details">没有额外的详细信息可用。</string>
+    <string name="close">关闭</string>
     <string name="settings_title">设置</string>
     <string name="display_section">显示</string>
     <string name="show_system_apps_description">在列表中包含系统应用程序</string>
@@ -121,4 +130,5 @@
     <string name="github_description">查看源代码并贡献</string>
     <string name="settings">设置</string>
     <string name="selected_count_zero">0</string>
+    <string name="firewall_enabled">已启用</string>
 </resources>

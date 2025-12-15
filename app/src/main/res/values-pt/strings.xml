@@ -38,6 +38,10 @@
     <string name="firewall_cleanup_warning">Aviso: Falha na limpeza do firewall. Por favor, REINICIE seu dispositivo para restaurar o acesso à internet.</string>
     <string name="app_reset_complete">Redefinição do app concluída. Fechando...</string>
     <string name="reset_app_failed">Falha ao redefinir app: %s</string>
+    <string name="android11_unsupported_title">Compatibilidade com Android 11</string>
+    <string name="android11_unsupported_message">Alguns dispositivos no Android 11 não suportam o ShizuWall. Se você vir um erro como:\n - no command found set chain3 - \nsignifica que seu dispositivo não é compatível e não há nada a fazer no momento.</string>
+    <string name="dont_show_again">Não mostrar novamente</string>
+    <string name="android11_unsupported_hint">Se o erro contém -no command found set chain 3-, é provável que seu dispositivo não seja compatível com esta versão do Android.</string>
     <string name="adb_broadcast_usage_title">Uso de Broadcast ADB (Copiável)</string>
     <string name="ok">OK</string>
     <string name="adb_broadcast_usage_text" formatted="false">Ação:\n%1$s\n\nComponente:\n%2$s\n\nExtras:\n\n%3$s (boolean) — true = ativar, false = desativar\n\n%4$s (string, opcional) — lista de pacotes separados por vírgula para operar. Se omitido, o app volta aos apps selecionados salvos.\n\n\nExemplos:\n\nAtivar firewall para apps selecionados (selecionados no ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nDesativar firewall para apps selecionados (selecionados no ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nAtivar firewall para pacotes específicos (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\nDesativar firewall para pacotes específicos (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\nNotas:\n\n- O receptor é exportado para automação ADB; prefira direcionar o receptor explicitamente com -n %2$s para evitar broadcasts externos.\n\n- Shizuku deve estar rodando e o app deve ter permissão Shizuku para que esses broadcasts sejam bem-sucedidos.\n\n- O receptor aplica os mesmos comandos da UI (cmd connectivity ...). Use com cuidado.</string>
@@ -89,6 +93,11 @@
     <string name="firewall_disabled">Firewall desabilitado</string>
     <string name="operation_failed_for_apps">Operação falhou para %d apps</string>
     <string name="operation_failed_message">Operação falhou para os seguintes %d apps. Eles foram desmarcados.</string>
+    <string name="details">Detalhes</string>
+    <string name="copy">Copiar</string>
+    <string name="error_details_title">Detalhes do Erro</string>
+    <string name="no_error_details">Não há detalhes adicionais disponíveis.</string>
+    <string name="close">Fechar</string>
     <string name="settings_title">Configurações</string>
     <string name="display_section">Exibição</string>
     <string name="show_system_apps_description">Incluir aplicações do sistema na lista</string>
@@ -121,4 +130,5 @@
     <string name="github_description">Ver código fonte e contribuir</string>
     <string name="settings">Configurações</string>
     <string name="selected_count_zero">0</string>
+    <string name="firewall_enabled">Ativado</string>
 </resources>
