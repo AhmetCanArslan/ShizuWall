@@ -67,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
         const val KEY_ADAPTIVE_MODE = "adaptive_mode"
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
+        const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"
 
         const val ACTION_FIREWALL_STATE_CHANGED = "com.arslan.shizuwall.ACTION_FIREWALL_STATE_CHANGED"
         const val EXTRA_FIREWALL_ENABLED = "state" 
@@ -248,6 +249,32 @@ class MainActivity : AppCompatActivity() {
 
         // Show Android 11 compatibility warning if needed
         showAndroid11WarningDialog()
+
+        // Prompt user to view Shizuku setup slides at app start
+        val showSetupPrompt = sharedPreferences.getBoolean(KEY_SHOW_SETUP_PROMPT, true)
+        if (showSetupPrompt) {
+            val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
+            val messageText: TextView = promptView.findViewById(R.id.shizuku_prompt_message_text)
+            val checkbox: CheckBox = promptView.findViewById(R.id.shizuku_prompt_do_not_show)
+            messageText.text = getString(R.string.shizuku_prompt_message)
+            checkbox.text = getString(R.string.shizuku_prompt_do_not_show)
+
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.shizuku_prompt_title)
+                .setView(promptView)
+                .setPositiveButton(R.string.show_now) { _, _ ->
+                    startActivity(Intent(this, ShizukuSetupActivity::class.java))
+                    if (checkbox.isChecked) {
+                        sharedPreferences.edit().putBoolean(KEY_SHOW_SETUP_PROMPT, false).apply()
+                    }
+                }
+                .setNegativeButton(R.string.later) { _, _ ->
+                    if (checkbox.isChecked) {
+                        sharedPreferences.edit().putBoolean(KEY_SHOW_SETUP_PROMPT, false).apply()
+                    }
+                }
+                .show()
+        }
 
         // GitHub icon
         val openGithub = {

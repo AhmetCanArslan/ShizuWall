@@ -131,4 +131,20 @@
     <string name="settings">Settings</string>
     <string name="selected_count_zero">0</string>
     <string name="firewall_enabled">Enabled</string>
+
+    <string name="shizuku_setup_guide">Shizuku Setup Guide</string>
+    <string name="shizuku_step_1">First of all you have to enable developer options. Afterwards open Shizuku app and press Pairing</string>
+    <string name="shizuku_step_2">Press developer options button, it\'ll redirect you there.</string>
+    <string name="shizuku_step_3">In here search for Wireless debugging and press that button.</string>
+    <string name="shizuku_step_4">Find and tap on ShizuWall in the list of apps.</string>
+    <string name="shizuku_step_5">When dialog opens, a notification will appear from Shizuku to allow you to enter the pairing code.</string>
+    <string name="shizuku_step_6">After confirming pairing code, return back to Shizuku and press start.</string>
+    <string name="shizuku_step_7">Wait until the service is active.</string>
+    <string name="shizuku_step_8">Open ShizuWall and try to enable Firewall.</string>
+    <string name="shizuku_step_9">Allow Shizuku permission, firewall be activated.</string>
+    <string name="shizuku_step_10">Pairing is required only once. Shizuku has to be enabled when device is rebooted. To enable and disable firewall, Shizuku has to be activated. If you want to use Shizuku without Wi‑Fi (it has to be started), enable USB debugging so Shizuku stays on until you reboot.</string>
+    <string name="shizuku_prompt_title">Show Shizuku setup guide?</string>
+    <string name="shizuku_prompt_message">Would you like to view the Shizuku setup slides now? You can always open them later from the three-dot menu in Settings.</string>
+    <string name="shizuku_prompt_do_not_show">Do not show again</string>
+    <string name="show_now">Show now</string>
 </resources>

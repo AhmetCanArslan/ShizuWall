@@ -28,6 +28,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".OnboardingActivity" />
+        <activity android:name=".ShizukuSetupActivity" />
         <activity
             android:name=".SettingsActivity"
             android:label="Settings"

@@ -94,6 +94,12 @@ class SettingsActivity : AppCompatActivity() {
             true
         }
 
+        // Add Shizuku Setup Guide to overflow menu
+        toolbar.menu.add(getString(R.string.shizuku_setup_guide)).setOnMenuItemClickListener {
+            startActivity(android.content.Intent(this, ShizukuSetupActivity::class.java))
+            true
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settingsRoot)) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             // Apply top margin to toolbar to account for status bar
