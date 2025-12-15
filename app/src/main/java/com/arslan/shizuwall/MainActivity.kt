@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         private const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
         const val KEY_SKIP_ERROR_DIALOG = "skip_error_dialog"
+        const val KEY_SKIP_ANDROID11_INFO = "skip_android11_info"
         const val KEY_KEEP_ERROR_APPS_SELECTED = "keep_error_apps_selected"
         const val KEY_SHOW_SYSTEM_APPS = "show_system_apps"
         const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
@@ -244,6 +245,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         applyFontToViews(findViewById(android.R.id.content))
+
+        // Show Android 11 compatibility warning if needed
+        showAndroid11WarningDialog()
 
         // GitHub icon
         val openGithub = {
@@ -1123,6 +1127,40 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private fun showAndroid11WarningDialog() {
+        // Only show for Android 11 and if user hasn't opted out
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.R) return
+
+        val prefsLocal = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        if (prefsLocal.getBoolean(KEY_SKIP_ANDROID11_INFO, false)) return
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_android11_info, null)
+        val checkbox = dialogView.findViewById<CheckBox>(R.id.checkboxDontShowAgain)
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                if (checkbox.isChecked) {
+                    prefsLocal.edit().putBoolean(KEY_SKIP_ANDROID11_INFO, true).apply()
+                }
+            }
+            .create()
+
+        applyFontToViews(dialogView)
+        dialog.setOnShowListener {
+            dialog.window?.decorView?.let { applyFontToViews(it) }
+        }
+
+        val dialogTitle = dialogView.findViewById<TextView>(R.id.dialogTitle)
+        val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
+
+        dialogTitle.text = getString(R.string.android11_unsupported_title)
+        dialogMessage.text = getString(R.string.android11_unsupported_message)
+
+        dialog.show()
+    }
+
     private fun updateSelectedCount() {
         val count = appList.count { it.isSelected }
         selectedCountText.text = count.toString()
@@ -1698,6 +1736,12 @@ class MainActivity : AppCompatActivity() {
         val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
 
         dialogMessage.text = getString(R.string.operation_failed_message, failedApps.size)
+
+        // If any error detail indicates the chain3 command is missing, append a short hint
+        val chain3Msg = errorDetails["_chain3"] ?: errorDetails.values.firstOrNull { it.contains("no command found set chain 3", ignoreCase = true) }
+        if (chain3Msg != null) {
+            dialogMessage.append("\n\n${getString(R.string.android11_unsupported_hint)}")
+        }
 
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
         selectedAppsRecyclerView.adapter = SelectedAppsAdapter(failedApps, getSelectedTypeface())
