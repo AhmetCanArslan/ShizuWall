@@ -142,7 +142,7 @@
     <string name="shizuku_step_7">Wait until the service is active.</string>
     <string name="shizuku_step_8">Open ShizuWall and try to enable Firewall.</string>
     <string name="shizuku_step_9">Allow Shizuku permission, firewall be activated.</string>
-    <string name="shizuku_step_10">Pairing is required only once. Shizuku has to be activated again when device is rebooted. To enable and disable firewall, Shizuku has to be activated. If you want to use Shizuku without Wi‑Fi (it has to be started via wifi before), enable USB debugging so Shizuku stays on until you reboot.</string>
+    <string name="shizuku_step_10">Pairing is required only once. Shizuku has to be activated again when device is rebooted. To enable and disable firewall, Shizuku has to be activated. If you want to use Shizuku without Wi-Fi (it has to be started via wifi before), enable USB debugging so Shizuku stays on until you reboot.</string>
     <string name="shizuku_prompt_title">Show Shizuku setup guide?</string>
     <string name="shizuku_prompt_message">Would you like to view the Shizuku setup slides now? You can always open them later from the three-dot menu in Settings.</string>
     <string name="shizuku_prompt_do_not_show">Do not show again</string>
