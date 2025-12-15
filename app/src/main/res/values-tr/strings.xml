@@ -140,7 +140,7 @@
     <string name="shizuku_step_6">Eşleştirme kodunu onayladıktan sonra Shizuku\'ya geri dönün ve \'Start\'a basın.</string>
     <string name="shizuku_step_7">Servisin aktif olmasını bekleyin.</string>
     <string name="shizuku_step_8">ShizuWall\'u açın ve Güvenlik Duvarını etkinleştirmeyi deneyin.</string>
-    <string name="shizuku_step_9">Shizuku iznini verin, güvenlik duvarı etkinleştirilecektir.</string>
+    <string name="shizuku_step_9">Shizuku iznini verin, güvenlik duvarı etkinleşsin. Güvenlik duvarını açıp kapatırken Shizuku çalışıyor olmalıdır. Güvenlik duvarı bir kez etkinleştirildiğinde, Shizuku dursa bile, siz Shizuku\'yu başlatıp manuel olarak devre dışı bırakana kadar etkin kalacaktır.</string>
     <string name="shizuku_step_10">Eşleştirme yalnızca bir kez gereklidir. Cihaz yeniden başlatıldığında Shizuku\'nun tekrar etkinleştirilmesi gerekir. Güvenlik duvarını etkinleştirmek/devre dışı bırakmak için Shizuku etkin olmalıdır. Shizuku\'yu Wi-Fi olmadan kullanmak istiyorsanız (önceden Wi-Fi üzerinden başlatılmalıdır), Shizuku\'nun yeniden başlatılana kadar açık kalması için USB hata ayıklamayı etkinleştirin.</string>
     <string name="shizuku_prompt_title">Shizuku kurulum kılavuzunu göster?</string>
     <string name="shizuku_prompt_message">Shizuku kurulum slaytlarını şimdi görüntülemek ister misiniz? Daha sonra Ayarlar\'daki üç nokta menüsünden her zaman açabilirsiniz.</string>

@@ -141,7 +141,7 @@
     <string name="shizuku_step_6">Nachdem Sie den Pairing-Code bestätigt haben, kehren Sie zu Shizuku zurück und drücken Sie Start.</string>
     <string name="shizuku_step_7">Warten Sie, bis der Dienst aktiv ist.</string>
     <string name="shizuku_step_8">Öffnen Sie ShizuWall und versuchen Sie, die Firewall zu aktivieren.</string>
-    <string name="shizuku_step_9">Erteilen Sie die Shizuku-Berechtigung, die Firewall wird aktiviert.</string>
+    <string name="shizuku_step_9">Erteilen Sie Shizuku die Berechtigung, um die Firewall zu aktivieren. Shizuku muss ausgeführt werden, wenn Sie die Firewall ein- oder ausschalten. Sobald die Firewall aktiviert ist, bleibt sie auch dann aktiv, wenn Shizuku stoppt, bis Sie Shizuku starten und die Firewall manuell deaktivieren.</string>
     <string name="shizuku_step_10">Das Pairing ist nur einmal erforderlich. Shizuku muss nach einem Neustart des Geräts erneut aktiviert werden. Um die Firewall zu aktivieren/deaktivieren, muss Shizuku aktiviert sein. Wenn Sie Shizuku ohne WLAN verwenden möchten (es muss zuvor über WLAN gestartet werden), aktivieren Sie USB-Debugging, damit Shizuku bis zum Neustart aktiv bleibt.</string>
     <string name="shizuku_prompt_title">Shizuku-Anleitung anzeigen?</string>
     <string name="shizuku_prompt_message">Möchten Sie jetzt die Shizuku-Setup-Folien ansehen? Sie können sie später jederzeit über das Drei-Punkte-Menü in den Einstellungen öffnen.</string>

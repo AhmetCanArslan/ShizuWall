@@ -140,7 +140,7 @@
     <string name="shizuku_step_6">Após confirmar o código, volte ao Shizuku e toque em Start.</string>
     <string name="shizuku_step_7">Espere até que o serviço esteja ativo.</string>
     <string name="shizuku_step_8">Abra o ShizuWall e tente ativar o Firewall.</string>
-    <string name="shizuku_step_9">Permita a permissão do Shizuku, o firewall será ativado.</string>
+    <string name="shizuku_step_9">Conceda permissão ao Shizuku para ativar o firewall. O Shizuku deve estar em execução ao ativar ou desativar o firewall. Após ativar o firewall uma vez, mesmo que o Shizuku pare, o firewall permanecerá ativo até que você inicie o Shizuku e o desative manualmente.</string>
     <string name="shizuku_step_10">O pareamento é necessário apenas uma vez. O Shizuku tem que ser ativado novamente quando o dispositivo for reiniciado. Para ativar/desativar o firewall, o Shizuku precisa estar ativado. Se você quiser usar o Shizuku sem Wi-Fi (ele precisa ser iniciado via Wi-Fi antes), ative a depuração USB para que o Shizuku permaneça ativo até você reiniciar.</string>
     <string name="shizuku_prompt_title">Mostrar guia de configuração do Shizuku?</string>
     <string name="shizuku_prompt_message">Você gostaria de ver os slides de configuração do Shizuku agora? Você sempre pode abri-los mais tarde no menu de três pontos em Configurações.</string>
