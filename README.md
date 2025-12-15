@@ -10,8 +10,9 @@ A lightweight, privacy focused Android firewall application that blocks network 
 #### Playstore and GitHub versions are signed with different keys. These two versions DOES NOT have any difference on usability and functionality.
 
 <p align="center">
-  <img src="assets/screenShots/v3.0.2/1.png" width="30%">
-  <img src="assets/screenShots/v3.0.2/2.png" width="30%">
+  <img src="assets/screenShots/v3.2/1.png" width="30%">
+  <img src="assets/screenShots/v3.2/2.png" width="30%">
+  <img src="assets/screenShots/v3.2/3.png" width="30%">
 </p>
 
 <p align="center">
