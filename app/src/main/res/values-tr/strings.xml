@@ -39,7 +39,7 @@
     <string name="app_reset_complete">Uygulama sıfırlama tamamlandı. Kapanıyor…</string>
     <string name="reset_app_failed">Uygulama sıfırlama başarısız: %s</string>
     <string name="android11_unsupported_title">Android 11 uyumluluğu</string>
-    <string name="android11_unsupported_message">Android 11'deki bazı cihazlar ShizuWall'i desteklemiyor. Aşağıdaki gibi bir hata görürseniz:\n - no command found set chain3 - \nbu, cihazınızın desteklenmediği ve şu anda yapılacak bir şey olmadığı anlamına gelir.</string>
+    <string name="android11_unsupported_message">Android 11\'deki bazı cihazlar ShizuWall\'i desteklemiyor. Aşağıdaki gibi bir hata görürseniz:\n - no command found set chain3 - \nbu, cihazınızın desteklenmediği ve şu anda yapılacak bir şey olmadığı anlamına gelir.</string>
     <string name="dont_show_again">Bir daha gösterme</string>
     <string name="android11_unsupported_hint">Hata -no command found set chain 3- içeriyorsa, cihazınızın bu Android sürümünde muhtemelen desteklenmediği anlamına gelir.</string>
     <string name="adb_broadcast_usage_title">ADB Yayın Kullanımı (Kopyalanabilir)</string>
