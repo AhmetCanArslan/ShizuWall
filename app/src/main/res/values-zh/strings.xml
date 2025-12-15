@@ -131,4 +131,19 @@
     <string name="settings">设置</string>
     <string name="selected_count_zero">0</string>
     <string name="firewall_enabled">已启用</string>
+    <string name="shizuku_setup_guide">Shizuku 设置指南</string>
+    <string name="shizuku_step_1">首先，您需要启用开发者选项。然后打开 Shizuku 应用并点击配对（Pairing）。</string>
+    <string name="shizuku_step_2">点击开发者选项按钮，系统会将您重定向到该页面。</string>
+    <string name="shizuku_step_3">在这里搜索“无线调试”（Wireless debugging）并点击该按钮，无线调试页面将打开。</string>
+    <string name="shizuku_step_4">点击“配对设备”（Pair device），将会出现配对代码。</string>
+    <string name="shizuku_step_5">对话框打开时，Shizuku 会弹出通知，允许您输入配对代码。</string>
+    <string name="shizuku_step_6">确认配对代码后，返回 Shizuku 并点击“开始”（Start）。</string>
+    <string name="shizuku_step_7">等待服务激活。</string>
+    <string name="shizuku_step_8">打开 ShizuWall 并尝试启用防火墙。</string>
+    <string name="shizuku_step_9">允许 Shizuku 权限，防火墙将被启用。</string>
+    <string name="shizuku_step_10">配对只需进行一次。设备重启后需要再次激活 Shizuku。要启用或禁用防火墙，Shizuku 必须处于激活状态。如果您想在没有 Wi‑Fi 的情况下使用 Shizuku（需先通过 Wi‑Fi 启动），请启用 USB 调试以便 Shizuku 在重启前保持运行。</string>
+    <string name="shizuku_prompt_title">显示 Shizuku 设置指南？</string>
+    <string name="shizuku_prompt_message">您想现在查看 Shizuku 设置幻灯片吗？您也可以稍后从“设置”中的三点菜单打开它们。</string>
+    <string name="shizuku_prompt_do_not_show">不再显示</string>
+    <string name="show_now">现在查看</string>
 </resources>

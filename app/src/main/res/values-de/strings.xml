@@ -131,4 +131,20 @@
     <string name="settings">Einstellungen</string>
     <string name="selected_count_zero">0</string>
     <string name="firewall_enabled">Aktiviert</string>
+
+    <string name="shizuku_setup_guide">Shizuku Einrichtungsanleitung</string>
+    <string name="shizuku_step_1">Zuerst müssen Sie die Entwickleroptionen aktivieren. Öffnen Sie anschließend die Shizuku-App und drücken Sie 'Pairing'.</string>
+    <string name="shizuku_step_2">Drücken Sie die Schaltfläche Entwickleroptionen, Sie werden dorthin weitergeleitet.</string>
+    <string name="shizuku_step_3">Suchen Sie hier nach "Wireless debugging" und drücken Sie die Schaltfläche, die Seite für Wireless-Debugging wird geöffnet.</string>
+    <string name="shizuku_step_4">Drücken Sie 'Pair device', es wird ein Pairing-Code angezeigt.</string>
+    <string name="shizuku_step_5">Wenn der Dialog geöffnet wird, erscheint eine Benachrichtigung von Shizuku, um den Pairing-Code einzugeben.</string>
+    <string name="shizuku_step_6">Nachdem Sie den Pairing-Code bestätigt haben, kehren Sie zu Shizuku zurück und drücken Sie 'Start'.</string>
+    <string name="shizuku_step_7">Warten Sie, bis der Dienst aktiv ist.</string>
+    <string name="shizuku_step_8">Öffnen Sie ShizuWall und versuchen Sie, die Firewall zu aktivieren.</string>
+    <string name="shizuku_step_9">Erteilen Sie die Shizuku-Berechtigung, die Firewall wird aktiviert.</string>
+    <string name="shizuku_step_10">Das Pairing ist nur einmal erforderlich. Shizuku muss nach einem Neustart des Geräts erneut aktiviert werden. Um die Firewall zu aktivieren/deaktivieren, muss Shizuku aktiviert sein. Wenn Sie Shizuku ohne WLAN verwenden möchten (es muss zuvor über WLAN gestartet werden), aktivieren Sie USB-Debugging, damit Shizuku bis zum Neustart aktiv bleibt.</string>
+    <string name="shizuku_prompt_title">Shizuku-Anleitung anzeigen?</string>
+    <string name="shizuku_prompt_message">Möchten Sie jetzt die Shizuku-Setup-Folien ansehen? Sie können sie später jederzeit über das Drei-Punkte-Menü in den Einstellungen öffnen.</string>
+    <string name="shizuku_prompt_do_not_show">Nicht erneut anzeigen</string>
+    <string name="show_now">Jetzt anzeigen</string>
 </resources>

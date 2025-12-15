@@ -131,4 +131,19 @@
     <string name="settings">Ayarlar</string>
     <string name="selected_count_zero">0</string>
     <string name="firewall_enabled">Etkin</string>
+    <string name="shizuku_setup_guide">Shizuku Kurulum Kılavuzu</string>
+    <string name="shizuku_step_1">Öncelikle geliştirici seçeneklerini etkinleştirmeniz gerekiyor. Ardından Shizuku uygulamasını açın ve 'Pairing'e basın.</string>
+    <string name="shizuku_step_2">Geliştirici seçenekleri düğmesine basın, sizi oraya yönlendirecektir.</string>
+    <string name="shizuku_step_3">Burada 'Wireless debugging'i arayın ve o düğmeye basın, kablosuz hata ayıklama sayfası açılacaktır.</string>
+    <string name="shizuku_step_4">Pair device'a basın, eşleştirme kodu görünecektir.</string>
+    <string name="shizuku_step_5">İletişim kutusu açıldığında, Shizuku'dan eşleştirme kodunu girmenize izin veren bir bildirim görünecektir.</string>
+    <string name="shizuku_step_6">Eşleştirme kodunu onayladıktan sonra Shizuku'ya geri dönün ve 'Start'a basın.</string>
+    <string name="shizuku_step_7">Servisin aktif olmasını bekleyin.</string>
+    <string name="shizuku_step_8">ShizuWall'u açın ve Güvenlik Duvarını etkinleştirmeyi deneyin.</string>
+    <string name="shizuku_step_9">Shizuku iznini verin, güvenlik duvarı etkinleştirilecektir.</string>
+    <string name="shizuku_step_10">Eşleştirme yalnızca bir kez gereklidir. Cihaz yeniden başlatıldığında Shizuku'nun tekrar etkinleştirilmesi gerekir. Güvenlik duvarını etkinleştirmek/devre dışı bırakmak için Shizuku etkin olmalıdır. Shizuku'yu Wi‑Fi olmadan kullanmak istiyorsanız (önceden Wi‑Fi üzerinden başlatılmalıdır), Shizuku'nun yeniden başlatılana kadar açık kalması için USB hata ayıklamayı etkinleştirin.</string>
+    <string name="shizuku_prompt_title">Shizuku kurulum kılavuzunu göster?</string>
+    <string name="shizuku_prompt_message">Shizuku kurulum slaytlarını şimdi görüntülemek ister misiniz? Daha sonra Ayarlar'daki üç nokta menüsünden her zaman açabilirsiniz.</string>
+    <string name="shizuku_prompt_do_not_show">Bir daha gösterme</string>
+    <string name="show_now">Şimdi göster</string>
 </resources>
