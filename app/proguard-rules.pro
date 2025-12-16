@@ -43,3 +43,6 @@
   public static final android.os.Parcelable$Creator CREATOR;
 }
 # Add library-specific keeps only when needed (e.g. retrofit, gson, shizuku)
+# Keep Conscrypt TLS provider classes used at runtime via Security.insertProviderAt
+-keep class org.conscrypt.** { *; }
+-dontwarn org.conscrypt.**

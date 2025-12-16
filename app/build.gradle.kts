@@ -82,4 +82,8 @@ dependencies {
 
     implementation ("dev.rikka.shizuku:api:$shizuku_version")
     implementation ("dev.rikka.shizuku:provider:$shizuku_version")
+
+    implementation ("com.github.MuntashirAkon:libadb-android:3.1.1")
+    implementation ("org.conscrypt:conscrypt-android:2.5.3")
+    implementation ("androidx.security:security-crypto:1.1.0")
 }
