@@ -1,7 +1,8 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.repo
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

@@ -1,11 +1,13 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context
+import com.arslan.shizuwall.widgets.FirewallWidgetProvider
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.SystemClock
 import android.widget.Toast
+import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

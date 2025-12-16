@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.ui
 
 import android.Manifest
 import android.content.Intent
@@ -10,7 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import android.content.res.Configuration
+import com.arslan.shizuwall.R
 import com.google.android.material.color.DynamicColors
+import com.arslan.shizuwall.adapters.OnboardingPageAdapter
 
 class OnboardingActivity : AppCompatActivity() {
 

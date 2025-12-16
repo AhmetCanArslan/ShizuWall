@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.adapters
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -16,11 +16,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.arslan.shizuwall.model.AppInfo
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.core.graphics.createBitmap
+import com.arslan.shizuwall.R
 
 class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
     override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {

@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -35,6 +35,12 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.DynamicColors
+import com.arslan.shizuwall.adapters.AppListAdapter
+import com.arslan.shizuwall.adapters.SelectedAppsAdapter
+import com.arslan.shizuwall.adapters.ErrorDetailsAdapter
+import com.arslan.shizuwall.model.AppInfo
+import com.arslan.shizuwall.widgets.FirewallWidgetProvider
+import com.arslan.shizuwall.repo.FirewallStateRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,6 +49,9 @@ import rikka.shizuku.ShizukuRemoteProcess
 import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
+import com.arslan.shizuwall.R
+import com.arslan.shizuwall.adapters.ErrorEntry
+import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {

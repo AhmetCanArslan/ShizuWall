@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.ui
 
 import android.content.Context
 import android.content.Intent
@@ -28,6 +28,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,6 +36,7 @@ import kotlinx.coroutines.withContext
 import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
+import com.arslan.shizuwall.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
@@ -482,7 +484,7 @@ class SettingsActivity : AppCompatActivity() {
         val action = MainActivity.ACTION_FIREWALL_CONTROL
         val extraEnabled = MainActivity.EXTRA_FIREWALL_ENABLED
         val extraCsv = MainActivity.EXTRA_PACKAGES_CSV
-        val component = "$pkg/.FirewallControlReceiver"
+        val component = "$pkg/.receivers.FirewallControlReceiver"
 
         val adbUsageText = getString(
             R.string.adb_broadcast_usage_text,

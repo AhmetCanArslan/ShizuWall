@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.receivers
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -12,6 +12,8 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.arslan.shizuwall.R
+import com.arslan.shizuwall.ui.MainActivity
 
 /**
  * On BOOT_COMPLETED, check whether the firewall was enabled before reboot (using the saved elapsedRealtime).

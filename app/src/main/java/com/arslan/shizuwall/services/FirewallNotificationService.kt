@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.services
 
 import android.app.Service
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.widgets
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -9,7 +9,10 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.widget.RemoteViews
 import android.widget.Toast
+import com.arslan.shizuwall.R
 import rikka.shizuku.Shizuku
+import com.arslan.shizuwall.receivers.FirewallControlReceiver
+import com.arslan.shizuwall.ui.MainActivity
 
 class FirewallWidgetProvider : AppWidgetProvider() {
 

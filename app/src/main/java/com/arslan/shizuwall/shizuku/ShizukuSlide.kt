@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.shizuku
 
 data class ShizukuSlide(
     val imageName: String?,

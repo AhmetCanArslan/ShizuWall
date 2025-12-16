@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.shizuku
 
 import android.os.Bundle
 import android.widget.TextView
@@ -11,6 +11,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.activity.enableEdgeToEdge
+import com.arslan.shizuwall.R
 import com.google.android.material.color.DynamicColors
 
 class ShizukuSetupActivity : AppCompatActivity() {

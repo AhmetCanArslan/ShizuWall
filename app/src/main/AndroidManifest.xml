@@ -23,7 +23,7 @@
         android:extractNativeLibs="false"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,12 +31,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".OnboardingActivity" />
-        <activity android:name=".ShizukuSetupActivity" />
+        <activity android:name=".ui.OnboardingActivity" />
+        <activity android:name=".shizuku.ShizukuSetupActivity" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:label="Settings"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:exported="false" />
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
@@ -50,7 +50,7 @@
 
         <!-- Boot receiver: when device reboots, check saved firewall state and notify user to re-enable if needed -->
         <receiver
-            android:name=".BootReceiver"
+            android:name=".receivers.BootReceiver"
             android:exported="true"
             android:directBootAware="true">
             <intent-filter>
@@ -60,7 +60,7 @@
         </receiver>
 
         <receiver
-            android:name=".FirewallControlReceiver"
+            android:name=".receivers.FirewallControlReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.arslan.shizuwall.ACTION_FIREWALL_CONTROL" />
@@ -68,7 +68,7 @@
         </receiver>
 
         <service
-            android:name=".FirewallTileService"
+            android:name=".services.FirewallTileService"
             android:label="Firewall Toggle"
             android:icon="@drawable/ic_quick_tile"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
@@ -79,7 +79,7 @@
         </service>
 
         <receiver
-            android:name=".FirewallWidgetProvider"
+            android:name=".widgets.FirewallWidgetProvider"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
