@@ -33,6 +33,7 @@
         </activity>
         <activity android:name=".ui.OnboardingActivity" />
         <activity android:name=".shizuku.ShizukuSetupActivity" />
+            <activity android:name=".LadbSetupActivity" />
         <activity
             android:name=".ui.SettingsActivity"
             android:label="Settings"

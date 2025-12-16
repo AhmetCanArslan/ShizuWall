@@ -62,6 +62,10 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var switchAutoEnableOnShizukuStart: SwitchCompat
 
     private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
+    private lateinit var radioGroupWorkingMode: RadioGroup
+    private lateinit var radioShizukuMode: RadioButton
+    private lateinit var radioLadbMode: RadioButton
+    private lateinit var layoutSetLadb: LinearLayout
 
     private val createDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -143,6 +147,11 @@ class SettingsActivity : AppCompatActivity() {
 
         // new: bind XML item
         layoutAdbBroadcastUsage = findViewById(R.id.layoutAdbBroadcastUsage)
+        // Working mode controls
+        radioGroupWorkingMode = findViewById(R.id.radioGroupWorkingMode)
+        radioShizukuMode = findViewById(R.id.radioShizukuMode)
+        radioLadbMode = findViewById(R.id.radioLadbMode)
+        layoutSetLadb = findViewById(R.id.layoutSetLadb)
         // Auto-enable switch (new)
         switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
     }
@@ -175,6 +184,18 @@ class SettingsActivity : AppCompatActivity() {
         tvCurrentFont.text = if (currentFont == "ndot") "Ndot" else "Default"
         switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
         switchAutoEnableOnShizukuStart.isChecked = prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
+
+        // Load working mode
+        val workingModeName = prefs.getString(MainActivity.KEY_WORKING_MODE, com.arslan.shizuwall.WorkingMode.SHIZUKU.name)
+        when (com.arslan.shizuwall.WorkingMode.fromName(workingModeName)) {
+            com.arslan.shizuwall.WorkingMode.LADB -> radioGroupWorkingMode.check(R.id.radioLadbMode)
+            else -> radioGroupWorkingMode.check(R.id.radioShizukuMode)
+        }
+        // Dim and disable LADB card if not selected
+        val ladbSelected = radioLadbMode.isChecked
+        layoutSetLadb.alpha = if (ladbSelected) 1.0f else 0.5f
+        layoutSetLadb.isEnabled = ladbSelected
+        layoutSetLadb.isClickable = ladbSelected
     }
 
     private fun setupListeners() {
@@ -262,6 +283,35 @@ class SettingsActivity : AppCompatActivity() {
         switchAutoEnableOnShizukuStart.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, isChecked).apply()
             setResult(RESULT_OK)
+        }
+
+        radioGroupWorkingMode.setOnCheckedChangeListener { _, checkedId ->
+            val mode = if (checkedId == R.id.radioLadbMode) com.arslan.shizuwall.WorkingMode.LADB else com.arslan.shizuwall.WorkingMode.SHIZUKU
+            prefs.edit().putString(MainActivity.KEY_WORKING_MODE, mode.name).apply()
+            setResult(RESULT_OK)
+            // Update UI affordance for LADB setup
+            val isLadb = mode == com.arslan.shizuwall.WorkingMode.LADB
+            layoutSetLadb.alpha = if (isLadb) 1.0f else 0.5f
+            layoutSetLadb.isEnabled = isLadb
+            layoutSetLadb.isClickable = isLadb
+            layoutSetLadb.isFocusable = isLadb
+            if (isLadb) {
+                Toast.makeText(this, getString(R.string.working_mode_ladb), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        layoutSetLadb.setOnClickListener {
+            // Only allow opening when LADB mode is selected
+            if (!radioLadbMode.isChecked) {
+                Toast.makeText(this, getString(R.string.working_mode_select_ladb_prompt), Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            try {
+                val intent = android.content.Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java)
+                startActivity(intent)
+            } catch (e: Exception) {
+                Toast.makeText(this, getString(R.string.open_ladb_setup), Toast.LENGTH_SHORT).show()
+            }
         }
 
         layoutAdbBroadcastUsage.setOnClickListener { showAdbBroadcastDialog() }

@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         const val KEY_ADAPTIVE_MODE = "adaptive_mode"
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
         const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"
+        const val KEY_WORKING_MODE = "working_mode"
 
         const val ACTION_FIREWALL_STATE_CHANGED = "com.arslan.shizuwall.ACTION_FIREWALL_STATE_CHANGED"
         const val EXTRA_FIREWALL_ENABLED = "state" 

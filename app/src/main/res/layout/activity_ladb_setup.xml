@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/ladbToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        app:title="@string/set_ladb_title"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:titleTextColor="?android:attr/textColorPrimary" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvLadbStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Not configured"
+                android:textSize="14sp"
+                android:textColor="?android:attr/textColorSecondary"
+                android:paddingBottom="12dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Host:Port (e.g., 192.168.1.2:5555)">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etHostPort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPair"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pair"
+                android:layout_marginTop="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConnect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Connect"
+                android:layout_marginTop="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUnpair"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Unpair"
+                android:layout_marginTop="8dp"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnStartService"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Start persistent connection"
+                android:layout_marginTop="12dp" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

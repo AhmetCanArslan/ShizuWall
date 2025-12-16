@@ -115,6 +115,10 @@
     <string name="keep_failed_apps_selected_description">Don\'t unselect apps on failure</string>
     <string name="auto_enable_on_shizuku_start">Auto-enable firewall when Shizuku starts</string>
     <string name="auto_enable_on_shizuku_start_description">Automatically enable the firewall when the Shizuku service becomes available</string>
+    <string name="working_mode_title">Working mode</string>
+    <string name="working_mode_summary">Choose how ADB commands are executed</string>
+    <string name="working_mode_shizuku">Shizuku (local privileged API)</string>
+    <string name="working_mode_ladb">LADB (remote ADB - LibADB)</string>
     <string name="appearance_section">Appearance</string>
     <string name="font">Font</string>
     <string name="advanced_section">Advanced</string>
@@ -147,4 +151,8 @@
     <string name="shizuku_prompt_message">Would you like to view the Shizuku setup slides now? You can always open them later from the three-dot menu in Settings.</string>
     <string name="shizuku_prompt_do_not_show">Do not show again</string>
     <string name="show_now">Show now</string>
+    <string name="open_ladb_setup">Open LADB setup</string>
+    <string name="working_mode_select_ladb_prompt">Select LADB mode first to configure LADB</string>
+    <string name="set_ladb_title">Set LADB</string>
+    <string name="set_ladb_summary">Configure LibADB pairing / remote ADB (TLS) and connection</string>
 </resources>
