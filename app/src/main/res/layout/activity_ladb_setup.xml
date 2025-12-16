@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ladbSetupRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorSurface">
+    android:background="?attr/colorSurface"
+    android:fitsSystemWindows="false">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/ladbToolbar"
@@ -23,57 +25,83 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingBottom="32dp">
 
-            <TextView
-                android:id="@+id/tvLadbStatus"
+            <!-- LADB Card: same style as Settings cards -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Not configured"
-                android:textSize="14sp"
-                android:textColor="?android:attr/textColorSecondary"
-                android:paddingBottom="12dp" />
+                android:layout_margin="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:strokeWidth="0dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Host:Port (e.g., 192.168.1.2:5555)">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etHostPort"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPair"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Pair"
-                android:layout_marginTop="12dp" />
+                    <TextView
+                        android:id="@+id/tvLadbStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_status_unconfigured"
+                        android:textSize="14sp"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:paddingBottom="12dp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnConnect"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Connect"
-                android:layout_marginTop="8dp" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/ladb_pairing_code_hint">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnUnpair"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Unpair"
-                android:layout_marginTop="8dp"
-                android:visibility="gone" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etHostPort"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnStartService"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Start persistent connection"
-                android:layout_marginTop="12dp" />
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:id="@+id/btnPair"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pair"
+                        android:layout_marginTop="12dp"
+                        app:useMaterialThemeColors="true" />
+
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:id="@+id/btnConnect"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_connect"
+                        android:layout_marginTop="8dp"
+                        app:useMaterialThemeColors="true" />
+
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:id="@+id/btnUnpair"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_unpair"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+                        app:useMaterialThemeColors="true" />
+
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:id="@+id/btnStartService"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_start_service"
+                        android:layout_marginTop="12dp"
+                        app:useMaterialThemeColors="true" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </ScrollView>

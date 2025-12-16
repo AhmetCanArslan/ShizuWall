@@ -153,6 +153,12 @@
     <string name="show_now">Show now</string>
     <string name="open_ladb_setup">Open LADB setup</string>
     <string name="working_mode_select_ladb_prompt">Select LADB mode first to configure LADB</string>
+    <string name="pair">Pair</string>
+    <string name="ladb_connect">Connect</string>
+    <string name="ladb_unpair">Unpair</string>
+    <string name="ladb_start_service">Start persistent connection</string>
+    <string name="ladb_status_unconfigured">Not configured</string>
+    <string name="ladb_pairing_code_hint">Pairing code (optional)</string>
     <string name="set_ladb_title">Set LADB</string>
     <string name="set_ladb_summary">Configure LibADB pairing / remote ADB (TLS) and connection</string>
 </resources>
