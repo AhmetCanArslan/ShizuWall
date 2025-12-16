@@ -61,7 +61,7 @@ ShizuWall supports a simple broadcast interface so you can enable/disable the fi
 
 ```bash
 - Action: shizuwall.CONTROL
-- Component: com.arslan.shizuwall/.FirewallControlReceiver
+- Component: com.arslan.shizuwall/.receivers.FirewallControlReceiver
 - Extras:
   - state (boolean) — true = enable, false = disable
   - apps (string, optional) — comma-separated package list to operate on. If omitted the app falls back to the saved "selected apps" set.
@@ -69,23 +69,23 @@ ShizuWall supports a simple broadcast interface so you can enable/disable the fi
 Examples:
 
 - Enable firewall for selected apps:
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.FirewallControlReceiver --ez state true
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true
 
 - Disable firewall for selected apps
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.FirewallControlReceiver --ez state false
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state false
 
 
 - Enable firewall for specific packages (CSV):
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.FirewallControlReceiver --ez state true --es apps "com.example.app1,com.example.app2"
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true --es apps "com.example.app1,com.example.app2"
 
 - Disable firewall for specific packages:
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.FirewallControlReceiver --ez state false --es apps "com.example.app1,com.example.app2"
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state false --es apps "com.example.app1,com.example.app2"
 
 ```
 
 Notes for those want to use broadcasts:
 - The receiver is exported to allow adb and automation.
-- Using `-n com.arslan.shizuwall/.FirewallControlReceiver` targets the receiver directly, bypassing intent filters.
+- Using `-n com.arslan.shizuwall/.receivers.FirewallControlReceiver` targets the receiver directly, bypassing intent filters.
 - Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.
 - The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.
 

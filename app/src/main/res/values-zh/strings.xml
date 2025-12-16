@@ -44,7 +44,6 @@
     <string name="android11_unsupported_hint">如果错误包含 -no command found set chain 3-，则您的设备很可能不支持此 Android 版本。</string>
     <string name="adb_broadcast_usage_title">ADB 广播使用（可复制）</string>
     <string name="ok">确定</string>
-    <string name="adb_broadcast_usage_text" formatted="false">操作：\n%1$s\n\n组件：\n%2$s\n\n额外：\n\n%3$s (boolean) — true = 启用，false = 禁用\n\n%4$s (string，可选) — 要操作的逗号分隔包列表。如果省略，应用将回退到保存的选定应用。\n\n\n示例：\n\n为选定应用启用防火墙（在 ShizuWall 中选定）：\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\n为选定应用禁用防火墙（在 ShizuWall 中选定）：\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\n为特定包启用防火墙 (CSV)：\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n为特定包禁用防火墙 (CSV)：\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\n注意：\n\n- 接收器为 ADB 自动化导出；首选使用 -n %2$s 明确针对接收器以避免外部广播。\n\n- Shizuku 必须运行且应用必须有 Shizuku 权限，这些广播才能成功。\n\n- 接收器应用与 UI 相同的命令 (cmd connectivity …)。谨慎使用。</string>
     <string name="no_apps_selected">未选择应用</string>
     <string name="shizuku_not_running">Shizuku 未运行</string>
     <string name="shizuku_permission_required">需要 Shizuku 权限</string>
