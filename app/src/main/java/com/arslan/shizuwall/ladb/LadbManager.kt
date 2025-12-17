@@ -244,12 +244,33 @@ class LadbManager private constructor(private val context: Context) {
 
         try {
             val stream: AdbStream = conn.open("shell:$cmd")
-            val stdout = stream.openInputStream().bufferedReader().use { it.readText() }
+            val input = stream.openInputStream()
+
+            // AdbInputStream may throw "Stream closed" at EOF depending on transport timing.
+            // Treat that as a normal end-of-stream so successful commands with no output
+            // don't get reported as failures.
+            val buf = ByteArray(8 * 1024)
+            val out = StringBuilder()
+            while (true) {
+                val n = try {
+                    input.read(buf)
+                } catch (e: Exception) {
+                    val msg = e.message?.lowercase().orEmpty()
+                    if (msg.contains("stream closed") || msg.contains("socket closed")) {
+                        if (stream.isClosed()) break
+                    }
+                    throw e
+                }
+                if (n <= 0) break
+                out.append(String(buf, 0, n, Charsets.UTF_8))
+            }
+
             try {
                 stream.close()
             } catch (_: Exception) {
             }
-            return@withContext ShellResult(0, stdout, "")
+
+            return@withContext ShellResult(0, out.toString(), "")
         } catch (e: Exception) {
             return@withContext ShellResult(-1, "", e.message ?: "Error executing command")
         }
