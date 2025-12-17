@@ -125,6 +125,30 @@ class LadbManager private constructor(private val context: Context) {
         )
     }
 
+    fun getSavedHost(): String? {
+        return try {
+            getPrefs().getString(KEY_HOST, null)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    fun getSavedConnectPort(): Int {
+        return try {
+            getPrefs().getInt(KEY_PORT, -1)
+        } catch (_: Exception) {
+            -1
+        }
+    }
+
+    fun getSavedPairingPort(): Int {
+        return try {
+            getPrefs().getInt(KEY_PAIRING_PORT, -1)
+        } catch (_: Exception) {
+            -1
+        }
+    }
+
     private fun keyStoreDir(): File {
         return File(context.filesDir, "ladb").apply { mkdirs() }
     }

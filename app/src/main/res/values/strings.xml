@@ -174,6 +174,18 @@
     <string name="ladb_pairing_notification_title">Enter pairing code</string>
     <string name="ladb_pairing_notification_text">Tap and enter the pairing port and code shown in Wireless debugging → Pair device.</string>
     <string name="ladb_enter_pairing_port_code_action">Enter port &amp; code</string>
+    <string name="ladb_pairing_notification_text_code_only">Tap and enter the pairing code shown in Wireless debugging → Pair device.</string>
+    <string name="ladb_enter_pairing_code_action">Enter code</string>
+
+    <string name="ladb_pairing_details_hint_port_code">Enter: PORT CODE (e.g. 37133 123456)</string>
+    <string name="ladb_pairing_details_hint_code_only">Enter pairing code (e.g. 123456)</string>
+    <string name="ladb_enter_pairing_details_action">Send</string>
+
+    <string name="ladb_pairing_result_success_title">LADB paired</string>
+    <string name="ladb_pairing_result_success_text">Pairing succeeded. You can now connect.</string>
+    <string name="ladb_pairing_result_failed_title">LADB pairing failed</string>
+    <string name="ladb_pairing_result_failed_text">Open ShizuWall to see the error log.</string>
+    <string name="ladb_pairing_result_missing_code">Missing pairing code. Enter it from Wireless debugging → Pair device.</string>
     <string name="ladb_pairing_notification_shown">Pairing notification shown</string>
     <string name="ladb_notification_permission_required">Notification permission is required to show the pairing code prompt.</string>
     <string name="set_ladb_title">Set LADB</string>
