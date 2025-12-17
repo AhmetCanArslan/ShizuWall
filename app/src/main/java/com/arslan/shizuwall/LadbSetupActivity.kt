@@ -43,6 +43,7 @@ class LadbSetupActivity : AppCompatActivity() {
     private lateinit var etPairingCode: TextInputEditText
     private lateinit var btnUnpair: MaterialButton
     private lateinit var tvLadbLogs: TextView
+    private lateinit var switchEnableLogs: com.google.android.material.materialswitch.MaterialSwitch
 
     private lateinit var ladbManager: LadbManager
 
@@ -60,6 +61,8 @@ class LadbSetupActivity : AppCompatActivity() {
     }
 
     private fun appendLog(message: String) {
+        if (!getLoggingEnabled()) return
+        
         runOnUiThread {
             val timestamp = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date())
             val logEntry = "[$timestamp] $message\n"
@@ -95,6 +98,16 @@ class LadbSetupActivity : AppCompatActivity() {
     private fun loadLogs(): String {
         val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
         return prefs.getString("logs", "") ?: ""
+    }
+
+    private fun getLoggingEnabled(): Boolean {
+        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
+        return prefs.getBoolean("logging_enabled", true)
+    }
+
+    private fun setLoggingEnabled(enabled: Boolean) {
+        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("logging_enabled", enabled).apply()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,6 +146,15 @@ class LadbSetupActivity : AppCompatActivity() {
         tvLadbLogs = findViewById<TextView>(R.id.tvLadbLogs)
         val btnClearLogs = findViewById<MaterialButton>(R.id.btnClearLogs)
         val btnCopyLogs = findViewById<MaterialButton>(R.id.btnCopyLogs)
+        switchEnableLogs = findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.switchEnableLogs)
+
+        // Load logging preference
+        switchEnableLogs.isChecked = getLoggingEnabled()
+
+        switchEnableLogs.setOnCheckedChangeListener { _, isChecked ->
+            setLoggingEnabled(isChecked)
+            appendLog("Logging ${if (isChecked) "enabled" else "disabled"}")
+        }
 
         // Load saved logs
         val savedLogs = loadLogs()

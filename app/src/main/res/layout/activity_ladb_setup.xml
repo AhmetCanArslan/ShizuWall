@@ -141,6 +141,15 @@
                         android:textColor="?android:attr/textColorPrimary"
                         android:paddingBottom="8dp" />
 
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchEnableLogs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_enable_logs"
+                        android:checked="true"
+                        android:layout_marginBottom="8dp"
+                        app:useMaterialThemeColors="true" />
+
                     <ScrollView
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
