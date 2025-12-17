@@ -32,17 +32,28 @@ class LadbPairingCodeReceiver : BroadcastReceiver() {
             if (s.isEmpty()) return null to null
 
             // Accept: "37133 123456" or "37133:123456" or "37133,123456".
-            val tokens = s.split(Regex("[\\s,:]+"), limit = 3).filter { it.isNotBlank() }
-            if (tokens.isEmpty()) return null to null
+            val tokens = s.split(Regex("[\\s,:]+"), limit = 2).filter { it.isNotBlank() }
+            if (tokens.size != 2) return null to null
 
-            // If first token is a port, treat second as code.
-            val firstAsPort = tokens.first().toIntOrNull()
-            return if (firstAsPort != null && firstAsPort > 0) {
-                val code = tokens.getOrNull(1)
-                firstAsPort to code
+            val first = tokens[0]
+            val second = tokens[1]
+
+            val port: Int?
+            val code: String?
+
+            if (first.length == 6 && first.toIntOrNull() != null && second.toIntOrNull() != null && second.toInt() in 1..65535) {
+                // Assume first is 6-digit code, second is port
+                code = first
+                port = second.toInt()
+            } else if (first.toIntOrNull() != null && first.toInt() in 1..65535) {
+                // Assume first is port, second is code
+                port = first.toInt()
+                code = second
             } else {
-                null to tokens.first()
+                return null to null
             }
+
+            return port to code
         }
 
         fun postResultNotification(title: String, text: String) {

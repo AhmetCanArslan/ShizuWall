@@ -241,7 +241,7 @@ class LadbManager private constructor(private val context: Context) {
 
     suspend fun pair(host: String, port: Int, pairingCode: String?): Boolean = withContext(Dispatchers.IO) {
         try {
-            if (host.isBlank() || port <= 0) {
+            if (host.isBlank() || port <= 0 || port > 65535) {
                 val e = IllegalArgumentException("Invalid host/port")
                 recordError("pair", host, port, e)
                 _state.set(State.UNCONFIGURED)
@@ -285,7 +285,7 @@ class LadbManager private constructor(private val context: Context) {
 
     suspend fun savePairingConfig(host: String, pairingPort: Int): Boolean = withContext(Dispatchers.IO) {
         return@withContext try {
-            if (host.isBlank() || pairingPort <= 0) {
+            if (host.isBlank() || pairingPort <= 0 || pairingPort > 65535) {
                 val e = IllegalArgumentException("Invalid pairing host/port")
                 recordError("save_pairing_config", host, pairingPort, e)
                 false
@@ -305,7 +305,7 @@ class LadbManager private constructor(private val context: Context) {
     suspend fun savePairingPortUsingSavedHost(pairingPort: Int): Boolean = withContext(Dispatchers.IO) {
         val host = getPrefs().getString(KEY_HOST, null)
         return@withContext try {
-            if (host.isNullOrBlank() || pairingPort <= 0) {
+            if (host.isNullOrBlank() || pairingPort <= 0 || pairingPort > 65535) {
                 val e = IllegalArgumentException("Invalid saved host or pairing port")
                 recordError("save_pairing_port_using_saved_host", host, pairingPort, e)
                 false
@@ -335,7 +335,7 @@ class LadbManager private constructor(private val context: Context) {
 
     suspend fun saveConnectConfig(host: String, port: Int): Boolean = withContext(Dispatchers.IO) {
         return@withContext try {
-            if (host.isBlank() || port <= 0) {
+            if (host.isBlank() || port <= 0 || port > 65535) {
                 val e = IllegalArgumentException("Invalid host/port")
                 recordError("save_connect_config", host, port, e)
                 false

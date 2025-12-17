@@ -57,9 +57,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private lateinit var adbPortFinder: AdbPortFinder
     private var localIp: String? = null
     private val detectedConnectPorts = mutableListOf<Int>()
-    private val detectedPairingCandidates = linkedSetOf<Pair<String, Int>>()
     private val handler = Handler(Looper.getMainLooper())
-    private var pairingScanScheduled = false
     private var lastShownErrorHash: Int? = null
 
     private fun updateStatus() {
@@ -265,89 +263,10 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         localIp = detectLocalIpv4OrNull()
         adbPortFinder = AdbPortFinder(this, this)
         detectedConnectPorts.clear()
-        detectedPairingCandidates.clear()
         adbPortFinder.startDiscovery()
 
-        fun createPairingNotificationChannel() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val nm = getSystemService(NotificationManager::class.java)
-                if (nm.getNotificationChannel(PAIRING_CHANNEL_ID) == null) {
-                    val channel = NotificationChannel(
-                        PAIRING_CHANNEL_ID,
-                        getString(R.string.ladb_pairing_channel_name),
-                        NotificationManager.IMPORTANCE_HIGH
-                    )
-                    nm.createNotificationChannel(channel)
-                }
-            }
-        }
+        updateStatus()
 
-        fun showPairingCodeNotification() {
-            // Android 13+ requires notification permission.
-            if (Build.VERSION.SDK_INT >= 33) {
-                if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    Snackbar.make(rootView, getString(R.string.ladb_notification_permission_required), Snackbar.LENGTH_LONG).show()
-                    return
-                }
-            }
-
-            createPairingNotificationChannel()
-
-            val hasPairingPort = ladbManager.getSavedPairingPort() > 0
-            val detailsLabel = if (hasPairingPort) {
-                getString(R.string.ladb_pairing_details_hint_code_only)
-            } else {
-                getString(R.string.ladb_pairing_details_hint_port_code)
-            }
-            val remoteDetails = RemoteInput.Builder(LadbPairingCodeReceiver.KEY_REMOTE_INPUT_DETAILS)
-                .setLabel(detailsLabel)
-                .build()
-
-            val intent = Intent(this, LadbPairingCodeReceiver::class.java).apply {
-                action = LadbPairingCodeReceiver.ACTION_LADB_PAIRING_CODE
-            }
-
-            // RemoteInput requires a mutable PendingIntent on Android 12+.
-            val actionFlags = PendingIntent.FLAG_UPDATE_CURRENT or when {
-                Build.VERSION.SDK_INT >= 31 -> PendingIntent.FLAG_MUTABLE
-                Build.VERSION.SDK_INT >= 23 -> 0
-                else -> 0
-            }
-            val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, actionFlags)
-
-            val action = NotificationCompat.Action.Builder(
-                0,
-                getString(R.string.ladb_enter_pairing_details_action),
-                pendingIntent
-            )
-                .addRemoteInput(remoteDetails)
-                .setAllowGeneratedReplies(false)
-                .build()
-
-            val openIntent = Intent(this, LadbSetupActivity::class.java)
-            val contentFlags = PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0)
-            val contentIntent = PendingIntent.getActivity(this, 0, openIntent, contentFlags)
-
-            val notification = NotificationCompat.Builder(this, PAIRING_CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(getString(R.string.ladb_pairing_notification_title))
-                .setContentText(
-                    if (hasPairingPort) {
-                        getString(R.string.ladb_pairing_notification_text_code_only)
-                    } else {
-                        getString(R.string.ladb_pairing_notification_text)
-                    }
-                )
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .setOnlyAlertOnce(true)
-                .setContentIntent(contentIntent)
-                .addAction(action)
-                .build()
-
-            NotificationManagerCompat.from(this)
-                .notify(LadbPairingCodeReceiver.NOTIFICATION_ID, notification)
-        }
 
         fun parseHostPort(raw: String): Pair<String, Int>? {
             val input = raw.trim()
@@ -388,16 +307,12 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 appendLog("Showing pairing notification (missing code)")
                 appendLog("Host will be: $host")
                 lifecycleScope.launch(Dispatchers.IO) {
-                    // Save host (and pairing port if present) so the receiver can complete pairing.
+                    // Save host so the receiver can complete pairing.
                     ladbManager.saveHost(host)
-                    if (pairingPort != null) {
-                        ladbManager.savePairingConfig(host, pairingPort)
-                        appendLog("Saved pairing port: $pairingPort")
-                    }
                 }
 
-                showPairingCodeNotification()
-                Snackbar.make(rootView, getString(R.string.ladb_pairing_notification_shown), Snackbar.LENGTH_SHORT).show()
+                // Do not show notification here, wait for pairing port discovery
+                Snackbar.make(rootView, "Waiting for pairing service discovery...", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -511,9 +426,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
                 // Reset local detection state.
                 detectedConnectPorts.clear()
-                detectedPairingCandidates.clear()
-                pairingScanScheduled = false
-                handler.removeCallbacksAndMessages(null)
 
                 // Restart mDNS discovery.
                 adbPortFinder.stopDiscovery()
@@ -567,12 +479,13 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         appendLog("Pairing port detected: $host:$port")
         if (host == "unknown" || port <= 0 || port > 65535) return
 
-        detectedPairingCandidates.add(host to port)
-
-        // Allow multiple NSD results to accumulate briefly, then pick a reachable port.
-        if (!pairingScanScheduled) {
-            pairingScanScheduled = true
-            handler.postDelayed({ scanForOpenPairingPort() }, 1200)
+        lifecycleScope.launch(Dispatchers.IO) {
+            ladbManager.saveHost(host)
+            val success = ladbManager.savePairingConfig(host, port)
+            withContext(Dispatchers.Main) {
+                appendLog(if (success) "Pairing config saved" else "Failed to save pairing config")
+                showPairingCodeNotification()
+            }
         }
     }
 
@@ -589,61 +502,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         }
     }
 
-    private fun scanForOpenPairingPort() {
-        val candidates = detectedPairingCandidates.toList()
-        if (candidates.isEmpty()) {
-            pairingScanScheduled = false
-            return
-        }
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            val savedHost = ladbManager.getSavedHost()
-
-            val preferred = candidates.sortedWith(
-                compareBy<Pair<String, Int>>(
-                    { (h, _) ->
-                        when {
-                            localIp != null && h == localIp -> 0
-                            !savedHost.isNullOrBlank() && h == savedHost -> 1
-                            else -> 2
-                        }
-                    },
-                    { (_, p) -> p }
-                )
-            )
-
-            var chosen: Pair<String, Int>? = null
-            for ((host, port) in preferred) {
-                try {
-                    val socket = Socket()
-                    socket.connect(InetSocketAddress(host, port), 250)
-                    if (socket.isConnected) {
-                        chosen = host to port
-                        socket.close()
-                        break
-                    }
-                    socket.close()
-                } catch (_: Exception) {
-                    // Not reachable; try next.
-                }
-            }
-
-            withContext(Dispatchers.Main) {
-                pairingScanScheduled = false
-                if (chosen != null) {
-                    val (host, port) = chosen
-                    appendLog("Reachable pairing port selected: $host:$port")
-                    lifecycleScope.launch {
-                        ladbManager.saveHost(host)
-                        val success = ladbManager.savePairingConfig(host, port)
-                        appendLog(if (success) "Pairing config saved" else "Failed to save pairing config")
-                    }
-                } else {
-                    appendLog("No reachable pairing port found. Open Wireless debugging → Pair device, then try again.")
-                }
-            }
-        }
-    }
 
     private fun scanForOpenPort(host: String) {
         lifecycleScope.launch(Dispatchers.IO) {
@@ -693,6 +552,87 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         } catch (_: Exception) {
             null
         }
+    }
+
+    private fun createPairingNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val nm = getSystemService(NotificationManager::class.java)
+            if (nm.getNotificationChannel(PAIRING_CHANNEL_ID) == null) {
+                val channel = NotificationChannel(
+                    PAIRING_CHANNEL_ID,
+                    getString(R.string.ladb_pairing_channel_name),
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+                nm.createNotificationChannel(channel)
+            }
+        }
+    }
+
+    private fun showPairingCodeNotification() {
+        // Android 13+ requires notification permission.
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                Snackbar.make(rootView, getString(R.string.ladb_notification_permission_required), Snackbar.LENGTH_LONG).show()
+                return
+            }
+        }
+
+        createPairingNotificationChannel()
+
+        val hasPairingPort = ladbManager.getSavedPairingPort() > 0
+        val detailsLabel = if (hasPairingPort) {
+            getString(R.string.ladb_pairing_details_hint_code_only)
+        } else {
+            getString(R.string.ladb_pairing_details_hint_port_code)
+        }
+        val remoteDetails = RemoteInput.Builder(LadbPairingCodeReceiver.KEY_REMOTE_INPUT_DETAILS)
+            .setLabel(detailsLabel)
+            .build()
+
+        val intent = Intent(this, LadbPairingCodeReceiver::class.java).apply {
+            action = LadbPairingCodeReceiver.ACTION_LADB_PAIRING_CODE
+        }
+
+        // RemoteInput requires a mutable PendingIntent on Android 12+.
+        val actionFlags = PendingIntent.FLAG_UPDATE_CURRENT or when {
+            Build.VERSION.SDK_INT >= 31 -> PendingIntent.FLAG_MUTABLE
+            Build.VERSION.SDK_INT >= 23 -> 0
+            else -> 0
+        }
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, actionFlags)
+
+        val action = NotificationCompat.Action.Builder(
+            0,
+            getString(R.string.ladb_enter_pairing_details_action),
+            pendingIntent
+        )
+            .addRemoteInput(remoteDetails)
+            .setAllowGeneratedReplies(false)
+            .build()
+
+        val openIntent = Intent(this, LadbSetupActivity::class.java)
+        val contentFlags = PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0)
+        val contentIntent = PendingIntent.getActivity(this, 0, openIntent, contentFlags)
+
+        val notification = NotificationCompat.Builder(this, PAIRING_CHANNEL_ID)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(getString(R.string.ladb_pairing_notification_title))
+            .setContentText(
+                if (hasPairingPort) {
+                    getString(R.string.ladb_pairing_notification_text_code_only)
+                } else {
+                    getString(R.string.ladb_pairing_notification_text)
+                }
+            )
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setOnlyAlertOnce(true)
+            .setContentIntent(contentIntent)
+            .addAction(action)
+            .build()
+
+        NotificationManagerCompat.from(this)
+            .notify(LadbPairingCodeReceiver.NOTIFICATION_ID, notification)
     }
 
     companion object {
