@@ -65,6 +65,15 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:id="@+id/btnRefresh"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_refresh"
+                        android:layout_marginTop="8dp"
+                        app:useMaterialThemeColors="true" />
+
+                    <com.google.android.material.button.MaterialButton
                         style="@style/Widget.MaterialComponents.Button"
                         android:id="@+id/btnPair"
                         android:layout_width="match_parent"

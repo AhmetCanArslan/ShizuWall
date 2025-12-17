@@ -157,6 +157,7 @@
     <string name="ladb_connect">Connect</string>
     <string name="ladb_unpair">Unpair</string>
     <string name="ladb_start_service">Start persistent connection</string>
+    <string name="ladb_refresh">Refresh</string>
     <string name="ladb_status_unconfigured">Not configured</string>
     <string name="ladb_status_paired">Paired (not connected)</string>
     <string name="ladb_status_connected">Connected</string>

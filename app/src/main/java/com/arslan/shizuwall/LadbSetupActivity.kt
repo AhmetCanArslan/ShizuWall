@@ -230,6 +230,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         // Bind UI controls
         tvStatus = findViewById<TextView>(R.id.tvLadbStatus)
         etHostPort = findViewById<TextInputEditText>(R.id.etHostPort)
+        val btnRefresh = findViewById<MaterialButton>(R.id.btnRefresh)
         val btnPair = findViewById<MaterialButton>(R.id.btnPair)
         val btnConnect = findViewById<MaterialButton>(R.id.btnConnect)
         btnUnpair = findViewById<MaterialButton>(R.id.btnUnpair)
@@ -501,6 +502,30 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             appendLog("LADB service started")
             Snackbar.make(rootView, "Service started", Snackbar.LENGTH_SHORT).show()
         }
+
+        btnRefresh.setOnClickListener {
+            appendLog("Refreshing LADB discovery (clearing saved host/ports)...")
+
+            lifecycleScope.launch {
+                val ok = withContext(Dispatchers.IO) { ladbManager.clearAllConfig() }
+
+                // Reset local detection state.
+                detectedConnectPorts.clear()
+                detectedPairingCandidates.clear()
+                pairingScanScheduled = false
+                handler.removeCallbacksAndMessages(null)
+
+                // Restart mDNS discovery.
+                adbPortFinder.stopDiscovery()
+                adbPortFinder.startDiscovery()
+
+                val detectedHost = detectLocalIpv4OrNull() ?: "127.0.0.1"
+                etHostPort.setText("$detectedHost:")
+                updateStatus()
+
+                appendLog(if (ok) "Refresh complete" else "Refresh failed (see error log)")
+            }
+        }
     }
 
     override fun onResume() {
@@ -690,6 +715,8 @@ class AdbPortFinder(context: Context, private val listener: AdbPortListener) {
     private val TAG = "AdbPortFinder"
 
     fun startDiscovery() {
+        // Ensure any previous discovery is stopped to avoid "listener already in use" error
+        stopDiscovery()
         nsdManager.discoverServices(
             PAIRING_SERVICE_TYPE,
             NsdManager.PROTOCOL_DNS_SD,

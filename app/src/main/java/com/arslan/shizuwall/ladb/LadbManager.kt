@@ -421,6 +421,32 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
+    suspend fun clearAllConfig(): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            try {
+                connectionRef.getAndSet(null)?.close()
+            } catch (_: Exception) {
+                // ignore
+            }
+
+            lastErrorLogRef.set(null)
+
+            getPrefs().edit()
+                .remove(KEY_HOST)
+                .remove(KEY_PORT)
+                .remove(KEY_PAIRING_PORT)
+                .remove(KEY_LAST_ERROR_LOG)
+                .apply()
+
+            _state.set(State.UNCONFIGURED)
+            true
+        } catch (e: Exception) {
+            recordError("clear_all_config", null, null, e)
+            _state.set(State.ERROR)
+            false
+        }
+    }
+
     suspend fun execShell(cmd: String): ShellResult = withContext(Dispatchers.IO) {
         var conn = connectionRef.get()
         if (state != State.CONNECTED || conn == null) {
