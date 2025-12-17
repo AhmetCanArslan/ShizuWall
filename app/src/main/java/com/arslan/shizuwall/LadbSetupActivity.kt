@@ -40,8 +40,7 @@ class LadbSetupActivity : AppCompatActivity() {
 
     private lateinit var rootView: View
     private lateinit var tvStatus: TextView
-    private lateinit var etPairingPort: TextInputEditText
-    private lateinit var etPairingCode: TextInputEditText
+    private lateinit var etHostPort: TextInputEditText
     private lateinit var btnUnpair: MaterialButton
     private lateinit var tvLadbLogs: TextView
     private lateinit var switchEnableLogs: com.google.android.material.materialswitch.MaterialSwitch
@@ -179,8 +178,7 @@ class LadbSetupActivity : AppCompatActivity() {
 
         // Bind UI controls
         tvStatus = findViewById<TextView>(R.id.tvLadbStatus)
-        etPairingPort = findViewById<TextInputEditText>(R.id.etPairingPort)
-        etPairingCode = findViewById<TextInputEditText>(R.id.etPairingCode)
+        etHostPort = findViewById<TextInputEditText>(R.id.etHostPort)
         val btnPair = findViewById<MaterialButton>(R.id.btnPair)
         val btnConnect = findViewById<MaterialButton>(R.id.btnConnect)
         btnUnpair = findViewById<MaterialButton>(R.id.btnUnpair)
@@ -238,7 +236,7 @@ class LadbSetupActivity : AppCompatActivity() {
 
             createPairingNotificationChannel()
 
-            val detailsLabel = getString(R.string.ladb_pairing_details_hint_port_code)
+            val detailsLabel = "Pairing Code"
             val remoteDetails = RemoteInput.Builder(LadbPairingCodeReceiver.KEY_REMOTE_INPUT_DETAILS)
                 .setLabel(detailsLabel)
                 .build()
@@ -345,17 +343,19 @@ class LadbSetupActivity : AppCompatActivity() {
 
         updateStatus()
         val detectedHost = detectLocalIpv4OrNull() ?: "127.0.0.1"
+        etHostPort.setText("$detectedHost:")
         appendLog("LADB Setup initialized. Current status: ${tvStatus.text}")
         appendLog("Auto-detected host: $detectedHost")
 
         btnPair.setOnClickListener {
-            val host = detectLocalIpv4OrNull() ?: "127.0.0.1"
-
-            val pairingPort = parsePort(etPairingPort.text?.toString().orEmpty())
-            val code = etPairingCode.text?.toString().orEmpty().trim()
+            val hostPortText = etHostPort.text?.toString().orEmpty()
+            val parsed = parseHostPort(hostPortText)
+            val host = parsed?.first ?: "127.0.0.1"
+            val pairingPort = parsed?.second
+            val code = ""
             if (pairingPort == null || code.isEmpty()) {
-                appendLog("Showing pairing notification (missing port/code)")
-                appendLog("Host will be auto-detected as: $host")
+                appendLog("Showing pairing notification (missing code)")
+                appendLog("Host will be: $host")
                 lifecycleScope.launch(Dispatchers.IO) {
                     // Save host (and pairing port if present) so the receiver can complete pairing.
                     ladbManager.saveHost(host)
@@ -406,10 +406,11 @@ class LadbSetupActivity : AppCompatActivity() {
             appendLog("Starting connection...")
             lifecycleScope.launch {
                 btnConnect.isEnabled = false
-                val host = detectLocalIpv4OrNull() ?: "127.0.0.1"
+                val hostPortText = etHostPort.text?.toString().orEmpty()
+                val parsed = parseHostPort(hostPortText)
+                val host = parsed?.first ?: (detectLocalIpv4OrNull() ?: "127.0.0.1")
+                val port = parsed?.second ?: 5555
                 val ok = withContext(Dispatchers.IO) {
-                    // Always use explicit host and default port for connection
-                    val port = 5555 // Default ADB port
                     appendLog("Connecting to host: $host, port: $port")
                     ladbManager.saveConnectConfig(host, port)
                     ladbManager.connect(host, port)
