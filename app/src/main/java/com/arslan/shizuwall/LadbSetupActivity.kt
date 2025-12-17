@@ -17,6 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.arslan.shizuwall.ladb.LadbManager
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import android.content.Context
 
 class LadbSetupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +56,31 @@ class LadbSetupActivity : AppCompatActivity() {
 
         val ladbManager = LadbManager.getInstance(this)
 
+        fun showLadbErrorDialog(title: String, logs: String) {
+            val dialogView = layoutInflater.inflate(R.layout.dialog_ladb_error, null)
+            val tvLogs = dialogView.findViewById<TextView>(R.id.tvLadbErrorLogs)
+            val btnCopy = dialogView.findViewById<android.widget.Button>(R.id.btnCopy)
+            val btnClose = dialogView.findViewById<android.widget.Button>(R.id.btnClose)
+
+            tvLogs.text = logs
+
+            val dialog = MaterialAlertDialogBuilder(this)
+                .setTitle(title)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create()
+
+            btnCopy.setOnClickListener {
+                val cm = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                val clip = android.content.ClipData.newPlainText("ladb_logs", logs)
+                cm.setPrimaryClip(clip)
+                Snackbar.make(root, getString(R.string.copy) + "!", Snackbar.LENGTH_SHORT).show()
+            }
+
+            btnClose.setOnClickListener { dialog.dismiss() }
+            dialog.show()
+        }
+
         fun updateStatus() {
             tvStatus.text = when (ladbManager.state) {
                 LadbManager.State.UNCONFIGURED -> getString(R.string.ladb_status_unconfigured)
@@ -78,7 +105,8 @@ class LadbSetupActivity : AppCompatActivity() {
                 val ok = withContext(Dispatchers.IO) { ladbManager.pair(host, port, null) }
                 updateStatus()
                 if (!ok) {
-                    Snackbar.make(root, "Pairing failed", Snackbar.LENGTH_SHORT).show()
+                    val logs = ladbManager.getLastErrorLog() ?: "Pairing failed (no logs)."
+                    showLadbErrorDialog(getString(R.string.ladb_error_title), logs)
                 }
                 btnPair.isEnabled = true
             }
@@ -90,7 +118,8 @@ class LadbSetupActivity : AppCompatActivity() {
                 val ok = withContext(Dispatchers.IO) { ladbManager.connect() }
                 updateStatus()
                 if (!ok) {
-                    Snackbar.make(root, "Connect failed", Snackbar.LENGTH_SHORT).show()
+                    val logs = ladbManager.getLastErrorLog() ?: "Connect failed (no logs)."
+                    showLadbErrorDialog(getString(R.string.ladb_error_title), logs)
                 }
                 btnConnect.isEnabled = true
             }

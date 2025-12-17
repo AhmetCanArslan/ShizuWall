@@ -17,6 +17,9 @@ import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
 import java.io.ByteArrayInputStream
+import java.io.PrintWriter
+import java.io.StringWriter
+import android.os.Build
 import java.security.PrivateKey
 import java.security.Security
 import java.security.cert.Certificate
@@ -60,6 +63,36 @@ class LadbManager private constructor(private val context: Context) {
     private val _state = AtomicReference(State.UNCONFIGURED)
     val state: State
         get() = _state.get()
+
+    private val lastErrorLogRef = AtomicReference<String?>(null)
+    fun getLastErrorLog(): String? = lastErrorLogRef.get()
+
+    private fun recordError(operation: String, host: String?, port: Int?, e: Throwable) {
+        val sw = StringWriter()
+        e.printStackTrace(PrintWriter(sw))
+
+        val providers = try {
+            Security.getProviders().joinToString { it.name }
+        } catch (_: Exception) {
+            "(unavailable)"
+        }
+
+        val log = buildString {
+            appendLine("ShizuWall LADB error")
+            appendLine("operation=$operation")
+            appendLine("host=${host ?: "(null)"}")
+            appendLine("port=${port?.toString() ?: "(null)"}")
+            appendLine("state=${state}")
+            appendLine("sdk=${Build.VERSION.SDK_INT}")
+            appendLine("device=${Build.MANUFACTURER} ${Build.MODEL}")
+            appendLine("providers=$providers")
+            appendLine()
+            appendLine("exception=${e::class.java.name}: ${e.message}")
+            appendLine(sw.toString())
+        }
+
+        lastErrorLogRef.set(log)
+    }
 
     private val connectionRef = AtomicReference<AdbConnection?>(null)
     private val keyMaterialRef = AtomicReference<Pair<PrivateKey, Certificate>?>(null)
@@ -182,7 +215,7 @@ class LadbManager private constructor(private val context: Context) {
             _state.set(State.PAIRED)
             return@withContext true
         } catch (e: Exception) {
-            e.printStackTrace()
+            recordError("pair", host, port, e)
             _state.set(State.ERROR)
             return@withContext false
         }
@@ -210,7 +243,9 @@ class LadbManager private constructor(private val context: Context) {
             _state.set(State.CONNECTED)
             return@withContext true
         } catch (e: Exception) {
-            e.printStackTrace()
+            val targetHost = host ?: getPrefs().getString(KEY_HOST, null)
+            val targetPort = port ?: getPrefs().getInt(KEY_PORT, 5555)
+            recordError("connect", targetHost, targetPort, e)
             _state.set(State.ERROR)
             return@withContext false
         }
