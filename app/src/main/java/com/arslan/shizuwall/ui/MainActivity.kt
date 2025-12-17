@@ -51,6 +51,8 @@ import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.adapters.ErrorEntry
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
+import com.arslan.shizuwall.LadbSetupActivity
+import com.arslan.shizuwall.ladb.LadbManager
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -610,6 +612,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkPermission(code: Int): Boolean {
+        val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+        if (workingMode == "LADB") {
+            val ladb = LadbManager.getInstance(this)
+            if (ladb.isConnected()) return true
+
+            val d = MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.working_mode_ladb))
+                .setMessage(getString(R.string.ladb_status_unconfigured))
+                .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
+                    try {
+                        startActivity(Intent(this, LadbSetupActivity::class.java))
+                    } catch (_: Exception) {
+                    }
+                }
+                .setNegativeButton(getString(R.string.cancel), null)
+                .create()
+            d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
+            d.show()
+            return false
+        }
+
         // First ensure Shizuku binder is reachable. If it's not running, show a friendly dialog prompting the user to start/install Shizuku.
         try {
             if (!Shizuku.pingBinder()) {

@@ -10,12 +10,13 @@ import android.service.quicksettings.TileService
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.LadbSetupActivity
+import com.arslan.shizuwall.ladb.LadbManager
+import com.arslan.shizuwall.shell.ShellExecutorBlocking
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.*
 import com.arslan.shizuwall.widgets.FirewallWidgetProvider
 import rikka.shizuku.Shizuku
-import rikka.shizuku.ShizukuRemoteProcess
-import java.lang.reflect.Method
 
 @RequiresApi(Build.VERSION_CODES.N)
 class FirewallTileService : TileService() {
@@ -24,16 +25,7 @@ class FirewallTileService : TileService() {
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Main + job)
 
-    companion object {
-        private val SHIZUKU_NEW_PROCESS_METHOD: Method by lazy {
-            Shizuku::class.java.getDeclaredMethod(
-                "newProcess",
-                Array<String>::class.java,
-                Array<String>::class.java,
-                String::class.java
-            ).apply { isAccessible = true }
-        }
-    }
+    companion object
 
     // SharedPreferences listener to update tile whenever relevant prefs change
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -78,7 +70,7 @@ class FirewallTileService : TileService() {
         val isEnabled = loadFirewallEnabled()
         if (isEnabled) {
             // Disable firewall
-            if (!checkPermission()) return
+            if (!checkBackendReady()) return
             scope.launch {
                 applyDisableFirewall()
             }
@@ -91,7 +83,7 @@ class FirewallTileService : TileService() {
                 Toast.makeText(this@FirewallTileService, getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
                 return
             }
-            if (!checkPermission()) return
+            if (!checkBackendReady()) return
             scope.launch {
                 applyEnableFirewall(selectedApps)
             }
@@ -130,16 +122,32 @@ class FirewallTileService : TileService() {
             ?.toList() ?: emptyList()
     }
 
-    private fun checkPermission(): Boolean {
-        if (!Shizuku.pingBinder()) {
-            Toast.makeText(this, getString(R.string.shizuku_not_running), Toast.LENGTH_SHORT).show()
-            return false
+    private fun checkBackendReady(): Boolean {
+        val mode = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+        return if (mode == "LADB") {
+            val ladb = LadbManager.getInstance(this)
+            if (ladb.isConnected()) {
+                true
+            } else {
+                Toast.makeText(this, getString(R.string.ladb_status_unconfigured), Toast.LENGTH_SHORT).show()
+                try {
+                    val i = Intent(this, LadbSetupActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(i)
+                } catch (_: Exception) {
+                }
+                false
+            }
+        } else {
+            if (!Shizuku.pingBinder()) {
+                Toast.makeText(this, getString(R.string.shizuku_not_running), Toast.LENGTH_SHORT).show()
+                return false
+            }
+            if (Shizuku.checkSelfPermission() != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, getString(R.string.shizuku_permission_required), Toast.LENGTH_SHORT).show()
+                return false
+            }
+            true
         }
-        if (Shizuku.checkSelfPermission() != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, getString(R.string.shizuku_permission_required), Toast.LENGTH_SHORT).show()
-            return false
-        }
-        return true
     }
 
     private suspend fun applyEnableFirewall(packageNames: List<String>) {
@@ -165,9 +173,9 @@ class FirewallTileService : TileService() {
 
     private fun enableFirewall(packageNames: List<String>): List<String> {
         val successful = mutableListOf<String>()
-        if (!runShizukuShellCommand("cmd connectivity set-chain3-enabled true")) return successful
+        if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled true")) return successful
         for (pkg in packageNames) {
-            if (runShizukuShellCommand("cmd connectivity set-package-networking-enabled false $pkg")) {
+            if (ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled false $pkg")) {
                 successful.add(pkg)
             }
         }
@@ -176,28 +184,9 @@ class FirewallTileService : TileService() {
 
     private fun disableFirewall(packageNames: List<String>) {
         for (pkg in packageNames) {
-            runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $pkg")
+            ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")
         }
-        runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
-    }
-
-    private fun runShizukuShellCommand(command: String): Boolean {
-        return try {
-            val process = SHIZUKU_NEW_PROCESS_METHOD.invoke(
-                null,
-                arrayOf("/system/bin/sh", "-c", command),
-                null,
-                null
-            ) as? rikka.shizuku.ShizukuRemoteProcess ?: return false
-            process.outputStream.close()
-            process.inputStream.close()
-            process.errorStream.close()
-            val exitCode = process.waitFor()
-            process.destroy()
-            exitCode == 0
-        } catch (e: Exception) {
-            false
-        }
+        ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled false")
     }
 
     private fun saveFirewallEnabled(enabled: Boolean) {

@@ -226,9 +226,20 @@ class LadbManager private constructor(private val context: Context) {
     }
 
     suspend fun execShell(cmd: String): ShellResult = withContext(Dispatchers.IO) {
-        val conn = connectionRef.get()
+        var conn = connectionRef.get()
         if (state != State.CONNECTED || conn == null) {
-            return@withContext ShellResult(-1, "", "Not connected")
+            val ok = try {
+                connect()
+            } catch (_: Exception) {
+                false
+            }
+            if (!ok) {
+                return@withContext ShellResult(-1, "", "Not connected")
+            }
+            conn = connectionRef.get()
+            if (conn == null) {
+                return@withContext ShellResult(-1, "", "Not connected")
+            }
         }
 
         try {

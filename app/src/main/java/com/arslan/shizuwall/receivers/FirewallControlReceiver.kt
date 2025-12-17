@@ -7,14 +7,14 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.SystemClock
 import android.widget.Toast
+import com.arslan.shizuwall.ladb.LadbManager
+import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
-import rikka.shizuku.ShizukuRemoteProcess
-import java.lang.reflect.Method
 
 /**
  * Manifest-registered receiver for ACTION_FIREWALL_CONTROL.
@@ -27,19 +27,7 @@ import java.lang.reflect.Method
  */
 class FirewallControlReceiver : BroadcastReceiver() {
 
-    companion object {
-        private val SHIZUKU_NEW_PROCESS_METHOD: Method by lazy {
-            Shizuku::class.java.getDeclaredMethod(
-                "newProcess",
-                Array<String>::class.java,
-                Array<String>::class.java,
-                String::class.java
-            ).apply { isAccessible = true }
-        }
-    }
-
-    override fun onReceive(context: Context?, intent: Intent?) {
-        if (context == null || intent == null) return
+    override fun onReceive(context: Context, intent: Intent) {
         
         // Log received action to help debug ADB commands
         android.util.Log.d("FirewallControl", "Received action: ${intent.action}")
@@ -73,42 +61,55 @@ class FirewallControlReceiver : BroadcastReceiver() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Ensure Shizuku available and permission granted
-                val shizukuAvailable = try {
-                    Shizuku.pingBinder() && Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
-                } catch (t: Throwable) {
-                    false
+                val prefsLocal = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                val mode = prefsLocal.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+
+                val backendReady = if (mode == "LADB") {
+                    val ladb = LadbManager.getInstance(context)
+                    ladb.isConnected() || ladb.connect()
+                } else {
+                    try {
+                        Shizuku.pingBinder() && Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
+                    } catch (_: Throwable) {
+                        false
+                    }
                 }
 
-                if (!shizukuAvailable) {
+                if (!backendReady) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Shizuku not available or permission denied", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            if (mode == "LADB") "LADB not connected" else "Shizuku not available or permission denied",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     pending.finish()
                     return@launch
                 }
 
+                suspend fun runShell(cmd: String): Boolean {
+                    return ShellExecutorProvider.forContext(context).exec(cmd).success
+                }
+
                 val successful = mutableListOf<String>()
 
-                if (shizukuAvailable) {
-                    if (enabled) {
-                        // enable chain3
-                        runShizukuShellCommand("cmd connectivity set-chain3-enabled true")
-                        for (pkg in packages) {
-                            if (runShizukuShellCommand("cmd connectivity set-package-networking-enabled false $pkg")) {
-                                successful.add(pkg)
-                            }
+                if (enabled) {
+                    // enable chain3
+                    runShell("cmd connectivity set-chain3-enabled true")
+                    for (pkg in packages) {
+                        if (runShell("cmd connectivity set-package-networking-enabled false $pkg")) {
+                            successful.add(pkg)
                         }
-                    } else {
-                        for (pkg in packages) {
-                            if (runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $pkg")) {
-                                successful.add(pkg)
-                            }
+                    }
+                } else {
+                    for (pkg in packages) {
+                        if (runShell("cmd connectivity set-package-networking-enabled true $pkg")) {
+                            successful.add(pkg)
                         }
-                        val isGlobalDisable = csv.isNullOrBlank()
-                        if (!adaptiveMode || isGlobalDisable) {
-                            runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
-                        }
+                    }
+                    val isGlobalDisable = csv.isNullOrBlank()
+                    if (!adaptiveMode || isGlobalDisable) {
+                        runShell("cmd connectivity set-chain3-enabled false")
                     }
                 }
 
@@ -162,26 +163,6 @@ class FirewallControlReceiver : BroadcastReceiver() {
             } finally {
                 pending.finish()
             }
-        }
-    }
-
-    private fun runShizukuShellCommand(command: String): Boolean {
-        return try {
-            val process = SHIZUKU_NEW_PROCESS_METHOD.invoke(
-                null,
-                arrayOf("/system/bin/sh", "-c", command),
-                null,
-                null
-            ) as? ShizukuRemoteProcess ?: return false
-
-            process.outputStream.close()
-            process.inputStream.close()
-            process.errorStream.close()
-            val exitCode = process.waitFor()
-            process.destroy()
-            exitCode == 0
-        } catch (e: Throwable) {
-            false
         }
     }
 }
