@@ -193,4 +193,5 @@
     <string name="ladb_logs_title">LADB Logs</string>
     <string name="ladb_logs_empty">No logs yet. Perform LADB operations to see logs here.</string>
     <string name="ladb_clear_logs">Clear Logs</string>
+    <string name="ladb_copy_logs">Copy Logs</string>
 </resources>

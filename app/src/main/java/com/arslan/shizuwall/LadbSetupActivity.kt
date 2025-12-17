@@ -132,6 +132,7 @@ class LadbSetupActivity : AppCompatActivity() {
         val btnStartService = findViewById<MaterialButton>(R.id.btnStartService)
         tvLadbLogs = findViewById<TextView>(R.id.tvLadbLogs)
         val btnClearLogs = findViewById<MaterialButton>(R.id.btnClearLogs)
+        val btnCopyLogs = findViewById<MaterialButton>(R.id.btnCopyLogs)
 
         // Load saved logs
         val savedLogs = loadLogs()
@@ -376,6 +377,19 @@ class LadbSetupActivity : AppCompatActivity() {
             tvLadbLogs.text = ""
             saveLogs("")
             appendLog("Logs cleared")
+        }
+
+        btnCopyLogs.setOnClickListener {
+            val logs = tvLadbLogs.text.toString()
+            if (logs.isNotEmpty()) {
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                val clip = android.content.ClipData.newPlainText("ladb_logs", logs)
+                clipboard.setPrimaryClip(clip)
+                Snackbar.make(rootView, getString(R.string.copy) + " logs!", Snackbar.LENGTH_SHORT).show()
+                appendLog("Logs copied to clipboard")
+            } else {
+                Snackbar.make(rootView, "No logs to copy", Snackbar.LENGTH_SHORT).show()
+            }
         }
 
         btnStartService.setOnClickListener {
