@@ -87,6 +87,9 @@ dependencies {
     implementation ("org.conscrypt:conscrypt-android:2.5.3")
     implementation ("androidx.security:security-crypto:1.1.0")
 
+    // Needed for R8: Tink (via security-crypto) references javax.annotation.* at shrink time.
+    implementation("com.google.code.findbugs:jsr305:3.0.2")
+
     // Required for generating a self-signed certificate for ADB-over-WiFi TLS.
     implementation("org.bouncycastle:bcprov-jdk15to18:1.81")
     implementation("org.bouncycastle:bcpkix-jdk15to18:1.81")
