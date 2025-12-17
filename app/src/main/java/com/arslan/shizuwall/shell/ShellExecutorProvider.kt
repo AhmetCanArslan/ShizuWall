@@ -9,6 +9,6 @@ object ShellExecutorProvider {
     fun forContext(context: Context): ShellExecutor {
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         val mode = prefs.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
-        return if (mode == "LADB") LadbShellExecutor() else ShizukuShellExecutor()
+        return if (mode == "LADB") LadbShellExecutor(context) else ShizukuShellExecutor()
     }
 }

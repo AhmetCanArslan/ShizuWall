@@ -92,6 +92,11 @@
         </receiver>
 
         <!-- ...existing code... -->
+        <service
+            android:name=".services.LadbService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
     </application>
 
 </manifest>

@@ -52,26 +52,33 @@ class LadbSetupActivity : AppCompatActivity() {
         val btnUnpair = findViewById<MaterialButton>(R.id.btnUnpair)
         val btnStartService = findViewById<MaterialButton>(R.id.btnStartService)
 
+        val ladbManager = LadbManager.getInstance(this)
+
         fun updateStatus() {
-            tvStatus.text = when (LadbManager.status) {
-                LadbManager.Status.UNCONFIGURED -> getString(R.string.ladb_status_unconfigured)
-                LadbManager.Status.PAIRED -> getString(R.string.ladb_status_paired)
-                LadbManager.Status.CONNECTED -> getString(R.string.ladb_status_connected)
-                LadbManager.Status.DISCONNECTED -> getString(R.string.ladb_status_disconnected)
+            tvStatus.text = when (ladbManager.state) {
+                LadbManager.State.UNCONFIGURED -> getString(R.string.ladb_status_unconfigured)
+                LadbManager.State.PAIRED -> getString(R.string.ladb_status_paired)
+                LadbManager.State.CONNECTED -> getString(R.string.ladb_status_connected)
+                LadbManager.State.DISCONNECTED -> getString(R.string.ladb_status_disconnected)
+                LadbManager.State.ERROR -> "Error"
             }
-            btnUnpair.visibility = if (LadbManager.status == LadbManager.Status.PAIRED || LadbManager.status == LadbManager.Status.CONNECTED) View.VISIBLE else View.GONE
+            btnUnpair.visibility = if (ladbManager.state == LadbManager.State.PAIRED || ladbManager.state == LadbManager.State.CONNECTED) View.VISIBLE else View.GONE
         }
 
         updateStatus()
 
         btnPair.setOnClickListener {
-            val code = etHostPort.text?.toString().orEmpty()
+            val input = etHostPort.text?.toString().orEmpty()
+            val parts = input.split(":")
+            val host = if (parts.isNotEmpty()) parts[0] else "localhost"
+            val port = if (parts.size > 1) parts[1].toIntOrNull() ?: 5555 else 5555
+            
             lifecycleScope.launch {
                 btnPair.isEnabled = false
-                val ok = withContext(Dispatchers.IO) { LadbManager.pair() }
+                val ok = withContext(Dispatchers.IO) { ladbManager.pair(host, port, null) }
                 updateStatus()
                 if (!ok) {
-                    Snackbar.make(root, "Pairing failed (not implemented)", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(root, "Pairing failed", Snackbar.LENGTH_SHORT).show()
                 }
                 btnPair.isEnabled = true
             }
@@ -80,10 +87,10 @@ class LadbSetupActivity : AppCompatActivity() {
         btnConnect.setOnClickListener {
             lifecycleScope.launch {
                 btnConnect.isEnabled = false
-                val ok = withContext(Dispatchers.IO) { LadbManager.connect() }
+                val ok = withContext(Dispatchers.IO) { ladbManager.connect() }
                 updateStatus()
                 if (!ok) {
-                    Snackbar.make(root, "Connect failed (not implemented)", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(root, "Connect failed", Snackbar.LENGTH_SHORT).show()
                 }
                 btnConnect.isEnabled = true
             }
@@ -91,15 +98,19 @@ class LadbSetupActivity : AppCompatActivity() {
 
         btnUnpair.setOnClickListener {
             lifecycleScope.launch {
-                withContext(Dispatchers.IO) { LadbManager.disconnect() }
-                // Reset to unconfigured for now
-                LadbManager.status = LadbManager.Status.UNCONFIGURED
+                withContext(Dispatchers.IO) { ladbManager.disconnect() }
                 updateStatus()
             }
         }
 
         btnStartService.setOnClickListener {
-            Snackbar.make(root, "Start service not implemented", Snackbar.LENGTH_SHORT).show()
+            val intent = android.content.Intent(this, com.arslan.shizuwall.services.LadbService::class.java)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                startForegroundService(intent)
+            } else {
+                startService(intent)
+            }
+            Snackbar.make(root, "Service started", Snackbar.LENGTH_SHORT).show()
         }
     }
 }

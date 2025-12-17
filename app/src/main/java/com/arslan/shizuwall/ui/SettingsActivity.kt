@@ -611,7 +611,7 @@ class SettingsActivity : AppCompatActivity() {
                                     false
                                 }
                             } else {
-                                com.arslan.shizuwall.ladb.LadbManager.status == com.arslan.shizuwall.ladb.LadbManager.Status.CONNECTED
+                                com.arslan.shizuwall.ladb.LadbManager.getInstance(this@SettingsActivity).isConnected()
                             }
 
                             if (canPerformCleanup) {

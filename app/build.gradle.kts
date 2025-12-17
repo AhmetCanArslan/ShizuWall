@@ -86,4 +86,8 @@ dependencies {
     implementation ("com.github.MuntashirAkon:libadb-android:3.1.1")
     implementation ("org.conscrypt:conscrypt-android:2.5.3")
     implementation ("androidx.security:security-crypto:1.1.0")
+
+    // Required for generating a self-signed certificate for ADB-over-WiFi TLS.
+    implementation("org.bouncycastle:bcprov-jdk15to18:1.81")
+    implementation("org.bouncycastle:bcpkix-jdk15to18:1.81")
 }
