@@ -17,7 +17,7 @@
         app:navigationIcon="?attr/homeAsUpIndicator"
         app:titleTextColor="?android:attr/textColorPrimary" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -153,7 +153,7 @@
                         android:orientation="vertical"
                         android:visibility="visible">
 
-                        <ScrollView
+                        <androidx.core.widget.NestedScrollView
                             android:layout_width="match_parent"
                             android:layout_height="200dp"
                             android:background="?attr/colorSurfaceVariant"
@@ -168,7 +168,7 @@
                                 android:textColor="?android:attr/textColorSecondary"
                                 android:fontFamily="monospace"
                                 android:typeface="monospace" />
-                        </ScrollView>
+                        </androidx.core.widget.NestedScrollView>
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -202,5 +202,5 @@
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>
