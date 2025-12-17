@@ -45,13 +45,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
-import rikka.shizuku.ShizukuRemoteProcess
 import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.adapters.ErrorEntry
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
+import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {
@@ -88,14 +88,7 @@ class MainActivity : AppCompatActivity() {
 
         const val KEY_FIREWALL_UPDATE_TS = "firewall_update_ts"
 
-        private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
-            Shizuku::class.java.getDeclaredMethod(
-                "newProcess",
-                Array<String>::class.java,
-                Array<String>::class.java,
-                String::class.java
-            ).apply { isAccessible = true }
-        }
+
     }
 
     private lateinit var recyclerView: RecyclerView
@@ -762,7 +755,7 @@ class MainActivity : AppCompatActivity() {
                             } else {
                                 "cmd connectivity set-package-networking-enabled true $pkg"
                             }
-                            val res = runShizukuShellCommandDetailed(cmd)
+                            val res = runCommandDetailed(cmd)
                             if (res.success) {
                                 successful.add(pkg)
                             } else {
@@ -835,7 +828,7 @@ class MainActivity : AppCompatActivity() {
                                 lastOperationErrorDetails.clear()
                                 
                                 for (pkg in previouslySelected) {
-                                    val res = runShizukuShellCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
+                                    val res = runCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
                                     if (res.success) {
                                         successful.add(pkg)
                                     } else {
@@ -892,9 +885,9 @@ class MainActivity : AppCompatActivity() {
                     lifecycleScope.launch(Dispatchers.IO) {
                         lastOperationErrorDetails.clear()
                         val res = if (isSelected) {
-                                runShizukuShellCommandDetailed("cmd connectivity set-package-networking-enabled false $pkg")
+                                runCommandDetailed("cmd connectivity set-package-networking-enabled false $pkg")
                             } else {
-                                runShizukuShellCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
+                                runCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
                             }
                         val success = res.success
                         
@@ -1553,12 +1546,12 @@ class MainActivity : AppCompatActivity() {
         return Pair(installed, missing)
     }
 
-    private fun enableFirewall(packageNames: List<String>): Pair<List<String>, List<String>> {
+    private suspend fun enableFirewall(packageNames: List<String>): Pair<List<String>, List<String>> {
         val successful = mutableListOf<String>()
         val failed = mutableListOf<String>()
         lastOperationErrorDetails.clear()
 
-        val chain3Result = runShizukuShellCommandDetailed("cmd connectivity set-chain3-enabled true")
+        val chain3Result = runCommandDetailed("cmd connectivity set-chain3-enabled true")
         if (!chain3Result.success) {
             // If chain3 enable fails, all packages fail; record the error message once with a key like "_chain3"
             val msg = chain3Result.stderr.ifEmpty { chain3Result.stdout }
@@ -1569,7 +1562,7 @@ class MainActivity : AppCompatActivity() {
             return Pair(successful, failed)
         }
         for (packageName in packageNames) {
-            val res = runShizukuShellCommandDetailed("cmd connectivity set-package-networking-enabled false $packageName")
+            val res = runCommandDetailed("cmd connectivity set-package-networking-enabled false $packageName")
             if (res.success) {
                 successful.add(packageName)
             } else {
@@ -1581,12 +1574,12 @@ class MainActivity : AppCompatActivity() {
         return Pair(successful, failed)
     }
 
-    private fun disableFirewall(packageNames: List<String>): Pair<List<String>, List<String>> {
+    private suspend fun disableFirewall(packageNames: List<String>): Pair<List<String>, List<String>> {
         val successful = mutableListOf<String>()
         val failed = mutableListOf<String>()
         lastOperationErrorDetails.clear()
         for (packageName in packageNames) {
-            val res = runShizukuShellCommandDetailed("cmd connectivity set-package-networking-enabled true $packageName")
+            val res = runCommandDetailed("cmd connectivity set-package-networking-enabled true $packageName")
             if (res.success) {
                 successful.add(packageName)
             } else {
@@ -1595,36 +1588,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
         // Disable chain3 regardless of individual results
-        runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
+        runCommandDetailed("cmd connectivity set-chain3-enabled false")
         return Pair(successful, failed)
     }
 
-    private data class ShellResult(val exitCode: Int, val stdout: String, val stderr: String) {
-        val success: Boolean get() = exitCode == 0
+
+    private suspend fun runCommandDetailed(command: String): com.arslan.shizuwall.shell.ShellResult {
+        return ShellExecutorProvider.forContext(this).exec(command)
     }
 
-    private fun runShizukuShellCommandDetailed(command: String): ShellResult {
-        return try {
-            val process = SHIZUKU_NEW_PROCESS_METHOD.invoke(
-                null,
-                arrayOf("/system/bin/sh", "-c", command),
-                null,
-                null
-            ) as? ShizukuRemoteProcess ?: return ShellResult(-1, "", "no-process")
-
-            val stdout = process.inputStream.bufferedReader().use { it.readText() }
-            val stderr = process.errorStream.bufferedReader().use { it.readText() }
-            process.outputStream.close()
-            val exitCode = process.waitFor()
-            process.destroy()
-            ShellResult(exitCode, stdout, stderr)
-        } catch (e: Exception) {
-            ShellResult(-1, "", e.message ?: "")
-        }
-    }
-
-    private fun runShizukuShellCommand(command: String): Boolean {
-        return runShizukuShellCommandDetailed(command).success
+    private suspend fun runCommand(command: String): Boolean {
+        return runCommandDetailed(command).success
     }
 
     // dim only the RecyclerView and disable its interactions

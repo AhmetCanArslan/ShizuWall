@@ -39,7 +39,6 @@ import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import rikka.shizuku.Shizuku
-import rikka.shizuku.ShizukuRemoteProcess
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -602,13 +601,26 @@ class SettingsActivity : AppCompatActivity() {
                     var cleanupPerformed = false
                     withContext(Dispatchers.IO) {
                         try {
-                            if (Shizuku.pingBinder() && Shizuku.checkSelfPermission() == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                            val prefsLocal = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                            val mode = prefsLocal.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+
+                            val canPerformCleanup = if (mode == "SHIZUKU") {
+                                try {
+                                    Shizuku.pingBinder() && Shizuku.checkSelfPermission() == android.content.pm.PackageManager.PERMISSION_GRANTED
+                                } catch (t: Throwable) {
+                                    false
+                                }
+                            } else {
+                                com.arslan.shizuwall.ladb.LadbManager.status == com.arslan.shizuwall.ladb.LadbManager.Status.CONNECTED
+                            }
+
+                            if (canPerformCleanup) {
                                 // 1. Disable global chain first (most important to restore internet)
-                                runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
+                                com.arslan.shizuwall.shell.ShellExecutorBlocking.runBlockingSuccess(this@SettingsActivity, "cmd connectivity set-chain3-enabled false")
 
                                 // 2. Clean up individual package rules
                                 for (pkg in allPackages) {
-                                    runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $pkg")
+                                    com.arslan.shizuwall.shell.ShellExecutorBlocking.runBlockingSuccess(this@SettingsActivity, "cmd connectivity set-package-networking-enabled true $pkg")
                                 }
                                 cleanupPerformed = true
                             }
@@ -653,30 +665,5 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun runShizukuShellCommand(command: String): Boolean {
-        return try {
-            val method = Shizuku::class.java.getDeclaredMethod(
-                "newProcess",
-                Array<String>::class.java,
-                Array<String>::class.java,
-                String::class.java
-            ).apply { isAccessible = true }
 
-            val process = method.invoke(
-                null,
-                arrayOf("/system/bin/sh", "-c", command),
-                null,
-                null
-            ) as? ShizukuRemoteProcess ?: return false
-
-            process.outputStream.close()
-            process.inputStream.close()
-            process.errorStream.close()
-            val exitCode = process.waitFor()
-            process.destroy()
-            exitCode == 0
-        } catch (e: Exception) {
-            false
-        }
-    }
 }

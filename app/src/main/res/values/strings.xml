@@ -158,6 +158,9 @@
     <string name="ladb_unpair">Unpair</string>
     <string name="ladb_start_service">Start persistent connection</string>
     <string name="ladb_status_unconfigured">Not configured</string>
+    <string name="ladb_status_paired">Paired (not connected)</string>
+    <string name="ladb_status_connected">Connected</string>
+    <string name="ladb_status_disconnected">Disconnected</string>
     <string name="ladb_pairing_code_hint">Pairing code (optional)</string>
     <string name="set_ladb_title">Set LADB</string>
     <string name="set_ladb_summary">Configure LibADB pairing / remote ADB (TLS) and connection</string>
