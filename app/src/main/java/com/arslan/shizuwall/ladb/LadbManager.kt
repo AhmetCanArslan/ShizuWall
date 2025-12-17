@@ -7,6 +7,7 @@ import androidx.security.crypto.MasterKey
 import com.arslan.shizuwall.shell.ShellResult
 import io.github.muntashirakon.adb.AdbConnection
 import io.github.muntashirakon.adb.AdbStream
+import io.github.muntashirakon.adb.PairingConnectionCtx
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.conscrypt.Conscrypt
@@ -50,6 +51,7 @@ class LadbManager private constructor(private val context: Context) {
         private const val PREFS_NAME = "ladb_prefs"
         private const val KEY_HOST = "host"
         private const val KEY_PORT = "port"
+        private const val KEY_PAIRING_PORT = "pairing_port"
     }
 
     enum class State {
@@ -202,15 +204,38 @@ class LadbManager private constructor(private val context: Context) {
 
     suspend fun pair(host: String, port: Int, pairingCode: String?): Boolean = withContext(Dispatchers.IO) {
         try {
-            // Save configuration
+            if (host.isBlank() || port <= 0) {
+                val e = IllegalArgumentException("Invalid host/port")
+                recordError("pair", host, port, e)
+                _state.set(State.UNCONFIGURED)
+                return@withContext false
+            }
+
+            val code = pairingCode?.trim().orEmpty()
+            if (code.isEmpty()) {
+                val e = IllegalArgumentException("Pairing code is required")
+                recordError("pair", host, port, e)
+                _state.set(State.ERROR)
+                return@withContext false
+            }
+
+            // Save pairing configuration (connect host/port is configured separately).
             getPrefs().edit()
                 .putString(KEY_HOST, host)
-                .putInt(KEY_PORT, port)
+                .putInt(KEY_PAIRING_PORT, port)
                 .apply()
 
-            if (pairingCode != null) {
-                // TODO: Implement pairing with code using AdbPairing if available
-            }
+            // Perform Wireless Debugging pairing so the device trusts our key/cert.
+            val (privateKey, certificate) = getOrCreateKeyMaterial()
+            val ctx = PairingConnectionCtx(
+                host,
+                port,
+                code.toByteArray(Charsets.UTF_8),
+                privateKey,
+                certificate,
+                "ShizuWall"
+            )
+            ctx.use { it.start() }
 
             _state.set(State.PAIRED)
             return@withContext true
@@ -221,12 +246,43 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
+    suspend fun saveConnectConfig(host: String, port: Int): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            if (host.isBlank() || port <= 0) {
+                val e = IllegalArgumentException("Invalid host/port")
+                recordError("save_connect_config", host, port, e)
+                false
+            } else {
+                getPrefs().edit()
+                    .putString(KEY_HOST, host)
+                    .putInt(KEY_PORT, port)
+                    .apply()
+                true
+            }
+        } catch (e: Exception) {
+            recordError("save_connect_config", host, port, e)
+            false
+        }
+    }
+
     suspend fun connect(host: String? = null, port: Int? = null, tls: Boolean = false): Boolean = withContext(Dispatchers.IO) {
         try {
             val targetHost = host ?: getPrefs().getString(KEY_HOST, null)
-            val targetPort = port ?: getPrefs().getInt(KEY_PORT, 5555)
+            val targetPort = port ?: getPrefs().getInt(KEY_PORT, -1)
 
-            if (targetHost == null) return@withContext false
+            if (targetHost == null || targetHost.isBlank()) {
+                val e = IllegalStateException("Host is not configured")
+                recordError("connect", targetHost, targetPort, e)
+                _state.set(State.UNCONFIGURED)
+                return@withContext false
+            }
+
+            if (targetPort <= 0) {
+                val e = IllegalStateException("Port is not configured")
+                recordError("connect", targetHost, targetPort, e)
+                _state.set(State.UNCONFIGURED)
+                return@withContext false
+            }
 
             // Note: Proper ADB pairing/TLS is not fully wired yet. This supports direct ADB-over-TCP.
             val (privateKey, certificate) = getOrCreateKeyMaterial()

@@ -49,6 +49,8 @@ class LadbSetupActivity : AppCompatActivity() {
         // Bind UI controls
         val tvStatus = findViewById<TextView>(R.id.tvLadbStatus)
         val etHostPort = findViewById<TextInputEditText>(R.id.etHostPort)
+        val etPairingPort = findViewById<TextInputEditText>(R.id.etPairingPort)
+        val etPairingCode = findViewById<TextInputEditText>(R.id.etPairingCode)
         val btnPair = findViewById<MaterialButton>(R.id.btnPair)
         val btnConnect = findViewById<MaterialButton>(R.id.btnConnect)
         val btnUnpair = findViewById<MaterialButton>(R.id.btnUnpair)
@@ -56,13 +58,48 @@ class LadbSetupActivity : AppCompatActivity() {
 
         val ladbManager = LadbManager.getInstance(this)
 
+        fun parseHostPort(raw: String): Pair<String, Int>? {
+            val input = raw.trim()
+            if (input.isEmpty()) return null
+
+            // Allow "PORT" shorthand.
+            input.toIntOrNull()?.let { p ->
+                if (p > 0) return "127.0.0.1" to p
+            }
+
+            val parts = input.split(":")
+            if (parts.size < 2) return null
+
+            val host = parts[0].trim().ifEmpty { "127.0.0.1" }
+            val port = parts[1].trim().toIntOrNull() ?: return null
+            if (port <= 0) return null
+            return host to port
+        }
+
+        fun parsePort(raw: String): Int? {
+            val p = raw.trim().toIntOrNull() ?: return null
+            return if (p > 0) p else null
+        }
+
         fun showLadbErrorDialog(title: String, logs: String) {
+            val hint = if (logs.contains("ECONNREFUSED", ignoreCase = true) || logs.contains("Connection refused", ignoreCase = true)) {
+                getString(R.string.ladb_hint_connection_refused)
+            } else {
+                ""
+            }
+
+            val merged = if (hint.isNotBlank()) {
+                "$hint\n\n$logs"
+            } else {
+                logs
+            }
+
             val dialogView = layoutInflater.inflate(R.layout.dialog_ladb_error, null)
             val tvLogs = dialogView.findViewById<TextView>(R.id.tvLadbErrorLogs)
             val btnCopy = dialogView.findViewById<android.widget.Button>(R.id.btnCopy)
             val btnClose = dialogView.findViewById<android.widget.Button>(R.id.btnClose)
 
-            tvLogs.text = logs
+            tvLogs.text = merged
 
             val dialog = MaterialAlertDialogBuilder(this)
                 .setTitle(title)
@@ -72,7 +109,7 @@ class LadbSetupActivity : AppCompatActivity() {
 
             btnCopy.setOnClickListener {
                 val cm = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                val clip = android.content.ClipData.newPlainText("ladb_logs", logs)
+                val clip = android.content.ClipData.newPlainText("ladb_logs", merged)
                 cm.setPrimaryClip(clip)
                 Snackbar.make(root, getString(R.string.copy) + "!", Snackbar.LENGTH_SHORT).show()
             }
@@ -95,14 +132,28 @@ class LadbSetupActivity : AppCompatActivity() {
         updateStatus()
 
         btnPair.setOnClickListener {
-            val input = etHostPort.text?.toString().orEmpty()
-            val parts = input.split(":")
-            val host = if (parts.isNotEmpty()) parts[0] else "localhost"
-            val port = if (parts.size > 1) parts[1].toIntOrNull() ?: 5555 else 5555
+            val parsed = parseHostPort(etHostPort.text?.toString().orEmpty())
+            if (parsed == null) {
+                showLadbErrorDialog(getString(R.string.ladb_error_title), getString(R.string.ladb_invalid_host_port))
+                return@setOnClickListener
+            }
+            val host = parsed.first
+
+            val pairingPort = parsePort(etPairingPort.text?.toString().orEmpty())
+            if (pairingPort == null) {
+                showLadbErrorDialog(getString(R.string.ladb_error_title), getString(R.string.ladb_invalid_pairing_port))
+                return@setOnClickListener
+            }
+
+            val code = etPairingCode.text?.toString().orEmpty().trim()
+            if (code.isEmpty()) {
+                showLadbErrorDialog(getString(R.string.ladb_error_title), getString(R.string.ladb_pairing_code_required))
+                return@setOnClickListener
+            }
             
             lifecycleScope.launch {
                 btnPair.isEnabled = false
-                val ok = withContext(Dispatchers.IO) { ladbManager.pair(host, port, null) }
+                val ok = withContext(Dispatchers.IO) { ladbManager.pair(host, pairingPort, code) }
                 updateStatus()
                 if (!ok) {
                     val logs = ladbManager.getLastErrorLog() ?: "Pairing failed (no logs)."
@@ -115,7 +166,17 @@ class LadbSetupActivity : AppCompatActivity() {
         btnConnect.setOnClickListener {
             lifecycleScope.launch {
                 btnConnect.isEnabled = false
-                val ok = withContext(Dispatchers.IO) { ladbManager.connect() }
+                val parsed = parseHostPort(etHostPort.text?.toString().orEmpty())
+                val ok = withContext(Dispatchers.IO) {
+                    if (parsed != null) {
+                        // Persist config and connect using provided host:port.
+                        ladbManager.saveConnectConfig(parsed.first, parsed.second)
+                        ladbManager.connect(parsed.first, parsed.second)
+                    } else {
+                        // Fall back to previously saved config.
+                        ladbManager.connect()
+                    }
+                }
                 updateStatus()
                 if (!ok) {
                     val logs = ladbManager.getLastErrorLog() ?: "Connect failed (no logs)."

@@ -162,7 +162,13 @@
     <string name="ladb_status_connected">Connected</string>
     <string name="ladb_status_disconnected">Disconnected</string>
     <string name="ladb_error_title">LADB error</string>
-    <string name="ladb_pairing_code_hint">Pairing code (optional)</string>
+    <string name="ladb_hint_connection_refused">Connection refused usually means Wireless debugging is OFF or you are using the wrong port. Use the port shown in Developer options → Wireless debugging → IP address &amp; port (not the pairing port). Also make sure ShizuWall is allowed in Wireless debugging.</string>
+    <string name="ladb_invalid_host_port">Invalid address. Enter HOST:PORT (example: 127.0.0.1:43055) or just PORT (example: 43055).</string>
+    <string name="ladb_connect_host_port_hint">Device IP:ADB port (from Wireless debugging)</string>
+    <string name="ladb_pairing_port_hint">Pairing port (from Pair device)</string>
+    <string name="ladb_pairing_code_hint">Pairing code</string>
+    <string name="ladb_pairing_code_required">Pairing code is required.</string>
+    <string name="ladb_invalid_pairing_port">Invalid pairing port.</string>
     <string name="set_ladb_title">Set LADB</string>
     <string name="set_ladb_summary">Configure LibADB pairing / remote ADB (TLS) and connection</string>
 </resources>
