@@ -169,6 +169,13 @@
     <string name="ladb_pairing_code_hint">Pairing code</string>
     <string name="ladb_pairing_code_required">Pairing code is required.</string>
     <string name="ladb_invalid_pairing_port">Invalid pairing port.</string>
+
+    <string name="ladb_pairing_channel_name">LADB pairing</string>
+    <string name="ladb_pairing_notification_title">Enter pairing code</string>
+    <string name="ladb_pairing_notification_text">Tap and enter the pairing port and code shown in Wireless debugging → Pair device.</string>
+    <string name="ladb_enter_pairing_port_code_action">Enter port &amp; code</string>
+    <string name="ladb_pairing_notification_shown">Pairing notification shown</string>
+    <string name="ladb_notification_permission_required">Notification permission is required to show the pairing code prompt.</string>
     <string name="set_ladb_title">Set LADB</string>
     <string name="set_ladb_summary">Configure LibADB pairing / remote ADB (TLS) and connection</string>
 </resources>

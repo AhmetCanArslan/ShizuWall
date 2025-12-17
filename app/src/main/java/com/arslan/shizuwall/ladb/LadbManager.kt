@@ -246,6 +246,56 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
+    suspend fun savePairingConfig(host: String, pairingPort: Int): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            if (host.isBlank() || pairingPort <= 0) {
+                val e = IllegalArgumentException("Invalid pairing host/port")
+                recordError("save_pairing_config", host, pairingPort, e)
+                false
+            } else {
+                getPrefs().edit()
+                    .putString(KEY_HOST, host)
+                    .putInt(KEY_PAIRING_PORT, pairingPort)
+                    .apply()
+                true
+            }
+        } catch (e: Exception) {
+            recordError("save_pairing_config", host, pairingPort, e)
+            false
+        }
+    }
+
+    suspend fun savePairingPortUsingSavedHost(pairingPort: Int): Boolean = withContext(Dispatchers.IO) {
+        val host = getPrefs().getString(KEY_HOST, null)
+        return@withContext try {
+            if (host.isNullOrBlank() || pairingPort <= 0) {
+                val e = IllegalArgumentException("Invalid saved host or pairing port")
+                recordError("save_pairing_port_using_saved_host", host, pairingPort, e)
+                false
+            } else {
+                getPrefs().edit()
+                    .putInt(KEY_PAIRING_PORT, pairingPort)
+                    .apply()
+                true
+            }
+        } catch (e: Exception) {
+            recordError("save_pairing_port_using_saved_host", host, pairingPort, e)
+            false
+        }
+    }
+
+    suspend fun pairUsingSavedConfig(pairingCode: String): Boolean = withContext(Dispatchers.IO) {
+        val host = getPrefs().getString(KEY_HOST, null)
+        val pairingPort = getPrefs().getInt(KEY_PAIRING_PORT, -1)
+        if (host.isNullOrBlank() || pairingPort <= 0) {
+            val e = IllegalStateException("Pairing host/port is not configured")
+            recordError("pair_using_saved", host, pairingPort, e)
+            _state.set(State.UNCONFIGURED)
+            return@withContext false
+        }
+        return@withContext pair(host, pairingPort, pairingCode)
+    }
+
     suspend fun saveConnectConfig(host: String, port: Int): Boolean = withContext(Dispatchers.IO) {
         return@withContext try {
             if (host.isBlank() || port <= 0) {
@@ -261,6 +311,24 @@ class LadbManager private constructor(private val context: Context) {
             }
         } catch (e: Exception) {
             recordError("save_connect_config", host, port, e)
+            false
+        }
+    }
+
+    suspend fun saveHost(host: String): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            if (host.isBlank()) {
+                val e = IllegalArgumentException("Host is blank")
+                recordError("save_host", host, null, e)
+                false
+            } else {
+                getPrefs().edit()
+                    .putString(KEY_HOST, host)
+                    .apply()
+                true
+            }
+        } catch (e: Exception) {
+            recordError("save_host", host, null, e)
             false
         }
     }

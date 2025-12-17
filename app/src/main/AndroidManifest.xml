@@ -69,6 +69,14 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".receivers.LadbPairingCodeReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.arslan.shizuwall.ACTION_LADB_PAIRING_CODE" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".services.FirewallTileService"
             android:label="Firewall Toggle"

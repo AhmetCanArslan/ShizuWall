@@ -1,5 +1,9 @@
 package com.arslan.shizuwall
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +23,13 @@ import com.arslan.shizuwall.ladb.LadbManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.RemoteInput
+import com.arslan.shizuwall.receivers.LadbPairingCodeReceiver
 
 class LadbSetupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +68,80 @@ class LadbSetupActivity : AppCompatActivity() {
         val btnStartService = findViewById<MaterialButton>(R.id.btnStartService)
 
         val ladbManager = LadbManager.getInstance(this)
+
+        fun createPairingNotificationChannel() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val nm = getSystemService(NotificationManager::class.java)
+                if (nm.getNotificationChannel(PAIRING_CHANNEL_ID) == null) {
+                    val channel = NotificationChannel(
+                        PAIRING_CHANNEL_ID,
+                        getString(R.string.ladb_pairing_channel_name),
+                        NotificationManager.IMPORTANCE_HIGH
+                    )
+                    nm.createNotificationChannel(channel)
+                }
+            }
+        }
+
+        fun showPairingCodeNotification() {
+            // Android 13+ requires notification permission.
+            if (Build.VERSION.SDK_INT >= 33) {
+                if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    Snackbar.make(root, getString(R.string.ladb_notification_permission_required), Snackbar.LENGTH_LONG).show()
+                    return
+                }
+            }
+
+            createPairingNotificationChannel()
+
+            val remotePort = RemoteInput.Builder(LadbPairingCodeReceiver.KEY_REMOTE_INPUT_PORT)
+                .setLabel(getString(R.string.ladb_pairing_port_hint))
+                .build()
+
+            val remoteCode = RemoteInput.Builder(LadbPairingCodeReceiver.KEY_REMOTE_INPUT_CODE)
+                .setLabel(getString(R.string.ladb_pairing_code_hint))
+                .build()
+
+            val intent = Intent(this, LadbPairingCodeReceiver::class.java).apply {
+                action = LadbPairingCodeReceiver.ACTION_LADB_PAIRING_CODE
+            }
+
+            // RemoteInput requires a mutable PendingIntent on Android 12+.
+            val actionFlags = PendingIntent.FLAG_UPDATE_CURRENT or when {
+                Build.VERSION.SDK_INT >= 31 -> PendingIntent.FLAG_MUTABLE
+                Build.VERSION.SDK_INT >= 23 -> 0
+                else -> 0
+            }
+            val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, actionFlags)
+
+            val action = NotificationCompat.Action.Builder(
+                0,
+                getString(R.string.ladb_enter_pairing_port_code_action),
+                pendingIntent
+            )
+                .addRemoteInput(remotePort)
+                .addRemoteInput(remoteCode)
+                .setAllowGeneratedReplies(false)
+                .build()
+
+            val openIntent = Intent(this, LadbSetupActivity::class.java)
+            val contentFlags = PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0)
+            val contentIntent = PendingIntent.getActivity(this, 0, openIntent, contentFlags)
+
+            val notification = NotificationCompat.Builder(this, PAIRING_CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(getString(R.string.ladb_pairing_notification_title))
+                .setContentText(getString(R.string.ladb_pairing_notification_text))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .setContentIntent(contentIntent)
+                .addAction(action)
+                .build()
+
+            NotificationManagerCompat.from(this)
+                .notify(LadbPairingCodeReceiver.NOTIFICATION_ID, notification)
+        }
 
         fun parseHostPort(raw: String): Pair<String, Int>? {
             val input = raw.trim()
@@ -140,14 +225,18 @@ class LadbSetupActivity : AppCompatActivity() {
             val host = parsed.first
 
             val pairingPort = parsePort(etPairingPort.text?.toString().orEmpty())
-            if (pairingPort == null) {
-                showLadbErrorDialog(getString(R.string.ladb_error_title), getString(R.string.ladb_invalid_pairing_port))
-                return@setOnClickListener
-            }
-
             val code = etPairingCode.text?.toString().orEmpty().trim()
-            if (code.isEmpty()) {
-                showLadbErrorDialog(getString(R.string.ladb_error_title), getString(R.string.ladb_pairing_code_required))
+            if (pairingPort == null || code.isEmpty()) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    // Save host (and pairing port if present) so the receiver can complete pairing.
+                    ladbManager.saveHost(host)
+                    if (pairingPort != null) {
+                        ladbManager.savePairingConfig(host, pairingPort)
+                    }
+                }
+
+                showPairingCodeNotification()
+                Snackbar.make(root, getString(R.string.ladb_pairing_notification_shown), Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             
@@ -202,5 +291,9 @@ class LadbSetupActivity : AppCompatActivity() {
             }
             Snackbar.make(root, "Service started", Snackbar.LENGTH_SHORT).show()
         }
+    }
+
+    companion object {
+        private const val PAIRING_CHANNEL_ID = "ladb_pairing"
     }
 }
