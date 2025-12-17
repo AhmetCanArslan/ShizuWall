@@ -35,6 +35,16 @@ import androidx.core.app.RemoteInput
 import com.arslan.shizuwall.receivers.LadbPairingCodeReceiver
 
 class LadbSetupActivity : AppCompatActivity() {
+
+    private lateinit var rootView: View
+    private lateinit var tvStatus: TextView
+    private lateinit var etHostPort: TextInputEditText
+    private lateinit var etPairingPort: TextInputEditText
+    private lateinit var etPairingCode: TextInputEditText
+    private lateinit var btnUnpair: MaterialButton
+
+    private lateinit var ladbManager: LadbManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ladb_setup)
@@ -43,8 +53,8 @@ class LadbSetupActivity : AppCompatActivity() {
         toolbar?.setNavigationOnClickListener { finish() }
 
         // Respect system bars (status/navigation) similar to SettingsActivity
-        val root = findViewById<android.view.View>(R.id.ladbSetupRoot) ?: return
-        ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
+        rootView = findViewById<android.view.View>(R.id.ladbSetupRoot) ?: return
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             // Apply top margin to toolbar to account for status bar
             try {
@@ -61,30 +71,16 @@ class LadbSetupActivity : AppCompatActivity() {
         }
 
         // Bind UI controls
-        val tvStatus = findViewById<TextView>(R.id.tvLadbStatus)
-        val etHostPort = findViewById<TextInputEditText>(R.id.etHostPort)
-        val etPairingPort = findViewById<TextInputEditText>(R.id.etPairingPort)
-        val etPairingCode = findViewById<TextInputEditText>(R.id.etPairingCode)
+        tvStatus = findViewById<TextView>(R.id.tvLadbStatus)
+        etHostPort = findViewById<TextInputEditText>(R.id.etHostPort)
+        etPairingPort = findViewById<TextInputEditText>(R.id.etPairingPort)
+        etPairingCode = findViewById<TextInputEditText>(R.id.etPairingCode)
         val btnPair = findViewById<MaterialButton>(R.id.btnPair)
         val btnConnect = findViewById<MaterialButton>(R.id.btnConnect)
-        val btnUnpair = findViewById<MaterialButton>(R.id.btnUnpair)
+        btnUnpair = findViewById<MaterialButton>(R.id.btnUnpair)
         val btnStartService = findViewById<MaterialButton>(R.id.btnStartService)
 
-        val ladbManager = LadbManager.getInstance(this)
-
-        fun detectLocalIpv4OrNull(): String? {
-            return try {
-                val cm = getSystemService(ConnectivityManager::class.java) ?: return null
-                val network = cm.activeNetwork ?: return null
-                val lp: LinkProperties = cm.getLinkProperties(network) ?: return null
-                lp.linkAddresses
-                    .mapNotNull { it.address }
-                    .firstOrNull { addr -> addr is Inet4Address && !addr.isLoopbackAddress && !addr.isLinkLocalAddress }
-                    ?.hostAddress
-            } catch (_: Exception) {
-                null
-            }
-        }
+        ladbManager = LadbManager.getInstance(this)
 
         fun createPairingNotificationChannel() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -104,7 +100,7 @@ class LadbSetupActivity : AppCompatActivity() {
             // Android 13+ requires notification permission.
             if (Build.VERSION.SDK_INT >= 33) {
                 if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    Snackbar.make(root, getString(R.string.ladb_notification_permission_required), Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(rootView, getString(R.string.ladb_notification_permission_required), Snackbar.LENGTH_LONG).show()
                     return
                 }
             }
@@ -216,7 +212,7 @@ class LadbSetupActivity : AppCompatActivity() {
                 val cm = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                 val clip = android.content.ClipData.newPlainText("ladb_logs", merged)
                 cm.setPrimaryClip(clip)
-                Snackbar.make(root, getString(R.string.copy) + "!", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(rootView, getString(R.string.copy) + "!", Snackbar.LENGTH_SHORT).show()
             }
 
             btnClose.setOnClickListener { dialog.dismiss() }
@@ -234,25 +230,7 @@ class LadbSetupActivity : AppCompatActivity() {
             btnUnpair.visibility = if (ladbManager.state == LadbManager.State.PAIRED || ladbManager.state == LadbManager.State.CONNECTED) View.VISIBLE else View.GONE
         }
 
-        // Auto-fill host/port with the best available defaults.
-        run {
-            val savedHost = ladbManager.getSavedHost()
-            val savedPort = ladbManager.getSavedConnectPort()
-
-            val hostToUse = savedHost?.takeIf { it.isNotBlank() }
-                ?: detectLocalIpv4OrNull()
-                ?: "127.0.0.1"
-
-            val text = when {
-                savedPort > 0 -> "$hostToUse:$savedPort"
-                else -> hostToUse
-            }
-
-            if (etHostPort.text.isNullOrBlank()) {
-                etHostPort.setText(text)
-            }
-        }
-
+        populateFieldsIfBlank()
         updateStatus()
 
         btnPair.setOnClickListener {
@@ -276,7 +254,7 @@ class LadbSetupActivity : AppCompatActivity() {
 
                 val askForPort = ladbManager.getSavedPairingPort() <= 0 && pairingPort == null
                 showPairingCodeNotification(askForPort)
-                Snackbar.make(root, getString(R.string.ladb_pairing_notification_shown), Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(rootView, getString(R.string.ladb_pairing_notification_shown), Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             
@@ -329,8 +307,66 @@ class LadbSetupActivity : AppCompatActivity() {
             } else {
                 startService(intent)
             }
-            Snackbar.make(root, "Service started", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(rootView, "Service started", Snackbar.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        populateFieldsIfBlank()
+        // Refresh status in case pairing happened via notification while we were away.
+        tvStatus.post { 
+            try {
+                tvStatus.text = when (ladbManager.state) {
+                    LadbManager.State.UNCONFIGURED -> getString(R.string.ladb_status_unconfigured)
+                    LadbManager.State.PAIRED -> getString(R.string.ladb_status_paired)
+                    LadbManager.State.CONNECTED -> getString(R.string.ladb_status_connected)
+                    LadbManager.State.DISCONNECTED -> getString(R.string.ladb_status_disconnected)
+                    LadbManager.State.ERROR -> "Error"
+                }
+                btnUnpair.visibility = if (ladbManager.state == LadbManager.State.PAIRED || ladbManager.state == LadbManager.State.CONNECTED) View.VISIBLE else View.GONE
+            } catch (_: Exception) {
+                // ignore
+            }
+        }
+    }
+
+    private fun detectLocalIpv4OrNull(): String? {
+        return try {
+            val cm = getSystemService(ConnectivityManager::class.java) ?: return null
+            val network = cm.activeNetwork ?: return null
+            val lp: LinkProperties = cm.getLinkProperties(network) ?: return null
+            lp.linkAddresses
+                .mapNotNull { it.address }
+                .firstOrNull { addr -> addr is Inet4Address && !addr.isLoopbackAddress && !addr.isLinkLocalAddress }
+                ?.hostAddress
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun populateFieldsIfBlank() {
+        val savedHost = ladbManager.getSavedHost()
+        val savedConnectPort = ladbManager.getSavedConnectPort()
+        val savedPairingPort = ladbManager.getSavedPairingPort()
+
+        val hostToUse = savedHost?.takeIf { it.isNotBlank() }
+            ?: detectLocalIpv4OrNull()
+            ?: "127.0.0.1"
+
+        if (etHostPort.text.isNullOrBlank()) {
+            val text = when {
+                savedConnectPort > 0 -> "$hostToUse:$savedConnectPort"
+                else -> hostToUse
+            }
+            etHostPort.setText(text)
+        }
+
+        if (etPairingPort.text.isNullOrBlank() && savedPairingPort > 0) {
+            etPairingPort.setText(savedPairingPort.toString())
+        }
+
+        // Never auto-fill pairing code.
     }
 
     companion object {
