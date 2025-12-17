@@ -96,7 +96,7 @@ class LadbSetupActivity : AppCompatActivity() {
             }
         }
 
-        fun showPairingCodeNotification(askForPort: Boolean) {
+        fun showPairingCodeNotification() {
             // Android 13+ requires notification permission.
             if (Build.VERSION.SDK_INT >= 33) {
                 if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -107,11 +107,7 @@ class LadbSetupActivity : AppCompatActivity() {
 
             createPairingNotificationChannel()
 
-            val detailsLabel = if (askForPort) {
-                getString(R.string.ladb_pairing_details_hint_port_code)
-            } else {
-                getString(R.string.ladb_pairing_details_hint_code_only)
-            }
+            val detailsLabel = getString(R.string.ladb_pairing_details_hint_port_code)
             val remoteDetails = RemoteInput.Builder(LadbPairingCodeReceiver.KEY_REMOTE_INPUT_DETAILS)
                 .setLabel(detailsLabel)
                 .build()
@@ -144,10 +140,7 @@ class LadbSetupActivity : AppCompatActivity() {
             val notification = NotificationCompat.Builder(this, PAIRING_CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getString(R.string.ladb_pairing_notification_title))
-                .setContentText(
-                    if (askForPort) getString(R.string.ladb_pairing_notification_text)
-                    else getString(R.string.ladb_pairing_notification_text_code_only)
-                )
+                .setContentText(getString(R.string.ladb_pairing_notification_text))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
@@ -252,8 +245,7 @@ class LadbSetupActivity : AppCompatActivity() {
                     }
                 }
 
-                val askForPort = ladbManager.getSavedPairingPort() <= 0 && pairingPort == null
-                showPairingCodeNotification(askForPort)
+                showPairingCodeNotification()
                 Snackbar.make(rootView, getString(R.string.ladb_pairing_notification_shown), Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -347,23 +339,13 @@ class LadbSetupActivity : AppCompatActivity() {
 
     private fun populateFieldsIfBlank() {
         val savedHost = ladbManager.getSavedHost()
-        val savedConnectPort = ladbManager.getSavedConnectPort()
-        val savedPairingPort = ladbManager.getSavedPairingPort()
 
         val hostToUse = savedHost?.takeIf { it.isNotBlank() }
             ?: detectLocalIpv4OrNull()
             ?: "127.0.0.1"
 
         if (etHostPort.text.isNullOrBlank()) {
-            val text = when {
-                savedConnectPort > 0 -> "$hostToUse:$savedConnectPort"
-                else -> hostToUse
-            }
-            etHostPort.setText(text)
-        }
-
-        if (etPairingPort.text.isNullOrBlank() && savedPairingPort > 0) {
-            etPairingPort.setText(savedPairingPort.toString())
+            etHostPort.setText(hostToUse)
         }
 
         // Never auto-fill pairing code.
