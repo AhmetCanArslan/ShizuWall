@@ -150,48 +150,56 @@
                         android:layout_marginBottom="8dp"
                         app:useMaterialThemeColors="true" />
 
-                    <ScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:background="?attr/colorSurfaceVariant"
-                        android:padding="8dp">
-
-                        <TextView
-                            android:id="@+id/tvLadbLogs"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/ladb_logs_empty"
-                            android:textSize="12sp"
-                            android:textColor="?android:attr/textColorSecondary"
-                            android:fontFamily="monospace"
-                            android:typeface="monospace" />
-                    </ScrollView>
-
                     <LinearLayout
+                        android:id="@+id/logsContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="8dp">
+                        android:orientation="vertical"
+                        android:visibility="visible">
 
-                        <com.google.android.material.button.MaterialButton
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:id="@+id/btnClearLogs"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/ladb_clear_logs"
-                            android:layout_marginEnd="8dp"
-                            app:useMaterialThemeColors="true" />
+                        <ScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:background="?attr/colorSurfaceVariant"
+                            android:padding="8dp">
 
-                        <com.google.android.material.button.MaterialButton
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:id="@+id/btnCopyLogs"
-                            android:layout_width="0dp"
+                            <TextView
+                                android:id="@+id/tvLadbLogs"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/ladb_logs_empty"
+                                android:textSize="12sp"
+                                android:textColor="?android:attr/textColorSecondary"
+                                android:fontFamily="monospace"
+                                android:typeface="monospace" />
+                        </ScrollView>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/ladb_copy_logs"
-                            android:layout_marginStart="8dp"
-                            app:useMaterialThemeColors="true" />
+                            android:orientation="horizontal"
+                            android:layout_marginTop="8dp">
+
+                            <com.google.android.material.button.MaterialButton
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:id="@+id/btnClearLogs"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/ladb_clear_logs"
+                                android:layout_marginEnd="8dp"
+                                app:useMaterialThemeColors="true" />
+
+                            <com.google.android.material.button.MaterialButton
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:id="@+id/btnCopyLogs"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/ladb_copy_logs"
+                                android:layout_marginStart="8dp"
+                                app:useMaterialThemeColors="true" />
+                        </LinearLayout>
                     </LinearLayout>
 
                 </LinearLayout>

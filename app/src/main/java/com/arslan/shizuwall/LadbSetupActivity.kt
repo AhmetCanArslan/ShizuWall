@@ -28,6 +28,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.net.ConnectivityManager
 import android.net.LinkProperties
+import android.widget.LinearLayout
 import android.widget.ScrollView
 import java.net.Inet4Address
 import androidx.core.app.NotificationCompat
@@ -44,6 +45,7 @@ class LadbSetupActivity : AppCompatActivity() {
     private lateinit var btnUnpair: MaterialButton
     private lateinit var tvLadbLogs: TextView
     private lateinit var switchEnableLogs: com.google.android.material.materialswitch.MaterialSwitch
+    private lateinit var logsContainer: LinearLayout
 
     private lateinit var ladbManager: LadbManager
 
@@ -105,6 +107,46 @@ class LadbSetupActivity : AppCompatActivity() {
         return prefs.getBoolean("logging_enabled", true)
     }
 
+    private fun animateLogsContainer(show: Boolean) {
+        // Cancel any ongoing animation
+        logsContainer.animate().cancel()
+
+        if (show) {
+            // Fade in animation
+            logsContainer.visibility = View.VISIBLE
+            logsContainer.alpha = 0f
+            logsContainer.animate()
+                .alpha(1f)
+                .setDuration(300)
+                .setInterpolator(android.view.animation.DecelerateInterpolator())
+                .setListener(null) // Remove any previous listener
+                .start()
+        } else {
+            // Fade out animation
+            logsContainer.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .setInterpolator(android.view.animation.AccelerateInterpolator())
+                .setListener(object : android.animation.Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: android.animation.Animator) {}
+                    override fun onAnimationEnd(animation: android.animation.Animator) {
+                        if (!getLoggingEnabled()) { // Double-check the state
+                            logsContainer.visibility = View.GONE
+                        }
+                    }
+                    override fun onAnimationCancel(animation: android.animation.Animator) {
+                        // If animation is cancelled and logging is disabled, hide immediately
+                        if (!getLoggingEnabled()) {
+                            logsContainer.visibility = View.GONE
+                            logsContainer.alpha = 0f
+                        }
+                    }
+                    override fun onAnimationRepeat(animation: android.animation.Animator) {}
+                })
+                .start()
+        }
+    }
+
     private fun setLoggingEnabled(enabled: Boolean) {
         val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
         prefs.edit().putBoolean("logging_enabled", enabled).apply()
@@ -147,13 +189,20 @@ class LadbSetupActivity : AppCompatActivity() {
         val btnClearLogs = findViewById<MaterialButton>(R.id.btnClearLogs)
         val btnCopyLogs = findViewById<MaterialButton>(R.id.btnCopyLogs)
         switchEnableLogs = findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.switchEnableLogs)
+        logsContainer = findViewById<LinearLayout>(R.id.logsContainer)
 
         // Load logging preference
         switchEnableLogs.isChecked = getLoggingEnabled()
+        
+        // Set initial state without animation
+        logsContainer.visibility = if (getLoggingEnabled()) View.VISIBLE else View.GONE
 
         switchEnableLogs.setOnCheckedChangeListener { _, isChecked ->
             setLoggingEnabled(isChecked)
-            appendLog("Logging ${if (isChecked) "enabled" else "disabled"}")
+            animateLogsContainer(isChecked)
+            if (isChecked) {
+                appendLog("Logging enabled")
+            }
         }
 
         // Load saved logs
