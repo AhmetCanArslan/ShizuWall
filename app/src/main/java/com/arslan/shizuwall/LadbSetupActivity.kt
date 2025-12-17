@@ -28,6 +28,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.net.ConnectivityManager
 import android.net.LinkProperties
+import android.widget.ScrollView
 import java.net.Inet4Address
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -38,12 +39,63 @@ class LadbSetupActivity : AppCompatActivity() {
 
     private lateinit var rootView: View
     private lateinit var tvStatus: TextView
-    private lateinit var etHostPort: TextInputEditText
     private lateinit var etPairingPort: TextInputEditText
     private lateinit var etPairingCode: TextInputEditText
     private lateinit var btnUnpair: MaterialButton
+    private lateinit var tvLadbLogs: TextView
 
     private lateinit var ladbManager: LadbManager
+
+    private fun updateStatus() {
+        runOnUiThread {
+            tvStatus.text = when (ladbManager.state) {
+                LadbManager.State.UNCONFIGURED -> getString(R.string.ladb_status_unconfigured)
+                LadbManager.State.PAIRED -> getString(R.string.ladb_status_paired)
+                LadbManager.State.CONNECTED -> getString(R.string.ladb_status_connected)
+                LadbManager.State.DISCONNECTED -> getString(R.string.ladb_status_disconnected)
+                LadbManager.State.ERROR -> "Error"
+            }
+            btnUnpair.isEnabled = ladbManager.state == LadbManager.State.PAIRED || ladbManager.state == LadbManager.State.CONNECTED
+        }
+    }
+
+    private fun appendLog(message: String) {
+        runOnUiThread {
+            val timestamp = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date())
+            val logEntry = "[$timestamp] $message\n"
+            val currentLogs = tvLadbLogs.text.toString()
+            val newLogs = currentLogs + logEntry
+            
+            // Keep only the last 1000 lines to prevent memory issues
+            val lines = newLogs.split("\n")
+            val trimmedLogs = if (lines.size > 1000) {
+                lines.takeLast(1000).joinToString("\n") + "\n"
+            } else {
+                newLogs
+            }
+            
+            tvLadbLogs.text = trimmedLogs
+            
+            // Save logs to persistent storage
+            saveLogs(trimmedLogs)
+            
+            // Auto-scroll to bottom
+            val scrollView = tvLadbLogs.parent as? ScrollView
+            scrollView?.post {
+                scrollView.fullScroll(View.FOCUS_DOWN)
+            }
+        }
+    }
+
+    private fun saveLogs(logs: String) {
+        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
+        prefs.edit().putString("logs", logs).apply()
+    }
+
+    private fun loadLogs(): String {
+        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
+        return prefs.getString("logs", "") ?: ""
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,13 +124,20 @@ class LadbSetupActivity : AppCompatActivity() {
 
         // Bind UI controls
         tvStatus = findViewById<TextView>(R.id.tvLadbStatus)
-        etHostPort = findViewById<TextInputEditText>(R.id.etHostPort)
         etPairingPort = findViewById<TextInputEditText>(R.id.etPairingPort)
         etPairingCode = findViewById<TextInputEditText>(R.id.etPairingCode)
         val btnPair = findViewById<MaterialButton>(R.id.btnPair)
         val btnConnect = findViewById<MaterialButton>(R.id.btnConnect)
         btnUnpair = findViewById<MaterialButton>(R.id.btnUnpair)
         val btnStartService = findViewById<MaterialButton>(R.id.btnStartService)
+        tvLadbLogs = findViewById<TextView>(R.id.tvLadbLogs)
+        val btnClearLogs = findViewById<MaterialButton>(R.id.btnClearLogs)
+
+        // Load saved logs
+        val savedLogs = loadLogs()
+        if (savedLogs.isNotEmpty()) {
+            tvLadbLogs.text = savedLogs
+        }
 
         ladbManager = LadbManager.getInstance(this)
 
@@ -212,36 +271,25 @@ class LadbSetupActivity : AppCompatActivity() {
             dialog.show()
         }
 
-        fun updateStatus() {
-            tvStatus.text = when (ladbManager.state) {
-                LadbManager.State.UNCONFIGURED -> getString(R.string.ladb_status_unconfigured)
-                LadbManager.State.PAIRED -> getString(R.string.ladb_status_paired)
-                LadbManager.State.CONNECTED -> getString(R.string.ladb_status_connected)
-                LadbManager.State.DISCONNECTED -> getString(R.string.ladb_status_disconnected)
-                LadbManager.State.ERROR -> "Error"
-            }
-            btnUnpair.visibility = if (ladbManager.state == LadbManager.State.PAIRED || ladbManager.state == LadbManager.State.CONNECTED) View.VISIBLE else View.GONE
-        }
-
-        populateFieldsIfBlank()
         updateStatus()
+        val detectedHost = detectLocalIpv4OrNull() ?: "127.0.0.1"
+        appendLog("LADB Setup initialized. Current status: ${tvStatus.text}")
+        appendLog("Auto-detected host: $detectedHost")
 
         btnPair.setOnClickListener {
-            val parsed = parseHostPort(etHostPort.text?.toString().orEmpty())
-            if (parsed == null) {
-                showLadbErrorDialog(getString(R.string.ladb_error_title), getString(R.string.ladb_invalid_host_port))
-                return@setOnClickListener
-            }
-            val host = parsed.first
+            val host = detectLocalIpv4OrNull() ?: "127.0.0.1"
 
             val pairingPort = parsePort(etPairingPort.text?.toString().orEmpty())
             val code = etPairingCode.text?.toString().orEmpty().trim()
             if (pairingPort == null || code.isEmpty()) {
+                appendLog("Showing pairing notification (missing port/code)")
+                appendLog("Host will be auto-detected as: $host")
                 lifecycleScope.launch(Dispatchers.IO) {
                     // Save host (and pairing port if present) so the receiver can complete pairing.
                     ladbManager.saveHost(host)
                     if (pairingPort != null) {
                         ladbManager.savePairingConfig(host, pairingPort)
+                        appendLog("Saved pairing port: $pairingPort")
                     }
                 }
 
@@ -249,74 +297,107 @@ class LadbSetupActivity : AppCompatActivity() {
                 Snackbar.make(rootView, getString(R.string.ladb_pairing_notification_shown), Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            
+
+            // Validate pairing port
+            if (pairingPort <= 0 || pairingPort > 65535) {
+                appendLog("Invalid pairing port: $pairingPort")
+                showLadbErrorDialog(getString(R.string.ladb_error_title), "Invalid pairing port. Port must be between 1 and 65535.")
+                return@setOnClickListener
+            }
+
+            appendLog("Starting pairing with host: $host, port: $pairingPort")
             lifecycleScope.launch {
                 btnPair.isEnabled = false
                 val ok = withContext(Dispatchers.IO) { ladbManager.pair(host, pairingPort, code) }
                 updateStatus()
                 if (!ok) {
-                    val logs = ladbManager.getLastErrorLog() ?: "Pairing failed (no logs)."
-                    showLadbErrorDialog(getString(R.string.ladb_error_title), logs)
+                    val logs = ladbManager.getLastErrorLog()
+                    val errorMessage = if (logs.isNullOrBlank()) {
+                        "Pairing failed with no error details available. Please check:\n" +
+                        "1. Wireless debugging is enabled in Developer options\n" +
+                        "2. The pairing port and code are correct\n" +
+                        "3. The device is on the same network\n" +
+                        "4. No firewall is blocking the connection"
+                    } else {
+                        logs
+                    }
+                    appendLog("Pairing failed: $errorMessage")
+                    showLadbErrorDialog(getString(R.string.ladb_error_title), errorMessage)
+                } else {
+                    appendLog("Pairing successful")
                 }
                 btnPair.isEnabled = true
             }
         }
 
         btnConnect.setOnClickListener {
+            appendLog("Starting connection...")
             lifecycleScope.launch {
                 btnConnect.isEnabled = false
-                val parsed = parseHostPort(etHostPort.text?.toString().orEmpty())
+                val host = detectLocalIpv4OrNull() ?: "127.0.0.1"
                 val ok = withContext(Dispatchers.IO) {
-                    if (parsed != null) {
-                        // Persist config and connect using provided host:port.
-                        ladbManager.saveConnectConfig(parsed.first, parsed.second)
-                        ladbManager.connect(parsed.first, parsed.second)
-                    } else {
-                        // Fall back to previously saved config.
-                        ladbManager.connect()
-                    }
+                    // Always use explicit host and default port for connection
+                    val port = 5555 // Default ADB port
+                    appendLog("Connecting to host: $host, port: $port")
+                    ladbManager.saveConnectConfig(host, port)
+                    ladbManager.connect(host, port)
                 }
                 updateStatus()
                 if (!ok) {
-                    val logs = ladbManager.getLastErrorLog() ?: "Connect failed (no logs)."
-                    showLadbErrorDialog(getString(R.string.ladb_error_title), logs)
+                    val logs = ladbManager.getLastErrorLog()
+                    val errorMessage = if (logs.isNullOrBlank()) {
+                        "Operation failed with no error details available. Please check:\n" +
+                        "1. Wireless debugging is enabled in Developer options\n" +
+                        "2. The correct IP address and port are being used\n" +
+                        "3. The device is on the same network\n" +
+                        "4. No firewall is blocking the connection"
+                    } else {
+                        logs
+                    }
+                    appendLog("Operation failed: $errorMessage")
+                    showLadbErrorDialog(getString(R.string.ladb_error_title), errorMessage)
+                } else {
+                    appendLog("Operation successful")
                 }
                 btnConnect.isEnabled = true
             }
         }
 
         btnUnpair.setOnClickListener {
+            appendLog("Unpairing device...")
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) { ladbManager.disconnect() }
                 updateStatus()
+                appendLog("Device unpaired")
             }
         }
 
+        btnClearLogs.setOnClickListener {
+            tvLadbLogs.text = ""
+            saveLogs("")
+            appendLog("Logs cleared")
+        }
+
         btnStartService.setOnClickListener {
+            appendLog("Starting LADB service...")
             val intent = android.content.Intent(this, com.arslan.shizuwall.services.LadbService::class.java)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                startForegroundService(intent)
-            } else {
-                startService(intent)
-            }
+            startForegroundService(intent)
+            appendLog("LADB service started")
             Snackbar.make(rootView, "Service started", Snackbar.LENGTH_SHORT).show()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        populateFieldsIfBlank()
         // Refresh status in case pairing happened via notification while we were away.
         tvStatus.post { 
             try {
-                tvStatus.text = when (ladbManager.state) {
-                    LadbManager.State.UNCONFIGURED -> getString(R.string.ladb_status_unconfigured)
-                    LadbManager.State.PAIRED -> getString(R.string.ladb_status_paired)
-                    LadbManager.State.CONNECTED -> getString(R.string.ladb_status_connected)
-                    LadbManager.State.DISCONNECTED -> getString(R.string.ladb_status_disconnected)
-                    LadbManager.State.ERROR -> "Error"
+                val oldStatus = tvStatus.text.toString()
+                updateStatus()
+                val newStatus = tvStatus.text.toString()
+                if (oldStatus != newStatus) {
+                    appendLog("Status updated: $newStatus")
                 }
-                btnUnpair.visibility = if (ladbManager.state == LadbManager.State.PAIRED || ladbManager.state == LadbManager.State.CONNECTED) View.VISIBLE else View.GONE
             } catch (_: Exception) {
                 // ignore
             }
@@ -335,20 +416,6 @@ class LadbSetupActivity : AppCompatActivity() {
         } catch (_: Exception) {
             null
         }
-    }
-
-    private fun populateFieldsIfBlank() {
-        val savedHost = ladbManager.getSavedHost()
-
-        val hostToUse = savedHost?.takeIf { it.isNotBlank() }
-            ?: detectLocalIpv4OrNull()
-            ?: "127.0.0.1"
-
-        if (etHostPort.text.isNullOrBlank()) {
-            etHostPort.setText(hostToUse)
-        }
-
-        // Never auto-fill pairing code.
     }
 
     companion object {

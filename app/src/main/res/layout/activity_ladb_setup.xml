@@ -54,18 +54,6 @@
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/ladb_connect_host_port_hint">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etHostPort"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="text" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:hint="@string/ladb_pairing_port_hint">
 
@@ -114,7 +102,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_unpair"
                         android:layout_marginTop="8dp"
-                        android:visibility="gone"
+                        android:enabled="false"
                         app:useMaterialThemeColors="true" />
 
                     <com.google.android.material.button.MaterialButton
@@ -124,6 +112,59 @@
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_start_service"
                         android:layout_marginTop="12dp"
+                        app:useMaterialThemeColors="true" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- LADB Logs Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_logs_title"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:paddingBottom="8dp" />
+
+                    <ScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:background="?attr/colorSurfaceVariant"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:id="@+id/tvLadbLogs"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ladb_logs_empty"
+                            android:textSize="12sp"
+                            android:textColor="?android:attr/textColorSecondary"
+                            android:fontFamily="monospace"
+                            android:typeface="monospace" />
+                    </ScrollView>
+
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:id="@+id/btnClearLogs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_clear_logs"
+                        android:layout_marginTop="8dp"
                         app:useMaterialThemeColors="true" />
 
                 </LinearLayout>
