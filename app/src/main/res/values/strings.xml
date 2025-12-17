@@ -186,6 +186,7 @@
     <string name="ladb_pairing_result_failed_title">LADB pairing failed</string>
     <string name="ladb_pairing_result_failed_text">Open ShizuWall to see the error log.</string>
     <string name="ladb_pairing_result_missing_code">Missing pairing code. Enter it from Wireless debugging → Pair device.</string>
+    <string name="ladb_pairing_result_missing_port">Missing pairing port. Enter: PORT CODE (from Wireless debugging → Pair device).</string>
     <string name="ladb_pairing_notification_shown">Pairing notification shown</string>
     <string name="ladb_notification_permission_required">Notification permission is required to show the pairing code prompt.</string>
     <string name="set_ladb_title">Set LADB</string>

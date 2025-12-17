@@ -22,7 +22,6 @@ import kotlinx.coroutines.withContext
 import com.arslan.shizuwall.ladb.LadbManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -35,8 +34,16 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import com.arslan.shizuwall.receivers.LadbPairingCodeReceiver
+import android.content.Context
+import android.net.nsd.NsdManager
+import android.net.nsd.NsdServiceInfo
+import android.util.Log
+import java.net.Socket
+import java.net.InetSocketAddress
+import android.os.Handler
+import android.os.Looper
 
-class LadbSetupActivity : AppCompatActivity() {
+class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
     private lateinit var rootView: View
     private lateinit var tvStatus: TextView
@@ -47,6 +54,13 @@ class LadbSetupActivity : AppCompatActivity() {
     private lateinit var logsContainer: LinearLayout
 
     private lateinit var ladbManager: LadbManager
+    private lateinit var adbPortFinder: AdbPortFinder
+    private var localIp: String? = null
+    private val detectedConnectPorts = mutableListOf<Int>()
+    private val detectedPairingCandidates = linkedSetOf<Pair<String, Int>>()
+    private val handler = Handler(Looper.getMainLooper())
+    private var pairingScanScheduled = false
+    private var lastShownErrorHash: Int? = null
 
     private fun updateStatus() {
         runOnUiThread {
@@ -151,6 +165,43 @@ class LadbSetupActivity : AppCompatActivity() {
         prefs.edit().putBoolean("logging_enabled", enabled).apply()
     }
 
+    private fun showLadbErrorDialog(title: String, logs: String) {
+        val hint = if (logs.contains("ECONNREFUSED", ignoreCase = true) || logs.contains("Connection refused", ignoreCase = true)) {
+            getString(R.string.ladb_hint_connection_refused)
+        } else {
+            ""
+        }
+
+        val merged = if (hint.isNotBlank()) {
+            "$hint\n\n$logs"
+        } else {
+            logs
+        }
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_ladb_error, null)
+        val tvLogs = dialogView.findViewById<TextView>(R.id.tvLadbErrorLogs)
+        val btnCopy = dialogView.findViewById<android.widget.Button>(R.id.btnCopy)
+        val btnClose = dialogView.findViewById<android.widget.Button>(R.id.btnClose)
+
+        tvLogs.text = merged
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(title)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        btnCopy.setOnClickListener {
+            val cm = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = android.content.ClipData.newPlainText("ladb_logs", merged)
+            cm.setPrimaryClip(clip)
+            Snackbar.make(rootView, getString(R.string.copy) + "!", Snackbar.LENGTH_SHORT).show()
+        }
+
+        btnClose.setOnClickListener { dialog.dismiss() }
+        dialog.show()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ladb_setup)
@@ -210,6 +261,11 @@ class LadbSetupActivity : AppCompatActivity() {
         }
 
         ladbManager = LadbManager.getInstance(this)
+        localIp = detectLocalIpv4OrNull()
+        adbPortFinder = AdbPortFinder(this, this)
+        detectedConnectPorts.clear()
+        detectedPairingCandidates.clear()
+        adbPortFinder.startDiscovery()
 
         fun createPairingNotificationChannel() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -236,7 +292,12 @@ class LadbSetupActivity : AppCompatActivity() {
 
             createPairingNotificationChannel()
 
-            val detailsLabel = "Pairing Code"
+            val hasPairingPort = ladbManager.getSavedPairingPort() > 0
+            val detailsLabel = if (hasPairingPort) {
+                getString(R.string.ladb_pairing_details_hint_code_only)
+            } else {
+                getString(R.string.ladb_pairing_details_hint_port_code)
+            }
             val remoteDetails = RemoteInput.Builder(LadbPairingCodeReceiver.KEY_REMOTE_INPUT_DETAILS)
                 .setLabel(detailsLabel)
                 .build()
@@ -269,7 +330,13 @@ class LadbSetupActivity : AppCompatActivity() {
             val notification = NotificationCompat.Builder(this, PAIRING_CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getString(R.string.ladb_pairing_notification_title))
-                .setContentText(getString(R.string.ladb_pairing_notification_text))
+                .setContentText(
+                    if (hasPairingPort) {
+                        getString(R.string.ladb_pairing_notification_text_code_only)
+                    } else {
+                        getString(R.string.ladb_pairing_notification_text)
+                    }
+                )
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
@@ -302,43 +369,6 @@ class LadbSetupActivity : AppCompatActivity() {
         fun parsePort(raw: String): Int? {
             val p = raw.trim().toIntOrNull() ?: return null
             return if (p > 0) p else null
-        }
-
-        fun showLadbErrorDialog(title: String, logs: String) {
-            val hint = if (logs.contains("ECONNREFUSED", ignoreCase = true) || logs.contains("Connection refused", ignoreCase = true)) {
-                getString(R.string.ladb_hint_connection_refused)
-            } else {
-                ""
-            }
-
-            val merged = if (hint.isNotBlank()) {
-                "$hint\n\n$logs"
-            } else {
-                logs
-            }
-
-            val dialogView = layoutInflater.inflate(R.layout.dialog_ladb_error, null)
-            val tvLogs = dialogView.findViewById<TextView>(R.id.tvLadbErrorLogs)
-            val btnCopy = dialogView.findViewById<android.widget.Button>(R.id.btnCopy)
-            val btnClose = dialogView.findViewById<android.widget.Button>(R.id.btnClose)
-
-            tvLogs.text = merged
-
-            val dialog = MaterialAlertDialogBuilder(this)
-                .setTitle(title)
-                .setView(dialogView)
-                .setCancelable(true)
-                .create()
-
-            btnCopy.setOnClickListener {
-                val cm = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                val clip = android.content.ClipData.newPlainText("ladb_logs", merged)
-                cm.setPrimaryClip(clip)
-                Snackbar.make(rootView, getString(R.string.copy) + "!", Snackbar.LENGTH_SHORT).show()
-            }
-
-            btnClose.setOnClickListener { dialog.dismiss() }
-            dialog.show()
         }
 
         updateStatus()
@@ -484,8 +514,144 @@ class LadbSetupActivity : AppCompatActivity() {
                 if (oldStatus != newStatus) {
                     appendLog("Status updated: $newStatus")
                 }
+
+                if (ladbManager.state == LadbManager.State.ERROR) {
+                    val logs = ladbManager.getLastErrorLog().orEmpty()
+                    if (logs.isNotBlank()) {
+                        val h = logs.hashCode()
+                        if (lastShownErrorHash != h) {
+                            lastShownErrorHash = h
+                            appendLog("Showing last LADB error details")
+                            showLadbErrorDialog(getString(R.string.ladb_error_title), logs)
+                        }
+                    }
+                }
             } catch (_: Exception) {
                 // ignore
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacksAndMessages(null)
+        adbPortFinder.stopDiscovery()
+    }
+
+    override fun onPairingPortFound(host: String, port: Int) {
+        appendLog("Pairing port detected: $host:$port")
+        if (host == "unknown" || port <= 0 || port > 65535) return
+
+        detectedPairingCandidates.add(host to port)
+
+        // Allow multiple NSD results to accumulate briefly, then pick a reachable port.
+        if (!pairingScanScheduled) {
+            pairingScanScheduled = true
+            handler.postDelayed({ scanForOpenPairingPort() }, 1200)
+        }
+    }
+
+    override fun onConnectPortFound(host: String, port: Int) {
+        appendLog("Connect port detected: $host:$port")
+        if (host == localIp) {
+            detectedConnectPorts.add(port)
+            if (detectedConnectPorts.size == 1) {
+                // Schedule scan after 2 seconds to allow more detections
+                handler.postDelayed({ scanForOpenPort(host) }, 2000)
+            }
+        } else {
+            appendLog("Ignoring connect port from different host: $host")
+        }
+    }
+
+    private fun scanForOpenPairingPort() {
+        val candidates = detectedPairingCandidates.toList()
+        if (candidates.isEmpty()) {
+            pairingScanScheduled = false
+            return
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val savedHost = ladbManager.getSavedHost()
+
+            val preferred = candidates.sortedWith(
+                compareBy<Pair<String, Int>>(
+                    { (h, _) ->
+                        when {
+                            localIp != null && h == localIp -> 0
+                            !savedHost.isNullOrBlank() && h == savedHost -> 1
+                            else -> 2
+                        }
+                    },
+                    { (_, p) -> p }
+                )
+            )
+
+            var chosen: Pair<String, Int>? = null
+            for ((host, port) in preferred) {
+                try {
+                    val socket = Socket()
+                    socket.connect(InetSocketAddress(host, port), 250)
+                    if (socket.isConnected) {
+                        chosen = host to port
+                        socket.close()
+                        break
+                    }
+                    socket.close()
+                } catch (_: Exception) {
+                    // Not reachable; try next.
+                }
+            }
+
+            withContext(Dispatchers.Main) {
+                pairingScanScheduled = false
+                if (chosen != null) {
+                    val (host, port) = chosen
+                    appendLog("Reachable pairing port selected: $host:$port")
+                    lifecycleScope.launch {
+                        ladbManager.saveHost(host)
+                        val success = ladbManager.savePairingConfig(host, port)
+                        appendLog(if (success) "Pairing config saved" else "Failed to save pairing config")
+                    }
+                } else {
+                    appendLog("No reachable pairing port found. Open Wireless debugging → Pair device, then try again.")
+                }
+            }
+        }
+    }
+
+    private fun scanForOpenPort(host: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val ports = detectedConnectPorts.sorted()
+            var realPort = -1
+            for (port in ports) {
+                try {
+                    val socket = Socket()
+                    socket.connect(InetSocketAddress(host, port), 200)
+                    if (socket.isConnected) {
+                        realPort = port
+                        socket.close()
+                        break
+                    }
+                } catch (e: Exception) {
+                    // Port not open, continue
+                }
+            }
+            withContext(Dispatchers.Main) {
+                if (realPort != -1) {
+                    appendLog("Real connect port found: $realPort")
+                    etHostPort.setText("$host:$realPort")
+                    lifecycleScope.launch {
+                        val success = ladbManager.saveConnectConfig(host, realPort)
+                        if (success) {
+                            appendLog("Connect config saved")
+                        } else {
+                            appendLog("Failed to save connect config")
+                        }
+                    }
+                } else {
+                    appendLog("No open connect port found")
+                }
             }
         }
     }
@@ -506,5 +672,124 @@ class LadbSetupActivity : AppCompatActivity() {
 
     companion object {
         private const val PAIRING_CHANNEL_ID = "ladb_pairing"
+    }
+}
+
+interface AdbPortListener {
+    fun onPairingPortFound(host: String, port: Int)
+    fun onConnectPortFound(host: String, port: Int)
+}
+
+class AdbPortFinder(context: Context, private val listener: AdbPortListener) {
+
+    private val nsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
+
+    // Service types
+    private val PAIRING_SERVICE_TYPE = "_adb-tls-pairing._tcp"
+    private val CONNECT_SERVICE_TYPE = "_adb-tls-connect._tcp"
+    private val TAG = "AdbPortFinder"
+
+    fun startDiscovery() {
+        nsdManager.discoverServices(
+            PAIRING_SERVICE_TYPE,
+            NsdManager.PROTOCOL_DNS_SD,
+            pairingDiscoveryListener
+        )
+        nsdManager.discoverServices(
+            CONNECT_SERVICE_TYPE,
+            NsdManager.PROTOCOL_DNS_SD,
+            connectDiscoveryListener
+        )
+    }
+
+    fun stopDiscovery() {
+        try {
+            nsdManager.stopServiceDiscovery(pairingDiscoveryListener)
+        } catch (e: Exception) {
+            // Already stopped
+        }
+        try {
+            nsdManager.stopServiceDiscovery(connectDiscoveryListener)
+        } catch (e: Exception) {
+            // Already stopped
+        }
+    }
+
+    private val pairingDiscoveryListener = object : NsdManager.DiscoveryListener {
+        override fun onDiscoveryStarted(regType: String) {
+            Log.d(TAG, "Pairing service discovery started")
+        }
+
+        override fun onServiceFound(service: NsdServiceInfo) {
+            Log.d(TAG, "Pairing service found: ${service.serviceName}")
+            nsdManager.resolveService(service, object : NsdManager.ResolveListener {
+                override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
+                    Log.e(TAG, "Pairing resolve failed: $errorCode")
+                }
+
+                override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+                    val port = serviceInfo.port
+                    val host = serviceInfo.host?.hostAddress ?: "unknown"
+                    Log.d(TAG, "Pairing resolved! IP: $host, PORT: $port")
+                    listener.onPairingPortFound(host, port)
+                }
+            })
+        }
+
+        override fun onServiceLost(service: NsdServiceInfo) {
+            Log.e(TAG, "Pairing service lost: $service")
+        }
+
+        override fun onDiscoveryStopped(serviceType: String) {
+            Log.i(TAG, "Pairing discovery stopped")
+        }
+
+        override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
+            Log.e(TAG, "Pairing discovery start failed: $errorCode")
+            nsdManager.stopServiceDiscovery(this)
+        }
+
+        override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
+            nsdManager.stopServiceDiscovery(this)
+        }
+    }
+
+    private val connectDiscoveryListener = object : NsdManager.DiscoveryListener {
+        override fun onDiscoveryStarted(regType: String) {
+            Log.d(TAG, "Connect service discovery started")
+        }
+
+        override fun onServiceFound(service: NsdServiceInfo) {
+            Log.d(TAG, "Connect service found: ${service.serviceName}")
+            nsdManager.resolveService(service, object : NsdManager.ResolveListener {
+                override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
+                    Log.e(TAG, "Connect resolve failed: $errorCode")
+                }
+
+                override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+                    val port = serviceInfo.port
+                    val host = serviceInfo.host?.hostAddress ?: "unknown"
+                    Log.d(TAG, "Connect resolved! IP: $host, PORT: $port")
+                    listener.onConnectPortFound(host, port)
+                }
+            })
+        }
+
+        override fun onServiceLost(service: NsdServiceInfo) {
+            Log.e(TAG, "Connect service lost: $service")
+        }
+
+        override fun onDiscoveryStopped(serviceType: String) {
+            Log.i(TAG, "Connect discovery stopped")
+        }
+
+        override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
+            Log.e(TAG, "Connect discovery start failed: $errorCode")
+            nsdManager.stopServiceDiscovery(this)
+        }
+
+        override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
+            nsdManager.stopServiceDiscovery(this)
+        }
     }
 }

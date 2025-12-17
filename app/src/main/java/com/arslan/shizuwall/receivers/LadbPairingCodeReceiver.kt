@@ -88,6 +88,16 @@ class LadbPairingCodeReceiver : BroadcastReceiver() {
                     ladb.savePairingPortUsingSavedHost(port)
                 }
 
+                // If the user entered code-only but we still don't have a pairing port, fail fast
+                // with a clear message (otherwise pairing will always fail).
+                if (ladb.getSavedPairingPort() <= 0) {
+                    postResultNotification(
+                        context.getString(R.string.ladb_pairing_result_failed_title),
+                        context.getString(R.string.ladb_pairing_result_missing_port)
+                    )
+                    return@launch
+                }
+
                 val ok = ladb.pairUsingSavedConfig(code)
                 if (ok) {
                     postResultNotification(
@@ -95,9 +105,17 @@ class LadbPairingCodeReceiver : BroadcastReceiver() {
                         context.getString(R.string.ladb_pairing_result_success_text)
                     )
                 } else {
+                    val log = ladb.getLastErrorLog().orEmpty()
+                    val summary = log.lineSequence()
+                        .firstOrNull { it.startsWith("exception=") }
+                        ?.removePrefix("exception=")
+                        ?.trim()
+                        ?.takeIf { it.isNotBlank() }
+                        ?: context.getString(R.string.ladb_pairing_result_failed_text)
+
                     postResultNotification(
                         context.getString(R.string.ladb_pairing_result_failed_title),
-                        context.getString(R.string.ladb_pairing_result_failed_text)
+                        summary
                     )
                 }
             } finally {

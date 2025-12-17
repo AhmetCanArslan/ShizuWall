@@ -52,6 +52,7 @@ class LadbManager private constructor(private val context: Context) {
         private const val KEY_HOST = "host"
         private const val KEY_PORT = "port"
         private const val KEY_PAIRING_PORT = "pairing_port"
+        private const val KEY_LAST_ERROR_LOG = "last_error_log"
     }
 
     enum class State {
@@ -67,7 +68,14 @@ class LadbManager private constructor(private val context: Context) {
         get() = _state.get()
 
     private val lastErrorLogRef = AtomicReference<String?>(null)
-    fun getLastErrorLog(): String? = lastErrorLogRef.get()
+    fun getLastErrorLog(): String? {
+        lastErrorLogRef.get()?.let { return it }
+        return try {
+            getPrefs().getString(KEY_LAST_ERROR_LOG, null)
+        } catch (_: Exception) {
+            null
+        }
+    }
 
     private fun recordError(operation: String, host: String?, port: Int?, e: Throwable) {
         val sw = StringWriter()
@@ -94,6 +102,11 @@ class LadbManager private constructor(private val context: Context) {
         }
 
         lastErrorLogRef.set(log)
+        try {
+            getPrefs().edit().putString(KEY_LAST_ERROR_LOG, log).apply()
+        } catch (_: Exception) {
+            // ignore
+        }
     }
 
     private val connectionRef = AtomicReference<AdbConnection?>(null)
