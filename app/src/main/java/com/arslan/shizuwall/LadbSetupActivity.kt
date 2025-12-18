@@ -50,6 +50,10 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private lateinit var tvStatus: TextView
     private lateinit var etHostPort: TextInputEditText
     private lateinit var btnUnpair: MaterialButton
+    private lateinit var btnRefresh: MaterialButton
+    private lateinit var btnPair: MaterialButton
+    private lateinit var btnConnect: MaterialButton
+    private lateinit var btnStartService: MaterialButton
     private lateinit var tvLadbLogs: TextView
     private lateinit var switchEnableLogs: com.google.android.material.materialswitch.MaterialSwitch
     private lateinit var logsContainer: LinearLayout
@@ -64,14 +68,38 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
     private fun updateStatus() {
         runOnUiThread {
-            tvStatus.text = when (ladbManager.state) {
+            val state = ladbManager.state
+            tvStatus.text = when (state) {
                 LadbManager.State.UNCONFIGURED -> getString(R.string.ladb_status_unconfigured)
                 LadbManager.State.PAIRED -> getString(R.string.ladb_status_paired)
                 LadbManager.State.CONNECTED -> getString(R.string.ladb_status_connected)
                 LadbManager.State.DISCONNECTED -> getString(R.string.ladb_status_disconnected)
                 LadbManager.State.ERROR -> "Error"
             }
-            btnUnpair.isEnabled = ladbManager.state == LadbManager.State.PAIRED || ladbManager.state == LadbManager.State.CONNECTED
+
+            val savedHost = ladbManager.getSavedHost()
+            val isPaired = state == LadbManager.State.PAIRED ||
+                    state == LadbManager.State.DISCONNECTED ||
+                    (!savedHost.isNullOrBlank())
+
+            val isConnected = state == LadbManager.State.CONNECTED
+
+            if (isConnected) {
+                btnPair.isEnabled = false
+                btnConnect.isEnabled = false
+                btnStartService.isEnabled = true
+                btnUnpair.isEnabled = true
+            } else if (isPaired) {
+                btnPair.isEnabled = false
+                btnConnect.isEnabled = true
+                btnStartService.isEnabled = false
+                btnUnpair.isEnabled = true
+            } else {
+                btnPair.isEnabled = true
+                btnConnect.isEnabled = false
+                btnStartService.isEnabled = false
+                btnUnpair.isEnabled = false
+            }
         }
     }
 
@@ -230,11 +258,11 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         // Bind UI controls
         tvStatus = findViewById<TextView>(R.id.tvLadbStatus)
         etHostPort = findViewById<TextInputEditText>(R.id.etHostPort)
-        val btnRefresh = findViewById<MaterialButton>(R.id.btnRefresh)
-        val btnPair = findViewById<MaterialButton>(R.id.btnPair)
-        val btnConnect = findViewById<MaterialButton>(R.id.btnConnect)
+        btnRefresh = findViewById<MaterialButton>(R.id.btnRefresh)
+        btnPair = findViewById<MaterialButton>(R.id.btnPair)
+        btnConnect = findViewById<MaterialButton>(R.id.btnConnect)
         btnUnpair = findViewById<MaterialButton>(R.id.btnUnpair)
-        val btnStartService = findViewById<MaterialButton>(R.id.btnStartService)
+        btnStartService = findViewById<MaterialButton>(R.id.btnStartService)
         tvLadbLogs = findViewById<TextView>(R.id.tvLadbLogs)
         val btnClearLogs = findViewById<MaterialButton>(R.id.btnClearLogs)
         val btnCopyLogs = findViewById<MaterialButton>(R.id.btnCopyLogs)
@@ -346,7 +374,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 } else {
                     appendLog("Pairing successful")
                 }
-                btnPair.isEnabled = true
             }
         }
 
@@ -380,7 +407,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 } else {
                     appendLog("Operation successful")
                 }
-                btnConnect.isEnabled = true
             }
         }
 
