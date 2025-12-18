@@ -19,6 +19,7 @@ import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
 import com.arslan.shizuwall.ladb.LadbManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -57,6 +58,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private lateinit var adbPortFinder: AdbPortFinder
     private var localIp: String? = null
     private val detectedConnectPorts = mutableListOf<Int>()
+    private var isRefreshing = false
     private val handler = Handler(Looper.getMainLooper())
     private var lastShownErrorHash: Int? = null
 
@@ -419,23 +421,31 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         }
 
         btnRefresh.setOnClickListener {
+            if (isRefreshing) return@setOnClickListener
+            isRefreshing = true
+
             appendLog("Refreshing LADB discovery (clearing saved host/ports)...")
 
             lifecycleScope.launch {
-                val ok = withContext(Dispatchers.IO) { ladbManager.clearAllConfig() }
+                try {
+                    val ok = withContext(Dispatchers.IO) { ladbManager.clearAllConfig() }
 
-                // Reset local detection state.
-                detectedConnectPorts.clear()
+                    // Reset local detection state.
+                    detectedConnectPorts.clear()
 
-                // Restart mDNS discovery.
-                adbPortFinder.stopDiscovery()
-                adbPortFinder.startDiscovery()
+                    // Restart mDNS discovery.
+                    adbPortFinder.stopDiscovery()
+                    delay(100L) // Wait for stop to complete
+                    adbPortFinder.startDiscovery()
 
-                val detectedHost = detectLocalIpv4OrNull() ?: "127.0.0.1"
-                etHostPort.setText("$detectedHost:")
-                updateStatus()
+                    val detectedHost = detectLocalIpv4OrNull() ?: "127.0.0.1"
+                    etHostPort.setText("$detectedHost:")
+                    updateStatus()
 
-                appendLog(if (ok) "Refresh complete" else "Refresh failed (see error log)")
+                    appendLog(if (ok) "Refresh complete" else "Refresh failed (see error log)")
+                } finally {
+                    isRefreshing = false
+                }
             }
         }
     }
