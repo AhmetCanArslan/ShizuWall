@@ -51,28 +51,6 @@
                         android:textColor="?android:attr/textColorSecondary"
                         android:paddingBottom="12dp" />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:hint="Host:Port">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etHostPort"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="text" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:id="@+id/btnRefresh"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ladb_refresh"
-                        android:layout_marginTop="8dp"
-                        app:useMaterialThemeColors="true" />
-
                     <com.google.android.material.button.MaterialButton
                         style="@style/Widget.MaterialComponents.Button"
                         android:id="@+id/btnPair"

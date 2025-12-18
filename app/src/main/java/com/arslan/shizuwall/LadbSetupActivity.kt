@@ -15,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import android.view.View
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -48,9 +47,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
     private lateinit var rootView: View
     private lateinit var tvStatus: TextView
-    private lateinit var etHostPort: TextInputEditText
     private lateinit var btnUnpair: MaterialButton
-    private lateinit var btnRefresh: MaterialButton
     private lateinit var btnPair: MaterialButton
     private lateinit var btnConnect: MaterialButton
     private lateinit var btnStartService: MaterialButton
@@ -62,7 +59,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private lateinit var adbPortFinder: AdbPortFinder
     private var localIp: String? = null
     private val detectedConnectPorts = mutableListOf<Int>()
-    private var isRefreshing = false
     private val handler = Handler(Looper.getMainLooper())
     private var lastShownErrorHash: Int? = null
 
@@ -257,8 +253,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
         // Bind UI controls
         tvStatus = findViewById<TextView>(R.id.tvLadbStatus)
-        etHostPort = findViewById<TextInputEditText>(R.id.etHostPort)
-        btnRefresh = findViewById<MaterialButton>(R.id.btnRefresh)
         btnPair = findViewById<MaterialButton>(R.id.btnPair)
         btnConnect = findViewById<MaterialButton>(R.id.btnConnect)
         btnUnpair = findViewById<MaterialButton>(R.id.btnUnpair)
@@ -298,72 +292,30 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         updateStatus()
 
 
-        fun parseHostPort(raw: String): Pair<String, Int>? {
-            val input = raw.trim()
-            if (input.isEmpty()) return null
-
-            // Allow "PORT" shorthand.
-            input.toIntOrNull()?.let { p ->
-                if (p > 0) return "127.0.0.1" to p
-            }
-
-            val parts = input.split(":")
-            if (parts.size < 2) return null
-
-            val host = parts[0].trim().ifEmpty { "127.0.0.1" }
-            val port = parts[1].trim().toIntOrNull() ?: return null
-            if (port <= 0) return null
-            return host to port
-        }
-
-        fun parsePort(raw: String): Int? {
-            val p = raw.trim().toIntOrNull() ?: return null
-            return if (p > 0) p else null
-        }
-
         updateStatus()
-        val detectedHost = detectLocalIpv4OrNull() ?: "127.0.0.1"
-        etHostPort.setText("$detectedHost:")
         appendLog("LADB Setup initialized. Current status: ${tvStatus.text}")
-        appendLog("Auto-detected host: $detectedHost")
 
         btnPair.setOnClickListener {
-            val hostPortText = etHostPort.text?.toString().orEmpty()
-            val parsed = parseHostPort(hostPortText)
-            val host = parsed?.first ?: "127.0.0.1"
-            val pairingPort = parsed?.second
-            val code = ""
-            if (pairingPort == null || code.isEmpty()) {
-                appendLog("Showing pairing notification (missing code)")
-                appendLog("Host will be: $host")
-                lifecycleScope.launch(Dispatchers.IO) {
-                    // Save host so the receiver can complete pairing.
-                    ladbManager.saveHost(host)
-                }
-
-                // Do not show notification here, wait for pairing port discovery
+            val savedHost = ladbManager.getSavedHost()
+            val savedPairingPort = ladbManager.getSavedPairingPort()
+            
+            if (savedHost.isNullOrBlank() || savedPairingPort <= 0) {
+                appendLog("No pairing config found, waiting for auto-discovery...")
                 Snackbar.make(rootView, "Waiting for pairing service discovery...", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Validate pairing port
-            if (pairingPort <= 0 || pairingPort > 65535) {
-                appendLog("Invalid pairing port: $pairingPort")
-                showLadbErrorDialog(getString(R.string.ladb_error_title), "Invalid pairing port. Port must be between 1 and 65535.")
-                return@setOnClickListener
-            }
-
-            appendLog("Starting pairing with host: $host, port: $pairingPort")
+            appendLog("Starting pairing with saved config: $savedHost:$savedPairingPort")
             lifecycleScope.launch {
                 btnPair.isEnabled = false
-                val ok = withContext(Dispatchers.IO) { ladbManager.pair(host, pairingPort, code) }
+                val ok = withContext(Dispatchers.IO) { ladbManager.pair(savedHost, savedPairingPort, "") }
                 updateStatus()
                 if (!ok) {
                     val logs = ladbManager.getLastErrorLog()
                     val errorMessage = if (logs.isNullOrBlank()) {
-                        "Pairing failed with no error details available. Please check:\n" +
+                        "Pairing failed. Please check:\n" +
                         "1. Wireless debugging is enabled in Developer options\n" +
-                        "2. The pairing port and code are correct\n" +
+                        "2. The pairing code is entered correctly\n" +
                         "3. The device is on the same network\n" +
                         "4. No firewall is blocking the connection"
                     } else {
@@ -374,6 +326,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 } else {
                     appendLog("Pairing successful")
                 }
+                btnPair.isEnabled = true
             }
         }
 
@@ -381,32 +334,37 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             appendLog("Starting connection...")
             lifecycleScope.launch {
                 btnConnect.isEnabled = false
-                val hostPortText = etHostPort.text?.toString().orEmpty()
-                val parsed = parseHostPort(hostPortText)
-                val host = parsed?.first ?: (detectLocalIpv4OrNull() ?: "127.0.0.1")
-                val port = parsed?.second ?: 5555
+                val savedHost = ladbManager.getSavedHost()
+                val savedConnectPort = ladbManager.getSavedConnectPort()
+                
+                if (savedHost.isNullOrBlank() || savedConnectPort <= 0) {
+                    appendLog("No connect config found")
+                    Snackbar.make(rootView, "No connection configuration found. Wait for auto-discovery or check wireless debugging.", Snackbar.LENGTH_LONG).show()
+                    btnConnect.isEnabled = true
+                    return@launch
+                }
+                
                 val ok = withContext(Dispatchers.IO) {
-                    appendLog("Connecting to host: $host, port: $port")
-                    ladbManager.saveConnectConfig(host, port)
-                    ladbManager.connect(host, port)
+                    appendLog("Connecting to $savedHost:$savedConnectPort")
+                    ladbManager.connect(savedHost, savedConnectPort)
                 }
                 updateStatus()
                 if (!ok) {
                     val logs = ladbManager.getLastErrorLog()
                     val errorMessage = if (logs.isNullOrBlank()) {
-                        "Operation failed with no error details available. Please check:\n" +
+                        "Connection failed. Please check:\n" +
                         "1. Wireless debugging is enabled in Developer options\n" +
-                        "2. The correct IP address and port are being used\n" +
-                        "3. The device is on the same network\n" +
-                        "4. No firewall is blocking the connection"
+                        "2. The device is on the same network\n" +
+                        "3. No firewall is blocking the connection"
                     } else {
                         logs
                     }
-                    appendLog("Operation failed: $errorMessage")
+                    appendLog("Connection failed: $errorMessage")
                     showLadbErrorDialog(getString(R.string.ladb_error_title), errorMessage)
                 } else {
-                    appendLog("Operation successful")
+                    appendLog("Connection successful")
                 }
+                btnConnect.isEnabled = true
             }
         }
 
@@ -444,35 +402,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             startForegroundService(intent)
             appendLog("LADB service started")
             Snackbar.make(rootView, "Service started", Snackbar.LENGTH_SHORT).show()
-        }
-
-        btnRefresh.setOnClickListener {
-            if (isRefreshing) return@setOnClickListener
-            isRefreshing = true
-
-            appendLog("Refreshing LADB discovery...")
-
-            lifecycleScope.launch {
-                try {
-                    withContext(Dispatchers.IO) { ladbManager.disconnect() }
-
-                    // Reset local detection state.
-                    detectedConnectPorts.clear()
-
-                    // Restart mDNS discovery.
-                    adbPortFinder.stopDiscovery()
-                    delay(100L) // Wait for stop to complete
-                    adbPortFinder.startDiscovery()
-
-                    val detectedHost = detectLocalIpv4OrNull() ?: "127.0.0.1"
-                    etHostPort.setText("$detectedHost:")
-                    updateStatus()
-
-                    appendLog("Refresh complete")
-                } finally {
-                    isRefreshing = false
-                }
-            }
         }
     }
 
@@ -561,7 +490,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             withContext(Dispatchers.Main) {
                 if (realPort != -1) {
                     appendLog("Real connect port found: $realPort")
-                    etHostPort.setText("$host:$realPort")
                     lifecycleScope.launch {
                         val success = ladbManager.saveConnectConfig(host, realPort)
                         if (success) {
