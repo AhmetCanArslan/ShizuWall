@@ -519,6 +519,18 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                     appendLog("Status updated: $newStatus")
                 }
 
+                // After pairing completes, check if we have detected connect ports but no saved connect config
+                // This handles the race condition where connect port is detected before pairing finishes
+                val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 && ladbManager.getSavedHost() != null
+                val hasConnectConfig = ladbManager.getSavedConnectPort() > 0
+                if (hasPairingConfig && !hasConnectConfig && detectedConnectPorts.isNotEmpty()) {
+                    val savedHost = ladbManager.getSavedHost()
+                    if (!savedHost.isNullOrBlank()) {
+                        appendLog("Pairing complete but no connect config - scanning detected ports...")
+                        scanForOpenPort(savedHost)
+                    }
+                }
+
                 if (ladbManager.state == LadbManager.State.ERROR) {
                     val logs = ladbManager.getLastErrorLog().orEmpty()
                     if (logs.isNotBlank()) {
