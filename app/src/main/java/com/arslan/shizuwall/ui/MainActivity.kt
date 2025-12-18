@@ -54,6 +54,8 @@ import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.arslan.shizuwall.LadbSetupActivity
 import com.arslan.shizuwall.ladb.LadbManager
 import com.arslan.shizuwall.shell.ShellExecutorProvider
+import com.arslan.shizuwall.WorkingMode
+import com.arslan.shizuwall.services.LadbService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {
@@ -427,6 +429,17 @@ class MainActivity : AppCompatActivity() {
         // (allows the toggle to remain enabled when firewall is active)
         if (::firewallToggle.isInitialized) {
             firewallToggle.isEnabled = isFirewallEnabled || savedCount > 0
+        }
+
+        // Auto-start LADB service if LADB mode is selected
+        val workingModeName = sharedPreferences.getString(KEY_WORKING_MODE, WorkingMode.SHIZUKU.name)
+        if (WorkingMode.fromName(workingModeName) == WorkingMode.LADB) {
+            val ladbPrefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
+            val shouldRun = ladbPrefs.getBoolean("service_should_run", false)
+            if (shouldRun) {
+                val serviceIntent = Intent(this, LadbService::class.java)
+                startService(serviceIntent)
+            }
         }
 
     }
