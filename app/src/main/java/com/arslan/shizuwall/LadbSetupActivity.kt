@@ -114,6 +114,13 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 btnStartService.isEnabled = false
                 btnUnpair.isEnabled = false
             }
+
+            // Update start service button text
+            btnStartService.text = if (isLadbServiceRunning()) {
+                getString(R.string.ladb_stop_service)
+            } else {
+                getString(R.string.ladb_start_service)
+            }
         }
     }
 
@@ -170,6 +177,16 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private fun getLoggingEnabled(): Boolean {
         val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
         return prefs.getBoolean("logging_enabled", true)
+    }
+
+    private fun setServiceShouldBeRunning(running: Boolean) {
+        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("service_should_run", running).apply()
+    }
+
+    private fun getServiceShouldBeRunning(): Boolean {
+        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
+        return prefs.getBoolean("service_should_run", false)
     }
 
     private fun animateLogsContainer(show: Boolean) {
@@ -425,17 +442,36 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         }
 
         btnStartService.setOnClickListener {
-            appendLog("Starting LADB service...")
-            val intent = android.content.Intent(this, com.arslan.shizuwall.services.LadbService::class.java)
-            startForegroundService(intent)
-            appendLog("LADB service started")
-            Snackbar.make(rootView, "Service started", Snackbar.LENGTH_SHORT).show()
+            if (isLadbServiceRunning()) {
+                // Stop service
+                appendLog("Stopping LADB service...")
+                val intent = android.content.Intent(this, com.arslan.shizuwall.services.LadbService::class.java)
+                stopService(intent)
+                setServiceShouldBeRunning(false)
+                appendLog("LADB service stopped")
+                Snackbar.make(rootView, "Service stopped", Snackbar.LENGTH_SHORT).show()
+            } else {
+                // Start service
+                appendLog("Starting LADB service...")
+                val intent = android.content.Intent(this, com.arslan.shizuwall.services.LadbService::class.java)
+                startService(intent)
+                setServiceShouldBeRunning(true)
+                appendLog("LADB service started")
+                Snackbar.make(rootView, "Service started", Snackbar.LENGTH_SHORT).show()
+            }
             updateStatus()
         }
     }
 
     override fun onResume() {
         super.onResume()
+        // Restart service if it should be running but isn't
+        if (getServiceShouldBeRunning() && !isLadbServiceRunning()) {
+            appendLog("Restarting LADB service...")
+            val intent = android.content.Intent(this, com.arslan.shizuwall.services.LadbService::class.java)
+            startService(intent)
+            appendLog("LADB service restarted")
+        }
         // Refresh status in case pairing happened via notification while we were away.
         tvStatus.post { 
             try {

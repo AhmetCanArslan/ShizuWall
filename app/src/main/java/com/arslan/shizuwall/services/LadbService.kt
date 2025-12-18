@@ -28,8 +28,6 @@ class LadbService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIFICATION_ID, createNotification("LADB Service Running"))
-        
         serviceScope.launch {
             if (!ladbManager.isConnected()) {
                 ladbManager.connect()
