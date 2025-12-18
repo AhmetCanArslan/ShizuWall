@@ -271,6 +271,25 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         dialog.show()
     }
 
+    private fun showNotificationPermissionDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Notification Permission Required")
+            .setMessage("ShizuWall needs notification permission to show the persistent notification for the LADB service. This notification keeps the service running in the background and displays the connection status.\n\nWithout this permission, the LADB service cannot run properly.")
+            .setPositiveButton("Grant Permission") { _, _ ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
+                } else {
+                    // For older versions, open app settings
+                    val intent = Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                        putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName)
+                    }
+                    startActivity(intent)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ladb_setup)
@@ -341,6 +360,17 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         appendLog("LADB Setup initialized. Current status: ${tvStatus.text}")
 
         btnPair.setOnClickListener {
+            // Check notification permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    showNotificationPermissionDialog()
+                    return@setOnClickListener
+                }
+            } else if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+                showNotificationPermissionDialog()
+                return@setOnClickListener
+            }
+
             val savedHost = ladbManager.getSavedHost()
             val savedPairingPort = ladbManager.getSavedPairingPort()
             
@@ -416,7 +446,16 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         btnUnpair.setOnClickListener {
             appendLog("Unpairing device...")
             lifecycleScope.launch {
-                withContext(Dispatchers.IO) { ladbManager.disconnect() }
+                withContext(Dispatchers.IO) { ladbManager.clearAllConfig() }
+                
+                // Stop service if running
+                if (isLadbServiceRunning()) {
+                    val intent = android.content.Intent(this@LadbSetupActivity, com.arslan.shizuwall.services.LadbService::class.java)
+                    stopService(intent)
+                    setServiceShouldBeRunning(false)
+                    appendLog("LADB service stopped")
+                }
+                
                 updateStatus()
                 appendLog("Device unpaired")
             }
@@ -556,11 +595,17 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 if (realPort != -1) {
                     appendLog("Real connect port found: $realPort")
                     lifecycleScope.launch {
-                        val success = ladbManager.saveConnectConfig(host, realPort)
-                        if (success) {
-                            appendLog("Connect config saved")
+                        // Only save connect config if we have pairing config (device has been paired)
+                        val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 && ladbManager.getSavedHost() != null
+                        if (hasPairingConfig) {
+                            val success = ladbManager.saveConnectConfig(host, realPort)
+                            if (success) {
+                                appendLog("Connect config saved")
+                            } else {
+                                appendLog("Failed to save connect config")
+                            }
                         } else {
-                            appendLog("Failed to save connect config")
+                            appendLog("Connect port found but not saving config (device not paired)")
                         }
                     }
                 } else {
@@ -663,6 +708,19 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
         NotificationManagerCompat.from(this)
             .notify(LadbPairingCodeReceiver.NOTIFICATION_ID, notification)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1001) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, show a snackbar or proceed
+                Snackbar.make(rootView, "Notification permission granted!", Snackbar.LENGTH_SHORT).show()
+            } else {
+                // Permission denied
+                Snackbar.make(rootView, "Notification permission is required for LADB service", Snackbar.LENGTH_LONG).show()
+            }
+        }
     }
 
     companion object {
