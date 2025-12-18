@@ -160,6 +160,7 @@
     <string name="ladb_status_unconfigured">Not configured</string>
     <string name="ladb_status_paired">Paired (not connected)</string>
     <string name="ladb_status_connected">Connected</string>
+    <string name="ladb_status_service_active">Service is active</string>
     <string name="ladb_status_disconnected">Disconnected</string>
     <string name="ladb_error_title">LADB error</string>
     <string name="ladb_hint_connection_refused">Connection refused usually means Wireless debugging is OFF or you are using the wrong port. Use the port shown in Developer options → Wireless debugging → IP address &amp; port (not the pairing port). Also make sure ShizuWall is allowed in Wireless debugging.</string>

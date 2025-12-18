@@ -1,6 +1,7 @@
 package com.arslan.shizuwall
 
 import android.Manifest
+import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -65,20 +66,37 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private fun updateStatus() {
         runOnUiThread {
             val state = ladbManager.state
-            tvStatus.text = when (state) {
+            val savedHost = ladbManager.getSavedHost()
+            val savedPairingPort = ladbManager.getSavedPairingPort()
+            val savedConnectPort = ladbManager.getSavedConnectPort()
+
+            // Determine effective status based on both current state and saved configurations
+            val effectiveState = when {
+                state == LadbManager.State.CONNECTED -> LadbManager.State.CONNECTED
+                state == LadbManager.State.ERROR -> LadbManager.State.ERROR
+                savedConnectPort > 0 && savedHost != null -> LadbManager.State.DISCONNECTED
+                savedPairingPort > 0 && savedHost != null -> LadbManager.State.PAIRED
+                else -> LadbManager.State.UNCONFIGURED
+            }
+
+            tvStatus.text = when (effectiveState) {
                 LadbManager.State.UNCONFIGURED -> getString(R.string.ladb_status_unconfigured)
                 LadbManager.State.PAIRED -> getString(R.string.ladb_status_paired)
-                LadbManager.State.CONNECTED -> getString(R.string.ladb_status_connected)
+                LadbManager.State.CONNECTED -> {
+                    if (isLadbServiceRunning()) {
+                        getString(R.string.ladb_status_service_active)
+                    } else {
+                        getString(R.string.ladb_status_connected)
+                    }
+                }
                 LadbManager.State.DISCONNECTED -> getString(R.string.ladb_status_disconnected)
                 LadbManager.State.ERROR -> "Error"
             }
 
-            val savedHost = ladbManager.getSavedHost()
-            val isPaired = state == LadbManager.State.PAIRED ||
-                    state == LadbManager.State.DISCONNECTED ||
-                    (!savedHost.isNullOrBlank())
+            val isPaired = effectiveState == LadbManager.State.PAIRED ||
+                    effectiveState == LadbManager.State.DISCONNECTED
 
-            val isConnected = state == LadbManager.State.CONNECTED
+            val isConnected = effectiveState == LadbManager.State.CONNECTED
 
             if (isConnected) {
                 btnPair.isEnabled = false
@@ -97,6 +115,16 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 btnUnpair.isEnabled = false
             }
         }
+    }
+
+    private fun isLadbServiceRunning(): Boolean {
+        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in activityManager.getRunningServices(Int.MAX_VALUE)) {
+            if (com.arslan.shizuwall.services.LadbService::class.java.name == service.service.className) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun appendLog(message: String) {
@@ -402,6 +430,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             startForegroundService(intent)
             appendLog("LADB service started")
             Snackbar.make(rootView, "Service started", Snackbar.LENGTH_SHORT).show()
+            updateStatus()
         }
     }
 
