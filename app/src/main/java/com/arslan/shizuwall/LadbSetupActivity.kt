@@ -176,7 +176,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
     private fun getLoggingEnabled(): Boolean {
         val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
-        return prefs.getBoolean("logging_enabled", true)
+        return prefs.getBoolean("logging_enabled", false)
     }
 
     private fun setServiceShouldBeRunning(running: Boolean) {
