@@ -450,11 +450,11 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             if (isRefreshing) return@setOnClickListener
             isRefreshing = true
 
-            appendLog("Refreshing LADB discovery (clearing saved host/ports)...")
+            appendLog("Refreshing LADB discovery...")
 
             lifecycleScope.launch {
                 try {
-                    val ok = withContext(Dispatchers.IO) { ladbManager.clearAllConfig() }
+                    withContext(Dispatchers.IO) { ladbManager.disconnect() }
 
                     // Reset local detection state.
                     detectedConnectPorts.clear()
@@ -468,7 +468,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                     etHostPort.setText("$detectedHost:")
                     updateStatus()
 
-                    appendLog(if (ok) "Refresh complete" else "Refresh failed (see error log)")
+                    appendLog("Refresh complete")
                 } finally {
                     isRefreshing = false
                 }
