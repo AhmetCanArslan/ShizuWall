@@ -297,6 +297,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             .setPositiveButton("Open Developer Settings") { _, _ ->
                 // Open developer settings
                 val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
                 // After opening settings, proceed with pairing
                 proceedWithPairing()
