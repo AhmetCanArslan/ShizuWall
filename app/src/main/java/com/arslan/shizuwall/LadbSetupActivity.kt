@@ -500,15 +500,16 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     }
 
     override fun onConnectPortFound(host: String, port: Int) {
-        appendLog("Connect port detected: $host:$port")
         if (host == localIp) {
+            appendLog("Connect port detected: $host:$port")
             detectedConnectPorts.add(port)
             if (detectedConnectPorts.size == 1) {
                 // Schedule scan after 2 seconds to allow more detections
                 handler.postDelayed({ scanForOpenPort(host) }, 2000)
             }
         } else {
-            appendLog("Ignoring connect port from different host: $host")
+            // Optionally log ignored detections if needed for debugging
+            // appendLog("Ignoring connect port from different host: $host")
         }
     }
 
