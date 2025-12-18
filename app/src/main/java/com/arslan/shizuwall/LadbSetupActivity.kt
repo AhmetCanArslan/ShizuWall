@@ -290,6 +290,45 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             .show()
     }
 
+    private fun showPairingInfoDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setMessage("Enter pairing code from wireless debugging page into notification.")
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Open Developer Settings") { _, _ ->
+                // Open developer settings
+                val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                startActivity(intent)
+                // After opening settings, proceed with pairing
+                proceedWithPairing()
+            }
+            .show()
+    }
+
+    private fun proceedWithPairing() {
+        // Check notification permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                showNotificationPermissionDialog()
+                return
+            }
+        } else if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+            showNotificationPermissionDialog()
+            return
+        }
+
+        val savedHost = ladbManager.getSavedHost()
+        val savedPairingPort = ladbManager.getSavedPairingPort()
+        
+        if (savedHost.isNullOrBlank() || savedPairingPort <= 0) {
+            appendLog("No pairing config found, waiting for auto-discovery...")
+            Snackbar.make(rootView, "Waiting for pairing service discovery...", Snackbar.LENGTH_SHORT).show()
+            return
+        }
+
+        appendLog("Showing pairing notification for config: $savedHost:$savedPairingPort")
+        showPairingCodeNotification()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ladb_setup)
@@ -360,49 +399,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         appendLog("LADB Setup initialized. Current status: ${tvStatus.text}")
 
         btnPair.setOnClickListener {
-            // Check notification permission
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    showNotificationPermissionDialog()
-                    return@setOnClickListener
-                }
-            } else if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-                showNotificationPermissionDialog()
-                return@setOnClickListener
-            }
-
-            val savedHost = ladbManager.getSavedHost()
-            val savedPairingPort = ladbManager.getSavedPairingPort()
-            
-            if (savedHost.isNullOrBlank() || savedPairingPort <= 0) {
-                appendLog("No pairing config found, waiting for auto-discovery...")
-                Snackbar.make(rootView, "Waiting for pairing service discovery...", Snackbar.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            appendLog("Starting pairing with saved config: $savedHost:$savedPairingPort")
-            lifecycleScope.launch {
-                btnPair.isEnabled = false
-                val ok = withContext(Dispatchers.IO) { ladbManager.pair(savedHost, savedPairingPort, "") }
-                updateStatus()
-                if (!ok) {
-                    val logs = ladbManager.getLastErrorLog()
-                    val errorMessage = if (logs.isNullOrBlank()) {
-                        "Pairing failed. Please check:\n" +
-                        "1. Wireless debugging is enabled in Developer options\n" +
-                        "2. The pairing code is entered correctly\n" +
-                        "3. The device is on the same network\n" +
-                        "4. No firewall is blocking the connection"
-                    } else {
-                        logs
-                    }
-                    appendLog("Pairing failed: $errorMessage")
-                    showLadbErrorDialog(getString(R.string.ladb_error_title), errorMessage)
-                } else {
-                    appendLog("Pairing successful")
-                }
-                btnPair.isEnabled = true
-            }
+            showPairingInfoDialog()
         }
 
         btnConnect.setOnClickListener {
