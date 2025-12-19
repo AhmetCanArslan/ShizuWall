@@ -448,54 +448,62 @@ class LadbManager private constructor(private val context: Context) {
     }
 
     suspend fun execShell(cmd: String): ShellResult = withContext(Dispatchers.IO) {
-        var conn = connectionRef.get()
-        if (state != State.CONNECTED || conn == null) {
-            val ok = try {
-                connect()
-            } catch (_: Exception) {
-                false
-            }
-            if (!ok) {
-                return@withContext ShellResult(-1, "", "Not connected")
-            }
-            conn = connectionRef.get()
-            if (conn == null) {
-                return@withContext ShellResult(-1, "", "Not connected")
-            }
-        }
+        val maxRetries = 1
 
-        try {
-            val stream: AdbStream = conn.open("shell:$cmd")
-            val input = stream.openInputStream()
-
-            // AdbInputStream may throw "Stream closed" at EOF depending on transport timing.
-            // Treat that as a normal end-of-stream so successful commands with no output
-            // don't get reported as failures.
-            val buf = ByteArray(8 * 1024)
-            val out = StringBuilder()
-            while (true) {
-                val n = try {
-                    input.read(buf)
-                } catch (e: Exception) {
-                    val msg = e.message?.lowercase().orEmpty()
-                    if (msg.contains("stream closed") || msg.contains("socket closed")) {
-                        if (stream.isClosed()) break
-                    }
-                    throw e
+        for (attempt in 0..maxRetries) {
+            var conn = connectionRef.get()
+            if (conn == null || state != State.CONNECTED) {
+                val ok = connect()
+                if (!ok) {
+                    return@withContext ShellResult(-1, "", "Not connected")
                 }
-                if (n <= 0) break
-                out.append(String(buf, 0, n, Charsets.UTF_8))
+                conn = connectionRef.get()
+                if (conn == null) {
+                    return@withContext ShellResult(-1, "", "Not connected")
+                }
             }
 
             try {
-                stream.close()
-            } catch (_: Exception) {
-            }
+                val stream: AdbStream = conn.open("shell:$cmd")
+                val input = stream.openInputStream()
 
-            return@withContext ShellResult(0, out.toString(), "")
-        } catch (e: Exception) {
-            return@withContext ShellResult(-1, "", e.message ?: "Error executing command")
+                // AdbInputStream may throw "Stream closed" at EOF depending on transport timing.
+                // Treat that as a normal end-of-stream so successful commands with no output
+                // don't get reported as failures.
+                val buf = ByteArray(8 * 1024)
+                val out = StringBuilder()
+                while (true) {
+                    val n = try {
+                        input.read(buf)
+                    } catch (e: Exception) {
+                        val msg = e.message?.lowercase().orEmpty()
+                        if (msg.contains("stream closed") || msg.contains("socket closed")) {
+                            if (stream.isClosed()) break
+                        }
+                        throw e
+                    }
+                    if (n <= 0) break
+                    out.append(String(buf, 0, n, Charsets.UTF_8))
+                }
+
+                try {
+                    stream.close()
+                } catch (_: Exception) {
+                }
+
+                return@withContext ShellResult(0, out.toString(), "")
+            } catch (e: Exception) {
+                if (attempt < maxRetries) {
+                    // Assume connection lost, try reconnect
+                    _state.set(State.DISCONNECTED)
+                    connectionRef.set(null)
+                    continue
+                } else {
+                    return@withContext ShellResult(-1, "", e.message ?: "Error executing command")
+                }
+            }
         }
+        return@withContext ShellResult(-1, "", "Failed to execute command")
     }
 
     fun isConnected(): Boolean {

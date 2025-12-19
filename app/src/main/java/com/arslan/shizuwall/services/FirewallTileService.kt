@@ -164,9 +164,16 @@ class FirewallTileService : TileService() {
     private suspend fun applyDisableFirewall() {
         val activePackages = loadActivePackages()
         withContext(Dispatchers.IO) {
-            disableFirewall(activePackages.toList())
-            saveFirewallEnabled(false)
-            saveActivePackages(emptySet())
+            val success = disableFirewall(activePackages.toList())
+            if (success) {
+                saveFirewallEnabled(false)
+                saveActivePackages(emptySet())
+            } else {
+                // Show error if disable failed
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@FirewallTileService, "Failed to disable firewall", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
         updateTile()
     }
@@ -182,11 +189,17 @@ class FirewallTileService : TileService() {
         return successful
     }
 
-    private fun disableFirewall(packageNames: List<String>) {
+    private fun disableFirewall(packageNames: List<String>): Boolean {
+        var allSuccessful = true
         for (pkg in packageNames) {
-            ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")
+            if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")) {
+                allSuccessful = false
+            }
         }
-        ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled false")
+        if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled false")) {
+            allSuccessful = false
+        }
+        return allSuccessful
     }
 
     private fun saveFirewallEnabled(enabled: Boolean) {

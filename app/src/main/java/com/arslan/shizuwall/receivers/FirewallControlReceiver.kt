@@ -66,7 +66,16 @@ class FirewallControlReceiver : BroadcastReceiver() {
 
                 val backendReady = if (mode == "LADB") {
                     val ladb = LadbManager.getInstance(context)
-                    ladb.isConnected() || ladb.connect()
+                    try {
+                        // First ensure we're connected
+                        if (!ladb.isConnected()) {
+                            ladb.connect()
+                        }
+                        // Then verify the connection works by running a simple command
+                        ladb.isConnected() && ladb.execShell("echo test").success
+                    } catch (e: Exception) {
+                        false
+                    }
                 } else {
                     try {
                         Shizuku.pingBinder() && Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
@@ -92,13 +101,16 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 }
 
                 val successful = mutableListOf<String>()
+                var globalCommandSuccess = true
 
                 if (enabled) {
                     // enable chain3
-                    runShell("cmd connectivity set-chain3-enabled true")
-                    for (pkg in packages) {
-                        if (runShell("cmd connectivity set-package-networking-enabled false $pkg")) {
-                            successful.add(pkg)
+                    globalCommandSuccess = runShell("cmd connectivity set-chain3-enabled true")
+                    if (globalCommandSuccess) {
+                        for (pkg in packages) {
+                            if (runShell("cmd connectivity set-package-networking-enabled false $pkg")) {
+                                successful.add(pkg)
+                            }
                         }
                     }
                 } else {
@@ -109,14 +121,14 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     }
                     val isGlobalDisable = csv.isNullOrBlank()
                     if (!adaptiveMode || isGlobalDisable) {
-                        runShell("cmd connectivity set-chain3-enabled false")
+                        globalCommandSuccess = runShell("cmd connectivity set-chain3-enabled false")
                     }
                 }
 
                 // Persist state to shared prefs (same keys MainActivity uses)
                 // val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
                 prefs.edit().apply {
-                    if (enabled && (successful.isNotEmpty() || adaptiveMode)) {
+                    if (enabled && globalCommandSuccess && (successful.isNotEmpty() || adaptiveMode)) {
                         putBoolean(MainActivity.KEY_FIREWALL_ENABLED, true)
                         putLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, SystemClock.elapsedRealtime())
                         putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, successful.toSet())
@@ -131,9 +143,16 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     } else {
                         val isGlobalDisable = csv.isNullOrBlank()
                         if (!adaptiveMode || isGlobalDisable) {
-                            putBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
-                            remove(MainActivity.KEY_FIREWALL_SAVED_ELAPSED)
-                            putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+                            if (globalCommandSuccess) {
+                                putBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
+                                remove(MainActivity.KEY_FIREWALL_SAVED_ELAPSED)
+                                putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+                            } else {
+                                // Global disable failed, show error but don't update state
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, "Failed to disable firewall", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                         } else {
                             // Partial disable (unblock specific apps), firewall stays ON
                             val currentActive = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
