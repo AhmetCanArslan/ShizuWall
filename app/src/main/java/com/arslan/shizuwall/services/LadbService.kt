@@ -29,7 +29,8 @@ class LadbService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         serviceScope.launch {
-            if (!ladbManager.isConnected()) {
+            val state = ladbManager.state
+            if (!ladbManager.isConnected() && (state == LadbManager.State.PAIRED || state == LadbManager.State.CONNECTED)) {
                 ladbManager.connect()
             }
         }

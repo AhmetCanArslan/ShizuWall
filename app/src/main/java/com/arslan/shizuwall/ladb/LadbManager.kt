@@ -8,6 +8,7 @@ import com.arslan.shizuwall.shell.ShellResult
 import io.github.muntashirakon.adb.AdbConnection
 import io.github.muntashirakon.adb.AdbStream
 import io.github.muntashirakon.adb.PairingConnectionCtx
+import io.github.muntashirakon.adb.AdbPairingRequiredException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.conscrypt.Conscrypt
@@ -403,6 +404,13 @@ class LadbManager private constructor(private val context: Context) {
 
             _state.set(State.CONNECTED)
             return@withContext true
+        } catch (e: io.github.muntashirakon.adb.AdbPairingRequiredException) {
+            // Pairing is required before connecting
+            val targetHost = host ?: getPrefs().getString(KEY_HOST, null)
+            val targetPort = port ?: getPrefs().getInt(KEY_PORT, 5555)
+            recordError("connect", targetHost, targetPort, e)
+            _state.set(State.PAIRED) // Set to PAIRED since pairing is needed
+            return@withContext false
         } catch (e: Exception) {
             val targetHost = host ?: getPrefs().getString(KEY_HOST, null)
             val targetPort = port ?: getPrefs().getInt(KEY_PORT, 5555)

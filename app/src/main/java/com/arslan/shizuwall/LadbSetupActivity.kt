@@ -517,8 +517,9 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
     override fun onResume() {
         super.onResume()
-        // Restart service if it should be running but isn't
-        if (getServiceShouldBeRunning() && !isLadbServiceRunning()) {
+        // Restart service if it should be running but isn't, and we're in a connectable state
+        val state = ladbManager.state
+        if (getServiceShouldBeRunning() && !isLadbServiceRunning() && (state == com.arslan.shizuwall.ladb.LadbManager.State.PAIRED || state == com.arslan.shizuwall.ladb.LadbManager.State.CONNECTED)) {
             appendLog("Restarting LADB service...")
             val intent = android.content.Intent(this, com.arslan.shizuwall.services.LadbService::class.java)
             startService(intent)
