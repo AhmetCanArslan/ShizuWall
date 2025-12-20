@@ -13,9 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
+        android:background="?attr/colorSurface"
         app:title="@string/set_ladb_title"
-        app:navigationIcon="?attr/homeAsUpIndicator"
-        app:titleTextColor="?android:attr/textColorPrimary" />
+        app:navigationIcon="@drawable/ic_arrow_back_24" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -31,7 +31,9 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"
                 app:cardCornerRadius="20dp"
                 app:cardBackgroundColor="?attr/colorSurfaceContainer"
                 app:strokeWidth="0dp">
@@ -58,7 +60,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/pair"
                         android:layout_marginTop="12dp"
-                        app:useMaterialThemeColors="true" />
+                        app:backgroundTint="?attr/colorPrimaryContainer"
+                        android:textColor="?attr/colorOnPrimaryContainer" />
 
                     <com.google.android.material.button.MaterialButton
                         style="@style/Widget.MaterialComponents.Button"
@@ -67,7 +70,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_connect"
                         android:layout_marginTop="8dp"
-                        app:useMaterialThemeColors="true" />
+                        app:backgroundTint="?attr/colorPrimaryContainer"
+                        android:textColor="?attr/colorOnPrimaryContainer" />
 
                     <com.google.android.material.button.MaterialButton
                         style="@style/Widget.MaterialComponents.Button"
@@ -77,7 +81,8 @@
                         android:text="@string/ladb_unpair"
                         android:layout_marginTop="8dp"
                         android:enabled="false"
-                        app:useMaterialThemeColors="true" />
+                        app:backgroundTint="?attr/colorPrimaryContainer"
+                        android:textColor="?attr/colorOnPrimaryContainer" />
 
                     <com.google.android.material.button.MaterialButton
                         style="@style/Widget.MaterialComponents.Button"
@@ -86,7 +91,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_start_service"
                         android:layout_marginTop="12dp"
-                        app:useMaterialThemeColors="true" />
+                        app:backgroundTint="?attr/colorPrimaryContainer"
+                        android:textColor="?attr/colorOnPrimaryContainer" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -95,7 +101,8 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp"
                 app:cardCornerRadius="20dp"
                 app:cardBackgroundColor="?attr/colorSurfaceContainer"
                 app:strokeWidth="0dp">
@@ -120,7 +127,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_enable_logs"
-                        android:checked="true"
+                        android:checked="false"
                         android:layout_marginBottom="8dp"
                         app:useMaterialThemeColors="true" />
 
@@ -129,7 +136,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:visibility="visible">
+                        android:visibility="gone">
 
                         <androidx.core.widget.NestedScrollView
                             android:layout_width="match_parent"

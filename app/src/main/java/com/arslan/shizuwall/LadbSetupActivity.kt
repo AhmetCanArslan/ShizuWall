@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -16,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import android.view.View
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -99,21 +101,26 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
             val isConnected = effectiveState == LadbManager.State.CONNECTED
 
+            fun applyButtonEnabledState(button: MaterialButton, enabled: Boolean) {
+                button.isEnabled = enabled
+                button.alpha = if (enabled) 1.0f else 0.5f
+            }
+
             if (isConnected) {
-                btnPair.isEnabled = false
-                btnConnect.isEnabled = false
-                btnStartService.isEnabled = true
-                btnUnpair.isEnabled = true
+                applyButtonEnabledState(btnPair, false)
+                applyButtonEnabledState(btnConnect, false)
+                applyButtonEnabledState(btnStartService, true)
+                applyButtonEnabledState(btnUnpair, true)
             } else if (isPaired) {
-                btnPair.isEnabled = false
-                btnConnect.isEnabled = true
-                btnStartService.isEnabled = false
-                btnUnpair.isEnabled = true
+                applyButtonEnabledState(btnPair, false)
+                applyButtonEnabledState(btnConnect, true)
+                applyButtonEnabledState(btnStartService, false)
+                applyButtonEnabledState(btnUnpair, true)
             } else {
-                btnPair.isEnabled = true
-                btnConnect.isEnabled = false
-                btnStartService.isEnabled = false
-                btnUnpair.isEnabled = false
+                applyButtonEnabledState(btnPair, true)
+                applyButtonEnabledState(btnConnect, false)
+                applyButtonEnabledState(btnStartService, false)
+                applyButtonEnabledState(btnUnpair, false)
             }
 
             // Update start service button text
@@ -333,10 +340,22 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DynamicColors.applyToActivityIfAvailable(this)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_ladb_setup)
 
         val toolbar = findViewById<MaterialToolbar?>(R.id.ladbToolbar)
         toolbar?.setNavigationOnClickListener { finish() }
+
+        try {
+            val typedValue = android.util.TypedValue()
+            theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+            val onSurfaceColor = typedValue.data
+            toolbar?.setTitleTextColor(onSurfaceColor)
+            toolbar?.navigationIcon?.setTint(onSurfaceColor)
+        } catch (_: Exception) {
+            // ignore
+        }
 
         // Respect system bars (status/navigation) similar to SettingsActivity
         rootView = findViewById<android.view.View>(R.id.ladbSetupRoot) ?: return
