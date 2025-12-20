@@ -62,6 +62,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private val detectedConnectPorts = mutableListOf<Int>()
     private val handler = Handler(Looper.getMainLooper())
     private var lastShownErrorHash: Int? = null
+    private var mPermissionCallback: (() -> Unit)? = null
 
     private fun updateStatus() {
         runOnUiThread {
@@ -271,12 +272,13 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         dialog.show()
     }
 
-    private fun showNotificationPermissionDialog() {
+    private fun showNotificationPermissionDialog(onPermissionGranted: (() -> Unit)? = null) {
         MaterialAlertDialogBuilder(this)
             .setTitle("Notification Permission Required")
             .setMessage("ShizuWall needs notification permission to show the persistent notification for the LADB service. This notification keeps the service running in the background and displays the connection status.\n\nWithout this permission, the LADB service cannot run properly.")
             .setPositiveButton("Grant Permission") { _, _ ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    mPermissionCallback = onPermissionGranted
                     requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
                 } else {
                     // For older versions, open app settings
@@ -286,7 +288,17 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                     startActivity(intent)
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton("Cancel") { _, _ ->
+                showNotificationDeniedDialog()
+            }
+            .show()
+    }
+
+    private fun showNotificationDeniedDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Cannot Continue")
+            .setMessage("Notification permission is required to use the LADB pairing feature. This permission allows us to show important pairing information.\n\nPlease grant notification permission to proceed.")
+            .setPositiveButton("OK", null)
             .show()
     }
 
@@ -306,17 +318,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     }
 
     private fun proceedWithPairing() {
-        // Check notification permission
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                showNotificationPermissionDialog()
-                return
-            }
-        } else if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-            showNotificationPermissionDialog()
-            return
-        }
-
         val savedHost = ladbManager.getSavedHost()
         val savedPairingPort = ladbManager.getSavedPairingPort()
         
@@ -400,6 +401,19 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         appendLog("LADB Setup initialized. Current status: ${tvStatus.text}")
 
         btnPair.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    showNotificationPermissionDialog {
+                        showPairingInfoDialog()
+                    }
+                    return@setOnClickListener
+                }
+            } else if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+                // For older Android versions, show denied dialog since we can't properly request permission
+                showNotificationDeniedDialog()
+                return@setOnClickListener
+            }
+            
             showPairingInfoDialog()
         }
 
@@ -778,11 +792,13 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1001) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, show a snackbar or proceed
+                // Permission granted, execute callback if available
                 Snackbar.make(rootView, "Notification permission granted!", Snackbar.LENGTH_SHORT).show()
+                mPermissionCallback?.invoke()
+                mPermissionCallback = null
             } else {
                 // Permission denied
-                Snackbar.make(rootView, "Notification permission is required for LADB service", Snackbar.LENGTH_LONG).show()
+                showNotificationDeniedDialog()
             }
         }
     }
