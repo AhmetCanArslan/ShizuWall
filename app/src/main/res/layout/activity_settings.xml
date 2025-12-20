@@ -231,6 +231,7 @@
 
             <!-- Auto-enable on Shizuku start -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAutoEnableOnShizukuStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"

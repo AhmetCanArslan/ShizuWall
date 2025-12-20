@@ -59,12 +59,14 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var tvVersion: TextView
     private lateinit var switchUseDynamicColor: SwitchCompat
     private lateinit var switchAutoEnableOnShizukuStart: SwitchCompat
+    private lateinit var cardAutoEnableOnShizukuStart: com.google.android.material.card.MaterialCardView
 
     private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
     private lateinit var radioGroupWorkingMode: RadioGroup
     private lateinit var radioShizukuMode: RadioButton
     private lateinit var radioLadbMode: RadioButton
     private lateinit var layoutSetLadb: LinearLayout
+    private var autoEnablePreviousState: Boolean = false  // Store previous state before disabling
 
     private val createDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -153,6 +155,7 @@ class SettingsActivity : AppCompatActivity() {
         layoutSetLadb = findViewById(R.id.layoutSetLadb)
         // Auto-enable switch (new)
         switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
+        cardAutoEnableOnShizukuStart = findViewById(R.id.cardAutoEnableOnShizukuStart)
     }
 
     private fun loadSettings() {
@@ -195,6 +198,11 @@ class SettingsActivity : AppCompatActivity() {
         layoutSetLadb.alpha = if (ladbSelected) 1.0f else 0.5f
         layoutSetLadb.isEnabled = ladbSelected
         layoutSetLadb.isClickable = ladbSelected
+        
+        // Disable auto-enable firewall card when LADB mode is selected
+        cardAutoEnableOnShizukuStart.isEnabled = !ladbSelected
+        cardAutoEnableOnShizukuStart.alpha = if (ladbSelected) 0.5f else 1.0f
+        switchAutoEnableOnShizukuStart.isEnabled = !ladbSelected
     }
 
     private fun setupListeners() {
@@ -295,7 +303,22 @@ class SettingsActivity : AppCompatActivity() {
             layoutSetLadb.isClickable = isLadb
             layoutSetLadb.isFocusable = isLadb
             if (isLadb) {
-                Toast.makeText(this, getString(R.string.working_mode_ladb), Toast.LENGTH_SHORT).show()
+                autoEnablePreviousState = switchAutoEnableOnShizukuStart.isChecked
+                cardAutoEnableOnShizukuStart.isEnabled = false
+                cardAutoEnableOnShizukuStart.alpha = 0.5f
+                switchAutoEnableOnShizukuStart.isEnabled = false
+                if (switchAutoEnableOnShizukuStart.isChecked) {
+                    switchAutoEnableOnShizukuStart.isChecked = false
+                    prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false).apply()
+                }
+            } else {
+                cardAutoEnableOnShizukuStart.isEnabled = true
+                cardAutoEnableOnShizukuStart.alpha = 1.0f
+                switchAutoEnableOnShizukuStart.isEnabled = true
+                if (autoEnablePreviousState) {
+                    switchAutoEnableOnShizukuStart.isChecked = true
+                    prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, true).apply()
+                }
             }
         }
 
