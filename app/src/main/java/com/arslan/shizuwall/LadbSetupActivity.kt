@@ -59,7 +59,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private lateinit var ladbManager: LadbManager
     private lateinit var adbPortFinder: AdbPortFinder
     private var localIp: String? = null
-    private val detectedConnectPorts = mutableListOf<Int>()
+    private val detectedConnectPorts = mutableListOf<Pair<String, Int>>()
     private val handler = Handler(Looper.getMainLooper())
     private var lastShownErrorHash: Int? = null
     private var mPermissionCallback: (() -> Unit)? = null
@@ -371,7 +371,9 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         ladbManager = LadbManager.getInstance(this)
         localIp = detectLocalIpv4OrNull()
         adbPortFinder = AdbPortFinder(this, this)
-        detectedConnectPorts.clear()
+        synchronized(detectedConnectPorts) {
+            detectedConnectPorts.clear()
+        }
         adbPortFinder.startDiscovery()
 
         updateStatus()
@@ -405,16 +407,21 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 var savedConnectPort = ladbManager.getSavedConnectPort()
                 
                 // If no connect config but we have detected ports, try to scan and save first
-                if ((savedHost.isNullOrBlank() || savedConnectPort <= 0) && detectedConnectPorts.isNotEmpty()) {
+                if ((savedHost.isNullOrBlank() || savedConnectPort <= 0)) {
                     val host = savedHost ?: localIp
                     if (!host.isNullOrBlank()) {
-                        appendLog("No connect config, attempting to scan detected ports...")
-                        val foundPort = withContext(Dispatchers.IO) {
-                            scanAndSaveConnectPort(host)
+                        val hasPorts = synchronized(detectedConnectPorts) {
+                            detectedConnectPorts.any { it.first == host }
                         }
-                        if (foundPort > 0) {
-                            savedHost = host
-                            savedConnectPort = foundPort
+                        if (hasPorts) {
+                            appendLog("No connect config, attempting to scan detected ports...")
+                            val foundPort = withContext(Dispatchers.IO) {
+                                scanAndSaveConnectPort(host)
+                            }
+                            if (foundPort > 0) {
+                                savedHost = host
+                                savedConnectPort = foundPort
+                            }
                         }
                     }
                 }
@@ -496,11 +503,16 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 // This handles the race condition where connect port is detected before pairing finishes
                 val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 && ladbManager.getSavedHost() != null
                 val hasConnectConfig = ladbManager.getSavedConnectPort() > 0
-                if (hasPairingConfig && !hasConnectConfig && detectedConnectPorts.isNotEmpty()) {
+                if (hasPairingConfig && !hasConnectConfig) {
                     val savedHost = ladbManager.getSavedHost()
                     if (!savedHost.isNullOrBlank()) {
-                        appendLog("Pairing complete but no connect config - scanning detected ports...")
-                        scanForOpenPort(savedHost)
+                        val hasPorts = synchronized(detectedConnectPorts) {
+                            detectedConnectPorts.any { it.first == savedHost }
+                        }
+                        if (hasPorts) {
+                            appendLog("Pairing complete but no connect config - scanning detected ports...")
+                            scanForOpenPort(savedHost)
+                        }
                     }
                 }
 
@@ -542,16 +554,17 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     }
 
     override fun onConnectPortFound(host: String, port: Int) {
-        if (host == localIp) {
-            appendLog("Connect port detected: $host:$port")
-            detectedConnectPorts.add(port)
-            if (detectedConnectPorts.size == 1) {
-                // Schedule scan after 2 seconds to allow more detections
-                handler.postDelayed({ scanForOpenPort(host) }, 2000)
+        appendLog("Connect port detected: $host:$port")
+        synchronized(detectedConnectPorts) {
+            if (detectedConnectPorts.none { it.first == host && it.second == port }) {
+                detectedConnectPorts.add(host to port)
             }
-        } else {
-            // Optionally log ignored detections if needed for debugging
-            // appendLog("Ignoring connect port from different host: $host")
+        }
+        
+        val savedHost = ladbManager.getSavedHost()
+        if (host == localIp || (savedHost != null && host == savedHost)) {
+            handler.removeCallbacksAndMessages(null) 
+            handler.postDelayed({ scanForOpenPort(host) }, 2000)
         }
     }
 
@@ -560,12 +573,22 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
      * Must be called from a coroutine.
      */
     private suspend fun scanAndSaveConnectPort(host: String): Int {
-        val ports = detectedConnectPorts.sorted()
+        val ports = synchronized(detectedConnectPorts) {
+            detectedConnectPorts.filter { it.first == host }.map { it.second }.sorted()
+        }
+        
+        if (ports.isEmpty()) {
+            withContext(Dispatchers.Main) { appendLog("No detected ports for host $host") }
+            return -1
+        }
+
         var realPort = -1
         for (port in ports) {
             try {
                 val socket = Socket()
-                socket.connect(InetSocketAddress(host, port), 200)
+                withContext(Dispatchers.IO) {
+                    socket.connect(InetSocketAddress(host, port), 200)
+                }
                 if (socket.isConnected) {
                     realPort = port
                     socket.close()
@@ -590,14 +613,17 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 return if (success) realPort else -1
             }
         } else {
-            withContext(Dispatchers.Main) { appendLog("No open connect port found from detected ports") }
+            withContext(Dispatchers.Main) { appendLog("No open connect port found from detected ports for $host") }
         }
         return realPort
     }
 
     private fun scanForOpenPort(host: String) {
         lifecycleScope.launch(Dispatchers.IO) {
-            val ports = detectedConnectPorts.sorted()
+            val ports = synchronized(detectedConnectPorts) {
+                detectedConnectPorts.filter { it.first == host }.map { it.second }.sorted()
+            }
+            
             var realPort = -1
             for (port in ports) {
                 try {
@@ -630,7 +656,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                         }
                     }
                 } else {
-                    appendLog("No open connect port found")
                 }
             }
         }
