@@ -77,15 +77,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver
-            android:name=".receivers.LadbServiceRestarter"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.SCREEN_ON" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
-
         <service
             android:name=".services.FirewallTileService"
             android:label="Firewall Toggle"
@@ -108,12 +99,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/firewall_widget_info" />
         </receiver>
-
-        <!-- ...existing code... -->
-        <service
-            android:name=".services.LadbService"
-            android:enabled="true"
-            android:exported="false" />
     </application>
 
 </manifest>

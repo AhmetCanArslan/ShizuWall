@@ -1,7 +1,6 @@
 package com.arslan.shizuwall
 
 import android.Manifest
-import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -53,7 +52,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private lateinit var btnUnpair: MaterialButton
     private lateinit var btnPair: MaterialButton
     private lateinit var btnConnect: MaterialButton
-    private lateinit var btnStartService: MaterialButton
     private lateinit var tvLadbLogs: TextView
     private lateinit var switchEnableLogs: com.google.android.material.materialswitch.MaterialSwitch
     private lateinit var logsContainer: LinearLayout
@@ -85,13 +83,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             tvStatus.text = when (effectiveState) {
                 LadbManager.State.UNCONFIGURED -> getString(R.string.ladb_status_unconfigured)
                 LadbManager.State.PAIRED -> getString(R.string.ladb_status_paired)
-                LadbManager.State.CONNECTED -> {
-                    if (isLadbServiceRunning()) {
-                        getString(R.string.ladb_status_service_active)
-                    } else {
-                        getString(R.string.ladb_status_connected)
-                    }
-                }
+                LadbManager.State.CONNECTED -> getString(R.string.ladb_status_connected)
                 LadbManager.State.DISCONNECTED -> getString(R.string.ladb_status_disconnected)
                 LadbManager.State.ERROR -> "Error"
             }
@@ -109,37 +101,17 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             if (isConnected) {
                 applyButtonEnabledState(btnPair, false)
                 applyButtonEnabledState(btnConnect, false)
-                applyButtonEnabledState(btnStartService, true)
                 applyButtonEnabledState(btnUnpair, true)
             } else if (isPaired) {
                 applyButtonEnabledState(btnPair, false)
                 applyButtonEnabledState(btnConnect, true)
-                applyButtonEnabledState(btnStartService, false)
                 applyButtonEnabledState(btnUnpair, true)
             } else {
                 applyButtonEnabledState(btnPair, true)
                 applyButtonEnabledState(btnConnect, false)
-                applyButtonEnabledState(btnStartService, false)
                 applyButtonEnabledState(btnUnpair, false)
             }
-
-            // Update start service button text
-            btnStartService.text = if (isLadbServiceRunning()) {
-                getString(R.string.ladb_stop_service)
-            } else {
-                getString(R.string.ladb_start_service)
-            }
         }
-    }
-
-    private fun isLadbServiceRunning(): Boolean {
-        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        for (service in activityManager.getRunningServices(Int.MAX_VALUE)) {
-            if (com.arslan.shizuwall.services.LadbService::class.java.name == service.service.className) {
-                return true
-            }
-        }
-        return false
     }
 
     private fun appendLog(message: String) {
@@ -185,16 +157,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private fun getLoggingEnabled(): Boolean {
         val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
         return prefs.getBoolean("logging_enabled", false)
-    }
-
-    private fun setServiceShouldBeRunning(running: Boolean) {
-        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("service_should_run", running).apply()
-    }
-
-    private fun getServiceShouldBeRunning(): Boolean {
-        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
-        return prefs.getBoolean("service_should_run", false)
     }
 
     private fun animateLogsContainer(show: Boolean) {
@@ -282,7 +244,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private fun showNotificationPermissionDialog(onPermissionGranted: (() -> Unit)? = null) {
         MaterialAlertDialogBuilder(this)
             .setTitle("Notification Permission Required")
-            .setMessage("ShizuWall needs notification permission to show the persistent notification for the LADB service. This notification keeps the service running in the background and displays the connection status.\n\nWithout this permission, the LADB service cannot run properly.")
+            .setMessage("ShizuWall needs notification permission to show the pairing code notification.\n\nWithout this permission, you won't be able to enter the pairing code easily.")
             .setPositiveButton("Grant Permission") { _, _ ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     mPermissionCallback = onPermissionGranted
@@ -380,7 +342,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         btnPair = findViewById<MaterialButton>(R.id.btnPair)
         btnConnect = findViewById<MaterialButton>(R.id.btnConnect)
         btnUnpair = findViewById<MaterialButton>(R.id.btnUnpair)
-        btnStartService = findViewById<MaterialButton>(R.id.btnStartService)
         tvLadbLogs = findViewById<TextView>(R.id.tvLadbLogs)
         val btnClearLogs = findViewById<MaterialButton>(R.id.btnClearLogs)
         val btnCopyLogs = findViewById<MaterialButton>(R.id.btnCopyLogs)
@@ -494,14 +455,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) { ladbManager.clearAllConfig() }
                 
-                // Stop service if running
-                if (isLadbServiceRunning()) {
-                    val intent = android.content.Intent(this@LadbSetupActivity, com.arslan.shizuwall.services.LadbService::class.java)
-                    stopService(intent)
-                    setServiceShouldBeRunning(false)
-                    appendLog("LADB service stopped")
-                }
-                
                 updateStatus()
                 appendLog("Device unpaired")
             }
@@ -525,39 +478,10 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 Snackbar.make(rootView, "No logs to copy", Snackbar.LENGTH_SHORT).show()
             }
         }
-
-        btnStartService.setOnClickListener {
-            if (isLadbServiceRunning()) {
-                // Stop service
-                appendLog("Stopping LADB service...")
-                val intent = android.content.Intent(this, com.arslan.shizuwall.services.LadbService::class.java)
-                stopService(intent)
-                setServiceShouldBeRunning(false)
-                appendLog("LADB service stopped")
-                Snackbar.make(rootView, "Service stopped", Snackbar.LENGTH_SHORT).show()
-            } else {
-                // Start service
-                appendLog("Starting LADB service...")
-                val intent = android.content.Intent(this, com.arslan.shizuwall.services.LadbService::class.java)
-                startService(intent)
-                setServiceShouldBeRunning(true)
-                appendLog("LADB service started")
-                Snackbar.make(rootView, "Service started", Snackbar.LENGTH_SHORT).show()
-            }
-            updateStatus()
-        }
     }
 
     override fun onResume() {
         super.onResume()
-        // Restart service if it should be running but isn't, and we're in a connectable state
-        val state = ladbManager.state
-        if (getServiceShouldBeRunning() && !isLadbServiceRunning() && (state == com.arslan.shizuwall.ladb.LadbManager.State.PAIRED || state == com.arslan.shizuwall.ladb.LadbManager.State.CONNECTED)) {
-            appendLog("Restarting LADB service...")
-            val intent = android.content.Intent(this, com.arslan.shizuwall.services.LadbService::class.java)
-            startService(intent)
-            appendLog("LADB service restarted")
-        }
         // Refresh status in case pairing happened via notification while we were away.
         tvStatus.post { 
             try {
