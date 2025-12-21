@@ -11,6 +11,7 @@ import io.github.muntashirakon.adb.PairingConnectionCtx
 import io.github.muntashirakon.adb.AdbPairingRequiredException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
 import org.conscrypt.Conscrypt
 import org.bouncycastle.asn1.x500.X500Name
 import org.bouncycastle.cert.X509v3CertificateBuilder
@@ -112,6 +113,7 @@ class LadbManager private constructor(private val context: Context) {
 
     private val connectionRef = AtomicReference<AdbConnection?>(null)
     private val keyMaterialRef = AtomicReference<Pair<PrivateKey, Certificate>?>(null)
+    private val connectionMutex = Mutex()
 
     init {
         // Prefer Conscrypt for modern TLS on older devices.
@@ -372,7 +374,13 @@ class LadbManager private constructor(private val context: Context) {
     }
 
     suspend fun connect(host: String? = null, port: Int? = null, tls: Boolean = false): Boolean = withContext(Dispatchers.IO) {
+        connectionMutex.lock()
         try {
+            // Check if already connected to avoid redundant connection attempts
+            if (state == State.CONNECTED && connectionRef.get() != null) {
+                return@withContext true
+            }
+
             val targetHost = host ?: getPrefs().getString(KEY_HOST, null)
             val targetPort = port ?: getPrefs().getInt(KEY_PORT, -1)
 
@@ -388,6 +396,13 @@ class LadbManager private constructor(private val context: Context) {
                 recordError("connect", targetHost, targetPort, e)
                 _state.set(State.UNCONFIGURED)
                 return@withContext false
+            }
+
+            // Close any existing connection before creating a new one
+            try {
+                connectionRef.getAndSet(null)?.close()
+            } catch (_: Exception) {
+                // ignore
             }
 
             // Note: Proper ADB pairing/TLS is not fully wired yet. This supports direct ADB-over-TCP.
@@ -417,6 +432,8 @@ class LadbManager private constructor(private val context: Context) {
             recordError("connect", targetHost, targetPort, e)
             _state.set(State.ERROR)
             return@withContext false
+        } finally {
+            connectionMutex.unlock()
         }
     }
 
@@ -459,16 +476,23 @@ class LadbManager private constructor(private val context: Context) {
         val maxRetries = 1
 
         for (attempt in 0..maxRetries) {
-            var conn = connectionRef.get()
-            if (conn == null || state != State.CONNECTED) {
-                val ok = connect()
-                if (!ok) {
-                    return@withContext ShellResult(-1, "", "Not connected")
+            // Use mutex to ensure only one coroutine checks/establishes connection at a time
+            val connResult = connectionMutex.lock()
+            val conn = try {
+                var connection = connectionRef.get()
+                if (connection == null || state != State.CONNECTED) {
+                    val ok = connect()
+                    if (!ok) {
+                        return@withContext ShellResult(-1, "", "Not connected")
+                    }
+                    connection = connectionRef.get()
+                    if (connection == null) {
+                        return@withContext ShellResult(-1, "", "Not connected")
+                    }
                 }
-                conn = connectionRef.get()
-                if (conn == null) {
-                    return@withContext ShellResult(-1, "", "Not connected")
-                }
+                connection
+            } finally {
+                connectionMutex.unlock()
             }
 
             try {
@@ -503,8 +527,13 @@ class LadbManager private constructor(private val context: Context) {
             } catch (e: Exception) {
                 if (attempt < maxRetries) {
                     // Assume connection lost, try reconnect
-                    _state.set(State.DISCONNECTED)
-                    connectionRef.set(null)
+                    connectionMutex.lock()
+                    try {
+                        _state.set(State.DISCONNECTED)
+                        connectionRef.set(null)
+                    } finally {
+                        connectionMutex.unlock()
+                    }
                     continue
                 } else {
                     return@withContext ShellResult(-1, "", e.message ?: "Error executing command")
