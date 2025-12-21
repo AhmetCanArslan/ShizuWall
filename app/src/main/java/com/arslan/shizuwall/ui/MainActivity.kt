@@ -222,6 +222,7 @@ class MainActivity : AppCompatActivity() {
                 appListAdapter.setSelectionEnabled(adaptiveMode || !isFirewallEnabled)
                 updateInteractiveViews()
             }
+            checkAndConnectLadb()
         }
     }
 
@@ -250,6 +251,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_main)
+
+        checkAndConnectLadb()
 
         applyFontToViews(findViewById(android.R.id.content))
 
@@ -1850,6 +1853,26 @@ class MainActivity : AppCompatActivity() {
         // continue was removed — close handles dialog dismissal
 
         dialog.show()
+    }
+
+    private fun checkAndConnectLadb() {
+        lifecycleScope.launch {
+            val ladbManager = LadbManager.getInstance(this@MainActivity)
+            val currentMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU")
+            
+            // Only attempt connection if user has explicitly selected LADB mode
+            if (currentMode == "LADB") {
+                if (ladbManager.state != LadbManager.State.CONNECTED) {
+                    val savedHost = ladbManager.getSavedHost()
+                    val savedPort = ladbManager.getSavedConnectPort()
+                    if (!savedHost.isNullOrBlank() && savedPort > 0) {
+                        withContext(Dispatchers.IO) {
+                            ladbManager.connect()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun applyFontToViews(view: View) {
