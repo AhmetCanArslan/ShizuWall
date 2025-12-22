@@ -1588,6 +1588,11 @@ class MainActivity : AppCompatActivity() {
         firewallToggle.isEnabled = false
         lifecycleScope.launch {
             firewallProgress.visibility = android.view.View.VISIBLE
+            if (enable && !adaptiveMode) {
+                appListAdapter.setSelectionEnabled(false)
+                updateInteractiveViews()
+                showDimOverlay()
+            }
             try {
                 // perform package existence checks and run enable/disable on IO thread
                 val (installed, missing) = withContext(Dispatchers.IO) {
@@ -1601,6 +1606,9 @@ class MainActivity : AppCompatActivity() {
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
+                    appListAdapter.setSelectionEnabled(true)
+                    updateInteractiveViews()
+                    hideDimOverlay()
                     return@launch
                 }
 
@@ -1648,6 +1656,11 @@ class MainActivity : AppCompatActivity() {
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
                     Toast.makeText(this@MainActivity, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()
+                    if (!adaptiveMode) {
+                        appListAdapter.setSelectionEnabled(true)
+                        updateInteractiveViews()
+                        hideDimOverlay()
+                    }
                 }
             } else {
                 if (successful.isNotEmpty()) {
