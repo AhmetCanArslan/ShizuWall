@@ -128,18 +128,47 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
-    private fun getPrefs(): SharedPreferences {
-        val masterKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
+    // Cache for SharedPreferences to avoid repeated heavy initialization on the main thread.
+    @Volatile
+    private var cachedPrefs: SharedPreferences? = null
 
-        return EncryptedSharedPreferences.create(
-            context,
-            PREFS_NAME,
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+    private fun ensurePrefsInitializedAsync() {
+        if (cachedPrefs != null) return
+        synchronized(this) {
+            if (cachedPrefs != null) return
+            // Initialize on a background thread to avoid blocking UI during Activity start
+            Thread {
+                try {
+                    val masterKey = MasterKey.Builder(context)
+                        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                        .build()
+
+                    val prefs = EncryptedSharedPreferences.create(
+                        context,
+                        PREFS_NAME,
+                        masterKey,
+                        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                    )
+                    cachedPrefs = prefs
+                } catch (_: Exception) {
+                    // Best-effort: if encrypted prefs cannot be created, leave cachedPrefs null
+                }
+            }.start()
+        }
+    }
+
+    private fun getPrefs(): SharedPreferences {
+        // If EncryptedSharedPreferences is ready, use it
+        cachedPrefs?.let { return it }
+
+        // Avoid blocking the main thread: return a fast plain SharedPreferences fallback
+        val fallback = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+        // Kick off async initialization so future calls will use encrypted prefs
+        ensurePrefsInitializedAsync()
+
+        return fallback
     }
 
     fun getSavedHost(): String? {
