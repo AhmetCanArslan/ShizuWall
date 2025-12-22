@@ -11,6 +11,7 @@ import io.github.muntashirakon.adb.PairingConnectionCtx
 import io.github.muntashirakon.adb.AdbPairingRequiredException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.sync.Mutex
 import org.conscrypt.Conscrypt
 import org.bouncycastle.asn1.x500.X500Name
@@ -474,6 +475,9 @@ class LadbManager private constructor(private val context: Context) {
 
     suspend fun execShell(cmd: String): ShellResult = withContext(Dispatchers.IO) {
         val maxRetries = 1
+        val SENTINEL = "__SHIZUWALL_EXIT:"
+        val sentinelRegex = Regex("""${SENTINEL}(\d+)""")
+        val timeoutMs = 15_000L // 15 seconds
 
         for (attempt in 0..maxRetries) {
             // Use mutex to ensure only one coroutine checks/establishes connection at a time
@@ -496,33 +500,66 @@ class LadbManager private constructor(private val context: Context) {
             }
 
             try {
-                val stream: AdbStream = conn.open("shell:$cmd")
+                // Wrap the command to emit a sentinel with the exit code so we can deterministically
+                // detect command completion even if the remote shell doesn't close the stream.
+                val wrapped = "/system/bin/sh -c \"$cmd; printf '\n${SENTINEL}%d\\n' \$?\""
+                val stream: AdbStream = conn.open("shell:$wrapped")
                 val input = stream.openInputStream()
 
                 // AdbInputStream may throw "Stream closed" at EOF depending on transport timing.
-                // Treat that as a normal end-of-stream so successful commands with no output
-                // don't get reported as failures.
+                // We'll read until we see the sentinel or the stream closes, but we also enforce a timeout
+                // to avoid hanging forever.
                 val buf = ByteArray(8 * 1024)
                 val out = StringBuilder()
-                while (true) {
-                    val n = try {
-                        input.read(buf)
-                    } catch (e: Exception) {
-                        val msg = e.message?.lowercase().orEmpty()
-                        if (msg.contains("stream closed") || msg.contains("socket closed")) {
-                            if (stream.isClosed()) break
-                        }
-                        throw e
-                    }
-                    if (n <= 0) break
-                    out.append(String(buf, 0, n, Charsets.UTF_8))
-                }
+                var finalResult: ShellResult? = null
 
                 try {
-                    stream.close()
-                } catch (_: Exception) {
+                    withTimeout(timeoutMs) {
+                        while (true) {
+                            val n = try {
+                                input.read(buf)
+                            } catch (e: Exception) {
+                                val msg = e.message?.lowercase().orEmpty()
+                                if (msg.contains("stream closed") || msg.contains("socket closed")) {
+                                    if (stream.isClosed()) break
+                                }
+                                throw e
+                            }
+                            if (n <= 0) break
+                            out.append(String(buf, 0, n, Charsets.UTF_8))
+
+                            // Check for sentinel in the accumulated output
+                            val m = sentinelRegex.find(out)
+                            if (m != null) {
+                                val code = m.groupValues[1].toIntOrNull() ?: -1
+                                val stdout = out.toString().replace(sentinelRegex, "").trimEnd()
+                                finalResult = ShellResult(code, stdout, "")
+                                break
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    // Timeout or other exception while reading
+                    if (e is kotlinx.coroutines.TimeoutCancellationException) {
+                        try {
+                            stream.close()
+                        } catch (_: Exception) {
+                        }
+                        return@withContext ShellResult(-1, out.toString(), "timeout")
+                    }
+                    // Re-throw to let outer handler treat it as a connection error
+                    throw e
+                } finally {
+                    try {
+                        stream.close()
+                    } catch (_: Exception) {
+                    }
                 }
 
+                // If sentinel was found, return the parsed result
+                finalResult?.let { return@withContext it }
+
+                // If we reached EOF without seeing the sentinel, return the collected stdout (exit code unknown)
                 return@withContext ShellResult(0, out.toString(), "")
             } catch (e: Exception) {
                 if (attempt < maxRetries) {
