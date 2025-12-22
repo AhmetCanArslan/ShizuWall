@@ -1134,9 +1134,6 @@ class MainActivity : AppCompatActivity() {
                         return@setOnCheckedChangeListener
                     }
 
-                    // Attempt to connect in background and show progress
-                    val progressAvailable = ::firewallProgress.isInitialized
-                    if (progressAvailable) firewallProgress.visibility = View.VISIBLE
                     firewallToggle.isEnabled = false
 
                     lifecycleScope.launch {
@@ -1177,7 +1174,6 @@ class MainActivity : AppCompatActivity() {
                             suppressToggleListener = false
                         }
 
-                        if (progressAvailable) firewallProgress.visibility = View.GONE
                         firewallToggle.isEnabled = true
                     }
 
@@ -1232,8 +1228,6 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         // Try to connect before disabling
-                        val progressAvailable = ::firewallProgress.isInitialized
-                        if (progressAvailable) firewallProgress.visibility = View.VISIBLE
                         firewallToggle.isEnabled = false
                         lifecycleScope.launch {
                             val connected = withContext(Dispatchers.IO) {
@@ -1248,7 +1242,6 @@ class MainActivity : AppCompatActivity() {
                                 // Proceed with disable
                                 applyFirewallState(false, activeFirewallPackages.toList())
                             }
-                            if (progressAvailable) firewallProgress.visibility = View.GONE
                             firewallToggle.isEnabled = true
                         }
 
@@ -2027,8 +2020,6 @@ class MainActivity : AppCompatActivity() {
                     val savedPort = ladbManager.getSavedConnectPort()
                     if (!savedHost.isNullOrBlank() && savedPort > 0) {
                         // Show loading icon while connecting if progress view is available
-                        val progressAvailable = ::firewallProgress.isInitialized
-                        if (progressAvailable) firewallProgress.visibility = View.VISIBLE
                         try {
                             val connected = withContext(Dispatchers.IO) {
                                 ladbManager.connect()
@@ -2043,7 +2034,6 @@ class MainActivity : AppCompatActivity() {
                                 }
                             }
                         } finally {
-                            if (progressAvailable) firewallProgress.visibility = View.GONE
                         }
                     }
                 }
