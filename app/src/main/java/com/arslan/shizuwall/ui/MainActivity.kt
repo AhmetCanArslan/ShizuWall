@@ -1098,6 +1098,93 @@ class MainActivity : AppCompatActivity() {
                     suppressToggleListener = false
                     return@setOnCheckedChangeListener
                 }
+
+                val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+                if (workingMode == "LADB") {
+                    val ladb = LadbManager.getInstance(this)
+
+                    // If already connected, proceed to confirmation dialog
+                    if (ladb.isConnected()) {
+                        showFirewallConfirmDialog(selectedApps)
+                        return@setOnCheckedChangeListener
+                    }
+
+                    // Not connected — try to connect if host/port configured
+                    val savedHost = ladb.getSavedHost()
+                    val savedPort = ladb.getSavedConnectPort()
+                    if (savedHost.isNullOrBlank() || savedPort <= 0) {
+                        // Not configured — prompt to open LADB setup
+                        val d = MaterialAlertDialogBuilder(this)
+                            .setTitle(getString(R.string.working_mode_ladb))
+                            .setMessage(getString(R.string.ladb_status_unconfigured))
+                            .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
+                                try {
+                                    startActivity(Intent(this, LadbSetupActivity::class.java))
+                                } catch (_: Exception) {
+                                }
+                            }
+                            .setNegativeButton(getString(R.string.cancel), null)
+                            .create()
+                        d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
+                        d.show()
+
+                        suppressToggleListener = true
+                        firewallToggle.isChecked = false
+                        suppressToggleListener = false
+                        return@setOnCheckedChangeListener
+                    }
+
+                    // Attempt to connect in background and show progress
+                    val progressAvailable = ::firewallProgress.isInitialized
+                    if (progressAvailable) firewallProgress.visibility = View.VISIBLE
+                    firewallToggle.isEnabled = false
+
+                    lifecycleScope.launch {
+                        val connected = withContext(Dispatchers.IO) {
+                            try {
+                                ladb.connect()
+                            } catch (e: Exception) {
+                                false
+                            }
+                        }
+
+                        if (connected) {
+                            // Connection established — show confirmation dialog
+                            showFirewallConfirmDialog(selectedApps)
+                        } else {
+                            // Connection failed — if pairing required, direct to setup, otherwise show toast
+                            if (ladb.state == LadbManager.State.PAIRED) {
+                                Toast.makeText(this@MainActivity, getString(R.string.ladb_status_paired), Toast.LENGTH_SHORT).show()
+                            } else {
+                                val d = MaterialAlertDialogBuilder(this@MainActivity)
+                                    .setTitle(getString(R.string.working_mode_ladb))
+                                    .setMessage(getString(R.string.ladb_status_unconfigured))
+                                    .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
+                                        try {
+                                            startActivity(Intent(this@MainActivity, LadbSetupActivity::class.java))
+                                        } catch (_: Exception) {
+                                        }
+                                    }
+                                    .setNegativeButton(getString(R.string.cancel), null)
+                                    .create()
+                                d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
+                                d.show()
+                            }
+
+                            // revert toggle state
+                            suppressToggleListener = true
+                            firewallToggle.isChecked = false
+                            suppressToggleListener = false
+                        }
+
+                        if (progressAvailable) firewallProgress.visibility = View.GONE
+                        firewallToggle.isEnabled = true
+                    }
+
+                    return@setOnCheckedChangeListener
+                }
+
+                // Non-LADB path: fall back to Shizuku permission flow
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
                     // Permission not granted, mark that we're waiting for it
                     pendingToggleEnable = true
@@ -1114,6 +1201,65 @@ class MainActivity : AppCompatActivity() {
                 if (!isFirewallEnabled) {
                     return@setOnCheckedChangeListener
                 }
+
+                val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+                if (workingMode == "LADB") {
+                    // For disable, still ensure LADB is connected; if not, try to connect, otherwise proceed to disable
+                    val ladb = LadbManager.getInstance(this)
+                    if (!ladb.isConnected()) {
+                        val savedHost = ladb.getSavedHost()
+                        val savedPort = ladb.getSavedConnectPort()
+                        if (savedHost.isNullOrBlank() || savedPort <= 0) {
+                            // Not configured — prompt to open LADB setup and keep toggle ON
+                            val d = MaterialAlertDialogBuilder(this)
+                                .setTitle(getString(R.string.working_mode_ladb))
+                                .setMessage(getString(R.string.ladb_status_unconfigured))
+                                .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
+                                    try {
+                                        startActivity(Intent(this, LadbSetupActivity::class.java))
+                                    } catch (_: Exception) {
+                                    }
+                                }
+                                .setNegativeButton(getString(R.string.cancel), null)
+                                .create()
+                            d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
+                            d.show()
+
+                            suppressToggleListener = true
+                            firewallToggle.isChecked = true
+                            suppressToggleListener = false
+                            return@setOnCheckedChangeListener
+                        }
+
+                        // Try to connect before disabling
+                        val progressAvailable = ::firewallProgress.isInitialized
+                        if (progressAvailable) firewallProgress.visibility = View.VISIBLE
+                        firewallToggle.isEnabled = false
+                        lifecycleScope.launch {
+                            val connected = withContext(Dispatchers.IO) {
+                                try { ladb.connect() } catch (e: Exception) { false }
+                            }
+                            if (!connected) {
+                                Toast.makeText(this@MainActivity, getString(R.string.ladb_status_unconfigured), Toast.LENGTH_SHORT).show()
+                                suppressToggleListener = true
+                                firewallToggle.isChecked = true
+                                suppressToggleListener = false
+                            } else {
+                                // Proceed with disable
+                                applyFirewallState(false, activeFirewallPackages.toList())
+                            }
+                            if (progressAvailable) firewallProgress.visibility = View.GONE
+                            firewallToggle.isEnabled = true
+                        }
+
+                        return@setOnCheckedChangeListener
+                    }
+
+                    // LADB is connected — proceed with disable
+                    applyFirewallState(false, activeFirewallPackages.toList())
+                    return@setOnCheckedChangeListener
+                }
+
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
                     // Permission not granted, mark that we're waiting for it
                     pendingToggleDisable = true
