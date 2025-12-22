@@ -1271,8 +1271,15 @@ class MainActivity : AppCompatActivity() {
 
                 val savedSelected = loadSelectedApps().toMutableSet()
                 val selectedToRemove = savedSelected.filter { !installedPackageNames.contains(it) }
+                // Remove this app itself from saved selected apps if present
+                val selfPkg = this@MainActivity.packageName
+                var selectedChanged = false
+                if (savedSelected.remove(selfPkg)) selectedChanged = true
                 if (selectedToRemove.isNotEmpty()) {
                     savedSelected.removeAll(selectedToRemove)
+                    selectedChanged = true
+                }
+                if (selectedChanged) {
                     sharedPreferences.edit()
                         .putStringSet(KEY_SELECTED_APPS, savedSelected)
                         .putInt(KEY_SELECTED_COUNT, savedSelected.size)
@@ -1292,8 +1299,9 @@ class MainActivity : AppCompatActivity() {
 
                     val packageName = packageInfo.packageName
 
-                    // never show Shizuku app(s) in the list
+                    // never show Shizuku app(s) or this app itself in the list
                     if (packageName == "moe.shizuku.privileged.api") continue
+                    if (packageName == this@MainActivity.packageName) continue
 
                     // skip apps that do not have internet permission (offline apps)
                     val hasInternetPermission = pm.checkPermission(

@@ -117,8 +117,9 @@ class FirewallTileService : TileService() {
     }
 
     private fun loadSelectedApps(): List<String> {
+        val selfPkg = packageName
         return sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())
-            ?.filterNot { it == "moe.shizuku.privileged.api" }
+            ?.filterNot { it == "moe.shizuku.privileged.api" || it == selfPkg }
             ?.toList() ?: emptyList()
     }
 
@@ -181,7 +182,10 @@ class FirewallTileService : TileService() {
     private fun enableFirewall(packageNames: List<String>): List<String> {
         val successful = mutableListOf<String>()
         if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled true")) return successful
+        val selfPkg = packageName
         for (pkg in packageNames) {
+            // never target the app itself or Shizuku
+            if (pkg == selfPkg || pkg == "moe.shizuku.privileged.api") continue
             if (ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled false $pkg")) {
                 successful.add(pkg)
             }
@@ -191,7 +195,10 @@ class FirewallTileService : TileService() {
 
     private fun disableFirewall(packageNames: List<String>): Boolean {
         var allSuccessful = true
+        val selfPkg = packageName
         for (pkg in packageNames) {
+            // never target the app itself or Shizuku
+            if (pkg == selfPkg || pkg == "moe.shizuku.privileged.api") continue
             if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")) {
                 allSuccessful = false
             }

@@ -47,8 +47,8 @@ class FirewallControlReceiver : BroadcastReceiver() {
             prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList()
         }
 
-        // filter out any Shizuku packages from incoming list
-        val packages = rawPackages.filterNot { it == "moe.shizuku.privileged.api" }
+        // filter out any Shizuku packages and this app itself from incoming list
+        val packages = rawPackages.filterNot { it == "moe.shizuku.privileged.api" || it == context.packageName }
 
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         val adaptiveMode = prefs.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
