@@ -35,6 +35,18 @@
         app:layout_constraintStart_toEndOf="@id/githubIcon"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ProgressBar
+        android:id="@+id/firewallProgress"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:indeterminate="true"
+        android:paddingEnd="8dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/firewallLabel"
+
+        app:layout_constraintTop_toTopOf="@id/appTitle"
+        app:layout_constraintBottom_toBottomOf="@id/appTitle" />
     <TextView
         android:id="@+id/firewallLabel"
         android:layout_width="wrap_content"

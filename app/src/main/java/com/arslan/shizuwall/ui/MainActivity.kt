@@ -97,6 +97,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var appListAdapter: AppListAdapter
     private lateinit var firewallToggle: SwitchCompat
+    private lateinit var firewallProgress: android.widget.ProgressBar
     private lateinit var searchView: SearchView
     private lateinit var selectedCountText: TextView
     private lateinit var selectAllCheckbox: CheckBox
@@ -1082,6 +1083,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupFirewallToggle() {
         firewallToggle = findViewById(R.id.firewallToggle)
+        firewallProgress = findViewById(R.id.firewallProgress)
+        firewallProgress.visibility = android.view.View.GONE
         selectedCountText = findViewById(R.id.selectedCountText)
 
         firewallToggle.setOnCheckedChangeListener { _, isChecked ->
@@ -1445,59 +1448,58 @@ class MainActivity : AppCompatActivity() {
         if (enable && packageNames.isEmpty() && !adaptiveMode) return
         firewallToggle.isEnabled = false
         lifecycleScope.launch {
-            // perform package existence checks and run enable/disable on IO thread
-            val (installed, missing) = withContext(Dispatchers.IO) {
-                filterInstalledPackages(packageNames)
-            }
-
-            // If enabling and none of the chosen packages remain installed -> abort
-            // In Adaptive Mode, allow enabling with empty list
-            if (enable && installed.isEmpty() && !adaptiveMode) {
-                Toast.makeText(this@MainActivity, getString(R.string.none_selected_apps_installed), Toast.LENGTH_SHORT).show()
-                suppressToggleListener = true
-                firewallToggle.isChecked = false
-                suppressToggleListener = false
-                firewallToggle.isEnabled = true
-                return@launch
-            }
-
-            // Inform about ignored (missing) packages when appropriate
-            if (missing.isNotEmpty()) {
-                Toast.makeText(this@MainActivity, getString(R.string.selected_apps_not_installed, missing.size), Toast.LENGTH_SHORT).show()
-            }
-
-            val (successful, failed) = withContext(Dispatchers.IO) {
-                if (enable) {
-                    enableFirewall(installed)
-                } else {
-                    disableFirewall(installed)
+            firewallProgress.visibility = android.view.View.VISIBLE
+            try {
+                // perform package existence checks and run enable/disable on IO thread
+                val (installed, missing) = withContext(Dispatchers.IO) {
+                    filterInstalledPackages(packageNames)
                 }
-            }
 
-            firewallToggle.isEnabled = true
-
-            // Handle successes
-            if (enable) {
-                if (successful.isNotEmpty() || adaptiveMode) {
-                    isFirewallEnabled = true
-                    activeFirewallPackages.clear()
-                    activeFirewallPackages.addAll(successful)
-                    saveActivePackages(activeFirewallPackages)
-                    saveFirewallEnabled(true)
-                    // Ensure toggle stays ON
+                // If enabling and none of the chosen packages remain installed -> abort
+                // In Adaptive Mode, allow enabling with empty list
+                if (enable && installed.isEmpty() && !adaptiveMode) {
+                    Toast.makeText(this@MainActivity, getString(R.string.none_selected_apps_installed), Toast.LENGTH_SHORT).show()
                     suppressToggleListener = true
-                    firewallToggle.isChecked = true
+                    firewallToggle.isChecked = false
                     suppressToggleListener = false
-                    
-                    if (adaptiveMode) {
-                        appListAdapter.setSelectionEnabled(true)
-                        updateInteractiveViews()
-                        hideDimOverlay()
+                    return@launch
+                }
+
+                // Inform about ignored (missing) packages when appropriate
+                if (missing.isNotEmpty()) {
+                    Toast.makeText(this@MainActivity, getString(R.string.selected_apps_not_installed, missing.size), Toast.LENGTH_SHORT).show()
+                }
+
+                val (successful, failed) = withContext(Dispatchers.IO) {
+                    if (enable) {
+                        enableFirewall(installed)
                     } else {
-                        appListAdapter.setSelectionEnabled(false)
-                        updateInteractiveViews()
-                        showDimOverlay()
+                        disableFirewall(installed)
                     }
+                }
+
+                // Handle successes
+                if (enable) {
+                    if (successful.isNotEmpty() || adaptiveMode) {
+                        isFirewallEnabled = true
+                        activeFirewallPackages.clear()
+                        activeFirewallPackages.addAll(successful)
+                        saveActivePackages(activeFirewallPackages)
+                        saveFirewallEnabled(true)
+                        // Ensure toggle stays ON
+                        suppressToggleListener = true
+                        firewallToggle.isChecked = true
+                        suppressToggleListener = false
+                        
+                        if (adaptiveMode) {
+                            appListAdapter.setSelectionEnabled(true)
+                            updateInteractiveViews()
+                            hideDimOverlay()
+                        } else {
+                            appListAdapter.setSelectionEnabled(false)
+                            updateInteractiveViews()
+                            showDimOverlay()
+                        }
                     
                     val msg = if (successful.isEmpty()) getString(R.string.firewall_enabled_adaptive) else getString(R.string.firewall_enabled_for_apps, successful.size)
                     Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
@@ -1554,6 +1556,10 @@ class MainActivity : AppCompatActivity() {
                     sortAndFilterApps(preserveScrollPosition = false)
                 }
                 showOperationErrorsDialog(failed, lastOperationErrorDetails)
+            }
+            } finally {
+                firewallProgress.visibility = android.view.View.GONE
+                firewallToggle.isEnabled = true
             }
         }
     }
