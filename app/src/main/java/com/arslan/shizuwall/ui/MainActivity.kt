@@ -223,7 +223,6 @@ class MainActivity : AppCompatActivity() {
                 appListAdapter.setSelectionEnabled(adaptiveMode || !isFirewallEnabled)
                 updateInteractiveViews()
             }
-            checkAndConnectLadb()
         }
     }
 
@@ -349,7 +348,6 @@ class MainActivity : AppCompatActivity() {
         setupSearchView()
         setupSelectAllCheckbox()
         setupRecyclerView()
-        checkAndConnectLadb()
 
         // wire category bar AFTER views are created
         val categoryGroup = findViewById<ChipGroup>(R.id.categoryChipGroup)
@@ -2019,39 +2017,6 @@ class MainActivity : AppCompatActivity() {
         // continue was removed — close handles dialog dismissal
 
         dialog.show()
-    }
-
-    private fun checkAndConnectLadb() {
-        lifecycleScope.launch {
-            val ladbManager = LadbManager.getInstance(this@MainActivity)
-            val currentMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU")
-            
-            // Only attempt connection if user has explicitly selected LADB mode
-            if (currentMode == "LADB") {
-                if (ladbManager.state != LadbManager.State.CONNECTED) {
-                    val savedHost = ladbManager.getSavedHost()
-                    val savedPort = ladbManager.getSavedConnectPort()
-                    if (!savedHost.isNullOrBlank() && savedPort > 0) {
-                        // Show loading icon while connecting if progress view is available
-                        try {
-                            val connected = withContext(Dispatchers.IO) {
-                                ladbManager.connect()
-                            }
-
-                            if (!connected) {
-                                // Notify user if connection didn't succeed (pairing required or other error)
-                                if (ladbManager.state == LadbManager.State.PAIRED) {
-                                    Toast.makeText(this@MainActivity, getString(R.string.ladb_status_paired), Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(this@MainActivity, getString(R.string.ladb_status_unconfigured), Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        } finally {
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private fun applyFontToViews(view: View) {
