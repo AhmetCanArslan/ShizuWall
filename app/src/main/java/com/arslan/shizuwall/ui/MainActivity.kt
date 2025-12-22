@@ -253,7 +253,6 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        checkAndConnectLadb()
 
         applyFontToViews(findViewById(android.R.id.content))
 
@@ -350,6 +349,7 @@ class MainActivity : AppCompatActivity() {
         setupSearchView()
         setupSelectAllCheckbox()
         setupRecyclerView()
+        checkAndConnectLadb()
 
         // wire category bar AFTER views are created
         val categoryGroup = findViewById<ChipGroup>(R.id.categoryChipGroup)
@@ -1880,8 +1880,24 @@ class MainActivity : AppCompatActivity() {
                     val savedHost = ladbManager.getSavedHost()
                     val savedPort = ladbManager.getSavedConnectPort()
                     if (!savedHost.isNullOrBlank() && savedPort > 0) {
-                        withContext(Dispatchers.IO) {
-                            ladbManager.connect()
+                        // Show loading icon while connecting if progress view is available
+                        val progressAvailable = ::firewallProgress.isInitialized
+                        if (progressAvailable) firewallProgress.visibility = View.VISIBLE
+                        try {
+                            val connected = withContext(Dispatchers.IO) {
+                                ladbManager.connect()
+                            }
+
+                            if (!connected) {
+                                // Notify user if connection didn't succeed (pairing required or other error)
+                                if (ladbManager.state == LadbManager.State.PAIRED) {
+                                    Toast.makeText(this@MainActivity, getString(R.string.ladb_status_paired), Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(this@MainActivity, getString(R.string.ladb_status_unconfigured), Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        } finally {
+                            if (progressAvailable) firewallProgress.visibility = View.GONE
                         }
                     }
                 }
