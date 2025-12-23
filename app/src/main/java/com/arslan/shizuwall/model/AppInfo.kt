@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.model
 
 data class AppInfo(
     val appName: String,

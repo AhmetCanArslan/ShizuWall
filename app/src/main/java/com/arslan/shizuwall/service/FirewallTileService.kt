@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.service
 
 import android.content.Context
 import android.content.Intent
@@ -9,6 +9,9 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.arslan.shizuwall.R
+import com.arslan.shizuwall.ui.main.MainActivity
+import com.arslan.shizuwall.widget.FirewallWidgetProvider
 import kotlinx.coroutines.*
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess

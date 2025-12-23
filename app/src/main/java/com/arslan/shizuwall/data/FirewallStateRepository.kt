@@ -1,9 +1,10 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.data
 
 import android.content.Context
 import android.content.SharedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import com.arslan.shizuwall.ui.main.MainActivity
 
 data class FirewallState(val enabled: Boolean, val activePackages: Set<String>)
 

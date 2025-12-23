@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.ui.shizuku
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.arslan.shizuwall.R
 import java.io.IOException
 
 class ShizukuSlideAdapter(

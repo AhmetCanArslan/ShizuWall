@@ -1,4 +1,4 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.ui.settings
 
 import android.content.Context
 import android.content.Intent
@@ -6,6 +6,8 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.util.TypedValue
+import com.arslan.shizuwall.ui.main.MainActivity
+import com.arslan.shizuwall.ui.shizuku.ShizukuSetupActivity
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
@@ -35,6 +37,7 @@ import kotlinx.coroutines.withContext
 import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
+import com.arslan.shizuwall.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
@@ -482,7 +485,7 @@ class SettingsActivity : AppCompatActivity() {
         val action = MainActivity.ACTION_FIREWALL_CONTROL
         val extraEnabled = MainActivity.EXTRA_FIREWALL_ENABLED
         val extraCsv = MainActivity.EXTRA_PACKAGES_CSV
-        val component = "$pkg/.FirewallControlReceiver"
+        val component = "com.arslan.shizuwall/com.arslan.shizuwall.receiver.FirewallControlReceiver"
 
         val adbUsageText = getString(
             R.string.adb_broadcast_usage_text,

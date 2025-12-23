@@ -1,9 +1,11 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import com.arslan.shizuwall.ui.main.MainActivity
+import com.arslan.shizuwall.widget.FirewallWidgetProvider
 import android.os.SystemClock
 import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope

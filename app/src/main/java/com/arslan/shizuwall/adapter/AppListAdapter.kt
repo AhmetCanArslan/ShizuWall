@@ -1,8 +1,9 @@
-package com.arslan.shizuwall
+package com.arslan.shizuwall.adapter
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Typeface
+import com.arslan.shizuwall.model.AppInfo
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.LruCache
@@ -21,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.core.graphics.createBitmap
+import com.arslan.shizuwall.R
 
 class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
     override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
