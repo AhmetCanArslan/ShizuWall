@@ -128,47 +128,38 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
-    // Cache for SharedPreferences to avoid repeated heavy initialization on the main thread.
+    // Cache for SharedPreferences to avoid repeated heavy initialization.
     @Volatile
     private var cachedPrefs: SharedPreferences? = null
-
-    private fun ensurePrefsInitializedAsync() {
-        if (cachedPrefs != null) return
-        synchronized(this) {
-            if (cachedPrefs != null) return
-            // Initialize on a background thread to avoid blocking UI during Activity start
-            Thread {
-                try {
-                    val masterKey = MasterKey.Builder(context)
-                        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                        .build()
-
-                    val prefs = EncryptedSharedPreferences.create(
-                        context,
-                        PREFS_NAME,
-                        masterKey,
-                        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                    )
-                    cachedPrefs = prefs
-                } catch (_: Exception) {
-                    // Best-effort: if encrypted prefs cannot be created, leave cachedPrefs null
-                }
-            }.start()
-        }
-    }
+    private val prefsLock = Any()
 
     private fun getPrefs(): SharedPreferences {
         // If EncryptedSharedPreferences is ready, use it
         cachedPrefs?.let { return it }
 
-        // Avoid blocking the main thread: return a fast plain SharedPreferences fallback
-        val fallback = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        // Synchronously initialize to ensure consistency between reads and writes
+        synchronized(prefsLock) {
+            cachedPrefs?.let { return it }
+            
+            return try {
+                val masterKey = MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
 
-        // Kick off async initialization so future calls will use encrypted prefs
-        ensurePrefsInitializedAsync()
-
-        return fallback
+                val prefs = EncryptedSharedPreferences.create(
+                    context,
+                    PREFS_NAME,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+                cachedPrefs = prefs
+                prefs
+            } catch (_: Exception) {
+                // Fallback to plain SharedPreferences if encrypted prefs cannot be created
+                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            }
+        }
     }
 
     fun getSavedHost(): String? {
