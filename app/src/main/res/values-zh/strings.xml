@@ -146,4 +146,7 @@
     <string name="shizuku_prompt_message">您想现在查看 Shizuku 设置幻灯片吗？您也可以稍后从“设置”中的三点菜单打开它们。</string>
     <string name="shizuku_prompt_do_not_show">不再显示</string>
     <string name="show_now">现在查看</string>
+    <string name="notifications_section">通知</string>
+    <string name="notify_about_new_apps">关于新应用的通知</string>
+    <string name="notify_about_new_apps_description">当安装新应用时收到通知</string>
 </resources>

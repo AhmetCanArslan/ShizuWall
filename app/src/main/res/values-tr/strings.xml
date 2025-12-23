@@ -146,4 +146,7 @@
     <string name="shizuku_prompt_message">Shizuku kurulum slaytlarını şimdi görüntülemek ister misiniz? Daha sonra Ayarlar\'daki üç nokta menüsünden her zaman açabilirsiniz.</string>
     <string name="shizuku_prompt_do_not_show">Bir daha gösterme</string>
     <string name="show_now">Şimdi göster</string>
+    <string name="notifications_section">Bildirimler</string>
+    <string name="notify_about_new_apps">Yeni uygulamalar hakkında bildirimde bulunun</string>
+    <string name="notify_about_new_apps_description">Yeni bir uygulama yüklendiğinde bildirim alın</string>
 </resources>

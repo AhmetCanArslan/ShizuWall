@@ -147,4 +147,7 @@
     <string name="shizuku_prompt_message">Would you like to view the Shizuku setup slides now? You can always open them later from the three-dot menu in Settings.</string>
     <string name="shizuku_prompt_do_not_show">Do not show again</string>
     <string name="show_now">Show now</string>
+    <string name="notifications_section">Notifications</string>
+    <string name="notify_about_new_apps">Notify about new apps</string>
+    <string name="notify_about_new_apps_description">Get notified when a new app installed</string>
 </resources>

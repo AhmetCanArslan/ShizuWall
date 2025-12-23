@@ -147,4 +147,7 @@
     <string name="shizuku_prompt_message">Möchten Sie jetzt die Shizuku-Setup-Folien ansehen? Sie können sie später jederzeit über das Drei-Punkte-Menü in den Einstellungen öffnen.</string>
     <string name="shizuku_prompt_do_not_show">Nicht erneut anzeigen</string>
     <string name="show_now">Jetzt anzeigen</string>
+    <string name="notifications_section">Benachrichtigungen</string>
+    <string name="notify_about_new_apps">Über neue Apps benachrichtigen</string>
+    <string name="notify_about_new_apps_description">Benachrichtigen, wenn eine neue App installiert wird</string>
 </resources>
