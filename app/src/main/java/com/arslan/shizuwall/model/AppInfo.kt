@@ -5,5 +5,6 @@ data class AppInfo(
     val packageName: String,
     val isSelected: Boolean = false,
     val isSystem: Boolean = false,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val installTime: Long = 0
 )

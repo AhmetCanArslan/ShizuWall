@@ -152,4 +152,8 @@
     <string name="notify_about_new_apps_description">Get notified when a new app installed</string>
     <string name="new_app_installed">New App Installed</string>
     <string name="add_it_to_selected_list">Add it to list</string>
+    <string name="sort">Sort</string>
+    <string name="sort_name_asc">A-Z</string>
+    <string name="sort_name_desc">Z-A</string>
+    <string name="sort_install_time">Date installed</string>
 </resources>
