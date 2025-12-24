@@ -11,7 +11,13 @@ import com.google.android.material.appbar.MaterialToolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.activity.enableEdgeToEdge
+import android.view.View
+import android.view.ViewGroup
+import android.graphics.Typeface
+import androidx.core.content.res.ResourcesCompat
+import android.content.Context
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.ui.main.MainActivity
 import com.google.android.material.color.DynamicColors
 
 class ShizukuSetupActivity : AppCompatActivity() {
@@ -25,6 +31,18 @@ class ShizukuSetupActivity : AppCompatActivity() {
         DynamicColors.applyToActivityIfAvailable(this)
         enableEdgeToEdge()
         setContentView(R.layout.activity_shizuku_setup)
+
+        // Apply saved custom font if selected (Ndot)
+        try {
+            val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+            val savedFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
+            if (savedFont != "default") {
+                val typeface = ResourcesCompat.getFont(this, R.font.ndot)
+                applyTypefaceRecursively(findViewById(android.R.id.content), typeface)
+            }
+        } catch (_: Exception) {
+            // Ignore failures to load/apply font
+        }
 
         val root = findViewById<android.view.View>(R.id.shizukuSetupRoot)
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
@@ -94,6 +112,21 @@ class ShizukuSetupActivity : AppCompatActivity() {
                 viewPager.currentItem = viewPager.currentItem + 1
             } else {
                 finish()
+            }
+        }
+    }
+
+    private fun applyTypefaceRecursively(view: View, typeface: Typeface?) {
+        if (typeface == null) return
+
+        when (view) {
+            is TextView -> {
+                view.typeface = typeface
+            }
+            is ViewGroup -> {
+                for (i in 0 until view.childCount) {
+                    applyTypefaceRecursively(view.getChildAt(i), typeface)
+                }
             }
         }
     }

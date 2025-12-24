@@ -313,7 +313,7 @@ class MainActivity : AppCompatActivity() {
             messageText.text = getString(R.string.shizuku_prompt_message)
             checkbox.text = getString(R.string.shizuku_prompt_do_not_show)
 
-            MaterialAlertDialogBuilder(this)
+            val shizukuPromptDialog = MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.shizuku_prompt_title)
                 .setView(promptView)
                 .setPositiveButton(R.string.show_now) { _, _ ->
@@ -327,7 +327,12 @@ class MainActivity : AppCompatActivity() {
                         sharedPreferences.edit().putBoolean(KEY_SHOW_SETUP_PROMPT, false).apply()
                     }
                 }
-                .show()
+                .create()
+            // Ensure custom font is applied to dialog (title, buttons and view)
+            shizukuPromptDialog.setOnShowListener {
+                shizukuPromptDialog.window?.decorView?.let { applyFontToViews(it) }
+            }
+            shizukuPromptDialog.show()
         }
 
         // GitHub icon
@@ -1317,7 +1322,7 @@ class MainActivity : AppCompatActivity() {
         
         val currentIndex = sortOrders.indexOf(currentSortOrder)
         
-        MaterialAlertDialogBuilder(this)
+        val builder = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.sort)
             .setSingleChoiceItems(options, currentIndex) { dialog, which ->
                 currentSortOrder = sortOrders[which]
@@ -1325,7 +1330,12 @@ class MainActivity : AppCompatActivity() {
                 sortAndFilterApps(preserveScrollPosition = false)
                 dialog.dismiss()
             }
-            .show()
+
+        val dialog = builder.create()
+        dialog.setOnShowListener {
+            dialog.window?.decorView?.let { applyFontToViews(it) }
+        }
+        dialog.show()
     }
 
     @SuppressLint("NotifyDataSetChanged")
