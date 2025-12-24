@@ -51,7 +51,19 @@ class BootReceiver : BroadcastReceiver() {
         val enabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
         
         // Start App Monitor Service if enabled
-        if (prefs.getBoolean(MainActivity.KEY_NOTIFY_NEW_APPS, true)) {
+        val notifyNewApps = if (prefs.contains(MainActivity.KEY_NOTIFY_NEW_APPS)) {
+            prefs.getBoolean(MainActivity.KEY_NOTIFY_NEW_APPS, true)
+        } else {
+            try {
+                context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                    .getBoolean(MainActivity.KEY_NOTIFY_NEW_APPS, true)
+            } catch (e: Exception) {
+                // If anything goes wrong, use a safe default (do not enable unexpectedly)
+                false
+            }
+        }
+
+        if (notifyNewApps) {
             val monitorIntent = Intent(context, AppMonitorService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(monitorIntent)

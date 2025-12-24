@@ -271,6 +271,16 @@ class SettingsActivity : AppCompatActivity() {
 
         switchNotifyAboutNewApps.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean(MainActivity.KEY_NOTIFY_NEW_APPS, isChecked).apply()
+            try {
+                val dpCtx = this.createDeviceProtectedStorageContext()
+                dpCtx.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                    .edit()
+                    .putBoolean(MainActivity.KEY_NOTIFY_NEW_APPS, isChecked)
+                    .apply()
+            } catch (e: Exception) {
+                // Ignore failures to access device-protected storage
+            }
+
             val monitorIntent = Intent(this, AppMonitorService::class.java)
             if (isChecked) {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
