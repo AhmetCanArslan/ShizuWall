@@ -17,6 +17,8 @@ import com.arslan.shizuwall.ui.shizuku.ShizukuSetupActivity
 import com.arslan.shizuwall.adapter.SelectedAppsAdapter
 import com.arslan.shizuwall.adapter.ErrorDetailsAdapter
 import com.arslan.shizuwall.adapter.ErrorEntry
+import com.arslan.shizuwall.service.AppMonitorService
+import com.arslan.shizuwall.util.ShizukuUtils
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -81,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         const val KEY_ADAPTIVE_MODE = "adaptive_mode"
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
         const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"
+        const val KEY_NOTIFY_NEW_APPS = "notify_new_apps"
 
         const val ACTION_FIREWALL_STATE_CHANGED = "com.arslan.shizuwall.ACTION_FIREWALL_STATE_CHANGED"
         const val EXTRA_FIREWALL_ENABLED = "state" 
@@ -90,15 +93,6 @@ class MainActivity : AppCompatActivity() {
         const val EXTRA_PACKAGES_CSV = "apps" 
 
         const val KEY_FIREWALL_UPDATE_TS = "firewall_update_ts"
-
-        private val SHIZUKU_NEW_PROCESS_METHOD by lazy {
-            Shizuku::class.java.getDeclaredMethod(
-                "newProcess",
-                Array<String>::class.java,
-                Array<String>::class.java,
-                String::class.java
-            ).apply { isAccessible = true }
-        }
     }
 
     private lateinit var recyclerView: RecyclerView
@@ -213,6 +207,32 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val refreshReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent?) {
+            if (intent?.action == "com.arslan.shizuwall.ACTION_REFRESH_LIST") {
+                val pkg = intent.getStringExtra("package_name") ?: return
+                val idx = appList.indexOfFirst { it.packageName == pkg }
+                if (idx != -1) {
+                    appList[idx] = appList[idx].copy(isSelected = true)
+                    updateSelectedCount()
+                    sortAndFilterApps(preserveScrollPosition = true)
+
+                    // Apply rule immediately if firewall is enabled (even if adaptive mode is off)
+                    // because this is an explicit user action from a notification.
+                    if (isFirewallEnabled) {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            val res = ShizukuUtils.runCommand("cmd connectivity set-package-networking-enabled false $pkg")
+                            if (res.success) {
+                                activeFirewallPackages.add(pkg)
+                                saveActivePackages(activeFirewallPackages)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private val settingsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -257,6 +277,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_main)
+
+        // Start App Monitor Service if enabled
+        if (sharedPreferences.getBoolean(KEY_NOTIFY_NEW_APPS, true)) {
+            val monitorIntent = Intent(this, AppMonitorService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(monitorIntent)
+            } else {
+                startService(monitorIntent)
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 101)
+            }
+        }
 
         applyFontToViews(findViewById(android.R.id.content))
 
@@ -474,6 +510,17 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             // ignore other registration errors
         }
+
+        try {
+            val refreshFilter = android.content.IntentFilter("com.arslan.shizuwall.ACTION_REFRESH_LIST")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(refreshReceiver, refreshFilter, Context.RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(refreshReceiver, refreshFilter)
+            }
+        } catch (e: Exception) {
+            // ignore
+        }
     }
 
     override fun onPause() {
@@ -481,8 +528,11 @@ class MainActivity : AppCompatActivity() {
         // Unregister package receiver to avoid leaks; ignore if not registered.
         try {
             unregisterReceiver(packageBroadcastReceiver)
-        } catch (e: IllegalArgumentException) {
-            // not registered
+        } catch (e: Exception) {
+            // ignore
+        }
+        try {
+            unregisterReceiver(refreshReceiver)
         } catch (e: Exception) {
             // ignore
         }
@@ -1602,32 +1652,12 @@ class MainActivity : AppCompatActivity() {
         return Pair(successful, failed)
     }
 
-    private data class ShellResult(val exitCode: Int, val stdout: String, val stderr: String) {
-        val success: Boolean get() = exitCode == 0
-    }
-
-    private fun runShizukuShellCommandDetailed(command: String): ShellResult {
-        return try {
-            val process = SHIZUKU_NEW_PROCESS_METHOD.invoke(
-                null,
-                arrayOf("/system/bin/sh", "-c", command),
-                null,
-                null
-            ) as? ShizukuRemoteProcess ?: return ShellResult(-1, "", "no-process")
-
-            val stdout = process.inputStream.bufferedReader().use { it.readText() }
-            val stderr = process.errorStream.bufferedReader().use { it.readText() }
-            process.outputStream.close()
-            val exitCode = process.waitFor()
-            process.destroy()
-            ShellResult(exitCode, stdout, stderr)
-        } catch (e: Exception) {
-            ShellResult(-1, "", e.message ?: "")
-        }
+    private fun runShizukuShellCommandDetailed(command: String): ShizukuUtils.ShellResult {
+        return ShizukuUtils.runCommand(command)
     }
 
     private fun runShizukuShellCommand(command: String): Boolean {
-        return runShizukuShellCommandDetailed(command).success
+        return ShizukuUtils.runCommand(command).success
     }
 
     // dim only the RecyclerView and disable its interactions

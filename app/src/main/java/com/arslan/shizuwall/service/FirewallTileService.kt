@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.ui.main.MainActivity
+import com.arslan.shizuwall.util.ShizukuUtils
 import com.arslan.shizuwall.widget.FirewallWidgetProvider
 import kotlinx.coroutines.*
 import rikka.shizuku.Shizuku
@@ -23,17 +24,6 @@ class FirewallTileService : TileService() {
     private lateinit var sharedPreferences: SharedPreferences
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Main + job)
-
-    companion object {
-        private val SHIZUKU_NEW_PROCESS_METHOD: Method by lazy {
-            Shizuku::class.java.getDeclaredMethod(
-                "newProcess",
-                Array<String>::class.java,
-                Array<String>::class.java,
-                String::class.java
-            ).apply { isAccessible = true }
-        }
-    }
 
     // SharedPreferences listener to update tile whenever relevant prefs change
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -178,26 +168,11 @@ class FirewallTileService : TileService() {
         for (pkg in packageNames) {
             runShizukuShellCommand("cmd connectivity set-package-networking-enabled true $pkg")
         }
-        runShizukuShellCommand("cmd connectivity set-chain3-enabled false")
+        ShizukuUtils.runCommand("cmd connectivity set-chain3-enabled false")
     }
 
     private fun runShizukuShellCommand(command: String): Boolean {
-        return try {
-            val process = SHIZUKU_NEW_PROCESS_METHOD.invoke(
-                null,
-                arrayOf("/system/bin/sh", "-c", command),
-                null,
-                null
-            ) as? rikka.shizuku.ShizukuRemoteProcess ?: return false
-            process.outputStream.close()
-            process.inputStream.close()
-            process.errorStream.close()
-            val exitCode = process.waitFor()
-            process.destroy()
-            exitCode == 0
-        } catch (e: Exception) {
-            false
-        }
+        return ShizukuUtils.runCommand(command).success
     }
 
     private fun saveFirewallEnabled(enabled: Boolean) {

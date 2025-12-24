@@ -38,6 +38,7 @@ import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.service.AppMonitorService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
@@ -61,6 +62,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var tvVersion: TextView
     private lateinit var switchUseDynamicColor: SwitchCompat
     private lateinit var switchAutoEnableOnShizukuStart: SwitchCompat
+    private lateinit var switchNotifyAboutNewApps: SwitchCompat
 
     private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
 
@@ -146,6 +148,7 @@ class SettingsActivity : AppCompatActivity() {
         layoutAdbBroadcastUsage = findViewById(R.id.layoutAdbBroadcastUsage)
         // Auto-enable switch (new)
         switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
+        switchNotifyAboutNewApps = findViewById(R.id.switchNotifyAboutNewApps)
     }
 
     private fun loadSettings() {
@@ -176,6 +179,7 @@ class SettingsActivity : AppCompatActivity() {
         tvCurrentFont.text = if (currentFont == "ndot") "Ndot" else "Default"
         switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
         switchAutoEnableOnShizukuStart.isChecked = prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
+        switchNotifyAboutNewApps.isChecked = prefs.getBoolean(MainActivity.KEY_NOTIFY_NEW_APPS, true)
     }
 
     private fun setupListeners() {
@@ -265,6 +269,20 @@ class SettingsActivity : AppCompatActivity() {
             setResult(RESULT_OK)
         }
 
+        switchNotifyAboutNewApps.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean(MainActivity.KEY_NOTIFY_NEW_APPS, isChecked).apply()
+            val monitorIntent = Intent(this, AppMonitorService::class.java)
+            if (isChecked) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    startForegroundService(monitorIntent)
+                } else {
+                    startService(monitorIntent)
+                }
+            } else {
+                stopService(monitorIntent)
+            }
+        }
+
         layoutAdbBroadcastUsage.setOnClickListener { showAdbBroadcastDialog() }
 
         // Make the whole card area toggle the corresponding switches when tapped
@@ -276,6 +294,7 @@ class SettingsActivity : AppCompatActivity() {
         makeCardClickableForSwitch(switchSkipErrorDialog)
         makeCardClickableForSwitch(switchKeepErrorAppsSelected)
         makeCardClickableForSwitch(switchAutoEnableOnShizukuStart)
+        makeCardClickableForSwitch(switchNotifyAboutNewApps)
     }
 
    

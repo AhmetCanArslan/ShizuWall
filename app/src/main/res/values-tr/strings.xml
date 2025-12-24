@@ -149,4 +149,6 @@
     <string name="notifications_section">Bildirimler</string>
     <string name="notify_about_new_apps">Yeni uygulamalar hakkında bildirimde bulunun</string>
     <string name="notify_about_new_apps_description">Yeni bir uygulama yüklendiğinde bildirim alın</string>
+    <string name="new_app_installed">Yeni Uygulama Yüklendi</string>
+    <string name="add_it_to_selected_list">Listeye ekle</string>
 </resources>

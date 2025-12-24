@@ -149,4 +149,6 @@
     <string name="notifications_section">通知</string>
     <string name="notify_about_new_apps">关于新应用的通知</string>
     <string name="notify_about_new_apps_description">当安装新应用时收到通知</string>
+    <string name="new_app_installed">新应用已安装</string>
+    <string name="add_it_to_selected_list">将其添加到选定列表中</string>
 </resources>

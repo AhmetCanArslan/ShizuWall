@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.service.AppMonitorService
 
 /**
  * On BOOT_COMPLETED, check whether the firewall was enabled before reboot (using the saved elapsedRealtime).
@@ -48,6 +49,17 @@ class BootReceiver : BroadcastReceiver() {
             }
 
         val enabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
+        
+        // Start App Monitor Service if enabled
+        if (prefs.getBoolean(MainActivity.KEY_NOTIFY_NEW_APPS, true)) {
+            val monitorIntent = Intent(context, AppMonitorService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(monitorIntent)
+            } else {
+                context.startService(monitorIntent)
+            }
+        }
+
         val savedElapsed = prefs.getLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, -1L)
         Log.d(TAG, "prefs: enabled=$enabled, savedElapsed=$savedElapsed")
 

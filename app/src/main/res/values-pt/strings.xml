@@ -149,4 +149,6 @@
     <string name="notifications_section">Notificações</string>
     <string name="notify_about_new_apps">Notificar sobre novos apps</string>
     <string name="notify_about_new_apps_description">Receba uma notificação quando um novo app for instalado</string>
+    <string name="new_app_installed">Novo app instalado</string>
+    <string name="add_it_to_selected_list">Adicione à lista selecionada</string>
 </resources>
