@@ -127,7 +127,9 @@ class FirewallTileService : TileService() {
         val mode = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
         return if (mode == "LADB") {
             val ladb = LadbManager.getInstance(this)
-            if (ladb.isConnected()) {
+            val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
+            
+            if (daemonManager.isDaemonRunning() || ladb.isConnected()) {
                 true
             } else {
                 Toast.makeText(this, getString(R.string.ladb_status_unconfigured), Toast.LENGTH_SHORT).show()

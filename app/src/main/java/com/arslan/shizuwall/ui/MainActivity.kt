@@ -1100,9 +1100,10 @@ class MainActivity : AppCompatActivity() {
                 val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
                 if (workingMode == "LADB") {
                     val ladb = LadbManager.getInstance(this)
+                    val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
 
-                    // If already connected, proceed to confirmation dialog
-                    if (ladb.isConnected()) {
+                    // If daemon is running or LADB is connected, proceed
+                    if (daemonManager.isDaemonRunning() || ladb.isConnected()) {
                         showFirewallConfirmDialog(selectedApps)
                         return@setOnCheckedChangeListener
                     }

@@ -66,13 +66,18 @@ class FirewallControlReceiver : BroadcastReceiver() {
 
                 val backendReady = if (mode == "LADB") {
                     val ladb = LadbManager.getInstance(context)
+                    val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(context)
                     try {
-                        // First ensure we're connected
-                        if (!ladb.isConnected()) {
-                            ladb.connect()
+                        // First check if daemon is running
+                        if (daemonManager.isDaemonRunning()) {
+                            true
+                        } else {
+                            // Fallback to LADB connection
+                            if (!ladb.isConnected()) {
+                                ladb.connect()
+                            }
+                            ladb.isConnected() && ladb.execShell("echo test").success
                         }
-                        // Then verify the connection works by running a simple command
-                        ladb.isConnected() && ladb.execShell("echo test").success
                     } catch (e: Exception) {
                         false
                     }
