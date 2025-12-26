@@ -55,6 +55,7 @@ class LadbManager private constructor(private val context: Context) {
         private const val KEY_HOST = "host"
         private const val KEY_PORT = "port"
         private const val KEY_PAIRING_PORT = "pairing_port"
+        private const val KEY_IS_PAIRED = "is_paired"
         private const val KEY_LAST_ERROR_LOG = "last_error_log"
     }
 
@@ -64,6 +65,10 @@ class LadbManager private constructor(private val context: Context) {
         CONNECTED,
         ERROR,
         DISCONNECTED
+    }
+
+    fun isPaired(): Boolean {
+        return getPrefs().getBoolean(KEY_IS_PAIRED, false)
     }
 
     private val _state = AtomicReference(State.UNCONFIGURED)
@@ -298,6 +303,7 @@ class LadbManager private constructor(private val context: Context) {
             )
             ctx.use { it.start() }
 
+            getPrefs().edit().putBoolean(KEY_IS_PAIRED, true).apply()
             _state.set(State.PAIRED)
             return@withContext true
         } catch (e: Exception) {
@@ -403,6 +409,15 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
+    suspend fun clearConnectPort(): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            getPrefs().edit().remove(KEY_PORT).apply()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun connect(host: String? = null, port: Int? = null): Boolean = withContext(Dispatchers.IO) {
         connectionMutex.lock()
         try {
@@ -480,6 +495,7 @@ class LadbManager private constructor(private val context: Context) {
                 .remove(KEY_HOST)
                 .remove(KEY_PORT)
                 .remove(KEY_PAIRING_PORT)
+                .remove(KEY_IS_PAIRED)
                 .remove(KEY_LAST_ERROR_LOG)
                 .apply()
 

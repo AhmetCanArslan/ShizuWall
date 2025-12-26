@@ -74,7 +74,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 state == LadbManager.State.CONNECTED -> LadbManager.State.CONNECTED
                 state == LadbManager.State.ERROR -> LadbManager.State.ERROR
                 savedConnectPort > 0 && savedHost != null -> LadbManager.State.DISCONNECTED
-                savedPairingPort > 0 && savedHost != null -> LadbManager.State.PAIRED
+                (savedPairingPort > 0 || ladbManager.isPaired()) && savedHost != null -> LadbManager.State.PAIRED
                 else -> LadbManager.State.UNCONFIGURED
             }
 
@@ -374,9 +374,10 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
         ladbManager = LadbManager.getInstance(this)
         
-        // Clear stale pairing port on start to ensure we wait for a fresh discovery
+        // Clear stale ports on start to ensure we wait for fresh discovery
         lifecycleScope.launch {
             ladbManager.clearPairingPort()
+            ladbManager.clearConnectPort()
         }
 
         localIp = detectLocalIpv4OrNull()
@@ -508,7 +509,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
                 // After pairing completes, check if we have detected connect ports but no saved connect config
                 // This handles the race condition where connect port is detected before pairing finishes
-                val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 && ladbManager.getSavedHost() != null
+                val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 || ladbManager.isPaired()
                 val hasConnectConfig = ladbManager.getSavedConnectPort() > 0
                 if (hasPairingConfig && !hasConnectConfig) {
                     val savedHost = ladbManager.getSavedHost()
@@ -551,6 +552,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         if (host == "unknown" || port <= 0 || port > 65535) return
 
         lifecycleScope.launch(Dispatchers.IO) {
+            ladbManager.clearConnectPort() // Clear old connect port when new pairing port is found
             ladbManager.saveHost(host)
             val success = ladbManager.savePairingConfig(host, port)
             withContext(Dispatchers.Main) {
@@ -650,11 +652,12 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                     appendLog("Real connect port found: $realPort")
                     lifecycleScope.launch {
                         // Only save connect config if we have pairing config (device has been paired)
-                        val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 && ladbManager.getSavedHost() != null
-                        if (hasPairingConfig) {
+                        val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 || ladbManager.isPaired()
+                        if (hasPairingConfig && ladbManager.getSavedHost() != null) {
                             val success = ladbManager.saveConnectConfig(host, realPort)
                             if (success) {
                                 appendLog("Connect config saved")
+                                updateStatus()
                             } else {
                                 appendLog("Failed to save connect config")
                             }
