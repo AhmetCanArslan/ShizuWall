@@ -394,6 +394,15 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
+    suspend fun clearPairingPort(): Boolean = withContext(Dispatchers.IO) {
+        return@withContext try {
+            getPrefs().edit().remove(KEY_PAIRING_PORT).apply()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun connect(host: String? = null, port: Int? = null): Boolean = withContext(Dispatchers.IO) {
         connectionMutex.lock()
         try {

@@ -274,12 +274,18 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             .setMessage("Enter pairing code from wireless debugging page into notification.")
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Open Developer Settings") { _, _ ->
-                // Open developer settings
-                val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-                // After opening settings, proceed with pairing
-                proceedWithPairing()
+                // Clear old pairing port to ensure we wait for a fresh one
+                lifecycleScope.launch {
+                    ladbManager.clearPairingPort()
+                    
+                    // Open developer settings
+                    val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                    
+                    // After opening settings, proceed with pairing (will show "Waiting..." snackbar)
+                    proceedWithPairing()
+                }
             }
             .show()
     }
@@ -367,6 +373,12 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         }
 
         ladbManager = LadbManager.getInstance(this)
+        
+        // Clear stale pairing port on start to ensure we wait for a fresh discovery
+        lifecycleScope.launch {
+            ladbManager.clearPairingPort()
+        }
+
         localIp = detectLocalIpv4OrNull()
         adbPortFinder = AdbPortFinder(this, this)
         synchronized(detectedConnectPorts) {
