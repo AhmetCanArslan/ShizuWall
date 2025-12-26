@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.SystemClock
 import android.widget.Toast
+import com.arslan.shizuwall.R
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
@@ -82,7 +83,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            if (mode == "LADB") "LADB not connected" else "Shizuku not available or permission denied",
+                            if (mode == "LADB") context.getString(R.string.daemon_not_running) else "Shizuku not available or permission denied",
                             Toast.LENGTH_SHORT
                         ).show()
                     }

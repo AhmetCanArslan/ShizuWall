@@ -394,7 +394,7 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
-    suspend fun connect(host: String? = null, port: Int? = null, tls: Boolean = false): Boolean = withContext(Dispatchers.IO) {
+    suspend fun connect(host: String? = null, port: Int? = null): Boolean = withContext(Dispatchers.IO) {
         connectionMutex.lock()
         try {
             // Check if already connected to avoid redundant connection attempts
@@ -426,7 +426,6 @@ class LadbManager private constructor(private val context: Context) {
                 // ignore
             }
 
-            // Note: Proper ADB pairing/TLS is not fully wired yet. This supports direct ADB-over-TCP.
             val (privateKey, certificate) = getOrCreateKeyMaterial()
             val conn = AdbConnection.Builder()
                 .setHost(targetHost)
@@ -458,15 +457,6 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
-    suspend fun disconnect() = withContext(Dispatchers.IO) {
-        try {
-            connectionRef.getAndSet(null)?.close()
-            _state.set(State.DISCONNECTED)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     suspend fun clearAllConfig(): Boolean = withContext(Dispatchers.IO) {
         return@withContext try {
             try {
@@ -495,8 +485,6 @@ class LadbManager private constructor(private val context: Context) {
 
     suspend fun execShell(cmd: String): ShellResult = withContext(Dispatchers.IO) {
         val maxRetries = 1
-        val SENTINEL = "__SHIZUWALL_EXIT:"
-        val sentinelRegex = Regex("""${SENTINEL}(\d+)""")
         val timeoutMs = 15_000L // 15 seconds
 
         for (attempt in 0..maxRetries) {
@@ -520,18 +508,11 @@ class LadbManager private constructor(private val context: Context) {
             }
 
             try {
-                // Wrap the command to emit a sentinel with the exit code so we can deterministically
-                // detect command completion even if the remote shell doesn't close the stream.
-                val wrapped = "/system/bin/sh -c \"$cmd; printf '\n${SENTINEL}%d\\n' \$?\""
-                val stream: AdbStream = conn.open("shell:$wrapped")
+                val stream: AdbStream = conn.open("shell:$cmd")
                 val input = stream.openInputStream()
 
-                // AdbInputStream may throw "Stream closed" at EOF depending on transport timing.
-                // We'll read until we see the sentinel or the stream closes, but we also enforce a timeout
-                // to avoid hanging forever.
                 val buf = ByteArray(8 * 1024)
                 val out = StringBuilder()
-                var finalResult: ShellResult? = null
 
                 try {
                     withTimeout(timeoutMs) {
@@ -547,19 +528,9 @@ class LadbManager private constructor(private val context: Context) {
                             }
                             if (n <= 0) break
                             out.append(String(buf, 0, n, Charsets.UTF_8))
-
-                            // Check for sentinel in the accumulated output
-                            val m = sentinelRegex.find(out)
-                            if (m != null) {
-                                val code = m.groupValues[1].toIntOrNull() ?: -1
-                                val stdout = out.toString().replace(sentinelRegex, "").trimEnd()
-                                finalResult = ShellResult(code, stdout, "")
-                                break
-                            }
                         }
                     }
                 } catch (e: Exception) {
-                    // Timeout or other exception while reading
                     if (e is kotlinx.coroutines.TimeoutCancellationException) {
                         try {
                             stream.close()
@@ -567,7 +538,6 @@ class LadbManager private constructor(private val context: Context) {
                         }
                         return@withContext ShellResult(-1, out.toString(), "timeout")
                     }
-                    // Re-throw to let outer handler treat it as a connection error
                     throw e
                 } finally {
                     try {
@@ -576,14 +546,9 @@ class LadbManager private constructor(private val context: Context) {
                     }
                 }
 
-                // If sentinel was found, return the parsed result
-                finalResult?.let { return@withContext it }
-
-                // If we reached EOF without seeing the sentinel, return the collected stdout (exit code unknown)
                 return@withContext ShellResult(0, out.toString(), "")
             } catch (e: Exception) {
                 if (attempt < maxRetries) {
-                    // Assume connection lost, try reconnect
                     connectionMutex.lock()
                     try {
                         _state.set(State.DISCONNECTED)

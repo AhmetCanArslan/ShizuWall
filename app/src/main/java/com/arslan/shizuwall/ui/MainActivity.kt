@@ -620,8 +620,8 @@ class MainActivity : AppCompatActivity() {
 
             val d = MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.working_mode_ladb))
-                .setMessage(getString(R.string.ladb_status_unconfigured))
-                .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
+                .setMessage(getString(R.string.daemon_not_running))
+                .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
                     try {
                         startActivity(Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java))
                     } catch (_: Exception) {
@@ -1108,8 +1108,8 @@ class MainActivity : AppCompatActivity() {
                     // Daemon not running — prompt to open Daemon setup
                     val d = MaterialAlertDialogBuilder(this)
                         .setTitle(getString(R.string.working_mode_ladb))
-                        .setMessage(getString(R.string.ladb_status_unconfigured))
-                        .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
+                        .setMessage(getString(R.string.daemon_not_running))
+                        .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
                             try {
                                 startActivity(Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java))
                             } catch (_: Exception) {
@@ -1150,8 +1150,8 @@ class MainActivity : AppCompatActivity() {
                     if (!daemonManager.isDaemonRunning()) {
                         val d = MaterialAlertDialogBuilder(this)
                             .setTitle(getString(R.string.working_mode_ladb))
-                            .setMessage(getString(R.string.ladb_status_unconfigured))
-                            .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
+                            .setMessage(getString(R.string.daemon_not_running))
+                            .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
                                 try {
                                     startActivity(Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java))
                                 } catch (_: Exception) {

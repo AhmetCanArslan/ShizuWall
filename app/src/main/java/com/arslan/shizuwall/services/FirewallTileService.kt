@@ -129,7 +129,7 @@ class FirewallTileService : TileService() {
             if (daemonManager.isDaemonRunning()) {
                 true
             } else {
-                Toast.makeText(this, getString(R.string.ladb_status_unconfigured), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.daemon_not_running), Toast.LENGTH_SHORT).show()
                 try {
                     val i = Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(i)

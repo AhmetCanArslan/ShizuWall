@@ -10,7 +10,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.arslan.shizuwall.R
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import android.view.View
@@ -20,7 +19,6 @@ import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.delay
 import com.arslan.shizuwall.ladb.LadbManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -377,9 +375,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         adbPortFinder.startDiscovery()
 
         updateStatus()
-
-
-        updateStatus()
         appendLog("LADB Setup initialized. Current status: ${tvStatus.text}")
 
         btnPair.setOnClickListener {
@@ -655,7 +650,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                             appendLog("Connect port found but not saving config (device not paired)")
                         }
                     }
-                } else {
                 }
             }
         }

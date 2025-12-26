@@ -156,12 +156,9 @@
     <string name="pair">Pair</string>
     <string name="ladb_connect">Connect</string>
     <string name="ladb_unpair">Unpair</string>
-    <string name="ladb_start_service">Start persistent connection</string>
-    <string name="ladb_stop_service">Stop persistent connection</string>
     <string name="ladb_status_unconfigured">Not configured</string>
     <string name="ladb_status_paired">Paired (not connected)</string>
     <string name="ladb_status_connected">Connected</string>
-    <string name="ladb_status_service_active">Service is active</string>
     <string name="ladb_status_disconnected">Disconnected</string>
     <string name="ladb_error_title">LADB error</string>
     <string name="ladb_hint_connection_refused">Connection refused usually means Wireless debugging is OFF or you are using the wrong port. Use the port shown in Developer options → Wireless debugging → IP address &amp; port (not the pairing port). Also make sure ShizuWall is allowed in Wireless debugging.</string>
@@ -200,4 +197,6 @@
     <string name="ladb_clear_logs">Clear Logs</string>
     <string name="ladb_copy_logs">Copy Logs</string>
     <string name="ladb_enable_logs">Enable Logs</string>
+    <string name="daemon_not_running">Daemon is not running. Please start it from the setup page.</string>
+    <string name="open_daemon_setup">Open Daemon Setup</string>
 </resources>
