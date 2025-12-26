@@ -111,6 +111,31 @@ class FirewallWidgetProvider : AppWidgetProvider() {
         }
 
         private fun checkShizukuPermission(context: Context): Boolean {
+            // Respect the configured working mode. If LADB is selected, ensure the daemon is running.
+            val sharedPreferences = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+            val workingMode = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+            if (workingMode == "LADB") {
+                val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(context)
+                return try {
+                    if (daemonManager.isDaemonRunning()) {
+                        true
+                    } else {
+                        Toast.makeText(context, context.getString(R.string.daemon_not_running), Toast.LENGTH_SHORT).show()
+                        // Try to open setup activity so user can start/prepare the daemon
+                        try {
+                            val intent = Intent(context, com.arslan.shizuwall.LadbSetupActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(intent)
+                        } catch (_: Exception) {
+                        }
+                        false
+                    }
+                } catch (e: Throwable) {
+                    false
+                }
+            }
+
+            // Fallback to normal Shizuku binder + permission checks for SHIZUKU mode
             try {
                 if (!Shizuku.pingBinder()) {
                     Toast.makeText(context, context.getString(R.string.shizuku_not_running), Toast.LENGTH_SHORT).show()
