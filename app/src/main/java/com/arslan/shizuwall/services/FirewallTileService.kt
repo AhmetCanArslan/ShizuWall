@@ -10,8 +10,6 @@ import android.service.quicksettings.TileService
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.arslan.shizuwall.R
-import com.arslan.shizuwall.LadbSetupActivity
-import com.arslan.shizuwall.ladb.LadbManager
 import com.arslan.shizuwall.shell.ShellExecutorBlocking
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.*
@@ -126,15 +124,14 @@ class FirewallTileService : TileService() {
     private fun checkBackendReady(): Boolean {
         val mode = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
         return if (mode == "LADB") {
-            val ladb = LadbManager.getInstance(this)
             val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
             
-            if (daemonManager.isDaemonRunning() || ladb.isConnected()) {
+            if (daemonManager.isDaemonRunning()) {
                 true
             } else {
                 Toast.makeText(this, getString(R.string.ladb_status_unconfigured), Toast.LENGTH_SHORT).show()
                 try {
-                    val i = Intent(this, LadbSetupActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    val i = Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(i)
                 } catch (_: Exception) {
                 }

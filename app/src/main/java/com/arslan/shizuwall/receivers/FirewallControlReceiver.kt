@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.SystemClock
 import android.widget.Toast
-import com.arslan.shizuwall.ladb.LadbManager
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
@@ -65,19 +64,9 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 val mode = prefsLocal.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
 
                 val backendReady = if (mode == "LADB") {
-                    val ladb = LadbManager.getInstance(context)
                     val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(context)
                     try {
-                        // First check if daemon is running
-                        if (daemonManager.isDaemonRunning()) {
-                            true
-                        } else {
-                            // Fallback to LADB connection
-                            if (!ladb.isConnected()) {
-                                ladb.connect()
-                            }
-                            ladb.isConnected() && ladb.execShell("echo test").success
-                        }
+                        daemonManager.isDaemonRunning()
                     } catch (e: Exception) {
                         false
                     }

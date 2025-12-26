@@ -51,8 +51,6 @@ import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.adapters.ErrorEntry
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
-import com.arslan.shizuwall.LadbSetupActivity
-import com.arslan.shizuwall.ladb.LadbManager
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.WorkingMode
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -617,15 +615,15 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermission(code: Int): Boolean {
         val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
         if (workingMode == "LADB") {
-            val ladb = LadbManager.getInstance(this)
-            if (ladb.isConnected()) return true
+            val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
+            if (daemonManager.isDaemonRunning()) return true
 
             val d = MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.working_mode_ladb))
                 .setMessage(getString(R.string.ladb_status_unconfigured))
                 .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
                     try {
-                        startActivity(Intent(this, LadbSetupActivity::class.java))
+                        startActivity(Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java))
                     } catch (_: Exception) {
                     }
                 }
@@ -1099,83 +1097,32 @@ class MainActivity : AppCompatActivity() {
 
                 val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
                 if (workingMode == "LADB") {
-                    val ladb = LadbManager.getInstance(this)
                     val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
 
-                    // If daemon is running or LADB is connected, proceed
-                    if (daemonManager.isDaemonRunning() || ladb.isConnected()) {
+                    // If daemon is running, proceed
+                    if (daemonManager.isDaemonRunning()) {
                         showFirewallConfirmDialog(selectedApps)
                         return@setOnCheckedChangeListener
                     }
 
-                    // Not connected — try to connect if host/port configured
-                    val savedHost = ladb.getSavedHost()
-                    val savedPort = ladb.getSavedConnectPort()
-                    if (savedHost.isNullOrBlank() || savedPort <= 0) {
-                        // Not configured — prompt to open LADB setup
-                        val d = MaterialAlertDialogBuilder(this)
-                            .setTitle(getString(R.string.working_mode_ladb))
-                            .setMessage(getString(R.string.ladb_status_unconfigured))
-                            .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
-                                try {
-                                    startActivity(Intent(this, LadbSetupActivity::class.java))
-                                } catch (_: Exception) {
-                                }
-                            }
-                            .setNegativeButton(getString(R.string.cancel), null)
-                            .create()
-                        d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
-                        d.show()
-
-                        suppressToggleListener = true
-                        firewallToggle.isChecked = false
-                        suppressToggleListener = false
-                        return@setOnCheckedChangeListener
-                    }
-
-                    firewallToggle.isEnabled = false
-
-                    lifecycleScope.launch {
-                        val connected = withContext(Dispatchers.IO) {
+                    // Daemon not running — prompt to open Daemon setup
+                    val d = MaterialAlertDialogBuilder(this)
+                        .setTitle(getString(R.string.working_mode_ladb))
+                        .setMessage(getString(R.string.ladb_status_unconfigured))
+                        .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
                             try {
-                                ladb.connect()
-                            } catch (e: Exception) {
-                                false
+                                startActivity(Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java))
+                            } catch (_: Exception) {
                             }
                         }
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .create()
+                    d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
+                    d.show()
 
-                        if (connected) {
-                            // Connection established — show confirmation dialog
-                            showFirewallConfirmDialog(selectedApps)
-                        } else {
-                            // Connection failed — if pairing required, direct to setup, otherwise show toast
-                            if (ladb.state == LadbManager.State.PAIRED) {
-                                Toast.makeText(this@MainActivity, getString(R.string.ladb_status_paired), Toast.LENGTH_SHORT).show()
-                            } else {
-                                val d = MaterialAlertDialogBuilder(this@MainActivity)
-                                    .setTitle(getString(R.string.working_mode_ladb))
-                                    .setMessage(getString(R.string.ladb_status_unconfigured))
-                                    .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
-                                        try {
-                                            startActivity(Intent(this@MainActivity, LadbSetupActivity::class.java))
-                                        } catch (_: Exception) {
-                                        }
-                                    }
-                                    .setNegativeButton(getString(R.string.cancel), null)
-                                    .create()
-                                d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
-                                d.show()
-                            }
-
-                            // revert toggle state
-                            suppressToggleListener = true
-                            firewallToggle.isChecked = false
-                            suppressToggleListener = false
-                        }
-
-                        firewallToggle.isEnabled = true
-                    }
-
+                    suppressToggleListener = true
+                    firewallToggle.isChecked = false
+                    suppressToggleListener = false
                     return@setOnCheckedChangeListener
                 }
 
@@ -1199,55 +1146,29 @@ class MainActivity : AppCompatActivity() {
 
                 val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
                 if (workingMode == "LADB") {
-                    // For disable, still ensure LADB is connected; if not, try to connect, otherwise proceed to disable
-                    val ladb = LadbManager.getInstance(this)
-                    if (!ladb.isConnected()) {
-                        val savedHost = ladb.getSavedHost()
-                        val savedPort = ladb.getSavedConnectPort()
-                        if (savedHost.isNullOrBlank() || savedPort <= 0) {
-                            // Not configured — prompt to open LADB setup and keep toggle ON
-                            val d = MaterialAlertDialogBuilder(this)
-                                .setTitle(getString(R.string.working_mode_ladb))
-                                .setMessage(getString(R.string.ladb_status_unconfigured))
-                                .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
-                                    try {
-                                        startActivity(Intent(this, LadbSetupActivity::class.java))
-                                    } catch (_: Exception) {
-                                    }
+                    val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
+                    if (!daemonManager.isDaemonRunning()) {
+                        val d = MaterialAlertDialogBuilder(this)
+                            .setTitle(getString(R.string.working_mode_ladb))
+                            .setMessage(getString(R.string.ladb_status_unconfigured))
+                            .setPositiveButton(getString(R.string.open_ladb_setup)) { _, _ ->
+                                try {
+                                    startActivity(Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java))
+                                } catch (_: Exception) {
                                 }
-                                .setNegativeButton(getString(R.string.cancel), null)
-                                .create()
-                            d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
-                            d.show()
-
-                            suppressToggleListener = true
-                            firewallToggle.isChecked = true
-                            suppressToggleListener = false
-                            return@setOnCheckedChangeListener
-                        }
-
-                        // Try to connect before disabling
-                        firewallToggle.isEnabled = false
-                        lifecycleScope.launch {
-                            val connected = withContext(Dispatchers.IO) {
-                                try { ladb.connect() } catch (e: Exception) { false }
                             }
-                            if (!connected) {
-                                Toast.makeText(this@MainActivity, getString(R.string.ladb_status_unconfigured), Toast.LENGTH_SHORT).show()
-                                suppressToggleListener = true
-                                firewallToggle.isChecked = true
-                                suppressToggleListener = false
-                            } else {
-                                // Proceed with disable
-                                applyFirewallState(false, activeFirewallPackages.toList())
-                            }
-                            firewallToggle.isEnabled = true
-                        }
+                            .setNegativeButton(getString(R.string.cancel), null)
+                            .create()
+                        d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
+                        d.show()
 
+                        suppressToggleListener = true
+                        firewallToggle.isChecked = true
+                        suppressToggleListener = false
                         return@setOnCheckedChangeListener
                     }
 
-                    // LADB is connected — proceed with disable
+                    // Daemon is running — proceed with disable
                     applyFirewallState(false, activeFirewallPackages.toList())
                     return@setOnCheckedChangeListener
                 }
