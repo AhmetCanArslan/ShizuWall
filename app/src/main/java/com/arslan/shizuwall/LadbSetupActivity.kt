@@ -42,6 +42,13 @@ import java.net.Socket
 import java.net.InetSocketAddress
 import android.os.Handler
 import android.os.Looper
+import android.graphics.Color
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import com.arslan.shizuwall.daemon.PersistentDaemonManager
+import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.delay
 
 class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
@@ -54,13 +61,23 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private lateinit var switchEnableLogs: com.google.android.material.materialswitch.MaterialSwitch
     private lateinit var logsContainer: LinearLayout
 
+    // Daemon UI
+    private lateinit var daemonStatusIndicator: View
+    private lateinit var tvDaemonStatus: TextView
+    private lateinit var actvDaemonCommands: AutoCompleteTextView
+    private lateinit var tilDaemonShell: TextInputLayout
+    private lateinit var etDaemonShell: TextInputEditText
+    private lateinit var btnStartDaemon: MaterialButton
+
     private lateinit var ladbManager: LadbManager
+    private lateinit var daemonManager: PersistentDaemonManager
     private lateinit var adbPortFinder: AdbPortFinder
     private var localIp: String? = null
     private val detectedConnectPorts = mutableListOf<Pair<String, Int>>()
     private val handler = Handler(Looper.getMainLooper())
     private var lastShownErrorHash: Int? = null
     private var mPermissionCallback: (() -> Unit)? = null
+    private var isDaemonRunning = false
 
     private fun updateStatus() {
         runOnUiThread {
@@ -108,6 +125,21 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 applyButtonEnabledState(btnPair, true)
                 applyButtonEnabledState(btnConnect, false)
                 applyButtonEnabledState(btnUnpair, false)
+            }
+
+            // Update Daemon UI
+            if (isDaemonRunning) {
+                daemonStatusIndicator.setBackgroundColor(Color.GREEN)
+                tvDaemonStatus.text = getString(R.string.daemon_status_running)
+                tvDaemonStatus.setTextColor(Color.GREEN)
+                btnStartDaemon.isEnabled = false
+                btnStartDaemon.alpha = 0.5f
+            } else {
+                daemonStatusIndicator.setBackgroundColor(Color.RED)
+                tvDaemonStatus.text = getString(R.string.daemon_status_stopped)
+                tvDaemonStatus.setTextColor(Color.RED)
+                btnStartDaemon.isEnabled = isConnected
+                btnStartDaemon.alpha = if (isConnected) 1.0f else 0.5f
             }
         }
     }
@@ -351,7 +383,15 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         val btnCopyLogs = findViewById<MaterialButton>(R.id.btnCopyLogs)
         switchEnableLogs = findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.switchEnableLogs)
         logsContainer = findViewById<LinearLayout>(R.id.logsContainer)
+        // Daemon UI
+        daemonStatusIndicator = findViewById(R.id.daemonStatusIndicator)
+        tvDaemonStatus = findViewById(R.id.tvDaemonStatus)
+        actvDaemonCommands = findViewById(R.id.actvDaemonCommands)
+        tilDaemonShell = findViewById(R.id.tilDaemonShell)
+        etDaemonShell = findViewById(R.id.etDaemonShell)
+        btnStartDaemon = findViewById(R.id.btnStartDaemon)
 
+        setupDaemonCommandsDropdown()
         // Load logging preference
         switchEnableLogs.isChecked = getLoggingEnabled()
         
@@ -373,11 +413,24 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         }
 
         ladbManager = LadbManager.getInstance(this)
+        daemonManager = PersistentDaemonManager(this)
         
         // Clear stale ports on start to ensure we wait for fresh discovery
         lifecycleScope.launch {
             ladbManager.clearPairingPort()
             ladbManager.clearConnectPort()
+        }
+
+        // Start daemon status check
+        lifecycleScope.launch {
+            while (true) {
+                val running = withContext(Dispatchers.IO) { daemonManager.isDaemonRunning() }
+                if (isDaemonRunning != running) {
+                    isDaemonRunning = running
+                    updateStatus()
+                }
+                delay(2000)
+            }
         }
 
         localIp = detectLocalIpv4OrNull()
@@ -405,6 +458,21 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             }
             
             showPairingInfoDialog()
+        }
+
+        btnStartDaemon.setOnClickListener {
+            startDaemon()
+        }
+
+        tilDaemonShell.setEndIconOnClickListener {
+            executeDaemonCommand()
+        }
+
+        etDaemonShell.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEND) {
+                executeDaemonCommand()
+                true
+            } else false
         }
 
         btnConnect.setOnClickListener {
@@ -460,6 +528,8 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                     showLadbErrorDialog(getString(R.string.ladb_error_title), errorMessage)
                 } else {
                     appendLog("Connection successful")
+                    // Automatically start daemon after connection
+                    startDaemon()
                 }
                 btnConnect.isEnabled = true
             }
@@ -667,6 +737,64 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                     }
                 }
             }
+        }
+    }
+
+    private fun startDaemon() {
+        lifecycleScope.launch {
+            appendLog("Starting daemon installation...")
+            btnStartDaemon.isEnabled = false
+            btnStartDaemon.text = getString(R.string.daemon_installing)
+            
+            val success = withContext(Dispatchers.IO) {
+                daemonManager.installDaemon { progress ->
+                    appendLog("Daemon: $progress")
+                }
+            }
+            
+            if (success) {
+                appendLog("Daemon started successfully!")
+                isDaemonRunning = true
+            } else {
+                appendLog("Daemon failed to start. Check LADB connection.")
+                isDaemonRunning = false
+            }
+            
+            btnStartDaemon.text = getString(R.string.daemon_start)
+            updateStatus()
+        }
+    }
+
+    private fun setupDaemonCommandsDropdown() {
+        val commands = arrayOf(
+            "id",
+            "ps -A | grep daemon",
+            "ls -l /data/local/tmp",
+            "cat /data/local/tmp/daemon.log",
+            "getprop ro.product.model",
+            "uname -a",
+            "pm list packages -3",
+            "dumpsys battery"
+        )
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, commands)
+        actvDaemonCommands.setAdapter(adapter)
+        actvDaemonCommands.setOnItemClickListener { parent, _, position, _ ->
+            val selectedCommand = parent.getItemAtPosition(position) as String
+            executeDaemonCommand(selectedCommand)
+        }
+    }
+
+    private fun executeDaemonCommand(cmd: String? = null) {
+        val command = cmd ?: etDaemonShell.text?.toString()
+        if (command.isNullOrBlank()) return
+        
+        lifecycleScope.launch {
+            appendLog("Executing daemon command: $command")
+            if (cmd == null) etDaemonShell.setText("")
+            val result = withContext(Dispatchers.IO) {
+                daemonManager.executeCommand(command)
+            }
+            appendLog("Daemon Result:\n$result")
         }
     }
 

@@ -4,11 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.Icon
-import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.shell.ShellExecutorBlocking
 import com.arslan.shizuwall.ui.MainActivity
@@ -16,7 +14,6 @@ import kotlinx.coroutines.*
 import com.arslan.shizuwall.widgets.FirewallWidgetProvider
 import rikka.shizuku.Shizuku
 
-@RequiresApi(Build.VERSION_CODES.N)
 class FirewallTileService : TileService() {
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -131,7 +128,7 @@ class FirewallTileService : TileService() {
             } else {
                 Toast.makeText(this, getString(R.string.daemon_not_running), Toast.LENGTH_SHORT).show()
                 try {
-                    val i = Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    val i = Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(i)
                 } catch (_: Exception) {
                 }

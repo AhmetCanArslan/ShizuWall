@@ -623,7 +623,7 @@ class MainActivity : AppCompatActivity() {
                 .setMessage(getString(R.string.daemon_not_running))
                 .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
                     try {
-                        startActivity(Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java))
+                        startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java))
                     } catch (_: Exception) {
                     }
                 }
@@ -1111,7 +1111,7 @@ class MainActivity : AppCompatActivity() {
                         .setMessage(getString(R.string.daemon_not_running))
                         .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
                             try {
-                                startActivity(Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java))
+                                startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java))
                             } catch (_: Exception) {
                             }
                         }
@@ -1153,7 +1153,7 @@ class MainActivity : AppCompatActivity() {
                             .setMessage(getString(R.string.daemon_not_running))
                             .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
                                 try {
-                                    startActivity(Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java))
+                                    startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java))
                                 } catch (_: Exception) {
                                 }
                             }

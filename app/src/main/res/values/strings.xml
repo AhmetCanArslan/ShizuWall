@@ -188,10 +188,8 @@
     <string name="ladb_pairing_result_missing_port">Missing pairing port. Enter: PORT CODE (from Wireless debugging → Pair device).</string>
     <string name="ladb_pairing_notification_shown">Pairing notification shown</string>
     <string name="ladb_notification_permission_required">Notification permission is required to show the pairing code prompt.</string>
-    <string name="set_ladb_title">Set LADB</string>
-    <string name="set_ladb_summary">Configure LibADB pairing / remote ADB (TLS) and connection</string>
-    <string name="persistent_daemon_title">Persistent Daemon</string>
-    <string name="persistent_daemon_summary">Install a background daemon to keep firewall active without WiFi</string>
+    <string name="set_ladb_title">LADB &amp; Daemon Setup</string>
+    <string name="set_ladb_summary">Pair LADB and install the persistent background daemon</string>
     <string name="ladb_logs_title">LADB Logs</string>
     <string name="ladb_logs_empty">No logs yet. Perform LADB operations to see logs here.</string>
     <string name="ladb_clear_logs">Clear Logs</string>
@@ -199,4 +197,9 @@
     <string name="ladb_enable_logs">Enable Logs</string>
     <string name="daemon_not_running">Daemon is not running. Please start it from the setup page.</string>
     <string name="open_daemon_setup">Open Daemon Setup</string>
+    <string name="daemon_status_running">Daemon: Running</string>
+    <string name="daemon_status_stopped">Daemon: Stopped</string>
+    <string name="daemon_start">Start Daemon</string>
+    <string name="daemon_installing">Installing...</string>
+    <string name="daemon_shell_hint">Daemon Shell Command</string>
 </resources>

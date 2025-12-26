@@ -66,8 +66,6 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var radioShizukuMode: RadioButton
     private lateinit var radioLadbMode: RadioButton
     private lateinit var layoutSetLadb: LinearLayout
-    private lateinit var layoutPersistentDaemon: LinearLayout
-    private lateinit var cardPersistentDaemon: com.google.android.material.card.MaterialCardView
     private var autoEnablePreviousState: Boolean = false  // Store previous state before disabling
 
     private val createDocumentLauncher = registerForActivityResult(
@@ -155,8 +153,6 @@ class SettingsActivity : AppCompatActivity() {
         radioShizukuMode = findViewById(R.id.radioShizukuMode)
         radioLadbMode = findViewById(R.id.radioLadbMode)
         layoutSetLadb = findViewById(R.id.layoutSetLadb)
-        layoutPersistentDaemon = findViewById(R.id.layoutPersistentDaemon)
-        cardPersistentDaemon = findViewById(R.id.cardPersistentDaemon)
         // Auto-enable switch (new)
         switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
         cardAutoEnableOnShizukuStart = findViewById(R.id.cardAutoEnableOnShizukuStart)
@@ -202,10 +198,6 @@ class SettingsActivity : AppCompatActivity() {
         layoutSetLadb.alpha = if (ladbSelected) 1.0f else 0.5f
         layoutSetLadb.isEnabled = ladbSelected
         layoutSetLadb.isClickable = ladbSelected
-
-        layoutPersistentDaemon.alpha = if (ladbSelected) 1.0f else 0.5f
-        layoutPersistentDaemon.isEnabled = ladbSelected
-        layoutPersistentDaemon.isClickable = ladbSelected
         
         // Disable auto-enable firewall card when LADB mode is selected
         cardAutoEnableOnShizukuStart.isEnabled = !ladbSelected
@@ -311,11 +303,6 @@ class SettingsActivity : AppCompatActivity() {
             layoutSetLadb.isClickable = isLadb
             layoutSetLadb.isFocusable = isLadb
 
-            layoutPersistentDaemon.alpha = if (isLadb) 1.0f else 0.5f
-            layoutPersistentDaemon.isEnabled = isLadb
-            layoutPersistentDaemon.isClickable = isLadb
-            layoutPersistentDaemon.isFocusable = isLadb
-
             if (isLadb) {
                 autoEnablePreviousState = switchAutoEnableOnShizukuStart.isChecked
                 cardAutoEnableOnShizukuStart.isEnabled = false
@@ -348,14 +335,6 @@ class SettingsActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Toast.makeText(this, getString(R.string.open_ladb_setup), Toast.LENGTH_SHORT).show()
             }
-        }
-
-        layoutPersistentDaemon.setOnClickListener {
-            if (!radioLadbMode.isChecked) {
-                Toast.makeText(this, getString(R.string.working_mode_select_ladb_prompt), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            startActivity(Intent(this, com.arslan.shizuwall.ui.daemon.DaemonSetupActivity::class.java))
         }
 
         layoutAdbBroadcastUsage.setOnClickListener { showAdbBroadcastDialog() }
