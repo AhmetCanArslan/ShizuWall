@@ -116,7 +116,7 @@
     <string name="auto_enable_on_shizuku_start">Auto-enable firewall when Shizuku starts</string>
     <string name="auto_enable_on_shizuku_start_description">Automatically enable the firewall when the Shizuku service becomes available</string>
     <string name="working_mode_title">Working mode</string>
-    <string name="working_mode_summary">Choose how ADB commands are executed</string>
+    <string name="working_mode_summary">Choose how Firewall commands are executed</string>
     <string name="working_mode_shizuku">Shizuku</string>
     <string name="working_mode_ladb">LADB (Beta)</string>
     <string name="appearance_section">Appearance</string>
@@ -154,11 +154,11 @@
     <string name="open_ladb_setup">Open LADB setup</string>
     <string name="working_mode_select_ladb_prompt">Select LADB mode first to configure LADB</string>
     <string name="pair">Pair</string>
-    <string name="ladb_connect">Connect</string>
+    <string name="ladb_connect">Connect to Wireless Debugging</string>
     <string name="ladb_unpair">Unpair</string>
     <string name="ladb_status_unconfigured">Not configured</string>
     <string name="ladb_status_paired">Paired (not connected)</string>
-    <string name="ladb_status_connected">Connected</string>
+    <string name="ladb_status_connected">Ladb Connected to Wireless Debugging</string>
     <string name="ladb_status_disconnected">Disconnected</string>
     <string name="ladb_error_title">LADB error</string>
     <string name="ladb_hint_connection_refused">Connection refused usually means Wireless debugging is OFF or you are using the wrong port. Use the port shown in Developer options → Wireless debugging → IP address &amp; port (not the pairing port). Also make sure ShizuWall is allowed in Wireless debugging.</string>
@@ -190,7 +190,7 @@
     <string name="ladb_notification_permission_required">Notification permission is required to show the pairing code prompt.</string>
     <string name="set_ladb_title">LADB &amp; Daemon Setup</string>
     <string name="set_ladb_summary">Pair LADB and install the persistent background daemon</string>
-    <string name="ladb_logs_title">LADB Logs</string>
+    <string name="ladb_logs_title">Logs</string>
     <string name="ladb_logs_empty">No logs yet. Perform LADB operations to see logs here.</string>
     <string name="ladb_clear_logs">Clear Logs</string>
     <string name="ladb_copy_logs">Copy Logs</string>
