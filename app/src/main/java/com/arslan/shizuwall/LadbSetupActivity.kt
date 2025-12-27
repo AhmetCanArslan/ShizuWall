@@ -29,6 +29,7 @@ import android.net.ConnectivityManager
 import android.net.LinkProperties
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import androidx.core.widget.NestedScrollView
 import java.net.Inet4Address
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -163,7 +164,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             saveLogs(trimmedLogs)
             
             // Auto-scroll to bottom
-            val scrollView = tvLadbLogs.parent as? ScrollView
+            val scrollView = tvLadbLogs.parent as? NestedScrollView
             scrollView?.post {
                 scrollView.fullScroll(View.FOCUS_DOWN)
             }
@@ -404,6 +405,11 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         val savedLogs = loadLogs()
         if (savedLogs.isNotEmpty()) {
             tvLadbLogs.text = savedLogs
+            // Scroll to bottom when loading saved logs
+            val scrollView = tvLadbLogs.parent as? NestedScrollView
+            scrollView?.post {
+                scrollView.fullScroll(View.FOCUS_DOWN)
+            }
         }
 
         ladbManager = LadbManager.getInstance(this)
