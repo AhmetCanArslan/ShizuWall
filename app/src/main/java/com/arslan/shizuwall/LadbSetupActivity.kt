@@ -64,6 +64,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private lateinit var daemonStatusIndicator: View
     private lateinit var tvDaemonStatus: TextView
     private lateinit var actvDaemonCommands: AutoCompleteTextView
+    private lateinit var connectProgress: android.widget.ProgressBar
     private lateinit var btnStartDaemon: MaterialButton
 
     private lateinit var ladbManager: LadbManager
@@ -369,6 +370,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         tvStatus = findViewById<TextView>(R.id.tvLadbStatus)
         btnPair = findViewById<MaterialButton>(R.id.btnPair)
         btnConnect = findViewById<MaterialButton>(R.id.btnConnect)
+        connectProgress = findViewById(R.id.connectProgress)
         btnUnpair = findViewById<MaterialButton>(R.id.btnUnpair)
         tvLadbLogs = findViewById<TextView>(R.id.tvLadbLogs)
         val btnClearLogs = findViewById<MaterialButton>(R.id.btnClearLogs)
@@ -459,6 +461,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             appendLog("Starting connection...")
             lifecycleScope.launch {
                 btnConnect.isEnabled = false
+                connectProgress.visibility = View.VISIBLE
                 var savedHost = ladbManager.getSavedHost()
                 var savedConnectPort = ladbManager.getSavedConnectPort()
 
@@ -503,6 +506,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                     appendLog("No connect config found")
                     Snackbar.make(rootView, "No connection configuration found. Wait for auto-discovery or check wireless debugging.", Snackbar.LENGTH_LONG).show()
                     btnConnect.isEnabled = true
+                    connectProgress.visibility = View.GONE
                     return@launch
                 }
 
@@ -533,6 +537,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                     }
                 }
                 btnConnect.isEnabled = true
+                connectProgress.visibility = View.GONE
             }
         }
 

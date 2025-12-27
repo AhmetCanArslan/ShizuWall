@@ -63,15 +63,33 @@
                         app:backgroundTint="?attr/colorPrimaryContainer"
                         android:textColor="?attr/colorOnPrimaryContainer" />
 
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.MaterialComponents.Button"
-                        android:id="@+id/btnConnect"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/ladb_connect"
+                        android:orientation="horizontal"
                         android:layout_marginTop="8dp"
-                        app:backgroundTint="?attr/colorPrimaryContainer"
-                        android:textColor="?attr/colorOnPrimaryContainer" />
+                        android:gravity="center_vertical">
+
+                        <com.google.android.material.button.MaterialButton
+                            style="@style/Widget.MaterialComponents.Button"
+                            android:id="@+id/btnConnect"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/ladb_connect"
+                            app:backgroundTint="?attr/colorPrimaryContainer"
+                            android:textColor="?attr/colorOnPrimaryContainer" />
+
+                        <ProgressBar
+                            android:id="@+id/connectProgress"
+                            style="?android:attr/progressBarStyleSmall"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginStart="12dp"
+                            android:indeterminate="true"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
                         style="@style/Widget.MaterialComponents.Button"
