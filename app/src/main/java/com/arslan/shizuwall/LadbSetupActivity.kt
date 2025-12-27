@@ -115,7 +115,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 applyButtonEnabledState(btnPair, false)
                 applyButtonEnabledState(btnConnect, false)
                 applyButtonEnabledState(btnUnpair, true)
-            } else if (isPaired) {
+            } else if (isPaired && !isDaemonRunning) {
                 applyButtonEnabledState(btnPair, false)
                 applyButtonEnabledState(btnConnect, true)
                 applyButtonEnabledState(btnUnpair, true)
@@ -531,6 +531,8 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                     appendLog("Connection successful")
                     // Automatically start daemon after connection (if not already running)
                     if (!isDaemonRunning) {
+                        // Delay to let connection stabilize
+                        delay(2000)
                         startDaemon()
                     } else {
                         appendLog("Daemon is already running, skipping auto-start")
@@ -752,7 +754,21 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             btnStartDaemon.isEnabled = false
             btnStartDaemon.text = getString(R.string.daemon_installing)
             
+            // Small delay to ensure connection is stable
+            delay(500)
+            
             val success = withContext(Dispatchers.IO) {
+                // Kill any existing daemon first
+                try {
+                    val pidResult = daemonManager.executeCommand("cat /data/local/tmp/daemon.pid 2>/dev/null")
+                    if (pidResult.isNotBlank()) {
+                        val pid = pidResult.trim()
+                        daemonManager.executeCommand("kill $pid 2>/dev/null || kill -9 $pid 2>/dev/null || true")
+                    }
+                } catch (e: Exception) {
+                    // ignore
+                }
+                
                 daemonManager.installDaemon { progress ->
                     appendLog("Daemon: $progress")
                 }
@@ -817,6 +833,12 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 }
             }
             appendLog("Daemon Result:\n$result")
+
+            // Update daemon status immediately after killing
+            if (cmd == "kill daemon") {
+                isDaemonRunning = false
+                updateStatus()
+            }
         }
     }
 
