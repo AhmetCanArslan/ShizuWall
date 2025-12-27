@@ -46,8 +46,6 @@ import android.graphics.Color
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import com.arslan.shizuwall.daemon.PersistentDaemonManager
-import com.google.android.material.textfield.TextInputLayout
-import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.delay
 
 class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
@@ -65,8 +63,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private lateinit var daemonStatusIndicator: View
     private lateinit var tvDaemonStatus: TextView
     private lateinit var actvDaemonCommands: AutoCompleteTextView
-    private lateinit var tilDaemonShell: TextInputLayout
-    private lateinit var etDaemonShell: TextInputEditText
     private lateinit var btnStartDaemon: MaterialButton
 
     private lateinit var ladbManager: LadbManager
@@ -387,8 +383,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         daemonStatusIndicator = findViewById(R.id.daemonStatusIndicator)
         tvDaemonStatus = findViewById(R.id.tvDaemonStatus)
         actvDaemonCommands = findViewById(R.id.actvDaemonCommands)
-        tilDaemonShell = findViewById(R.id.tilDaemonShell)
-        etDaemonShell = findViewById(R.id.etDaemonShell)
         btnStartDaemon = findViewById(R.id.btnStartDaemon)
 
         setupDaemonCommandsDropdown()
@@ -462,17 +456,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
         btnStartDaemon.setOnClickListener {
             startDaemon()
-        }
-
-        tilDaemonShell.setEndIconOnClickListener {
-            executeDaemonCommand()
-        }
-
-        etDaemonShell.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEND) {
-                executeDaemonCommand()
-                true
-            } else false
         }
 
         btnConnect.setOnClickListener {
@@ -784,15 +767,13 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         }
     }
 
-    private fun executeDaemonCommand(cmd: String? = null) {
-        val command = cmd ?: etDaemonShell.text?.toString()
-        if (command.isNullOrBlank()) return
+    private fun executeDaemonCommand(cmd: String) {
+        if (cmd.isBlank()) return
         
         lifecycleScope.launch {
-            appendLog("Executing daemon command: $command")
-            if (cmd == null) etDaemonShell.setText("")
+            appendLog("Executing daemon command: $cmd")
             val result = withContext(Dispatchers.IO) {
-                daemonManager.executeCommand(command)
+                daemonManager.executeCommand(cmd)
             }
             appendLog("Daemon Result:\n$result")
         }

@@ -141,25 +141,6 @@
                             android:inputType="none" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilDaemonShell"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/daemon_shell_hint"
-                        app:endIconMode="custom"
-                        app:endIconDrawable="@drawable/ic_send_24">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etDaemonShell"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="monospace"
-                            android:imeOptions="actionSend"
-                            android:inputType="text"
-                            android:textSize="14sp" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
                     <com.google.android.material.button.MaterialButton
                         style="@style/Widget.MaterialComponents.Button"
                         android:id="@+id/btnStartDaemon"

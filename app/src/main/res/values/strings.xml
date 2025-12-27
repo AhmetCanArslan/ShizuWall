@@ -201,5 +201,4 @@
     <string name="daemon_status_stopped">Daemon: Stopped</string>
     <string name="daemon_start">Start Daemon</string>
     <string name="daemon_installing">Installing...</string>
-    <string name="daemon_shell_hint">Daemon Shell Command</string>
 </resources>
