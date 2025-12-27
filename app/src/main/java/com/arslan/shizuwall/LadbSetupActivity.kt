@@ -780,7 +780,8 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             "getprop ro.product.model",
             "uname -a",
             "pm list packages -3",
-            "dumpsys battery"
+            "dumpsys battery",
+            "kill daemon"
         )
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, commands)
         actvDaemonCommands.setAdapter(adapter)
@@ -795,8 +796,25 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         
         lifecycleScope.launch {
             appendLog("Executing daemon command: $cmd")
+            
             val result = withContext(Dispatchers.IO) {
-                daemonManager.executeCommand(cmd)
+                if (cmd == "kill daemon") {
+                    // Special handling for killing daemon
+                    try {
+                        val pidResult = daemonManager.executeCommand("cat /data/local/tmp/daemon.pid 2>/dev/null")
+                        if (pidResult.isNotBlank()) {
+                            val pid = pidResult.trim()
+                            appendLog("Found daemon PID: $pid")
+                            daemonManager.executeCommand("kill $pid 2>/dev/null || kill -9 $pid 2>/dev/null || true")
+                        } else {
+                            "No daemon PID file found"
+                        }
+                    } catch (e: Exception) {
+                        "Error killing daemon: ${e.message}"
+                    }
+                } else {
+                    daemonManager.executeCommand(cmd)
+                }
             }
             appendLog("Daemon Result:\n$result")
         }
