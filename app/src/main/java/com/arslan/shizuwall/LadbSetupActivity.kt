@@ -68,7 +68,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
     private lateinit var ladbManager: LadbManager
     private lateinit var daemonManager: PersistentDaemonManager
-    private lateinit var adbPortFinder: AdbPortFinder
+    private var adbPortFinder: AdbPortFinder? = null
     private var localIp: String? = null
     private val detectedConnectPorts = mutableListOf<Pair<String, Int>>()
     private val handler = Handler(Looper.getMainLooper())
@@ -303,18 +303,13 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             .setMessage("Enter pairing code from wireless debugging page into notification.")
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Open Developer Settings") { _, _ ->
-                // Clear old pairing port to ensure we wait for a fresh one
-                lifecycleScope.launch {
-                    ladbManager.clearPairingPort()
-                    
-                    // Open developer settings
-                    val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    
-                    // After opening settings, proceed with pairing (will show "Waiting..." snackbar)
-                    proceedWithPairing()
-                }
+                // Open developer settings
+                val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                
+                // After opening settings, proceed with pairing (will show "Waiting..." snackbar)
+                proceedWithPairing()
             }
             .show()
     }
@@ -414,13 +409,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
         ladbManager = LadbManager.getInstance(this)
         daemonManager = PersistentDaemonManager(this)
-        
-        // Clear stale ports on start to ensure we wait for fresh discovery
-        lifecycleScope.launch {
-            ladbManager.clearPairingPort()
-            ladbManager.clearConnectPort()
-        }
-
         // Start daemon status check
         lifecycleScope.launch {
             while (true) {
@@ -433,17 +421,13 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             }
         }
 
-        localIp = detectLocalIpv4OrNull()
-        adbPortFinder = AdbPortFinder(this, this)
-        synchronized(detectedConnectPorts) {
-            detectedConnectPorts.clear()
-        }
-        adbPortFinder.startDiscovery()
-
         updateStatus()
         appendLog("LADB Setup initialized. Current status: ${tvStatus.text}")
 
         btnPair.setOnClickListener {
+            // Initialize pairing components when pairing is requested
+            initializePairingComponents()
+            
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                     showNotificationPermissionDialog {
@@ -461,17 +445,41 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         }
 
         btnStartDaemon.setOnClickListener {
+            if (isDaemonRunning) {
+                appendLog("Daemon is already running")
+                return@setOnClickListener
+            }
             startDaemon()
         }
 
         btnConnect.setOnClickListener {
+            // Initialize connection components when connecting is requested
+            initializeConnectionComponents()
+
             appendLog("Starting connection...")
             lifecycleScope.launch {
                 btnConnect.isEnabled = false
                 var savedHost = ladbManager.getSavedHost()
                 var savedConnectPort = ladbManager.getSavedConnectPort()
-                
-                // If no connect config but we have detected ports, try to scan and save first
+
+                // If no connect config, wait a bit for auto-discovery to complete
+                if ((savedHost.isNullOrBlank() || savedConnectPort <= 0)) {
+                    appendLog("No connect config found, waiting for auto-discovery...")
+                    // Wait up to 3 seconds for port discovery to complete
+                    var waitCount = 0
+                    while (waitCount < 30) { // 30 * 100ms = 3 seconds
+                        delay(100)
+                        savedHost = ladbManager.getSavedHost()
+                        savedConnectPort = ladbManager.getSavedConnectPort()
+                        if (savedHost != null && savedConnectPort > 0) {
+                            appendLog("Connect config found via auto-discovery")
+                            break
+                        }
+                        waitCount++
+                    }
+                }
+
+                // If still no config, try scanning detected ports
                 if ((savedHost.isNullOrBlank() || savedConnectPort <= 0)) {
                     val host = savedHost ?: localIp
                     if (!host.isNullOrBlank()) {
@@ -490,14 +498,14 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                         }
                     }
                 }
-                
+
                 if (savedHost.isNullOrBlank() || savedConnectPort <= 0) {
                     appendLog("No connect config found")
                     Snackbar.make(rootView, "No connection configuration found. Wait for auto-discovery or check wireless debugging.", Snackbar.LENGTH_LONG).show()
                     btnConnect.isEnabled = true
                     return@launch
                 }
-                
+
                 val ok = withContext(Dispatchers.IO) {
                     appendLog("Connecting to $savedHost:$savedConnectPort")
                     ladbManager.connect(savedHost, savedConnectPort)
@@ -517,8 +525,12 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                     showLadbErrorDialog(getString(R.string.ladb_error_title), errorMessage)
                 } else {
                     appendLog("Connection successful")
-                    // Automatically start daemon after connection
-                    startDaemon()
+                    // Automatically start daemon after connection (if not already running)
+                    if (!isDaemonRunning) {
+                        startDaemon()
+                    } else {
+                        appendLog("Daemon is already running, skipping auto-start")
+                    }
                 }
                 btnConnect.isEnabled = true
             }
@@ -603,7 +615,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacksAndMessages(null)
-        adbPortFinder.stopDiscovery()
+        adbPortFinder?.stopDiscovery()
     }
 
     override fun onPairingPortFound(host: String, port: Int) {
@@ -782,6 +794,42 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 daemonManager.executeCommand(cmd)
             }
             appendLog("Daemon Result:\n$result")
+        }
+    }
+
+    private fun initializePairingComponents() {
+        // Initialize components needed for pairing
+        if (localIp == null) {
+            localIp = detectLocalIpv4OrNull()
+        }
+        if (adbPortFinder == null) {
+            adbPortFinder = AdbPortFinder(this, this)
+            synchronized(detectedConnectPorts) {
+                detectedConnectPorts.clear()
+            }
+            adbPortFinder?.startDiscovery()
+        }
+        // Clear stale pairing port for fresh pairing
+        lifecycleScope.launch {
+            ladbManager.clearPairingPort()
+        }
+    }
+
+    private fun initializeConnectionComponents() {
+        // Initialize components needed for connection
+        if (localIp == null) {
+            localIp = detectLocalIpv4OrNull()
+        }
+        if (adbPortFinder == null) {
+            adbPortFinder = AdbPortFinder(this, this)
+            synchronized(detectedConnectPorts) {
+                detectedConnectPorts.clear()
+            }
+            adbPortFinder?.startDiscovery()
+        }
+        // Clear stale connect port for fresh connection
+        lifecycleScope.launch {
+            ladbManager.clearConnectPort()
         }
     }
 
