@@ -6,19 +6,31 @@ import com.arslan.shizuwall.ladb.LadbManager
 import com.arslan.shizuwall.shell.ShellResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicReference
 
 class PersistentDaemonManager(private val context: Context) {
 
-    private val daemonPort = 18522
-    private val TAG = "PersistentDaemonManager"
-    private val PREFS_NAME = "daemon_prefs"
-    private val KEY_TOKEN = "daemon_token"
+    companion object {
+        private const val DAEMON_PORT = 18522
+        private const val TAG = "PersistentDaemonManager"
+        private const val PREFS_NAME = "daemon_prefs"
+        private const val KEY_TOKEN = "daemon_token"
+        private const val SOCKET_TIMEOUT_MS = 5000
+        private const val CONNECT_TIMEOUT_MS = 2000
+        
+        // Shared socket pool for connection reuse
+        private val connectionMutex = Mutex()
+    }
+    
+    private val daemonPort = DAEMON_PORT
 
     private fun getOrGenerateToken(): String {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -27,6 +39,19 @@ class PersistentDaemonManager(private val context: Context) {
             token = UUID.randomUUID().toString()
             prefs.edit().putString(KEY_TOKEN, token).apply()
         }
+        return token
+    }
+    
+    /**
+     * Force regenerate the authentication token.
+     * Call this when reinstalling the daemon.
+     */
+    fun regenerateToken(): String {
+        val token = UUID.randomUUID().toString()
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_TOKEN, token)
+            .apply()
         return token
     }
 
@@ -39,9 +64,6 @@ class PersistentDaemonManager(private val context: Context) {
             onProgress("Copying assets...")
             val scriptPath = copyAssetToCache("daemon.sh")
             val dexPath = copyAssetToCache("daemon.bin", "daemon.dex")
-            // Note: adb_daemon binary is optional if we use the Java implementation
-            // but we'll copy it if it exists in assets.
-            val binaryPath = try { copyAssetToCache("adb_daemon") } catch (e: Exception) { null }
 
             onProgress("Connecting to LADB...")
             val ladb = LadbManager.getInstance(context)
@@ -50,17 +72,21 @@ class PersistentDaemonManager(private val context: Context) {
                 return@withContext false
             }
 
-            // Create token file
-            val token = getOrGenerateToken()
+            // Regenerate token on reinstall to ensure sync
+            val token = regenerateToken()
             val tokenFile = File(context.externalCacheDir ?: context.cacheDir, "token")
             FileOutputStream(tokenFile).use { it.write(token.toByteArray()) }
             val tokenPath = tokenFile.absolutePath
+            
+            onProgress("Stopping existing daemon...")
+            // Kill any existing daemon first
+            ladb.execShell("pkill -f 'com.arslan.shizuwall.daemon.SystemDaemon' 2>/dev/null || true")
+            delay(500)
             
             onProgress("Moving files to /data/local/tmp/...")
             ladb.execShell("cat $dexPath > /data/local/tmp/daemon.dex")
             ladb.execShell("cat $scriptPath > /data/local/tmp/daemon.sh")
             ladb.execShell("cat $tokenPath > /data/local/tmp/shizuwall.token")
-            binaryPath?.let { path -> ladb.execShell("cat $path > /data/local/tmp/adb_daemon") }
             
             ladb.execShell("chmod 700 /data/local/tmp/daemon.sh")
             ladb.execShell("chmod 700 /data/local/tmp/daemon.dex")
@@ -92,10 +118,19 @@ class PersistentDaemonManager(private val context: Context) {
             val running = isDaemonRunning()
             if (running) {
                 onProgress("Daemon is running!")
+                // Verify connection works with a ping
+                val pingResult = executeCommand("ping")
+                if (pingResult.trim() == "pong") {
+                    onProgress("Daemon verified and responding!")
+                } else {
+                    onProgress("Warning: Daemon running but ping failed: $pingResult")
+                }
             } else {
                 onProgress("Daemon failed to start.")
-                if (scriptOutput.isEmpty()) {
-                    onProgress("No output from script. Check if LADB is connected.")
+                // Try to get logs for debugging
+                val logs = ladb.execShell("tail -20 /data/local/tmp/daemon.log 2>/dev/null").stdout
+                if (logs.isNotEmpty()) {
+                    onProgress("Daemon logs:\n$logs")
                 }
             }
             return@withContext running
@@ -108,13 +143,11 @@ class PersistentDaemonManager(private val context: Context) {
     }
 
     fun isDaemonRunning(): Boolean {
-        // Use a short timeout and run on a background thread to avoid NetworkOnMainThreadException
-        // although for a simple localhost connection it's usually fast.
         return try {
             val future = java.util.concurrent.Executors.newSingleThreadExecutor().submit(java.util.concurrent.Callable {
                 try {
-                    val socket = java.net.Socket()
-                    socket.connect(java.net.InetSocketAddress("127.0.0.1", daemonPort), 500)
+                    val socket = Socket()
+                    socket.connect(InetSocketAddress("127.0.0.1", daemonPort), 500)
                     socket.close()
                     true
                 } catch (e: Exception) {
@@ -127,33 +160,61 @@ class PersistentDaemonManager(private val context: Context) {
         }
     }
 
-    suspend fun executeCommand(command: String): String = withContext(Dispatchers.IO) {
-        val socket = Socket()
-        try {
-            socket.connect(InetSocketAddress("127.0.0.1", daemonPort), 2000)
-            
-            val output = socket.getOutputStream()
-            val input = socket.getInputStream()
-            
-            // Send token
-            val token = getOrGenerateToken()
-            output.write("$token\n".toByteArray())
-
-            // Send command
-            output.write("$command\n".toByteArray())
-            output.flush()
-            
-            // Read result
-            val result = input.readBytes().decodeToString()
-            Log.d(TAG, "Received from daemon: $result")
-            return@withContext result
-            
-        } catch (e: Exception) {
-            return@withContext "Error: Daemon not responding - ${e.message}"
-        } finally {
+    suspend fun executeCommand(command: String): String = connectionMutex.withLock {
+        withContext(Dispatchers.IO) {
+            val socket = Socket()
             try {
-                socket.close()
-            } catch (ignored: Exception) {}
+                socket.connect(InetSocketAddress("127.0.0.1", daemonPort), CONNECT_TIMEOUT_MS)
+                socket.soTimeout = SOCKET_TIMEOUT_MS
+                
+                val output = socket.getOutputStream().bufferedWriter()
+                val input = socket.getInputStream().bufferedReader()
+                
+                // Send token
+                val token = getOrGenerateToken()
+                output.write("$token\n")
+                output.flush()
+
+                // Send command
+                output.write("$command\n")
+                output.flush()
+                
+                // Shutdown output to signal we're done sending
+                socket.shutdownOutput()
+                
+                // Read result
+                val result = input.readText()
+                Log.d(TAG, "Received from daemon: $result")
+                return@withContext result
+                
+            } catch (e: java.net.SocketTimeoutException) {
+                Log.w(TAG, "Socket timeout for command: $command")
+                return@withContext "Error: Daemon not responding - timeout"
+            } catch (e: java.net.ConnectException) {
+                Log.w(TAG, "Connection refused - daemon not running")
+                return@withContext "Error: Daemon not responding - connection refused"
+            } catch (e: Exception) {
+                Log.e(TAG, "Error executing command", e)
+                return@withContext "Error: Daemon not responding - ${e.message}"
+            } finally {
+                try {
+                    socket.close()
+                } catch (ignored: Exception) {}
+            }
+        }
+    }
+    
+    /**
+     * Check if daemon is healthy and responding to commands.
+     */
+    suspend fun healthCheck(): Boolean = withContext(Dispatchers.IO) {
+        if (!isDaemonRunning()) return@withContext false
+        try {
+            val result = executeCommand("ping")
+            return@withContext result.trim() == "pong"
+        } catch (e: Exception) {
+            Log.w(TAG, "Health check failed", e)
+            return@withContext false
         }
     }
 

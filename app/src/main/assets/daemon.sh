@@ -1,58 +1,74 @@
 #!/system/bin/sh
 
-# daemon.sh - LADB ile wireless debugging açıkken çalıştır
+# daemon.sh - ShizuWall persistent daemon launcher
+# Run via LADB with wireless debugging enabled
 
-DAEMON_PATH="/data/local/tmp/adb_daemon"
 DEX_PATH="/data/local/tmp/daemon.dex"
 PID_FILE="/data/local/tmp/daemon.pid"
+LOG_FILE="/data/local/tmp/daemon.log"
+TOKEN_FILE="/data/local/tmp/shizuwall.token"
 
-echo "--- Daemon Startup Log ---"
+echo "=== ShizuWall Daemon Startup ==="
 echo "Date: $(date)"
 echo "DEX Path: $DEX_PATH"
+
+# Verify required files
+if [ ! -s "$DEX_PATH" ]; then
+    echo "ERROR: $DEX_PATH is missing or empty!"
+    ls -la "$DEX_PATH" 2>/dev/null
+    exit 1
+fi
+
+if [ ! -f "$TOKEN_FILE" ]; then
+    echo "ERROR: Token file missing at $TOKEN_FILE"
+    exit 1
+fi
 
 # Kill existing daemon if running
 if [ -f "$PID_FILE" ]; then
     OLD_PID=$(cat "$PID_FILE")
-    if [ -d /proc/$OLD_PID ]; then
-        echo "Killing old daemon (PID $OLD_PID)..."
-        kill -9 $OLD_PID
+    if [ -d "/proc/$OLD_PID" ]; then
+        echo "Stopping old daemon (PID $OLD_PID)..."
+        kill -TERM "$OLD_PID" 2>/dev/null
+        sleep 1
+        # Force kill if still running
+        if [ -d "/proc/$OLD_PID" ]; then
+            kill -9 "$OLD_PID" 2>/dev/null
+        fi
     fi
-    rm "$PID_FILE"
+    rm -f "$PID_FILE"
 fi
 
-# Check if DEX exists and has size
-if [ ! -s "$DEX_PATH" ]; then
-    echo "ERROR: $DEX_PATH is missing or empty!"
-    ls -l $DEX_PATH
-    exit 1
-fi
+# Also kill by process name
+pkill -f 'com.arslan.shizuwall.daemon.SystemDaemon' 2>/dev/null || true
+sleep 1
 
-# Binary'yi kopyala ve çalıştır
-# if [ -f "$DAEMON_PATH" ]; then
-#     echo "Starting native binary..."
-#     chmod 755 "$DAEMON_PATH"
-#     nohup "$DAEMON_PATH" > /dev/null 2>&1 &
-# fi
+# Clear old logs
+: > "$LOG_FILE"
 
-# app_process ile başlat (system context)
+# Start daemon via app_process (runs with shell UID privileges)
 echo "Starting app_process..."
-LOG_FILE="/data/local/tmp/daemon.log"
-nohup env CLASSPATH=$DEX_PATH /system/bin/app_process /system/bin \
-    com.arslan.shizuwall.daemon.SystemDaemon > $LOG_FILE 2>&1 &
+nohup env CLASSPATH="$DEX_PATH" /system/bin/app_process /system/bin \
+    com.arslan.shizuwall.daemon.SystemDaemon >> "$LOG_FILE" 2>&1 &
 
 PID=$!
-echo $PID > $PID_FILE
-echo "App process started with PID $PID. Logs at $LOG_FILE"
+echo "$PID" > "$PID_FILE"
+echo "Daemon started with PID $PID"
+echo "Logs: $LOG_FILE"
 
-# Quick check
-sleep 1
-if [ -d /proc/$PID ]; then
-    echo "Daemon process is alive."
+# Wait for startup
+sleep 2
+
+# Verify process is alive
+if [ -d "/proc/$PID" ]; then
+    echo "SUCCESS: Daemon process is running"
+    # Show first few log lines
+    echo "=== Initial log output ==="
+    head -10 "$LOG_FILE"
+    exit 0
 else
-    echo "Daemon process died immediately."
+    echo "FAILED: Daemon process died"
+    echo "=== Error log ==="
+    cat "$LOG_FILE"
     exit 1
 fi
-
-exit 0
-
-exit 0

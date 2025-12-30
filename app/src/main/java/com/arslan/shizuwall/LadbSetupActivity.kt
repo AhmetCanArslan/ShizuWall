@@ -789,6 +789,8 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
     private fun setupDaemonCommandsDropdown() {
         val commands = arrayOf(
+            "ping",
+            "status",
             "id",
             "ps -A | grep daemon",
             "ls -l /data/local/tmp",
@@ -814,28 +816,47 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             appendLog("Executing daemon command: $cmd")
             
             val result = withContext(Dispatchers.IO) {
-                if (cmd == "kill daemon") {
-                    // Special handling for killing daemon
-                    try {
-                        val pidResult = daemonManager.executeCommand("cat /data/local/tmp/daemon.pid 2>/dev/null")
-                        if (pidResult.isNotBlank()) {
-                            val pid = pidResult.trim()
-                            appendLog("Found daemon PID: $pid")
-                            daemonManager.executeCommand("kill $pid 2>/dev/null || kill -9 $pid 2>/dev/null || true")
-                        } else {
-                            "No daemon PID file found"
+                when (cmd) {
+                    "ping" -> {
+                        // Health check - verify daemon is responding
+                        try {
+                            val response = daemonManager.executeCommand("ping")
+                            if (response.trim() == "pong") {
+                                "✓ Daemon is alive and responding!"
+                            } else {
+                                "✗ Unexpected response: $response"
+                            }
+                        } catch (e: Exception) {
+                            "✗ Ping failed: ${e.message}"
                         }
-                    } catch (e: Exception) {
-                        "Error killing daemon: ${e.message}"
                     }
-                } else {
-                    daemonManager.executeCommand(cmd)
+                    "kill daemon" -> {
+                        // Special handling for killing daemon
+                        try {
+                            val pidResult = daemonManager.executeCommand("cat /data/local/tmp/daemon.pid 2>/dev/null")
+                            if (pidResult.isNotBlank()) {
+                                val pid = pidResult.trim()
+                                appendLog("Found daemon PID: $pid")
+                                daemonManager.executeCommand("kill $pid 2>/dev/null || kill -9 $pid 2>/dev/null || true")
+                            } else {
+                                "No daemon PID file found"
+                            }
+                        } catch (e: Exception) {
+                            "Error killing daemon: ${e.message}"
+                        }
+                    }
+                    else -> {
+                        daemonManager.executeCommand(cmd)
+                    }
                 }
             }
             appendLog("Daemon Result:\n$result")
 
-            // Update daemon status immediately after killing
-            if (cmd == "kill daemon") {
+            // Update daemon status after ping or kill
+            if (cmd == "ping") {
+                isDaemonRunning = result.contains("✓")
+                updateStatus()
+            } else if (cmd == "kill daemon") {
                 isDaemonRunning = false
                 updateStatus()
             }
