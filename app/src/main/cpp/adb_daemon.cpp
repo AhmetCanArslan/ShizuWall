@@ -51,7 +51,7 @@ int main() {
     
     bind(server_fd, (struct sockaddr*)&addr, sizeof(addr));
     listen(server_fd, 10);
-    chmod(SOCKET_PATH, 0666);
+    chmod(SOCKET_PATH, 0600);
     
     // Sonsuz döngü
     while(1) {

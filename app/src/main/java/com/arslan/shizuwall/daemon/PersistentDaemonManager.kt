@@ -11,11 +11,24 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.InetSocketAddress
 import java.net.Socket
+import java.util.UUID
 
 class PersistentDaemonManager(private val context: Context) {
 
-    private val daemonPort = 18521
+    private val daemonPort = 18522
     private val TAG = "PersistentDaemonManager"
+    private val PREFS_NAME = "daemon_prefs"
+    private val KEY_TOKEN = "daemon_token"
+
+    private fun getOrGenerateToken(): String {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        var token = prefs.getString(KEY_TOKEN, null)
+        if (token == null) {
+            token = UUID.randomUUID().toString()
+            prefs.edit().putString(KEY_TOKEN, token).apply()
+        }
+        return token
+    }
 
     suspend fun installDaemon(onProgress: (String) -> Unit): Boolean = withContext(Dispatchers.IO) {
         try {
@@ -37,14 +50,27 @@ class PersistentDaemonManager(private val context: Context) {
                 return@withContext false
             }
 
+            // Create token file
+            val token = getOrGenerateToken()
+            val tokenFile = File(context.externalCacheDir ?: context.cacheDir, "token")
+            FileOutputStream(tokenFile).use { it.write(token.toByteArray()) }
+            val tokenPath = tokenFile.absolutePath
+            
             onProgress("Moving files to /data/local/tmp/...")
             ladb.execShell("cat $dexPath > /data/local/tmp/daemon.dex")
             ladb.execShell("cat $scriptPath > /data/local/tmp/daemon.sh")
+            ladb.execShell("cat $tokenPath > /data/local/tmp/shizuwall.token")
             binaryPath?.let { path -> ladb.execShell("cat $path > /data/local/tmp/adb_daemon") }
             
-            ladb.execShell("chmod 777 /data/local/tmp/daemon.sh")
-            ladb.execShell("chmod 777 /data/local/tmp/daemon.dex")
+            ladb.execShell("chmod 700 /data/local/tmp/daemon.sh")
+            ladb.execShell("chmod 700 /data/local/tmp/daemon.dex")
+            ladb.execShell("chmod 600 /data/local/tmp/shizuwall.token")
             
+            // Cleanup temporary token file to reduce exposure
+            if (tokenFile.exists()) {
+                tokenFile.delete()
+            }
+
             // Verify files exist
             val checkFiles = ladb.execShell("ls -l /data/local/tmp/daemon.*").stdout
             Log.d(TAG, "Files in /data/local/tmp/:\n$checkFiles")
@@ -109,6 +135,10 @@ class PersistentDaemonManager(private val context: Context) {
             val output = socket.getOutputStream()
             val input = socket.getInputStream()
             
+            // Send token
+            val token = getOrGenerateToken()
+            output.write("$token\n".toByteArray())
+
             // Send command
             output.write("$command\n".toByteArray())
             output.flush()

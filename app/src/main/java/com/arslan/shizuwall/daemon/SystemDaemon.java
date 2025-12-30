@@ -2,20 +2,47 @@ package com.arslan.shizuwall.daemon;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import android.util.Log;
 
 public class SystemDaemon {
     
     private static final String TAG = "ShizuWallDaemon";
-    private static final int PORT = 18521;
+    private static final int PORT = 18522;
+    private static final String TOKEN_PATH = "/data/local/tmp/shizuwall.token";
+    private static String authToken = "";
+    private static final ExecutorService executor = Executors.newFixedThreadPool(4);
     
     public static void main(String[] args) {
+        try {
+            File tokenFile = new File(TOKEN_PATH);
+            if (!tokenFile.exists()) {
+                System.err.println("SystemDaemon: Token file not found at " + TOKEN_PATH);
+                System.exit(1);
+            }
+            try (BufferedReader br = new BufferedReader(new FileReader(tokenFile))) {
+                authToken = br.readLine();
+            }
+            if (authToken == null || authToken.trim().isEmpty()) {
+                System.err.println("SystemDaemon: Token file is empty");
+                System.exit(1);
+            }
+            authToken = authToken.trim();
+        } catch (Exception e) {
+            System.err.println("SystemDaemon: Failed to read token: " + e.getMessage());
+            System.exit(1);
+        }
+
         Log.d(TAG, "Daemon starting...");
         System.out.println("SystemDaemon: Starting...");
         System.out.flush();
@@ -42,11 +69,13 @@ public class SystemDaemon {
     private static void startSocketServer() throws Exception {
         new Thread(() -> {
             try {
-                ServerSocket server = new ServerSocket(PORT);
-                System.out.println("SystemDaemon: Listening on TCP port: " + PORT);
+                // Bind only to localhost (loopback) to prevent external network access
+                ServerSocket server = new ServerSocket(PORT, 50, InetAddress.getByName("127.0.0.1"));
+                System.out.println("SystemDaemon: Listening on 127.0.0.1:" + PORT);
                 while (true) {
                     Socket client = server.accept();
-                    handleClient(client);
+                    client.setSoTimeout(5000); // 5 second timeout to prevent DoS
+                    executor.execute(() -> handleClient(client));
                 }
             } catch (Exception e) {
                 System.err.println("SystemDaemon: Socket server error");
@@ -55,47 +84,63 @@ public class SystemDaemon {
         }).start();
     }
 
+    private static boolean safeEquals(String a, String b) {
+        if (a == null || b == null) return false;
+        if (a.length() != b.length()) return false;
+        int result = 0;
+        for (int i = 0; i < a.length(); i++) {
+            result |= a.charAt(i) ^ b.charAt(i);
+        }
+        return result == 0;
+    }
+
     private static void handleClient(Socket socket) {
-        new Thread(() -> {
-            String command = "unknown";
-            try (
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true)
-            ) {
-                command = reader.readLine();
-                Log.d(TAG, "Received command: [" + command + "]");
-                System.out.println("SystemDaemon: Received command: [" + command + "]");
-                System.out.flush();
-
-                if (command != null) {
-                    String result;
-                    if (command.trim().equalsIgnoreCase("ping")) {
-                        result = "pong";
-                    } else {
-                        result = executeCommand(command);
-                    }
-
-                    if (result == null || result.isEmpty()) {
-                        result = "(No output from command)";
-                    }
-
-                    Log.d(TAG, "Sending result: " + result);
-                    System.out.println("SystemDaemon: Sending result (" + result.length() + " chars)");
-                    System.out.flush();
-                    
-                    writer.print(result);
-                    writer.flush();
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Client handler error for command: " + command, e);
-                System.err.println("SystemDaemon: Client handler error");
-                e.printStackTrace();
-            } finally {
-                try {
-                    socket.close();
-                } catch (Exception ignored) {}
+        String command = "unknown";
+        try (
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true)
+        ) {
+            String token = reader.readLine();
+            if (!safeEquals(token, authToken)) {
+                Log.w(TAG, "Unauthorized access attempt");
+                System.out.println("SystemDaemon: Unauthorized access attempt");
+                writer.println("Error: Unauthorized");
+                return;
             }
-        }).start();
+
+            command = reader.readLine();
+            Log.d(TAG, "Received command: [" + command + "]");
+            System.out.println("SystemDaemon: Received command: [" + command + "]");
+            System.out.flush();
+
+            if (command != null) {
+                String result;
+                if (command.trim().equalsIgnoreCase("ping")) {
+                    result = "pong";
+                } else {
+                    result = executeCommand(command);
+                }
+
+                if (result == null || result.isEmpty()) {
+                    result = "(No output from command)";
+                }
+
+                Log.d(TAG, "Sending result: " + result);
+                System.out.println("SystemDaemon: Sending result (" + result.length() + " chars)");
+                System.out.flush();
+                
+                writer.print(result);
+                writer.flush();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Client handler error for command: " + command, e);
+            System.err.println("SystemDaemon: Client handler error");
+            e.printStackTrace();
+        } finally {
+            try {
+                socket.close();
+            } catch (Exception ignored) {}
+        }
     }
 
     private static String executeCommand(String cmd) {

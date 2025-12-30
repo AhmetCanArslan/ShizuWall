@@ -10,6 +10,16 @@ echo "--- Daemon Startup Log ---"
 echo "Date: $(date)"
 echo "DEX Path: $DEX_PATH"
 
+# Kill existing daemon if running
+if [ -f "$PID_FILE" ]; then
+    OLD_PID=$(cat "$PID_FILE")
+    if [ -d /proc/$OLD_PID ]; then
+        echo "Killing old daemon (PID $OLD_PID)..."
+        kill -9 $OLD_PID
+    fi
+    rm "$PID_FILE"
+fi
+
 # Check if DEX exists and has size
 if [ ! -s "$DEX_PATH" ]; then
     echo "ERROR: $DEX_PATH is missing or empty!"
@@ -18,11 +28,11 @@ if [ ! -s "$DEX_PATH" ]; then
 fi
 
 # Binary'yi kopyala ve çalıştır
-if [ -f "$DAEMON_PATH" ]; then
-    echo "Starting native binary..."
-    chmod 755 "$DAEMON_PATH"
-    nohup "$DAEMON_PATH" > /dev/null 2>&1 &
-fi
+# if [ -f "$DAEMON_PATH" ]; then
+#     echo "Starting native binary..."
+#     chmod 755 "$DAEMON_PATH"
+#     nohup "$DAEMON_PATH" > /dev/null 2>&1 &
+# fi
 
 # app_process ile başlat (system context)
 echo "Starting app_process..."
