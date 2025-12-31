@@ -20,8 +20,6 @@ class FirewallTileService : TileService() {
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Main + job)
 
-    companion object
-
     // SharedPreferences listener to update tile whenever relevant prefs change
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == MainActivity.KEY_FIREWALL_ENABLED ||

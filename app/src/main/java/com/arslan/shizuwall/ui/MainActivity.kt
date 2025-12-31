@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -52,7 +51,6 @@ import com.arslan.shizuwall.R
 import com.arslan.shizuwall.adapters.ErrorEntry
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.arslan.shizuwall.shell.ShellExecutorProvider
-import com.arslan.shizuwall.WorkingMode
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {

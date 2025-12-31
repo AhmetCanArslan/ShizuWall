@@ -1,8 +1,5 @@
 package com.arslan.shizuwall.shell
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-
 /**
  * Result of a shell execution.
  */

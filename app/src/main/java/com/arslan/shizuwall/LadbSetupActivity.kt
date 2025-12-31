@@ -28,7 +28,6 @@ import android.os.Build
 import android.net.ConnectivityManager
 import android.net.LinkProperties
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import androidx.core.widget.NestedScrollView
 import java.net.Inet4Address
 import androidx.core.app.NotificationCompat

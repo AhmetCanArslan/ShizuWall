@@ -11,7 +11,6 @@ import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.ui.MainActivity
 
