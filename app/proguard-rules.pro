@@ -20,6 +20,25 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+#===============================================================================
+# OPTIMIZATION SETTINGS
+#===============================================================================
+# Enable aggressive optimizations
+-optimizationpasses 5
+-allowaccessmodification
+-dontpreverify
+-repackageclasses ''
+
+# Remove logging in release builds
+-assumenosideeffects class android.util.Log {
+    public static int v(...);
+    public static int d(...);
+    public static int i(...);
+}
+
+#===============================================================================
+# APPLICATION COMPONENTS
+#===============================================================================
 # Keep application/components referenced from manifest
 -keep class * extends android.app.Application { *; }
 -keep class * extends android.app.Activity { *; }
@@ -27,6 +46,9 @@
 -keep class * extends android.content.BroadcastReceiver { *; }
 -keep class * extends android.content.ContentProvider { *; }
 
+#===============================================================================
+# ANDROIDX / MATERIAL
+#===============================================================================
 # Keep classes used by AndroidX / material reflection (adjust if you add more libs)
 -keepnames class androidx.lifecycle.** { *; }
 -keepclassmembers class * {
@@ -42,7 +64,86 @@
 -keepclassmembers class * implements android.os.Parcelable {
   public static final android.os.Parcelable$Creator CREATOR;
 }
-# Add library-specific keeps only when needed (e.g. retrofit, gson, shizuku)
-# Keep Conscrypt TLS provider classes used at runtime via Security.insertProviderAt
--keep class org.conscrypt.** { *; }
+
+#===============================================================================
+# CONSCRYPT (TLS Provider for LADB)
+#===============================================================================
+# Keep only the public Conscrypt API used at runtime via Security.insertProviderAt
+-keep class org.conscrypt.Conscrypt {
+    public static org.conscrypt.OpenSSLProvider newProvider();
+}
+-keep class org.conscrypt.OpenSSLProvider { public <init>(); }
+
+# Keep JNI native methods
+-keepclasseswithmembernames class org.conscrypt.** {
+    native <methods>;
+}
+
+# Don't warn about internal Conscrypt classes
 -dontwarn org.conscrypt.**
+-dontwarn dalvik.system.**
+
+#===============================================================================
+# BOUNCYCASTLE (Certificate Generation for LADB)
+#===============================================================================
+# BouncyCastle is large - only keep what we absolutely need for X509 cert generation
+# The app uses: X500Name, JcaX509v3CertificateBuilder, JcaX509CertificateConverter,
+# JcaContentSignerBuilder, and BouncyCastleProvider
+
+# Core provider - must keep for Security.addProvider
+-keep class org.bouncycastle.jce.provider.BouncyCastleProvider {
+    public <init>();
+    public static final java.lang.String PROVIDER_NAME;
+}
+
+# Certificate builder classes (accessed directly in code)
+-keep class org.bouncycastle.asn1.x500.X500Name { public *; }
+-keep class org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder { public *; }
+-keep class org.bouncycastle.cert.jcajce.JcaX509CertificateConverter { public *; }
+-keep class org.bouncycastle.operator.jcajce.JcaContentSignerBuilder { public *; }
+
+# Don't warn about unused BouncyCastle classes - we're intentionally stripping them
+-dontwarn org.bouncycastle.**
+-dontnote org.bouncycastle.**
+
+#===============================================================================
+# LIBADB-ANDROID (ADB over WiFi)
+#===============================================================================
+# Keep ADB connection classes - accessed via reflection in some places
+-keep class io.github.muntashirakon.adb.AdbConnection { *; }
+-keep class io.github.muntashirakon.adb.AdbStream { *; }
+-keep class io.github.muntashirakon.adb.PairingConnectionCtx { *; }
+-keep class io.github.muntashirakon.adb.AdbPairingRequiredException { *; }
+-dontwarn io.github.muntashirakon.adb.**
+
+#===============================================================================
+# SHIZUKU
+#===============================================================================
+# Keep Shizuku API classes
+-keep class rikka.shizuku.** { *; }
+-keepclassmembers class rikka.shizuku.** { *; }
+-dontwarn rikka.shizuku.**
+
+#===============================================================================
+# JSR305 annotations
+#===============================================================================
+-dontwarn javax.annotation.**
+-dontwarn com.google.errorprone.annotations.**
+
+#===============================================================================
+# KOTLIN COROUTINES
+#===============================================================================
+-keepclassmembernames class kotlinx.** {
+    volatile <fields>;
+}
+-dontwarn kotlinx.coroutines.**
+
+#===============================================================================
+# REMOVE UNUSED CODE
+#===============================================================================
+# Strip kotlin metadata to save space
+-dontwarn kotlin.**
+-dontnote kotlin.**
+
+# Remove R8 debugging info
+-dontnote **

@@ -36,7 +36,7 @@ android {
 
 
     // strip unneeded files from APK
-    packagingOptions {
+    packaging {
         // remove common license/metadata files that bloat APK
         resources {
             excludes += setOf(
@@ -45,8 +45,19 @@ android {
                 "META-INF/LICENSE",
                 "META-INF/LICENSE.txt",
                 "META-INF/NOTICE",
-                "META-INF/DEPENDENCIES"
+                "META-INF/DEPENDENCIES",
+                "META-INF/INDEX.LIST",
+                "META-INF/*.kotlin_module",
+                "META-INF/versions/**",
+                "DebugProbesKt.bin",
+                // BouncyCastle metadata
+                "META-INF/maven/**",
+                "META-INF/proguard/**"
             )
+        }
+        // Keep only essential JNI libs
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
 
@@ -63,6 +74,14 @@ android {
     buildFeatures {
         aidl = true 
         viewBinding = true
+    }
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a")
+            isUniversalApk = true
+        }
     }
 }
 
@@ -86,10 +105,6 @@ dependencies {
 
     implementation ("com.github.MuntashirAkon:libadb-android:3.1.1")
     implementation ("org.conscrypt:conscrypt-android:2.5.3")
-    implementation ("androidx.security:security-crypto:1.1.0")
-
-    // Needed for R8: Tink (via security-crypto) references javax.annotation.* at shrink time.
-    implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     // Required for generating a self-signed certificate for ADB-over-WiFi TLS.
     implementation("org.bouncycastle:bcprov-jdk15to18:1.81")

@@ -2,8 +2,6 @@ package com.arslan.shizuwall.ladb
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import com.arslan.shizuwall.shell.ShellResult
 import io.github.muntashirakon.adb.AdbConnection
 import io.github.muntashirakon.adb.AdbStream
@@ -133,37 +131,22 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
-    // Cache for SharedPreferences to avoid repeated heavy initialization.
+    // Cache for SharedPreferences to avoid repeated initialization.
     @Volatile
     private var cachedPrefs: SharedPreferences? = null
     private val prefsLock = Any()
 
     private fun getPrefs(): SharedPreferences {
-        // If EncryptedSharedPreferences is ready, use it
         cachedPrefs?.let { return it }
 
-        // Synchronously initialize to ensure consistency between reads and writes
         synchronized(prefsLock) {
             cachedPrefs?.let { return it }
             
-            return try {
-                val masterKey = MasterKey.Builder(context)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build()
-
-                val prefs = EncryptedSharedPreferences.create(
-                    context,
-                    PREFS_NAME,
-                    masterKey,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                )
-                cachedPrefs = prefs
-                prefs
-            } catch (_: Exception) {
-                // Fallback to plain SharedPreferences if encrypted prefs cannot be created
-                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            }
+            // Use regular SharedPreferences - LADB config (host/port) is not highly sensitive
+            // and Android already protects app private data from other apps
+            val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            cachedPrefs = prefs
+            return prefs
         }
     }
 
