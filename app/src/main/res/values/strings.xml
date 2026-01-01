@@ -201,4 +201,8 @@
     <string name="daemon_status_stopped">Daemon: Stopped</string>
     <string name="daemon_start">Start Daemon</string>
     <string name="daemon_installing">Installing...</string>
+    <string name="sort">Sort</string>
+    <string name="sort_name_asc">A-Z</string>
+    <string name="sort_name_desc">Z-A</string>
+    <string name="sort_install_time">Date installed</string>
 </resources>

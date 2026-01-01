@@ -48,6 +48,7 @@ import android.graphics.Typeface
 import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
+import kotlin.comparisons.*
 import com.arslan.shizuwall.adapters.ErrorEntry
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.arslan.shizuwall.shell.ShellExecutorProvider
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity() {
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
         const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"
         const val KEY_WORKING_MODE = "working_mode"
+        const val KEY_SORT_ORDER = "sort_order"
 
         const val ACTION_FIREWALL_STATE_CHANGED = "com.arslan.shizuwall.ACTION_FIREWALL_STATE_CHANGED"
         const val EXTRA_FIREWALL_ENABLED = "state" 
@@ -104,6 +106,8 @@ class MainActivity : AppCompatActivity() {
     private var showSystemApps = false 
     private var moveSelectedTop = true
     private var adaptiveMode = false
+    private enum class SortOrder { NAME_ASC, NAME_DESC, INSTALL_TIME }
+    private var currentSortOrder = SortOrder.NAME_ASC
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -299,9 +303,19 @@ class MainActivity : AppCompatActivity() {
             settingsLauncher.launch(intent)
         }
 
+        val sortButton: MaterialButton? = findViewById(R.id.sortButton)
+        sortButton?.setOnClickListener {
+            showSortDialog()
+        }
+
         showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
         moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
         adaptiveMode = sharedPreferences.getBoolean(KEY_ADAPTIVE_MODE, false)
+        currentSortOrder = try {
+            SortOrder.valueOf(sharedPreferences.getString(KEY_SORT_ORDER, SortOrder.NAME_ASC.name) ?: SortOrder.NAME_ASC.name)
+        } catch (e: Exception) {
+            SortOrder.NAME_ASC
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -1034,21 +1048,49 @@ class MainActivity : AppCompatActivity() {
         // Removed submitList from here; handled in callers
     }
 
+    private fun showSortDialog() {
+        val options = arrayOf(
+            getString(R.string.sort_install_time),
+            getString(R.string.sort_name_asc),
+            getString(R.string.sort_name_desc)
+        )
+        
+        val sortOrders = arrayOf(
+            SortOrder.INSTALL_TIME,
+            SortOrder.NAME_ASC,
+            SortOrder.NAME_DESC
+        )
+        
+        val currentIndex = sortOrders.indexOf(currentSortOrder)
+        
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.sort)
+            .setSingleChoiceItems(options, currentIndex) { dialog, which ->
+                currentSortOrder = sortOrders[which]
+                sharedPreferences.edit().putString(KEY_SORT_ORDER, currentSortOrder.name).apply()
+                sortAndFilterApps(preserveScrollPosition = false)
+                dialog.dismiss()
+            }
+            .show()
+    }
+
     private fun sortAndFilterApps(preserveScrollPosition: Boolean = false) {
         val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
-        if (moveSelectedTop) {
-            appList.sortWith(
-                compareByDescending<AppInfo> { it.isSelected }
-                    .thenBy { it.isSystem } // false (user apps) before true (system apps)
-                    .thenBy(turkishCollator) { it.appName }
-            )
+        
+        val baseComparator = if (moveSelectedTop) {
+            compareByDescending<AppInfo> { it.isSelected }
+                .thenBy { it.isSystem }
         } else {
-            // Do not prioritize selected apps; sort by user/system then name
-            appList.sortWith(
-                compareBy<AppInfo> { it.isSystem } // false (user apps) before true (system apps)
-                    .thenBy(turkishCollator) { it.appName }
-            )
+            compareBy<AppInfo> { it.isSystem }
         }
+
+        val finalComparator = when (currentSortOrder) {
+            SortOrder.NAME_ASC -> baseComparator.thenBy(turkishCollator) { it.appName }
+            SortOrder.NAME_DESC -> baseComparator.thenByDescending(turkishCollator) { it.appName }
+            SortOrder.INSTALL_TIME -> baseComparator.thenByDescending { it.installTime }
+        }
+
+        appList.sortWith(finalComparator)
 
         filterApps(currentQuery)
         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
@@ -1316,7 +1358,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
                 val pm = packageManager
-                val packages = pm.getInstalledApplications(0)
+                val packages = pm.getInstalledPackages(0)
                 
                 val installedPackageNames = packages.map { it.packageName }.toSet()
 
@@ -1349,10 +1391,11 @@ class MainActivity : AppCompatActivity() {
                 val favoritePackages = loadFavoriteApps()
                 val temp = mutableListOf<AppInfo>()
                 for (packageInfo in packages) {
-                    val isSystemApp = (packageInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                    val appInfo = packageInfo.applicationInfo ?: continue
+                    val isSystemApp = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
 
                     // skip apps that are disabled (treated as "offline" — don't show them even if system apps are enabled)
-                    if (!packageInfo.enabled) continue
+                    if (!appInfo.enabled) continue
 
                     // include if user requested system apps, or it's a user-installed app
                     if (!showSystemApps && isSystemApp) continue
@@ -1370,11 +1413,14 @@ class MainActivity : AppCompatActivity() {
                     ) == PackageManager.PERMISSION_GRANTED
                     if (!hasInternetPermission) continue
 
-                    val appName = pm.getApplicationLabel(packageInfo).toString()
+                    val appName = pm.getApplicationLabel(appInfo).toString()
                     // Removed bitmap loading to save RAM
                     val isSelected = savedSelected.contains(packageName)
                     val isFavorite = favoritePackages.contains(packageName)
-                    temp.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite))
+                    
+                    val installTime = packageInfo.firstInstallTime
+
+                    temp.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite, installTime))
                 }
                 Triple(temp, savedActive, appsWereRemoved)
             }
@@ -1774,7 +1820,8 @@ class MainActivity : AppCompatActivity() {
             val maybeApp = withContext(Dispatchers.IO) {
                 try {
                     val pm = packageManager
-                    val ai = pm.getApplicationInfo(pkg, 0)
+                    val pi = pm.getPackageInfo(pkg, 0)
+                    val ai = pi.applicationInfo ?: return@withContext null
                     if (!ai.enabled) return@withContext null
                     val isSystemApp = (ai.flags and ApplicationInfo.FLAG_SYSTEM) != 0
                     if (!showSystemApps && isSystemApp) return@withContext null
@@ -1783,7 +1830,8 @@ class MainActivity : AppCompatActivity() {
                     val appName = pm.getApplicationLabel(ai).toString()
                     val isSelected = loadSelectedApps().contains(pkg)
                     val isFavorite = loadFavoriteApps().contains(pkg)
-                    AppInfo(appName, pkg, isSelected, isSystemApp, isFavorite)
+                    val installTime = pi.firstInstallTime
+                    AppInfo(appName, pkg, isSelected, isSystemApp, isFavorite, installTime)
                 } catch (e: Exception) {
                     null
                 }
