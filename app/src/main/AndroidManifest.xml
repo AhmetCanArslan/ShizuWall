@@ -65,7 +65,7 @@
             android:name=".receivers.FirewallControlReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.arslan.shizuwall.ACTION_FIREWALL_CONTROL" />
+                <action android:name="shizuwall.CONTROL" />
             </intent-filter>
         </receiver>
 
@@ -76,6 +76,16 @@
                 <action android:name="com.arslan.shizuwall.ACTION_LADB_PAIRING_CODE" />
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".receivers.NotificationActionReceiver"
+            android:exported="false" />
+
+        <service
+            android:name=".services.AppMonitorService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
 
         <service
             android:name=".services.FirewallTileService"

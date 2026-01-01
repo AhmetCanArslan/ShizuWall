@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.ui.MainActivity
 
 /**
@@ -48,7 +49,17 @@ class BootReceiver : BroadcastReceiver() {
 
         val enabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
         val savedElapsed = prefs.getLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, -1L)
-        Log.d(TAG, "prefs: enabled=$enabled, savedElapsed=$savedElapsed")
+        val appMonitorEnabled = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
+        Log.d(TAG, "prefs: enabled=$enabled, savedElapsed=$savedElapsed, appMonitorEnabled=$appMonitorEnabled")
+
+        if (appMonitorEnabled) {
+            val monitorIntent = Intent(context, AppMonitorService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(monitorIntent)
+            } else {
+                context.startService(monitorIntent)
+            }
+        }
 
         val currentElapsed = SystemClock.elapsedRealtime()
         // A reboot occurred if currentElapsed < savedElapsed; in that case the saved flag represents state before reboot.

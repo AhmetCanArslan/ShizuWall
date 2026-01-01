@@ -28,9 +28,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.graphics.Typeface
+import android.os.Build
 import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.services.AppMonitorService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import rikka.shizuku.Shizuku
 
@@ -54,6 +56,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var switchUseDynamicColor: SwitchCompat
     private lateinit var switchAutoEnableOnShizukuStart: SwitchCompat
     private lateinit var cardAutoEnableOnShizukuStart: com.google.android.material.card.MaterialCardView
+    private lateinit var switchAppMonitor: SwitchCompat
 
     private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
     private lateinit var radioGroupWorkingMode: RadioGroup
@@ -147,6 +150,7 @@ class SettingsActivity : AppCompatActivity() {
         radioShizukuMode = findViewById(R.id.radioShizukuMode)
         radioLadbMode = findViewById(R.id.radioLadbMode)
         layoutSetLadb = findViewById(R.id.layoutSetLadb)
+        switchAppMonitor = findViewById(R.id.switchAppMonitor)
         // Auto-enable switch (new)
         switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
         cardAutoEnableOnShizukuStart = findViewById(R.id.cardAutoEnableOnShizukuStart)
@@ -180,6 +184,7 @@ class SettingsActivity : AppCompatActivity() {
         tvCurrentFont.text = if (currentFont == "ndot") "Ndot" else "Default"
         switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
         switchAutoEnableOnShizukuStart.isChecked = prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
+        switchAppMonitor.isChecked = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
 
         // Load working mode
         val workingModeName = prefs.getString(MainActivity.KEY_WORKING_MODE, com.arslan.shizuwall.WorkingMode.SHIZUKU.name)
@@ -286,6 +291,25 @@ class SettingsActivity : AppCompatActivity() {
             setResult(RESULT_OK)
         }
 
+        switchAppMonitor.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    androidx.core.app.ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1002)
+                }
+            }
+            prefs.edit().putBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, isChecked).apply()
+            val intent = Intent(this, AppMonitorService::class.java)
+            if (isChecked) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(intent)
+                } else {
+                    startService(intent)
+                }
+            } else {
+                stopService(intent)
+            }
+        }
+
         radioGroupWorkingMode.setOnCheckedChangeListener { _, checkedId ->
             val mode = if (checkedId == R.id.radioLadbMode) com.arslan.shizuwall.WorkingMode.LADB else com.arslan.shizuwall.WorkingMode.SHIZUKU
             prefs.edit().putString(MainActivity.KEY_WORKING_MODE, mode.name).apply()
@@ -342,6 +366,7 @@ class SettingsActivity : AppCompatActivity() {
         makeCardClickableForSwitch(switchSkipErrorDialog)
         makeCardClickableForSwitch(switchKeepErrorAppsSelected)
         makeCardClickableForSwitch(switchAutoEnableOnShizukuStart)
+        makeCardClickableForSwitch(switchAppMonitor)
     }
 
    

@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.arslan.shizuwall.services.AppMonitorService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -88,6 +89,7 @@ class MainActivity : AppCompatActivity() {
         const val EXTRA_PACKAGES_CSV = "apps" 
 
         const val KEY_FIREWALL_UPDATE_TS = "firewall_update_ts"
+        const val KEY_APP_MONITOR_ENABLED = "app_monitor_enabled"
 
 
     }
@@ -252,6 +254,15 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
+        // Start App Monitor Service if enabled
+        if (sharedPreferences.getBoolean(KEY_APP_MONITOR_ENABLED, false)) {
+            val monitorIntent = Intent(this, AppMonitorService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(monitorIntent)
+            } else {
+                startService(monitorIntent)
+            }
+        }
 
         applyFontToViews(findViewById(android.R.id.content))
 
