@@ -114,7 +114,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 applyButtonEnabledState(btnPair, false)
                 applyButtonEnabledState(btnConnect, false)
                 applyButtonEnabledState(btnUnpair, true)
-            } else if (isPaired && !isDaemonRunning) {
+            } else if (isPaired) {
                 applyButtonEnabledState(btnPair, false)
                 applyButtonEnabledState(btnConnect, true)
                 applyButtonEnabledState(btnUnpair, true)
