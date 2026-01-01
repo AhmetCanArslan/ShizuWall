@@ -65,6 +65,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
     private lateinit var actvDaemonCommands: AutoCompleteTextView
     private lateinit var connectProgress: android.widget.ProgressBar
     private lateinit var btnStartDaemon: MaterialButton
+    private lateinit var btnKillDaemon: MaterialButton
 
     private lateinit var ladbManager: LadbManager
     private lateinit var daemonManager: PersistentDaemonManager
@@ -131,12 +132,16 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 tvDaemonStatus.setTextColor(Color.GREEN)
                 btnStartDaemon.isEnabled = false
                 btnStartDaemon.alpha = 0.5f
+                btnKillDaemon.isEnabled = true
+                btnKillDaemon.alpha = 1.0f
             } else {
                 daemonStatusIndicator.setBackgroundColor(Color.RED)
                 tvDaemonStatus.text = getString(R.string.daemon_status_stopped)
                 tvDaemonStatus.setTextColor(Color.RED)
                 btnStartDaemon.isEnabled = isConnected
                 btnStartDaemon.alpha = if (isConnected) 1.0f else 0.5f
+                btnKillDaemon.isEnabled = false
+                btnKillDaemon.alpha = 0.5f
             }
         }
     }
@@ -381,6 +386,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         tvDaemonStatus = findViewById(R.id.tvDaemonStatus)
         actvDaemonCommands = findViewById(R.id.actvDaemonCommands)
         btnStartDaemon = findViewById(R.id.btnStartDaemon)
+        btnKillDaemon = findViewById(R.id.btnKillDaemon)
 
         setupDaemonCommandsDropdown()
         // Load logging preference
@@ -451,6 +457,21 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 return@setOnClickListener
             }
             startDaemon()
+        }
+
+        btnKillDaemon.setOnClickListener {
+            appendLog("Killing daemon via LADB...")
+            lifecycleScope.launch {
+                val cmd = "kill \$(cat /data/local/tmp/daemon.pid 2>/dev/null) 2>/dev/null; pkill -f 'com.arslan.shizuwall.daemon.SystemDaemon'"
+                val result = withContext(Dispatchers.IO) {
+                    ladbManager.execShell(cmd)
+                }
+                if (result.exitCode == 0) {
+                    appendLog("Kill command sent successfully")
+                } else {
+                    appendLog("Kill command failed: ${result.stderr}")
+                }
+            }
         }
 
         btnConnect.setOnClickListener {
@@ -797,8 +818,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             "getprop ro.product.model",
             "uname -a",
             "pm list packages -3",
-            "dumpsys battery",
-            "kill daemon"
+            "dumpsys battery"
         )
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, commands)
         actvDaemonCommands.setAdapter(adapter)
@@ -827,21 +847,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                             }
                         } catch (e: Exception) {
                             "✗ Ping failed: ${e.message}"
-                        }
-                    }
-                    "kill daemon" -> {
-                        // Special handling for killing daemon
-                        try {
-                            val pidResult = daemonManager.executeCommand("cat /data/local/tmp/daemon.pid 2>/dev/null")
-                            if (pidResult.isNotBlank()) {
-                                val pid = pidResult.trim()
-                                appendLog("Found daemon PID: $pid")
-                                daemonManager.executeCommand("kill $pid 2>/dev/null || kill -9 $pid 2>/dev/null || true")
-                            } else {
-                                "No daemon PID file found"
-                            }
-                        } catch (e: Exception) {
-                            "Error killing daemon: ${e.message}"
                         }
                     }
                     else -> {

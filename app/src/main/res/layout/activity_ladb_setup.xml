@@ -169,6 +169,16 @@
                         app:backgroundTint="?attr/colorPrimaryContainer"
                         android:textColor="?attr/colorOnPrimaryContainer" />
 
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:id="@+id/btnKillDaemon"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/daemon_kill"
+                        android:layout_marginTop="8dp"
+                        app:backgroundTint="?attr/colorErrorContainer"
+                        android:textColor="?attr/colorOnErrorContainer" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
