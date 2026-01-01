@@ -1,13 +1,32 @@
 # ShizuWall
 
+<!-- ---------- Badges ---------- -->
+<div align="center">
+  <img alt="Last commit" src="https://img.shields.io/github/last-commit/AhmetCanArslan/ShizuWall?color=c3e7ff&style=flat-square">
+  <img alt="Repo size" src="https://img.shields.io/github/repo-size/AhmetCanArslan/ShizuWall?color=c3e7ff&style=flat-square">
+  
+  <br>
+  <a href="https://github.com/AhmetCanArslan/ShizuWall/releases">
+    <img src="https://img.shields.io/github/downloads/AhmetCanArslan/ShizuWall/total?color=ff9500&style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPmRvd25sb2FkPC90aXRsZT48cGF0aCBkPSJNNSwyMEgxOVYxOEg1TTE5LDlIMTVWM0g5VjlINUwxMiwxNkwxOSw5WiIgZmlsbD0id2hpdGUiIC8+PC9zdmc+&labelColor=a6660d"/>
+  </a>
+  <br>
+  <a href="https://github.com/AhmetCanArslan/ShizuWall/stargazers">
+    <img src="https://img.shields.io/github/stars/AhmetCanArslan/ShizuWall?color=ffff00&style=for-the-badge&labelColor=a1a116&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPnN0YXI8L3RpdGxlPjxwYXRoIGQ9Ik0xMiwxNy4yN0wxOC4xOCwyMUwxNi41NCwxMy45N0wyMiw5LjI0TDE0LjgxLDguNjJMMTIsMkw5LjE5LDguNjJMMiw5LjI0TDcuNDUsMTMuOTdMNS44MiwyMUwxMiwxNy4yN1oiIGZpbGw9IndoaXRlIiAvPjwvc3ZnPg=="/>
+  </a>
+</div>
+<p align="center">
+  <a href="https://www.buymeacoffee.com/ahmetcanarslan">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="30%"/>
+  </a>
+</p>
 
 
 A lightweight, privacy focused Android firewall application that blocks network connections for selected apps **without requiring root access or VPN**. ShizuWall leverages Shizuku to provide powerful network control capabilities. Requires Android 11 (API 30) or higher. 
 
-## ShizuWall is available on playstore!
-### [Download from playstore](https://play.google.com/store/apps/details?id=com.arslan.shizuwall) 
+## ShizuWall is available on PlayStore!
+### [Download from PlayStore](https://play.google.com/store/apps/details?id=com.arslan.shizuwall) 
 
-#### Playstore and GitHub versions are signed with different keys. These two versions DOES NOT have any difference on usability and functionality.
+#### PlayStore and GitHub versions are signed with different keys. These two versions DOES NOT have any difference on usability and functionality.
 
 <p align="center">
   <img src="assets/screenShots/v3.2/1.png" width="30%">
@@ -15,11 +34,6 @@ A lightweight, privacy focused Android firewall application that blocks network 
   <img src="assets/screenShots/v3.2/3.png" width="30%">
 </p>
 
-<p align="center">
-  <a href="https://www.buymeacoffee.com/ahmetcanarslan">
-    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" />
-  </a>
-</p>
 
 ## Why ShizuWall is Different
 
@@ -30,12 +44,9 @@ A lightweight, privacy focused Android firewall application that blocks network 
 
 ## Notes
 
-- Firewall rules are applied using platform commands and are automatically cleared on device reboot (Android security limitation).
-- The app detects reboots using a boot-relative timestamp and automatically clears stale saved state so you won't be left with stale "enabled" flags after reboot.
-- By default only user-installed apps are shown. Use the overflow menu (three dots, top-right) to "Show system apps" if you need to include system apps for selection.
-- If anything goes wrong, rebooting the device will revert every change made by ShizuWall.
-- The app persists minimal preferences locally (selected apps, enabled flag) and stores a small boot-relative timestamp in device-protected storage so the app can detect reboots safely without exposing data.
-- No network calls from the app itself — it does not send any data to external services. The application does not request android.permission.INTERNET in its manifest. While Shizuku itself has shell privileges (which include network access), ShizuWall is designed to operate locally and does not initiate any network connections.
+- Firewall rules are applied using platform commands and are automatically cleared on device reboot (Android security limitation).That means, rebooting will revert anything done by ShizuWall.
+
+- No network calls from the app itself — it does not send any data to external services. The application requests `android.permission.INTERNET` permission to only support wireless debugging pairing (LibADB) features (connecting to the local ADB daemon). ShizuWall is designed to operate locally and does not initiate any connections to external servers.
 
 ## Firewall Implementation
 
@@ -83,11 +94,7 @@ adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.F
 
 ```
 
-Notes for those want to use broadcasts:
-- The receiver is exported to allow adb and automation.
-- Using `-n com.arslan.shizuwall/.receivers.FirewallControlReceiver` targets the receiver directly, bypassing intent filters.
 - Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.
-- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.
 
 ## ⚠️ Disclaimer
 
@@ -104,16 +111,12 @@ Use at your own discretion and ensure you understand which apps you're blocking.
 
 *This project is Licenced under GNU General Public License v3.0 (GPLv3).*
 
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Please see the repository for contribution guidelines.
-
----
-
-- [Shizuku](https://github.com/RikkaApps/Shizuku) - For providing the API that makes this app possible
 
 ## Donate
 
-If you find ShizuWall useful, consider [Buy Me a Coffee](https://buymeacoffee.com/ahmetcanarslan) or downloading it from [PlayStore](https://play.google.com/store/apps/details?id=com.arslan.shizuwall)
+If you find ShizuWall useful, consider [Buying Me a Coffee](https://buymeacoffee.com/ahmetcanarslan) or downloading it from [PlayStore](https://play.google.com/store/apps/details?id=com.arslan.shizuwall)
 
 ## [Releases](https://github.com/AhmetCanArslan/ShizuWall/releases)
+
+- [Shizuku](https://github.com/RikkaApps/Shizuku) - For providing the API that makes this app possible
+- [LibADB](https://github.com/MuntashirAkon/libadb-android) - For wireless debugging support that makes adb connection and Daemon management easier
