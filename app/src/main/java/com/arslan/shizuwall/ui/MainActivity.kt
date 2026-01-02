@@ -1135,8 +1135,9 @@ class MainActivity : AppCompatActivity() {
 
                 if (animate) {
                     recyclerView.post {
+                        val targetAlpha = if (isFirewallEnabled && !adaptiveMode) 0.5f else 1f
                         recyclerView.animate()
-                            .alpha(1f)
+                            .alpha(targetAlpha)
                             .setStartDelay(400)
                             .setDuration(200)
                             .start()
@@ -1159,7 +1160,8 @@ class MainActivity : AppCompatActivity() {
             appList.sortWith(finalComparator)
             filterApps(currentQuery)
             recyclerView.animate().cancel()
-            recyclerView.alpha = 1f
+            val targetAlpha = if (isFirewallEnabled && !adaptiveMode) 0.5f else 1f
+            recyclerView.alpha = targetAlpha
             updateList()
         }
     }
