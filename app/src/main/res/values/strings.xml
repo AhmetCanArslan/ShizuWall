@@ -59,8 +59,13 @@
     <string name="favorites_message">Long press on an app to add it to your favorites for quick access.</string>
     <string name="app_visibility_title">Smart App Filtering</string>
     <string name="app_visibility_message">ShizuWall automatically filters out apps that don\'t have internet permission. This keeps your list clean and focused on apps that actually need firewall control.</string>
-    <string name="shizuku_required_title">Shizuku Required</string>
-    <string name="shizuku_required_message">Shizuku is required for this application to run. Therefore, the developer is not responsible for any negative consequences. Please install and activate Shizuku before proceeding.</string>
+    <string name="shizuku_required_title">Shizuku Mode</string>
+    <string name="shizuku_required_message">The developer is not responsible for any negative consequences. Please install and activate Shizuku before proceeding.</string>
+    <string name="onboarding_mode_selection_title">Choose Working Mode</string>
+    <string name="onboarding_mode_selection_message">ShizuWall can work in two modes. Shizuku is recommended for most users. LADB is an alternative that uses a local ADB daemon. Working Mode can be changed later</string>
+    <string name="use_shizuku">Use Shizuku</string>
+    <string name="use_ladb">Use LADB</string>
+    <string name="ladb_onboarding_message">LADB mode allows ShizuWall to work by using a local ADB daemon. You will need to pair with Wireless Debugging once on LADB Setup page which located in settings. The developer is not responsible for any negative consequences.</string>
     <string name="get_started">Get Started</string>
     <string name="shizuku_service_dead">Shizuku service is dead</string>
     <string name="shizuku_update_required">Shizuku Update Required</string>

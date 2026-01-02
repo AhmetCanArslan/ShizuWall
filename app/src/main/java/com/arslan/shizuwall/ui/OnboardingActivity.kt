@@ -74,6 +74,19 @@ class OnboardingActivity : AppCompatActivity() {
 
         pages.add(
             OnboardingPage(
+                title = getString(R.string.onboarding_mode_selection_title),
+                message = getString(R.string.onboarding_mode_selection_message),
+                buttonText = getString(R.string.use_shizuku),
+                onButtonClick = { setWorkingMode("SHIZUKU") },
+                secondaryButtonText = getString(R.string.use_ladb),
+                onSecondaryButtonClick = { setWorkingMode("LADB") },
+                isModeSelectionPage = true,
+                imageResId = R.drawable.ic_settings
+            )
+        )
+
+        pages.add(
+            OnboardingPage(
                 title = getString(R.string.shizuku_required_title),
                 message = getString(R.string.shizuku_required_message),
                 buttonText = getString(R.string.get_started),
@@ -142,6 +155,36 @@ class OnboardingActivity : AppCompatActivity() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
+
+    fun setWorkingMode(mode: String) {
+        getSharedPreferences(MainActivity.PREF_NAME, MODE_PRIVATE)
+            .edit()
+            .putString(MainActivity.KEY_WORKING_MODE, mode)
+            .apply()
+
+        // Update the last page based on the selected mode
+        val lastPageIndex = pages.size - 1
+        if (mode == "LADB") {
+            pages[lastPageIndex] = OnboardingPage(
+                title = getString(R.string.working_mode_ladb),
+                message = getString(R.string.ladb_onboarding_message),
+                buttonText = getString(R.string.get_started),
+                onButtonClick = { finishOnboarding() },
+                imageResId = R.drawable.adb_24px
+            )
+        } else {
+            pages[lastPageIndex] = OnboardingPage(
+                title = getString(R.string.shizuku_required_title),
+                message = getString(R.string.shizuku_required_message),
+                buttonText = getString(R.string.get_started),
+                onButtonClick = { finishOnboarding() },
+                imageResId = getShizukuIconRes()
+            )
+        }
+        viewPager.adapter?.notifyItemChanged(lastPageIndex)
+
+        goToNextPage()
+    }
 }
 
 data class OnboardingPage(
@@ -150,5 +193,8 @@ data class OnboardingPage(
     val buttonText: String,
     val onButtonClick: () -> Unit,
     val isPermissionPage: Boolean = false,
+    val isModeSelectionPage: Boolean = false,
+    val secondaryButtonText: String? = null,
+    val onSecondaryButtonClick: (() -> Unit)? = null,
     val imageResId: Int? = null
 )

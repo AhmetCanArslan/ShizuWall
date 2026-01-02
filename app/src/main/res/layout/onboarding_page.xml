@@ -40,4 +40,13 @@
         android:layout_height="wrap_content"
         android:text="Button" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/page_button_secondary"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:text="Secondary Button" />
+
 </LinearLayout>

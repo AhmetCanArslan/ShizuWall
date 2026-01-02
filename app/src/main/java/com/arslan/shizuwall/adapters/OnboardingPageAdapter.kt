@@ -33,6 +33,7 @@ class OnboardingPageAdapter(
         private val titleText: TextView = itemView.findViewById(R.id.page_title)
         private val messageText: TextView = itemView.findViewById(R.id.page_message)
         private val actionButton: MaterialButton = itemView.findViewById(R.id.page_button)
+        private val secondaryButton: MaterialButton = itemView.findViewById(R.id.page_button_secondary)
 
         fun bind(page: OnboardingPage) {
             // Show/hide image based on whether imageResId is provided
@@ -47,6 +48,14 @@ class OnboardingPageAdapter(
             messageText.text = page.message
             actionButton.text = page.buttonText
             actionButton.setOnClickListener { page.onButtonClick() }
+
+            if (page.secondaryButtonText != null && page.onSecondaryButtonClick != null) {
+                secondaryButton.visibility = View.VISIBLE
+                secondaryButton.text = page.secondaryButtonText
+                secondaryButton.setOnClickListener { page.onSecondaryButtonClick.invoke() }
+            } else {
+                secondaryButton.visibility = View.GONE
+            }
         }
     }
 }
