@@ -130,18 +130,14 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 daemonStatusIndicator.setBackgroundColor(Color.GREEN)
                 tvDaemonStatus.text = getString(R.string.daemon_status_running)
                 tvDaemonStatus.setTextColor(Color.GREEN)
-                btnStartDaemon.isEnabled = false
-                btnStartDaemon.alpha = 0.5f
-                btnKillDaemon.isEnabled = true
-                btnKillDaemon.alpha = 1.0f
+                applyButtonEnabledState(btnStartDaemon, false)
+                applyButtonEnabledState(btnKillDaemon, isConnected)
             } else {
                 daemonStatusIndicator.setBackgroundColor(Color.RED)
                 tvDaemonStatus.text = getString(R.string.daemon_status_stopped)
                 tvDaemonStatus.setTextColor(Color.RED)
-                btnStartDaemon.isEnabled = isConnected
-                btnStartDaemon.alpha = if (isConnected) 1.0f else 0.5f
-                btnKillDaemon.isEnabled = false
-                btnKillDaemon.alpha = 0.5f
+                applyButtonEnabledState(btnStartDaemon, isConnected)
+                applyButtonEnabledState(btnKillDaemon, false)
             }
         }
     }
