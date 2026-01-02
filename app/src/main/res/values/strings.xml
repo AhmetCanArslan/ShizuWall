@@ -196,6 +196,9 @@
     <string name="ladb_clear_logs">Clear Logs</string>
     <string name="ladb_copy_logs">Copy Logs</string>
     <string name="ladb_enable_logs">Enable Logs</string>
+    <string name="ladb_setup_guidance">This working mode uses a background helper Daemon to manage your firewall rules.\n\nQuick Start Guide:\n- Make sure you are connected to Wi-Fi\n- Enable \'Wireless Debugging and Usb debugging (to keep helper alive without Wi-Fi connection)\' in Developer Options\n- Tap the button below to start the helper\n\nFirst Time Setup:\nIf you haven\'t paired before, the button will open Developer Options. Go to \'Wireless Debugging\' -> \'Pair device with pairing code\'. A notification will appear—just enter the code there.\n\nImportant: Android stops the helper when you restart your phone. You\'ll need to tap the button again after every reboot to keep Daemon alive.\n\nImportant2: If you do not enable usb debugging, this working mode will only work when you have a Wi-Fi connection. Because if you disconnect from wi-fi it\'ll stop daemon and firewall cannot be enabled or disabled.</string>
+    <string name="advanced_mode">Advanced Mode</string>
+    <string name="advanced_mode_description">Show detailed LADB and Daemon configuration</string>
     <string name="daemon_not_running">Daemon is not running. Please start it from the setup page.</string>
     <string name="open_daemon_setup">Open Daemon Setup</string>
     <string name="daemon_status_running">Daemon: Running</string>
