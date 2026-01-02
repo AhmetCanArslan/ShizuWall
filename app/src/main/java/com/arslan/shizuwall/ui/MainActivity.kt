@@ -1095,17 +1095,14 @@ class MainActivity : AppCompatActivity() {
     private fun sortAndFilterApps(preserveScrollPosition: Boolean = false, scrollToTop: Boolean = false, animate: Boolean = false) {
         val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
         
-        val baseComparator = if (moveSelectedTop) {
-            compareByDescending<AppInfo> { it.isSelected }
-                .thenBy { it.isSystem }
-        } else {
-            compareBy<AppInfo> { it.isSystem }
+        var finalComparator: Comparator<AppInfo> = when (currentSortOrder) {
+            SortOrder.NAME_ASC -> Comparator { o1: AppInfo, o2: AppInfo -> turkishCollator.compare(o1.appName, o2.appName) }
+            SortOrder.NAME_DESC -> Comparator { o1: AppInfo, o2: AppInfo -> turkishCollator.compare(o1.appName, o2.appName) }.reversed()
+            SortOrder.INSTALL_TIME -> compareByDescending<AppInfo> { it.installTime }
         }
 
-        val finalComparator = when (currentSortOrder) {
-            SortOrder.NAME_ASC -> baseComparator.thenBy(turkishCollator) { it.appName }
-            SortOrder.NAME_DESC -> baseComparator.thenByDescending(turkishCollator) { it.appName }
-            SortOrder.INSTALL_TIME -> baseComparator.thenByDescending { it.installTime }
+        if (moveSelectedTop) {
+            finalComparator = compareByDescending<AppInfo> { it.isSelected }.then(finalComparator)
         }
 
         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
