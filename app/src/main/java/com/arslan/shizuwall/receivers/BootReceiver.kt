@@ -107,8 +107,8 @@ class BootReceiver : BroadcastReceiver() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
             )
 
-            val title = "Firewall was active before reboot"
-            val text = "Firewall should be enabled again after rebooting. Tap to open the app."
+            val title = context.getString(R.string.firewall_reboot_title)
+            val text = context.getString(R.string.firewall_reboot_message)
 
             val notifBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)

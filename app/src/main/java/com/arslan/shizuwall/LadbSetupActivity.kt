@@ -262,7 +262,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             val cm = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
             val clip = android.content.ClipData.newPlainText("ladb_logs", merged)
             cm.setPrimaryClip(clip)
-            Snackbar.make(rootView, getString(R.string.copy) + "!", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(rootView, R.string.copy_logs_success, Snackbar.LENGTH_SHORT).show()
         }
 
         btnClose.setOnClickListener { dialog.dismiss() }
@@ -271,9 +271,9 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
     private fun showNotificationPermissionDialog(onPermissionGranted: (() -> Unit)? = null) {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Notification Permission Required")
-            .setMessage("ShizuWall needs notification permission to show the pairing code notification.\n\nWithout this permission, you won't be able to enter the pairing code easily.")
-            .setPositiveButton("Grant Permission") { _, _ ->
+            .setTitle(R.string.notification_permission_required_title)
+            .setMessage(R.string.notification_permission_required_message)
+            .setPositiveButton(R.string.grant_permission) { _, _ ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     mPermissionCallback = onPermissionGranted
                     requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
@@ -285,7 +285,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                     startActivity(intent)
                 }
             }
-            .setNegativeButton("Cancel") { _, _ ->
+            .setNegativeButton(R.string.cancel) { _, _ ->
                 showNotificationDeniedDialog()
             }
             .show()
@@ -293,17 +293,17 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
     private fun showNotificationDeniedDialog() {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Cannot Continue")
-            .setMessage("Notification permission is required to use the LADB pairing feature. This permission allows us to show important pairing information.\n\nPlease grant notification permission to proceed.")
-            .setPositiveButton("OK", null)
+            .setTitle(R.string.cannot_continue)
+            .setMessage(R.string.notification_permission_required_ladb)
+            .setPositiveButton(R.string.ok, null)
             .show()
     }
 
     private fun showPairingInfoDialog() {
         MaterialAlertDialogBuilder(this)
-            .setMessage("Enter pairing code from wireless debugging page into notification.")
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Open Developer Settings") { _, _ ->
+            .setMessage(R.string.enter_pairing_code_hint)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.open_developer_settings) { _, _ ->
                 // Open developer settings
                 val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -320,12 +320,12 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         val savedPairingPort = ladbManager.getSavedPairingPort()
         
         if (savedHost.isNullOrBlank() || savedPairingPort <= 0) {
-            appendLog("No pairing config found, waiting for auto-discovery...")
-            Snackbar.make(rootView, "Waiting for pairing service discovery...", Snackbar.LENGTH_SHORT).show()
+            appendLog(getString(R.string.log_no_pairing_config))
+            Snackbar.make(rootView, R.string.waiting_for_pairing_discovery, Snackbar.LENGTH_SHORT).show()
             return
         }
 
-        appendLog("Showing pairing notification for config: $savedHost:$savedPairingPort")
+        appendLog(getString(R.string.log_showing_pairing_notif, savedHost, savedPairingPort))
         showPairingCodeNotification()
     }
 
@@ -395,7 +395,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             setLoggingEnabled(isChecked)
             animateLogsContainer(isChecked)
             if (isChecked) {
-                appendLog("Logging enabled")
+                appendLog(getString(R.string.log_logging_enabled))
             }
         }
 
@@ -425,7 +425,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         }
 
         updateStatus()
-        appendLog("LADB Setup initialized. Current status: ${tvStatus.text}")
+        appendLog(getString(R.string.log_setup_initialized, tvStatus.text))
 
         btnPair.setOnClickListener {
             // Initialize pairing components when pairing is requested
@@ -449,23 +449,23 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
         btnStartDaemon.setOnClickListener {
             if (isDaemonRunning) {
-                appendLog("Daemon is already running")
+                appendLog(getString(R.string.log_daemon_already_running))
                 return@setOnClickListener
             }
             startDaemon()
         }
 
         btnKillDaemon.setOnClickListener {
-            appendLog("Killing daemon via LADB...")
+            appendLog(getString(R.string.log_killing_daemon))
             lifecycleScope.launch {
                 val cmd = "kill \$(cat /data/local/tmp/daemon.pid 2>/dev/null) 2>/dev/null; pkill -f 'com.arslan.shizuwall.daemon.SystemDaemon'"
                 val result = withContext(Dispatchers.IO) {
                     ladbManager.execShell(cmd)
                 }
                 if (result.exitCode == 0) {
-                    appendLog("Kill command sent successfully")
+                    appendLog(getString(R.string.log_kill_success))
                 } else {
-                    appendLog("Kill command failed: ${result.stderr}")
+                    appendLog(getString(R.string.log_kill_failed, result.stderr))
                 }
             }
         }
@@ -474,7 +474,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
             // Initialize connection components when connecting is requested
             initializeConnectionComponents()
 
-            appendLog("Starting connection...")
+            appendLog(getString(R.string.log_starting_connection))
             lifecycleScope.launch {
                 btnConnect.isEnabled = false
                 connectProgress.visibility = View.VISIBLE
@@ -483,7 +483,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
                 // If no connect config, wait a bit for auto-discovery to complete
                 if ((savedHost.isNullOrBlank() || savedConnectPort <= 0)) {
-                    appendLog("No connect config found, waiting for auto-discovery...")
+                    appendLog(getString(R.string.log_no_connect_config))
                     // Wait up to 3 seconds for port discovery to complete
                     var waitCount = 0
                     while (waitCount < 30) { // 30 * 100ms = 3 seconds
@@ -491,7 +491,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                         savedHost = ladbManager.getSavedHost()
                         savedConnectPort = ladbManager.getSavedConnectPort()
                         if (savedHost != null && savedConnectPort > 0) {
-                            appendLog("Connect config found via auto-discovery")
+                            appendLog(getString(R.string.log_connect_config_found))
                             break
                         }
                         waitCount++
@@ -506,7 +506,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                             detectedConnectPorts.any { it.first == host }
                         }
                         if (hasPorts) {
-                            appendLog("No connect config, attempting to scan detected ports...")
+                            appendLog(getString(R.string.log_scanning_ports))
                             val foundPort = withContext(Dispatchers.IO) {
                                 scanAndSaveConnectPort(host)
                             }
@@ -519,39 +519,36 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 }
 
                 if (savedHost.isNullOrBlank() || savedConnectPort <= 0) {
-                    appendLog("No connect config found")
-                    Snackbar.make(rootView, "No connection configuration found. Wait for auto-discovery or check wireless debugging.", Snackbar.LENGTH_LONG).show()
+                    appendLog(getString(R.string.log_no_connect_config_final))
+                    Snackbar.make(rootView, R.string.no_connection_config_found, Snackbar.LENGTH_LONG).show()
                     btnConnect.isEnabled = true
                     connectProgress.visibility = View.GONE
                     return@launch
                 }
 
                 val ok = withContext(Dispatchers.IO) {
-                    appendLog("Connecting to $savedHost:$savedConnectPort")
+                    appendLog(getString(R.string.log_connecting_to, savedHost, savedConnectPort))
                     ladbManager.connect(savedHost, savedConnectPort)
                 }
                 updateStatus()
                 if (!ok) {
                     val logs = ladbManager.getLastErrorLog()
                     val errorMessage = if (logs.isNullOrBlank()) {
-                        "Connection failed. Please check:\n" +
-                        "1. Wireless debugging is enabled in Developer options\n" +
-                        "2. The device is on the same network\n" +
-                        "3. No firewall is blocking the connection"
+                        getString(R.string.ladb_connection_failed_help)
                     } else {
                         logs
                     }
-                    appendLog("Connection failed: $errorMessage")
+                    appendLog(getString(R.string.log_connection_failed, errorMessage))
                     showLadbErrorDialog(getString(R.string.ladb_error_title), errorMessage)
                 } else {
-                    appendLog("Connection successful")
+                    appendLog(getString(R.string.log_connection_success))
                     // Automatically start daemon after connection (if not already running)
                     if (!isDaemonRunning) {
                         // Delay to let connection stabilize
                         delay(2000)
                         startDaemon()
                     } else {
-                        appendLog("Daemon is already running, skipping auto-start")
+                        appendLog(getString(R.string.log_daemon_running_skipping))
                     }
                 }
                 btnConnect.isEnabled = true
@@ -560,19 +557,19 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         }
 
         btnUnpair.setOnClickListener {
-            appendLog("Unpairing device...")
+            appendLog(getString(R.string.log_unpairing))
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) { ladbManager.clearAllConfig() }
                 
                 updateStatus()
-                appendLog("Device unpaired")
+                appendLog(getString(R.string.log_device_unpaired))
             }
         }
 
         btnClearLogs.setOnClickListener {
             tvLadbLogs.text = ""
             saveLogs("")
-            appendLog("Logs cleared")
+            appendLog(getString(R.string.log_logs_cleared))
         }
 
         btnCopyLogs.setOnClickListener {
@@ -581,10 +578,10 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                 val clip = android.content.ClipData.newPlainText("ladb_logs", logs)
                 clipboard.setPrimaryClip(clip)
-                Snackbar.make(rootView, getString(R.string.copy) + " logs!", Snackbar.LENGTH_SHORT).show()
-                appendLog("Logs copied to clipboard")
+                Snackbar.make(rootView, R.string.copy_logs_success, Snackbar.LENGTH_SHORT).show()
+                appendLog(getString(R.string.log_logs_copied))
             } else {
-                Snackbar.make(rootView, "No logs to copy", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(rootView, R.string.no_logs_to_copy, Snackbar.LENGTH_SHORT).show()
             }
         }
     }
@@ -598,7 +595,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 updateStatus()
                 val newStatus = tvStatus.text.toString()
                 if (oldStatus != newStatus) {
-                    appendLog("Status updated: $newStatus")
+                    appendLog(getString(R.string.log_status_updated, newStatus))
                 }
 
                 // After pairing completes, check if we have detected connect ports but no saved connect config
@@ -999,7 +996,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         if (requestCode == 1001) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted, execute callback if available
-                Snackbar.make(rootView, "Notification permission granted!", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(rootView, R.string.notification_permission_granted, Snackbar.LENGTH_SHORT).show()
                 mPermissionCallback?.invoke()
                 mPermissionCallback = null
             } else {

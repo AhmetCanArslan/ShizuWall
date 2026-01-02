@@ -120,7 +120,7 @@ class SettingsActivity : AppCompatActivity() {
         setupListeners()
 
         val packageInfo = packageManager.getPackageInfo(packageName, 0)
-        tvVersion.text = "Version ${packageInfo.versionName}"
+        tvVersion.text = getString(R.string.version_format, packageInfo.versionName)
 
         // Apply custom font to all views
         applyFontToViews(findViewById(android.R.id.content))
@@ -181,7 +181,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
-        tvCurrentFont.text = if (currentFont == "ndot") "Ndot" else "Default"
+        tvCurrentFont.text = if (currentFont == "ndot") getString(R.string.font_ndot) else getString(R.string.font_default)
         switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
         switchAutoEnableOnShizukuStart.isChecked = prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
         switchAppMonitor.isChecked = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
@@ -424,7 +424,7 @@ class SettingsActivity : AppCompatActivity() {
             }
 
             prefs.edit().putString(MainActivity.KEY_SELECTED_FONT, fontKey).apply()
-            tvCurrentFont.text = if (fontKey == "ndot") "Ndot" else "Default"
+            tvCurrentFont.text = if (fontKey == "ndot") getString(R.string.font_ndot) else getString(R.string.font_default)
 
             dialog.dismiss()
             showRestartNotice(getString(R.string.font_changed_title), getString(R.string.font_changed_message))

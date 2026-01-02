@@ -54,7 +54,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
         val adaptiveMode = prefs.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
 
         if (enabled && packages.isEmpty() && !adaptiveMode) {
-            Toast.makeText(context, "No apps selected", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
             pending.finish()
             return
         }
@@ -83,7 +83,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            if (mode == "LADB") context.getString(R.string.daemon_not_running) else "Shizuku not available or permission denied",
+                            if (mode == "LADB") context.getString(R.string.daemon_not_running) else context.getString(R.string.shizuku_not_available),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -145,7 +145,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                             } else {
                                 // Global disable failed, show error but don't update state
                                 withContext(Dispatchers.Main) {
-                                    Toast.makeText(context, "Failed to disable firewall", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.failed_to_disable_firewall), Toast.LENGTH_SHORT).show()
                                 }
                             }
                         } else {
@@ -172,7 +172,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
 
             } catch (t: Throwable) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.error_format, t.message), Toast.LENGTH_SHORT).show()
                 }
             } finally {
                 pending.finish()

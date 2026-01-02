@@ -713,7 +713,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }
-                     .setNegativeButton("Cancel", null)
+                     .setNegativeButton(getString(R.string.cancel), null)
                      .create()
                 d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
                 d.show()
@@ -848,7 +848,7 @@ class MainActivity : AppCompatActivity() {
                                     }
                                     showOperationErrorsDialog(failed, lastOperationErrorDetails)
                                 } else {
-                                    Toast.makeText(this@MainActivity, "Failed to update rules for ${failed.size} apps", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@MainActivity, getString(R.string.failed_to_update_rules_count, failed.size), Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
@@ -897,15 +897,15 @@ class MainActivity : AppCompatActivity() {
                                         saveActivePackages(activeFirewallPackages)
                                     }
                                     if (failed.isNotEmpty()) {
-                                        Toast.makeText(this@MainActivity, "Failed to unblock ${failed.size} apps", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@MainActivity, getString(R.string.failed_to_unblock_count, failed.size), Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             }
                         }
 
-                        Toast.makeText(this@MainActivity, "All apps unselected", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, getString(R.string.all_apps_unselected), Toast.LENGTH_SHORT).show()
                     }
-                    .setNegativeButton("Cancel", null)
+                    .setNegativeButton(getString(R.string.cancel), null)
                     .show()
                 true
             } else {
@@ -981,7 +981,7 @@ class MainActivity : AppCompatActivity() {
                                     saveSelectedApps()
                                     sortAndFilterApps(preserveScrollPosition = true)
                                     
-                                    Toast.makeText(this@MainActivity, "Failed to unblock ${appInfo.appName}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@MainActivity, getString(R.string.failed_to_unblock_app, appInfo.appName), Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }

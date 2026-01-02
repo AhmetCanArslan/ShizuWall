@@ -5,7 +5,6 @@
     <string name="donate">Donate</string>
     <string name="show_system_apps">Show system apps</string>
     <string name="skip_enable_dialog">Skip enable confirmation</string>
-    <string name="more_options">More options</string>
     <string name="github_button_desc">Open GitHub repository</string>
     <string name="app_icon_desc">App icon</string>
     <string name="cat_system">System</string>
@@ -13,8 +12,6 @@
     <string name="cat_unselected">Unselected</string>
     <string name="cat_user">User</string>
     <string name="enable_firewall">Firewall</string>
-    <string name="selected_0">Selected: 0</string>
-    <string name="change_font">Change Font</string>
     <string name="font_default">Default</string>
     <string name="font_ndot">Ndot</string>
     <string name="select_all">Select all</string>
@@ -74,7 +71,6 @@
     <string name="shizuku_permission_required_message">Shizuku permission is required for this app to work. Please grant the permission in Shizuku settings.</string>
     <string name="permission_denied">Permission Denied</string>
     <string name="shizuku_permission_granted">Shizuku permission granted</string>
-    <string name="shizuku_permission_denied">Shizuku permission denied. Please grant permission to enable/disable firewall.</string>
     <string name="notification_permission_granted">Notification permission granted</string>
     <string name="notification_permission_denied">Notification permission denied. You won\'t see firewall status notifications.</string>
     <string name="shizuku_not_running_title">Shizuku not running</string>
@@ -97,12 +93,10 @@
     <string name="firewall_enabled_adaptive">Firewall activated (Adaptive Mode)</string>
     <string name="failed_to_enable_firewall">Failed to enable firewall for any apps</string>
     <string name="failed_to_disable_firewall">Failed to disable firewall for any apps</string>
-    <string name="firewall_disabled">Firewall disabled</string>
     <string name="operation_failed_for_apps">Operation failed for %d apps</string>
     <string name="operation_failed_message">Operation failed for the following %d apps. They have been unselected.</string>
     <string name="details">Details</string>
     <string name="copy">Copy</string>
-    <string name="error_details_title">Error Details</string>
     <string name="no_error_details">No additional details are available.</string>
     <string name="close">Close</string>
     <string name="settings_title">Settings</string>
@@ -151,7 +145,6 @@
     <string name="github_description">View source code and contribute</string>
     <string name="settings">Settings</string>
     <string name="selected_count_zero">0</string>
-    <string name="firewall_enabled">Enabled</string>
 
     <string name="shizuku_setup_guide">Shizuku Setup Guide</string>
     <string name="shizuku_step_1">First of all you have to enable developer options. Afterwards open Shizuku app and press Pairing</string>
@@ -179,19 +172,11 @@
     <string name="ladb_status_disconnected">Disconnected</string>
     <string name="ladb_error_title">LADB error</string>
     <string name="ladb_hint_connection_refused">Connection refused usually means Wireless debugging is OFF or you are using the wrong port. Use the port shown in Developer options → Wireless debugging → IP address &amp; port (not the pairing port). Also make sure ShizuWall is allowed in Wireless debugging.</string>
-    <string name="ladb_invalid_host_port">Invalid address. Enter HOST:PORT (example: 127.0.0.1:43055) or just PORT (example: 43055).</string>
-    <string name="ladb_connect_host_port_hint">Device IP:ADB port (from Wireless debugging)</string>
-    <string name="ladb_pairing_port_hint">Pairing port (from Pair device)</string>
-    <string name="ladb_pairing_code_hint">Pairing code</string>
-    <string name="ladb_pairing_code_required">Pairing code is required.</string>
-    <string name="ladb_invalid_pairing_port">Invalid pairing port.</string>
 
     <string name="ladb_pairing_channel_name">LADB pairing</string>
     <string name="ladb_pairing_notification_title">Enter pairing code</string>
     <string name="ladb_pairing_notification_text">Tap and enter the pairing port and code shown in Wireless debugging → Pair device.</string>
-    <string name="ladb_enter_pairing_port_code_action">Enter port &amp; code</string>
     <string name="ladb_pairing_notification_text_code_only">Tap and enter the pairing code shown in Wireless debugging → Pair device.</string>
-    <string name="ladb_enter_pairing_code_action">Enter code</string>
 
     <string name="ladb_pairing_details_hint_port_code">Enter: PORT CODE (e.g. 37133 123456)</string>
     <string name="ladb_pairing_details_hint_code_only">Enter pairing code (e.g. 123456)</string>
@@ -203,7 +188,6 @@
     <string name="ladb_pairing_result_failed_text">Open ShizuWall to see the error log.</string>
     <string name="ladb_pairing_result_missing_code">Missing pairing code. Enter it from Wireless debugging → Pair device.</string>
     <string name="ladb_pairing_result_missing_port">Missing pairing port. Enter: PORT CODE (from Wireless debugging → Pair device).</string>
-    <string name="ladb_pairing_notification_shown">Pairing notification shown</string>
     <string name="ladb_notification_permission_required">Notification permission is required to show the pairing code prompt.</string>
     <string name="set_ladb_title">LADB &amp; Daemon Setup</string>
     <string name="set_ladb_summary">Pair LADB and install the persistent background daemon</string>
@@ -222,5 +206,50 @@
     <string name="sort">Sort</string>
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
-    <string name="sort_install_time">Date installed</string>
+    <string name="sort_install_time">Newest app first</string>
+    <string name="failed_to_update_rules_count">Failed to update rules for %d apps</string>
+    <string name="failed_to_unblock_count">Failed to unblock %d apps</string>
+    <string name="all_apps_unselected">All apps unselected</string>
+    <string name="failed_to_unblock_app">Failed to unblock %s</string>
+    <string name="notification_permission_required_title">Notification Permission Required</string>
+    <string name="notification_permission_required_message">ShizuWall needs notification permission to show the pairing code notification.\n\nWithout this permission, you won\'t be able to enter the pairing code easily.</string>
+    <string name="cannot_continue">Cannot Continue</string>
+    <string name="notification_permission_required_ladb">Notification permission is required to use the LADB pairing feature. This permission allows us to show important pairing information.\n\nPlease grant notification permission to proceed.</string>
+    <string name="enter_pairing_code_hint">Enter pairing code from wireless debugging page into notification.</string>
+    <string name="waiting_for_pairing_discovery">Waiting for pairing service discovery...</string>
+    <string name="no_connection_config_found">No connection configuration found. Wait for auto-discovery or check wireless debugging.</string>
+    <string name="no_logs_to_copy">No logs to copy</string>
+    <string name="version_format">Version %s</string>
+    <string name="firewalling_app">Firewalling %s</string>
+    <string name="added_to_selected_list">Added %s to selected list</string>
+    <string name="already_in_list">%s already in list</string>
+    <string name="error_format">Error: %s</string>
+    <string name="firewall_reboot_message">Firewall should be enabled again after rebooting. Tap to open the app.</string>
+    <string name="open_developer_settings">Open Developer Settings</string>
+    <string name="ladb_connection_failed_help">Connection failed. Please check:\n1. Wireless debugging is enabled in Developer options\n2. The device is on the same network\n3. No firewall is blocking the connection</string>
+    <string name="copy_logs_success">Logs copied to clipboard!</string>
+    <string name="shizuku_not_available">Shizuku not available or permission denied</string>
+    <string name="firewall_reboot_title">Firewall was active before reboot</string>
+    <string name="log_no_pairing_config">No pairing config found, waiting for auto-discovery...</string>
+    <string name="log_showing_pairing_notif">Showing pairing notification for config: %1$s:%2$d</string>
+    <string name="log_logging_enabled">Logging enabled</string>
+    <string name="log_setup_initialized">LADB Setup initialized. Current status: %s</string>
+    <string name="log_daemon_already_running">Daemon is already running</string>
+    <string name="log_killing_daemon">Killing daemon via LADB...</string>
+    <string name="log_kill_success">Kill command sent successfully</string>
+    <string name="log_kill_failed">Kill command failed: %s</string>
+    <string name="log_starting_connection">Starting connection...</string>
+    <string name="log_no_connect_config">No connect config found, waiting for auto-discovery...</string>
+    <string name="log_connect_config_found">Connect config found via auto-discovery</string>
+    <string name="log_scanning_ports">No connect config, attempting to scan detected ports...</string>
+    <string name="log_no_connect_config_final">No connect config found</string>
+    <string name="log_connecting_to">Connecting to %1$s:%2$d</string>
+    <string name="log_connection_failed">Connection failed: %s</string>
+    <string name="log_connection_success">Connection successful</string>
+    <string name="log_daemon_running_skipping">Daemon is already running, skipping auto-start</string>
+    <string name="log_unpairing">Unpairing device...</string>
+    <string name="log_device_unpaired">Device unpaired</string>
+    <string name="log_logs_cleared">Logs cleared</string>
+    <string name="log_logs_copied">Logs copied to clipboard</string>
+    <string name="log_status_updated">Status updated: %s</string>
 </resources>

@@ -166,7 +166,7 @@ class FirewallTileService : TileService() {
             } else {
                 // Show error if disable failed
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@FirewallTileService, "Failed to disable firewall", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@FirewallTileService, getString(R.string.failed_to_disable_firewall), Toast.LENGTH_SHORT).show()
                 }
             }
         }
