@@ -123,6 +123,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
+        val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+        if (workingMode == "LADB") return@OnBinderReceivedListener
+
         val autoEnable = sharedPreferences.getBoolean(KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
         if (!autoEnable) {
             checkShizukuPermission()
@@ -166,6 +169,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val binderDeadListener = Shizuku.OnBinderDeadListener {
+        val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+        if (workingMode == "LADB") return@OnBinderDeadListener
+
         Toast.makeText(this, getString(R.string.shizuku_service_dead), Toast.LENGTH_SHORT).show()
         finish()
     }
@@ -270,8 +276,9 @@ class MainActivity : AppCompatActivity() {
         showAndroid11WarningDialog()
 
         // Prompt user to view Shizuku setup slides at app start
+        val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
         val showSetupPrompt = sharedPreferences.getBoolean(KEY_SHOW_SETUP_PROMPT, true)
-        if (showSetupPrompt) {
+        if (showSetupPrompt && workingMode == "SHIZUKU") {
             val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
             val messageText: TextView = promptView.findViewById(R.id.shizuku_prompt_message_text)
             val checkbox: CheckBox = promptView.findViewById(R.id.shizuku_prompt_do_not_show)
