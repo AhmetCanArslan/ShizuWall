@@ -390,7 +390,7 @@ class MainActivity : AppCompatActivity() {
                 -1 -> Category.NONE
                 else -> Category.NONE
             }
-            sortAndFilterApps(preserveScrollPosition = false)
+            sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true)
         }
 
         // ensure the category chips reflect the saved "show system apps" preference
@@ -1086,13 +1086,13 @@ class MainActivity : AppCompatActivity() {
             .setSingleChoiceItems(options, currentIndex) { dialog, which ->
                 currentSortOrder = sortOrders[which]
                 sharedPreferences.edit().putString(KEY_SORT_ORDER, currentSortOrder.name).apply()
-                sortAndFilterApps(preserveScrollPosition = false)
+                sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = true)
                 dialog.dismiss()
             }
             .show()
     }
 
-    private fun sortAndFilterApps(preserveScrollPosition: Boolean = false) {
+    private fun sortAndFilterApps(preserveScrollPosition: Boolean = false, scrollToTop: Boolean = false, animate: Boolean = false) {
         val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
         
         val baseComparator = if (moveSelectedTop) {
@@ -1108,9 +1108,6 @@ class MainActivity : AppCompatActivity() {
             SortOrder.INSTALL_TIME -> baseComparator.thenByDescending { it.installTime }
         }
 
-        appList.sortWith(finalComparator)
-
-        filterApps(currentQuery)
         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
         
         var firstVisible = RecyclerView.NO_POSITION
@@ -1121,17 +1118,49 @@ class MainActivity : AppCompatActivity() {
             offset = layoutManager.findViewByPosition(firstVisible)?.top ?: 0
         }
 
-        // Disable animator to prevent visual clutter during list updates
-        recyclerView.itemAnimator = null
-        appListAdapter.submitList(filteredAppList.toList()) {
-            recyclerView.itemAnimator = defaultItemAnimator
-            
-            if (preserveScrollPosition && moveSelectedTop && firstVisible != RecyclerView.NO_POSITION) {
-                layoutManager.scrollToPositionWithOffset(firstVisible, offset)
+        val updateList = {
+            // Disable animator to prevent visual clutter during list updates
+            recyclerView.itemAnimator = null
+            appListAdapter.submitList(filteredAppList.toList()) {
+                recyclerView.itemAnimator = defaultItemAnimator
+                
+                if (preserveScrollPosition && moveSelectedTop && firstVisible != RecyclerView.NO_POSITION) {
+                    layoutManager.scrollToPositionWithOffset(firstVisible, offset)
+                } else if (scrollToTop) {
+                    layoutManager.scrollToPosition(0)
+                }
+                
+                updateSelectedCount()
+                updateSelectAllCheckbox()
+
+                if (animate) {
+                    recyclerView.post {
+                        recyclerView.animate()
+                            .alpha(1f)
+                            .setStartDelay(400)
+                            .setDuration(200)
+                            .start()
+                    }
+                }
             }
-            
-            updateSelectedCount()
-            updateSelectAllCheckbox()
+        }
+
+        if (animate) {
+            recyclerView.animate()
+                .alpha(0f)
+                .setDuration(200)
+                .withEndAction {
+                    appList.sortWith(finalComparator)
+                    filterApps(currentQuery)
+                    updateList()
+                }
+                .start()
+        } else {
+            appList.sortWith(finalComparator)
+            filterApps(currentQuery)
+            recyclerView.animate().cancel()
+            recyclerView.alpha = 1f
+            updateList()
         }
     }
 
