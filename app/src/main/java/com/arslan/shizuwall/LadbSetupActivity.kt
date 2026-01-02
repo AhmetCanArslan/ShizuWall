@@ -487,7 +487,11 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
             if (isConnected) {
                 // If connected but daemon not running, start daemon
-                if (!isDaemonRunning) startDaemon()
+                if (!isDaemonRunning) {
+                    lifecycleScope.launch {
+                        performDaemonStart()
+                    }
+                }
             } else if (isPaired) {
                 // If paired, skip to connection
                 performConnection()
@@ -502,7 +506,9 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 appendLog(getString(R.string.log_daemon_already_running))
                 return@setOnClickListener
             }
-            startDaemon()
+            lifecycleScope.launch {
+                performDaemonStart()
+            }
         }
 
         btnKillDaemon.setOnClickListener {
@@ -654,7 +660,7 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
                 if (!isDaemonRunning) {
                     // Delay to let connection stabilize
                     delay(2000)
-                    startDaemon()
+                    performDaemonStart()
                 } else {
                     appendLog(getString(R.string.log_daemon_running_skipping))
                 }
@@ -851,8 +857,8 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
         }
     }
 
-    private fun startDaemon() {
-        lifecycleScope.launch {
+    private suspend fun performDaemonStart() {
+        withContext(Dispatchers.Main) {
             appendLog("Starting daemon installation...")
             btnStartDaemon.isEnabled = false
             btnPairSimple.isEnabled = false
