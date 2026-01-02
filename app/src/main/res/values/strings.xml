@@ -57,6 +57,8 @@
     <string name="grant_permission">Grant Permission</string>
     <string name="favorites_title">Favorites</string>
     <string name="favorites_message">Long press on an app to add it to your favorites for quick access.</string>
+    <string name="app_visibility_title">Smart App Filtering</string>
+    <string name="app_visibility_message">ShizuWall automatically filters out apps that don\'t have internet permission. This keeps your list clean and focused on apps that actually need firewall control.</string>
     <string name="shizuku_required_title">Shizuku Required</string>
     <string name="shizuku_required_message">Shizuku is required for this application to run. Therefore, the developer is not responsible for any negative consequences. Please install and activate Shizuku before proceeding.</string>
     <string name="get_started">Get Started</string>

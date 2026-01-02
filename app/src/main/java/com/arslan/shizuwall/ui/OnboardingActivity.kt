@@ -64,6 +64,16 @@ class OnboardingActivity : AppCompatActivity() {
 
         pages.add(
             OnboardingPage(
+                title = getString(R.string.app_visibility_title),
+                message = getString(R.string.app_visibility_message),
+                buttonText = getString(R.string.next),
+                onButtonClick = { goToNextPage() },
+                imageResId = R.drawable.ic_sort
+            )
+        )
+
+        pages.add(
+            OnboardingPage(
                 title = getString(R.string.shizuku_required_title),
                 message = getString(R.string.shizuku_required_message),
                 buttonText = getString(R.string.get_started),
