@@ -180,6 +180,9 @@
     <string name="ladb_clear_logs">清除日志</string>
     <string name="ladb_copy_logs">复制日志</string>
     <string name="ladb_enable_logs">启用日志</string>
+    <string name="ladb_setup_guidance">此工作模式使用后台辅助守护进程来管理您的防火墙规则。\n\n快速入门指南：\n- 确保您已连接到 Wi-Fi\n- 在开发者选项中启用“无线调试和 USB 调试（以在没有 Wi-Fi 连接的情况下保持辅助进程运行）”\n- 点击下面的按钮启动辅助进程\n\n首次设置：\n如果您之前没有配对过，该按钮将打开开发者选项。转到“无线调试”->“使用配对码配对设备”。将出现一个通知——只需在那里输入代码即可。\n\n重要提示：当您重启手机时，Android 会停止辅助进程运行。您需要在每次重启后再次点击该按钮以保持守护进程运行。\n\n重要提示2：如果您不启用 USB 调试，此工作模式仅在您有 Wi-Fi 连接时有效。因为如果您断开 Wi-Fi 连接，它将停止守护进程，并且无法启用或禁用防火墙。</string>
+    <string name="advanced_mode">高级模式</string>
+    <string name="advanced_mode_description">显示详细的 LADB 和守护进程配置</string>
     <string name="daemon_not_running">守护进程未运行。请从设置页面启动。</string>
     <string name="open_daemon_setup">打开守护进程设置</string>
     <string name="daemon_status_running">守护进程：正在运行</string>

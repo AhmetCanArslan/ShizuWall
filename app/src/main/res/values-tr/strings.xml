@@ -180,6 +180,9 @@
     <string name="ladb_clear_logs">Günlükleri Temizle</string>
     <string name="ladb_copy_logs">Günlükleri Kopyala</string>
     <string name="ladb_enable_logs">Günlükleri Etkinleştir</string>
+    <string name="ladb_setup_guidance">Bu çalışma modu, güvenlik duvarı kurallarınızı yönetmek için bir arka plan yardımcı Daemon kullanır.\n\nHızlı Başlangıç Kılavuzu:\n- Wi-Fi\'ye bağlı olduğunuzdan emin olun\n- Geliştirici Seçeneklerinde \'Kablosuz Hata Ayıklama ve USB hata ayıklama (yardımcıyı Wi-Fi bağlantısı olmadan hayatta tutmak için)\' seçeneğini etkinleştirin\n- Yardımcıyı başlatmak için aşağıdaki butona basın\n\nİlk Kez Kurulum:\nDaha önce eşleştirme yapmadıysanız düğme, Geliştirici Seçeneklerini açacaktır. \'Kablosuz Hata Ayıklama\' -> \'Cihazı eşleştirme koduyla eşleştir\' seçeneğine basın. Bastığınız zaman bir bildirim gelecek, bildirime eşleşme kodunu girin.\n\nÖnemli: Telefonunuzu yeniden başlattığınızda Android, yardımcı daemonu durdurur. Daemon\'ı hayatta tutmak için her yeniden başlatmadan sonra butona tekrar basmanız gerekiyor.\n\nÖnemli2: USB hata ayıklamayı etkinleştirmezseniz, bu çalışma modu yalnızca Wi-Fi bağlantınız olduğunda çalışacaktır. Çünkü Wi-Fi bağlantısını keserseniz daemon durur ve güvenlik duvarı etkinleştirilemez veya devre dışı bırakılamaz.</string>
+    <string name="advanced_mode">Gelişmiş Mod</string>
+    <string name="advanced_mode_description">Ayrıntılı LADB ve Daemon yapılandırmasını göster</string>
     <string name="daemon_not_running">Daemon çalışmıyor. Lütfen kurulum sayfasından başlatın.</string>
     <string name="open_daemon_setup">Daemon Kurulumunu Aç</string>
     <string name="daemon_status_running">Daemon: Çalışıyor</string>

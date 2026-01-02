@@ -178,6 +178,9 @@
     <string name="ladb_clear_logs">Protokolle löschen</string>
     <string name="ladb_copy_logs">Protokolle kopieren</string>
     <string name="ladb_enable_logs">Protokolle aktivieren</string>
+    <string name="ladb_setup_guidance">Dieser Arbeitsmodus verwendet einen Hintergrund-Daemon, um Ihre Firewall-Regeln zu verwalten.\n\nSchnellstartanleitung:\n- Stellen Sie sicher, dass Sie mit dem WLAN verbunden sind\n- Aktivieren Sie \'Wireless-Debugging und USB-Debugging (um den Helfer ohne WLAN-Verbindung am Leben zu erhalten)\' in den Entwickleroptionen\n- Tippen Sie auf die Schaltfläche unten, um den Helfer zu starten\n\nErstmalige Einrichtung:\nWenn Sie noch nicht gekoppelt haben, öffnet die Schaltfläche die Entwickleroptionen. Gehen Sie zu \'Wireless-Debugging\' -> \'Gerät mit Kopplungscode koppeln\'. Eine Benachrichtigung erscheint – geben Sie dort einfach den Code ein.\n\nWichtig: Android stoppt den Helfer, wenn Sie Ihr Telefon neu starten. Sie müssen die Schaltfläche nach jedem Neustart erneut tippen, um den Daemon am Leben zu erhalten.\n\nWichtig2: Wenn Sie USB-Debugging nicht aktivieren, funktioniert dieser Arbeitsmodus nur, wenn Sie eine WLAN-Verbindung haben. Denn wenn Sie die WLAN-Verbindung trennen, wird der Daemon gestoppt und die Firewall kann nicht aktiviert oder deaktiviert werden.</string>
+    <string name="advanced_mode">Erweiterter Modus</string>
+    <string name="advanced_mode_description">Detaillierte LADB- und Daemon-Konfiguration anzeigen</string>
     <string name="daemon_not_running">Daemon läuft nicht. Bitte starten Sie ihn von der Setup-Seite. </string>
     <string name="open_daemon_setup">Daemon-Setup öffnen</string>
     <string name="daemon_status_running">Daemon: Läuft</string>

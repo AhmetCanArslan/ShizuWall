@@ -194,6 +194,9 @@
     <string name="ladb_clear_logs">Limpar Logs</string>
     <string name="ladb_copy_logs">Copiar Logs</string>
     <string name="ladb_enable_logs">Ativar Logs</string>
+    <string name="ladb_setup_guidance">Este modo de trabalho usa um Daemon auxiliar em segundo plano para gerenciar suas regras de firewall.\n\nGuia de Início Rápido:\n- Certifique-se de estar conectado ao Wi-Fi\n- Ative \'Depuração sem fio e Depuração USB (para manter o auxiliar ativo sem conexão Wi-Fi)\' nas Opções do desenvolvedor\n- Toque no botão abaixo para iniciar o auxiliar\n\nConfiguração pela Primeira Vez:\nSe você ainda não pareou, o botão abrirá as Opções do desenvolvedor. Vá em \'Depuração sem fio\' -> \'Parear dispositivo com código de pareamento\'. Uma notificação aparecerá — basta inserir o código lá.\n\nImportante: O Android interrompe o auxiliar quando você reinicia o telefone. Você precisará tocar no botão novamente após cada reinicialização para manter o Daemon ativo.\n\nImportante2: Se você não ativar a depuração USB, este modo de trabalho só funcionará quando você tiver uma conexão Wi-Fi. Porque se você se desconectar do Wi-Fi, o daemon será interrompido e o firewall não poderá ser ativado ou desativado.</string>
+    <string name="advanced_mode">Modo Avançado</string>
+    <string name="advanced_mode_description">Mostrar configuração detalhada do LADB e Daemon</string>
     <string name="daemon_not_running">O daemon não está em execução. Por favor, inicie-o na página de configuração.</string>
     <string name="open_daemon_setup">Abrir Configuração do Daemon</string>
     <string name="daemon_status_running">Daemon: Em execução</string>
