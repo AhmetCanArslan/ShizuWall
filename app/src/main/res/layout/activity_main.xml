@@ -185,35 +185,30 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_favorites"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/cat_favorites" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_system"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/cat_system" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_selected"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/cat_selected" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_unselected"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/cat_unselected" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_user"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/cat_user" />

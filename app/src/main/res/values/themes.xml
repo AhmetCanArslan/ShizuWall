@@ -3,11 +3,24 @@
     <style name="Base.Theme.ShizuWall" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Choice</item>
     </style>
 
     <style name="Theme.ShizuWall" parent="Base.Theme.ShizuWall" />
 
     <style name="Theme.ShizuWall.Ndot" parent="Theme.ShizuWall">
+        <item name="android:fontFamily">@font/ndot</item>
+        <item name="fontFamily">@font/ndot</item>
+        <item name="chipStyle">@style/Widget.ShizuWall.Chip.Ndot</item>
+    </style>
+
+    <style name="Widget.ShizuWall.Chip.Ndot" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="android:fontFamily">@font/ndot</item>
+        <item name="fontFamily">@font/ndot</item>
+        <item name="android:textAppearance">@style/TextAppearance.ShizuWall.Chip.Ndot</item>
+    </style>
+
+    <style name="TextAppearance.ShizuWall.Chip.Ndot" parent="TextAppearance.MaterialComponents.Chip">
         <item name="android:fontFamily">@font/ndot</item>
         <item name="fontFamily">@font/ndot</item>
     </style>
