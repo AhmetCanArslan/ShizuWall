@@ -439,8 +439,29 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
         switchAdvancedMode.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean("advanced_mode", isChecked).apply()
-            simpleSetupContainer.visibility = if (isChecked) View.GONE else View.VISIBLE
-            advancedSetupContainer.visibility = if (isChecked) View.VISIBLE else View.GONE
+            
+            val outgoing = if (isChecked) simpleSetupContainer else advancedSetupContainer
+            val incoming = if (isChecked) advancedSetupContainer else simpleSetupContainer
+
+            // Cancel any ongoing animations to prevent overlapping transitions
+            simpleSetupContainer.animate().cancel()
+            advancedSetupContainer.animate().cancel()
+
+            outgoing.animate()
+                .alpha(0f)
+                .setDuration(200)
+                .setInterpolator(android.view.animation.AccelerateInterpolator())
+                .withEndAction {
+                    outgoing.visibility = View.GONE
+                    incoming.alpha = 0f
+                    incoming.visibility = View.VISIBLE
+                    incoming.animate()
+                        .alpha(1f)
+                        .setDuration(200)
+                        .setInterpolator(android.view.animation.DecelerateInterpolator())
+                        .start()
+                }
+                .start()
         }
 
         // Load saved logs
