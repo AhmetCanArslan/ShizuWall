@@ -272,7 +272,7 @@ class SettingsActivity : BaseActivity() {
             sharedPreferences.edit()
                 .putBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, isChecked)
                 .apply()
-            showRestartNotice(getString(R.string.theme_changed_title), getString(R.string.theme_changed_message))
+            recreateWithAnimation()
         }
 
         switchAutoEnableOnShizukuStart.setOnCheckedChangeListener { _, isChecked ->
@@ -415,7 +415,7 @@ class SettingsActivity : BaseActivity() {
             tvCurrentFont.text = if (fontKey == "ndot") getString(R.string.font_ndot) else getString(R.string.font_default)
 
             dialog.dismiss()
-            showRestartNotice(getString(R.string.font_changed_title), getString(R.string.font_changed_message))
+            recreateWithAnimation()
         }
 
         btnCancel.setOnClickListener {
@@ -501,6 +501,7 @@ class SettingsActivity : BaseActivity() {
                     loadSettings()
                     setResult(RESULT_OK)
                     Toast.makeText(this@SettingsActivity, getString(R.string.import_successful), Toast.LENGTH_SHORT).show()
+                    recreateWithAnimation()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -513,20 +514,6 @@ class SettingsActivity : BaseActivity() {
     // helper to detect shizuku packages (match exact privileged API package only)
     private fun isShizukuPackage(pkg: String): Boolean {
         return pkg == "moe.shizuku.privileged.api"
-    }
-
-    private fun showRestartNotice(title: String, message: String) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton(getString(R.string.restart_now)) { _, _ ->
-                val intent = Intent(this, MainActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                startActivity(intent)
-                finish()
-            }
-            .setNegativeButton(getString(R.string.later), null)
-            .show()
     }
 
     private fun showAdbBroadcastDialog() {
