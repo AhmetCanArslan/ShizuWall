@@ -43,8 +43,8 @@ A lightweight, privacy focused Android firewall application that blocks network 
 
 ## Why ShizuWall is Different
 
-1. **Shizuku-Only Approach**: Most Android firewalls require either Root access or a VPN service. ShizuWall uses **only Shizuku**, providing native system-level control without the common VPN drawbacks.
-2. **Per-app System Networking Control**: Uses Android's `connectivity` service (chain-3) via Shizuku to enable/disable networking on a per-app basis — no packet interception, no VPN tunnel.
+1. **No Root or VPN Required**: Most Android firewalls require either Root access or a VPN service. ShizuWall uses **Shizuku or a local ADB daemon**, providing native system-level control without the common VPN drawbacks.
+2. **Per-app System Networking Control**: Uses Android's `connectivity` service (chain-3) to enable/disable networking on a per-app basis — no packet interception, no VPN tunnel.
 3. **Privacy-first Design**: The app is offline-first and does not phone home. There is no analytics, no tracking and no telemetry.
 
 
@@ -56,7 +56,7 @@ A lightweight, privacy focused Android firewall application that blocks network 
 
 ## Firewall Implementation
 
-(what the app runs via Shizuku)
+(what the app runs via Shizuku or the local daemon)
 
 ```bash
 # Enable firewall framework
@@ -100,18 +100,40 @@ adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.F
 
 ```
 
-- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.
+- Shizuku or the local daemon must be running for these broadcasts to succeed.
 
 ## ⚠️ Disclaimer
 
-This application requires Shizuku to function. The developer is not responsible for any issues arising from:
-- Shizuku usage or configuration
-- Network blocking affecting system functionality
-- Data loss or service disruption
-- Any negative consequences mentioned in the onboarding process
+**ShizuWall is provided "as is" without warranty of any kind.** By using this application, you acknowledge that it requires advanced system permissions (Shizuku/ADB) and you use it at your own risk.
 
-Use at your own discretion and ensure you understand which apps you're blocking.
+The developer is **not responsible** for any damages, including but not limited to:
 
+- System instability, data loss, or service disruption.
+- Network blocking affecting critical system functionality.
+- Any consequences arising from the use of Shizuku or ADB.
+
+**Always ensure you understand which apps you are blocking. Use at your own discretion.**
+
+## Compiling the Daemon (For Developers)
+
+The ShizuWall daemon is a lightweight Java-based service that runs on the device to handle system-level firewall commands. It is compiled into a DEX file and stored as `app/src/main/assets/daemon.bin`.
+
+### Prerequisites
+
+- Android SDK
+- Java 11
+- `d8` tool (part of Android Build Tools)
+- Compilation script located at `scripts/compile_daemon.sh`
+
+#### Using the script
+
+1. Open [scripts/compile_daemon.sh](scripts/compile_daemon.sh).
+2. Update `SDK_PATH`, `BUILD_TOOLS_VER`, and `PLATFORM_VER` to match your environment.
+3. Run the script:
+   ```bash
+   chmod +x scripts/compile_daemon.sh
+   ./scripts/compile_daemon.sh
+   ```
 
 ## 📄 License
 
