@@ -24,19 +24,13 @@ data class ErrorEntry(
 )
 
 class ErrorDetailsAdapter(
-    private val errorList: List<ErrorEntry>,
-    private val typeface: android.graphics.Typeface? = null
+    private val errorList: List<ErrorEntry>
 ) : RecyclerView.Adapter<ErrorDetailsAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val appIcon: ImageView = itemView.findViewById(R.id.appIcon)
         val appName: TextView = itemView.findViewById(R.id.appName)
         val errorText: TextView = itemView.findViewById(R.id.errorText)
-
-        init {
-            typeface?.let { appName.typeface = it }
-            typeface?.let { errorText.typeface = it }
-        }
 
         fun bind(entry: ErrorEntry) {
             val pkg = entry.packageName

@@ -2,7 +2,6 @@ package com.arslan.shizuwall.adapters
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.LruCache
@@ -36,8 +35,7 @@ class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
 
 class AppListAdapter(
     private val onAppClick: (AppInfo) -> Unit,
-    private val onAppLongClick: (AppInfo) -> Unit,
-    private val typeface: Typeface? = null
+    private val onAppLongClick: (AppInfo) -> Unit
 ) : ListAdapter<AppInfo, AppListAdapter.AppViewHolder>(AppInfoDiffCallback()) {
 
     // Cache icons to avoid reloading. Max size 1/8th of available memory.
@@ -65,13 +63,6 @@ class AppListAdapter(
         val packageName: TextView = itemView.findViewById(R.id.packageName)
         val checkbox: CheckBox = itemView.findViewById(R.id.appCheckbox)
         val favoriteIcon: ImageView = itemView.findViewById(R.id.favoriteIcon)
-
-        init {
-            typeface?.let {
-                appName.typeface = it
-                packageName.typeface = it
-            }
-        }
 
         fun bind(appInfo: AppInfo) {
             // Load icon async

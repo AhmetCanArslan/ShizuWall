@@ -2,7 +2,6 @@ package com.arslan.shizuwall.adapters
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
@@ -20,19 +19,12 @@ import kotlinx.coroutines.withContext
 import com.arslan.shizuwall.model.AppInfo
 
 class SelectedAppsAdapter(
-    private val appList: List<AppInfo>,
-    private val typeface: Typeface? = null
+    private val appList: List<AppInfo>
 ) : RecyclerView.Adapter<SelectedAppsAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val appIcon: ImageView = itemView.findViewById(R.id.appIcon)
         val appName: TextView = itemView.findViewById(R.id.appName)
-
-        init {
-            typeface?.let {
-                appName.typeface = it
-            }
-        }
 
         fun bind(appInfo: AppInfo) {
             val pkg = appInfo.packageName

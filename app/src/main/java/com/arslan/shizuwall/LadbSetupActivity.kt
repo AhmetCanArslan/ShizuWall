@@ -7,7 +7,7 @@ import android.app.PendingIntent
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import com.arslan.shizuwall.ui.BaseActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.widget.TextView
@@ -15,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import android.view.View
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -48,7 +47,7 @@ import android.widget.AutoCompleteTextView
 import com.arslan.shizuwall.daemon.PersistentDaemonManager
 import kotlinx.coroutines.delay
 
-class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
+class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
     private lateinit var rootView: View
     private lateinit var tvStatus: TextView
@@ -357,7 +356,6 @@ class LadbSetupActivity : AppCompatActivity(), AdbPortListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DynamicColors.applyToActivityIfAvailable(this)
         enableEdgeToEdge()
         setContentView(R.layout.activity_ladb_setup)
 

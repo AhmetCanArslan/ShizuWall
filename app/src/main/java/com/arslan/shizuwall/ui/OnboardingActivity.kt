@@ -6,22 +6,20 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import com.arslan.shizuwall.ui.BaseActivity
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import android.content.res.Configuration
 import com.arslan.shizuwall.R
-import com.google.android.material.color.DynamicColors
 import com.arslan.shizuwall.adapters.OnboardingPageAdapter
 
-class OnboardingActivity : AppCompatActivity() {
+class OnboardingActivity : BaseActivity() {
 
     private lateinit var viewPager: ViewPager2
     private val pages = mutableListOf<OnboardingPage>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DynamicColors.applyToActivityIfAvailable(this)
         setContentView(R.layout.activity_onboarding)
 
         viewPager = findViewById(R.id.viewPager)

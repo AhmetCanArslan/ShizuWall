@@ -21,7 +21,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -34,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.chip.Chip
-import com.google.android.material.color.DynamicColors
 import com.arslan.shizuwall.adapters.AppListAdapter
 import com.arslan.shizuwall.adapters.SelectedAppsAdapter
 import com.arslan.shizuwall.adapters.ErrorDetailsAdapter
@@ -45,8 +43,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
-import android.graphics.Typeface
-import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
 import kotlin.comparisons.*
@@ -55,7 +51,7 @@ import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     companion object {
         const val PREF_NAME = "ShizuWallPrefs"
         const val KEY_SELECTED_APPS = "selected_apps"
@@ -239,12 +235,6 @@ class MainActivity : AppCompatActivity() {
         
         sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         
-        // Apply theme before any UI is created
-        val useDynamicColor = sharedPreferences.getBoolean(KEY_USE_DYNAMIC_COLOR, true)
-        if (useDynamicColor) {
-            DynamicColors.applyToActivityIfAvailable(this)
-        }
-        
         enableEdgeToEdge()
 
         // Check if onboarding is complete
@@ -270,7 +260,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        applyFontToViews(findViewById(android.R.id.content))
 
         // Show Android 11 compatibility warning if needed
         showAndroid11WarningDialog()
@@ -534,7 +523,6 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton(getString(R.string.ok), null) // do not close app, just dismiss
                 .setCancelable(true)
                 .create()
-            d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
             d.show()
             return
         }
@@ -550,7 +538,6 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton(getString(R.string.ok), null) // do not close app
                 .setCancelable(true)
                 .create()
-            d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
             d.show()
         } else {
             // Request permission
@@ -628,7 +615,6 @@ class MainActivity : AppCompatActivity() {
                         .setPositiveButton(getString(R.string.ok), null) // just dismiss dialog
                         .setCancelable(true)
                         .create()
-                    d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
                     d.show()
                 }
             }
@@ -659,7 +645,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 .setNegativeButton(getString(R.string.cancel), null)
                 .create()
-            d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
             d.show()
             return false
         }
@@ -715,7 +700,6 @@ class MainActivity : AppCompatActivity() {
                     }
                      .setNegativeButton(getString(R.string.cancel), null)
                      .create()
-                d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
                 d.show()
                 return false
             }
@@ -990,8 +974,7 @@ class MainActivity : AppCompatActivity() {
             },
             onAppLongClick = { appInfo ->
                 toggleFavorite(appInfo)
-            },
-            typeface = getSelectedTypeface()
+            }
         )
         recyclerView.adapter = appListAdapter
         defaultItemAnimator = recyclerView.itemAnimator
@@ -1203,7 +1186,6 @@ class MainActivity : AppCompatActivity() {
                         }
                         .setNegativeButton(getString(R.string.cancel), null)
                         .create()
-                    d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
                     d.show()
 
                     suppressToggleListener = true
@@ -1245,7 +1227,6 @@ class MainActivity : AppCompatActivity() {
                             }
                             .setNegativeButton(getString(R.string.cancel), null)
                             .create()
-                        d.setOnShowListener { d.window?.decorView?.let { applyFontToViews(it) } }
                         d.show()
 
                         suppressToggleListener = true
@@ -1298,9 +1279,7 @@ class MainActivity : AppCompatActivity() {
             }
             .create()
 
-        applyFontToViews(dialogView)
         dialog.setOnShowListener {
-            dialog.window?.decorView?.let { applyFontToViews(it) }
         }
         val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
         val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
@@ -1308,7 +1287,7 @@ class MainActivity : AppCompatActivity() {
         dialogMessage.text = getString(R.string.enable_firewall_confirm, selectedApps.size)
 
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
-        selectedAppsRecyclerView.adapter = SelectedAppsAdapter(selectedApps, getSelectedTypeface())
+        selectedAppsRecyclerView.adapter = SelectedAppsAdapter(selectedApps)
 
         // Limit the RecyclerView height to a fraction of the screen
         // Calculate constraints BEFORE showing dialog to prevent visual jumping/sliding
@@ -1352,9 +1331,7 @@ class MainActivity : AppCompatActivity() {
             }
             .create()
 
-        applyFontToViews(dialogView)
         dialog.setOnShowListener {
-            dialog.window?.decorView?.let { applyFontToViews(it) }
         }
 
         val dialogTitle = dialogView.findViewById<TextView>(R.id.dialogTitle)
@@ -1943,9 +1920,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         val dialog = builder.create()
-        applyFontToViews(dialogView)
         dialog.setOnShowListener {
-            dialog.window?.decorView?.let { applyFontToViews(it) }
         }
 
         val dialogMessage = dialogView.findViewById<TextView>(R.id.dialogMessage)
@@ -1960,7 +1935,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
-        selectedAppsRecyclerView.adapter = SelectedAppsAdapter(failedApps, getSelectedTypeface())
+        selectedAppsRecyclerView.adapter = SelectedAppsAdapter(failedApps)
 
         // Limit the RecyclerView height to a fraction of the screen
         val displayMetrics = resources.displayMetrics
@@ -1991,9 +1966,7 @@ class MainActivity : AppCompatActivity() {
             .setView(dialogView)
             .setCancelable(true)
             .create()
-        applyFontToViews(dialogView)
         dialog.setOnShowListener {
-            dialog.window?.decorView?.let { applyFontToViews(it) }
         }
 
         val messageView = dialogView.findViewById<TextView>(R.id.dialogErrorDetailsMessage)
@@ -2009,7 +1982,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = ErrorDetailsAdapter(list, getSelectedTypeface())
+        recyclerView.adapter = ErrorDetailsAdapter(list)
 
         btnCopy.setOnClickListener {
             val sb = StringBuilder()
@@ -2033,42 +2006,4 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun applyFontToViews(view: View) {
-        val savedFont = sharedPreferences.getString(KEY_SELECTED_FONT, "default") ?: "default"
-        if (savedFont == "default") return
-        
-        val typeface = try {
-            ResourcesCompat.getFont(this, R.font.ndot)
-        } catch (e: Exception) {
-            return
-        }
-        
-        applyTypefaceRecursively(view, typeface)
-    }
-
-    private fun applyTypefaceRecursively(view: View, typeface: Typeface?) {
-        if (typeface == null) return
-        
-        when (view) {
-            is TextView -> {
-                view.typeface = typeface
-            }
-            is ViewGroup -> {
-                for (i in 0 until view.childCount) {
-                    applyTypefaceRecursively(view.getChildAt(i), typeface)
-                }
-            }
-        }
-    }
-
-    private fun getSelectedTypeface(): Typeface? {
-        val savedFont = sharedPreferences.getString(KEY_SELECTED_FONT, "default") ?: "default"
-        if (savedFont == "default") return null
-        
-        return try {
-            ResourcesCompat.getFont(this, R.font.ndot)
-        } catch (e: Exception) {
-            null
-        }
-    }
 }

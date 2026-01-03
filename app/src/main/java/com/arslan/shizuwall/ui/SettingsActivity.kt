@@ -16,27 +16,24 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.color.DynamicColors
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.graphics.Typeface
 import android.os.Build
-import androidx.core.content.res.ResourcesCompat
 import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.services.AppMonitorService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import rikka.shizuku.Shizuku
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : BaseActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var switchShowSystemApps: SwitchCompat
@@ -82,11 +79,6 @@ class SettingsActivity : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
 
-        val useDynamicColor = sharedPreferences.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
-        if (useDynamicColor) {
-            DynamicColors.applyToActivityIfAvailable(this)
-        }
-
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
 
@@ -121,9 +113,6 @@ class SettingsActivity : AppCompatActivity() {
 
         val packageInfo = packageManager.getPackageInfo(packageName, 0)
         tvVersion.text = getString(R.string.version_format, packageInfo.versionName)
-
-        // Apply custom font to all views
-        applyFontToViews(findViewById(android.R.id.content))
     }
 
     private fun initializeViews() {
@@ -403,7 +392,6 @@ class SettingsActivity : AppCompatActivity() {
             .create()
 
         // Apply font to dialog views
-        applyFontToViews(dialogView)
 
         val radioGroup = dialogView.findViewById<android.widget.RadioGroup>(R.id.fontRadioGroup)
         val btnApply = dialogView.findViewById<MaterialButton>(R.id.btnApplyFont)
@@ -522,38 +510,9 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun applyFontToViews(view: View) {
-        val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        val savedFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
-        if (savedFont == "default") return
-
-        val typeface = try {
-            ResourcesCompat.getFont(this, R.font.ndot)
-        } catch (e: Exception) {
-            return
-        }
-
-        applyTypefaceRecursively(view, typeface)
-    }
-
     // helper to detect shizuku packages (match exact privileged API package only)
     private fun isShizukuPackage(pkg: String): Boolean {
         return pkg == "moe.shizuku.privileged.api"
-    }
-
-    private fun applyTypefaceRecursively(view: View, typeface: Typeface?) {
-        if (typeface == null) return
-
-        when (view) {
-            is TextView -> {
-                view.typeface = typeface
-            }
-            is ViewGroup -> {
-                for (i in 0 until view.childCount) {
-                    applyTypefaceRecursively(view.getChildAt(i), typeface)
-                }
-            }
-        }
     }
 
     private fun showRestartNotice(title: String, message: String) {
@@ -624,7 +583,6 @@ class SettingsActivity : AppCompatActivity() {
             .create()
 
         dialog.setOnShowListener {
-            dialog.window?.decorView?.let { applyFontToViews(it) }
         }
         dialog.show()
     }
