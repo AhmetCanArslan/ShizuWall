@@ -403,6 +403,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         val btnCopyLogs = findViewById<MaterialButton>(R.id.btnCopyLogs)
         switchEnableLogs = findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.switchEnableLogs)
         switchAdvancedMode = findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.switchAdvancedMode)
+        val cardAdvancedMode = findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardAdvancedMode)
         logsContainer = findViewById<LinearLayout>(R.id.logsContainer)
         simpleSetupContainer = findViewById<LinearLayout>(R.id.simpleSetupContainer)
         advancedSetupContainer = findViewById<LinearLayout>(R.id.advancedSetupContainer)
@@ -462,6 +463,10 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                         .start()
                 }
                 .start()
+        }
+
+        cardAdvancedMode.setOnClickListener {
+            switchAdvancedMode.isChecked = !switchAdvancedMode.isChecked
         }
 
         // Load saved logs
