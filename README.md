@@ -1,37 +1,43 @@
 # ShizuWall
 
-<!-- ---------- Badges ---------- -->
+A lightweight, privacy focused Android firewall application that blocks network connections for selected apps **without requiring root access or VPN**. ShizuWall leverages Shizuku and libADB to provide powerful network control capabilities. Requires Android 11 (API 30) or higher. 
+
 <div align="center">
   <img alt="Last commit" src="https://img.shields.io/github/last-commit/AhmetCanArslan/ShizuWall?color=c3e7ff&style=flat-square">
   <img alt="Repo size" src="https://img.shields.io/github/repo-size/AhmetCanArslan/ShizuWall?color=c3e7ff&style=flat-square">
-  
-  <br>
-  <a href="https://github.com/AhmetCanArslan/ShizuWall/releases">
+</div>
+
+<div align="center">  
+<a href="https://github.com/AhmetCanArslan/ShizuWall/releases">
     <img src="https://img.shields.io/github/downloads/AhmetCanArslan/ShizuWall/total?color=ff9500&style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPmRvd25sb2FkPC90aXRsZT48cGF0aCBkPSJNNSwyMEgxOVYxOEg1TTE5LDlIMTVWM0g5VjlINUwxMiwxNkwxOSw5WiIgZmlsbD0id2hpdGUiIC8+PC9zdmc+&labelColor=a6660d"/>
   </a>
   <br>
   <a href="https://github.com/AhmetCanArslan/ShizuWall/stargazers">
     <img src="https://img.shields.io/github/stars/AhmetCanArslan/ShizuWall?color=ffff00&style=for-the-badge&labelColor=a1a116&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPnN0YXI8L3RpdGxlPjxwYXRoIGQ9Ik0xMiwxNy4yN0wxOC4xOCwyMUwxNi41NCwxMy45N0wyMiw5LjI0TDE0LjgxLDguNjJMMTIsMkw5LjE5LDguNjJMMiw5LjI0TDcuNDUsMTMuOTdMNS44MiwyMUwxMiwxNy4yN1oiIGZpbGw9IndoaXRlIiAvPjwvc3ZnPg=="/>
   </a>
-</div>
+  <br>
+  <a href="https://play.google.com/store/apps/details?id=com.arslan.shizuwall">
+  <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="280px"/>
+</a>
+
 <p align="center">
   <a href="https://www.buymeacoffee.com/ahmetcanarslan">
     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="30%"/>
   </a>
 </p>
+</div>
 
 
-A lightweight, privacy focused Android firewall application that blocks network connections for selected apps **without requiring root access or VPN**. ShizuWall leverages Shizuku to provide powerful network control capabilities. Requires Android 11 (API 30) or higher. 
 
-## ShizuWall is available on PlayStore!
-### [Download from PlayStore](https://play.google.com/store/apps/details?id=com.arslan.shizuwall) 
-
-#### PlayStore and GitHub versions are signed with different keys. These two versions DOES NOT have any difference on usability and functionality.
-
+## Screenshots
 <p align="center">
-  <img src="assets/screenShots/v3.2/1.png" width="30%">
-  <img src="assets/screenShots/v3.2/2.png" width="30%">
-  <img src="assets/screenShots/v3.2/3.png" width="30%">
+  <img src="assets/screenShots/v4.0/1.png" width="30%">
+  <img src="assets/screenShots/v4.0/2.png" width="30%">
+  <img src="assets/screenShots/v4.0/3.png" width="30%">
+  <img src="assets/screenShots/v4.0/4.png" width="30%">
+  <img src="assets/screenShots/v4.0/5.png" width="30%">
+  <img src="assets/screenShots/v4.0/6.png" width="30%">
+  <img src="assets/screenShots/v4.0/7.png" width="30%">
 </p>
 
 
