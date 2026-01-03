@@ -83,6 +83,16 @@ android {
             isUniversalApk = true
         }
     }
+
+    applicationVariants.all {
+        outputs.all {
+            val output = this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
+            val appName = "ShizuWall"
+            val version = versionName
+            val type = name
+            output.outputFileName = "$appName-$version-$type.apk"
+        }
+    }
 }
 
 val shizuku_version = "13.1.5"
