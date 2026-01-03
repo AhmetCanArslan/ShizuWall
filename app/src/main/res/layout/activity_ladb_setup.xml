@@ -74,7 +74,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="false"
-                        app:useMaterialThemeColors="true" />
+                        app:thumbIcon="@drawable/check_24px" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -357,7 +357,7 @@
                         android:text="@string/ladb_enable_logs"
                         android:checked="false"
                         android:layout_marginBottom="8dp"
-                        app:useMaterialThemeColors="true" />
+                        app:thumbIcon="@drawable/check_24px" />
 
                     <LinearLayout
                         android:id="@+id/logsContainer"
@@ -397,7 +397,7 @@
                                 android:layout_weight="1"
                                 android:text="@string/ladb_clear_logs"
                                 android:layout_marginEnd="8dp"
-                                app:useMaterialThemeColors="true" />
+                               />
 
                             <com.google.android.material.button.MaterialButton
                                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -407,7 +407,7 @@
                                 android:layout_weight="1"
                                 android:text="@string/ladb_copy_logs"
                                 android:layout_marginStart="8dp"
-                                app:useMaterialThemeColors="true" />
+                               />
                         </LinearLayout>
                     </LinearLayout>
 

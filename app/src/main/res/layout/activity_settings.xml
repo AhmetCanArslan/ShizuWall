@@ -86,15 +86,11 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchShowSystemApps"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="@color/switch_track_tint"
-                        app:thumbTint="@android:color/white"
-                        app:thumbIconTint="?attr/colorPrimary" />
+                        app:thumbIcon="@drawable/check_24px" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -145,15 +141,11 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchMoveSelectedTop"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="@color/switch_track_tint"
-                        app:thumbTint="@android:color/white"
-                        app:thumbIconTint="?attr/colorPrimary" />
+                        app:thumbIcon="@drawable/check_24px" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -204,15 +196,11 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchUseDynamicColor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="@color/switch_track_tint"
-                        app:thumbTint="@android:color/white"
-                        app:thumbIconTint="?attr/colorPrimary" />
+                        app:thumbIcon="@drawable/check_24px" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -277,15 +265,11 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchAutoEnableOnShizukuStart"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="@color/switch_track_tint"
-                        app:thumbTint="@android:color/white"
-                        app:thumbIconTint="?attr/colorPrimary" />
+                        app:thumbIcon="@drawable/check_24px" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -337,15 +321,11 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchSkipConfirm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="@color/switch_track_tint"
-                        app:thumbTint="@android:color/white"
-                        app:thumbIconTint="?attr/colorPrimary" />
+                        app:thumbIcon="@drawable/check_24px" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -396,15 +376,11 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchAdaptiveMode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="@color/switch_track_tint"
-                        app:thumbTint="@android:color/white"
-                        app:thumbIconTint="?attr/colorPrimary" />
+                        app:thumbIcon="@drawable/check_24px" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -455,15 +431,11 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchSkipErrorDialog"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="@color/switch_track_tint"
-                        app:thumbTint="@android:color/white"
-                        app:thumbIconTint="?attr/colorPrimary" />
+                        app:thumbIcon="@drawable/check_24px" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -515,15 +487,11 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchKeepErrorAppsSelected"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="@color/switch_track_tint"
-                        app:thumbTint="@android:color/white"
-                        app:thumbIconTint="?attr/colorPrimary" />
+                        app:thumbIcon="@drawable/check_24px" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
               
@@ -722,15 +690,11 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchAppMonitor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px"
-                        app:useMaterialThemeColors="false"
-                        app:trackTint="@color/switch_track_tint"
-                        app:thumbTint="@android:color/white"
-                        app:thumbIconTint="?attr/colorPrimary" />
+                        app:thumbIcon="@drawable/check_24px" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
