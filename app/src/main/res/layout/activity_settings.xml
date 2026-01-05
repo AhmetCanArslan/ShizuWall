@@ -277,65 +277,9 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp" />
 
-            <!-- Auto-enable on Shizuku start -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardAutoEnableOnShizukuStart"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="72dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_shizuku"
-                        app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
-                        android:contentDescription="@null" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/auto_enable_on_shizuku_start"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/auto_enable_on_shizuku_start_description"
-                            android:textSize="12sp"
-                            android:textColor="?android:attr/textColorSecondary" />
-                    </LinearLayout>
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/switchAutoEnableOnShizukuStart"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-
             <!-- Skip Confirm -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSkipConfirm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -446,6 +390,7 @@
 
             <!-- ADB Broadcast -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAdbBroadcastUsage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -557,6 +502,7 @@
 
             <!-- Keep Error Apps -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardKeepErrorApps"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -691,6 +637,7 @@
 
              <!-- Set LADB (LibADB) -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSetLadb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -742,6 +689,62 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Auto-enable on Shizuku start -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAutoEnableOnShizukuStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="72dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_shizuku"
+                        app:tint="?attr/colorPrimary"
+                        android:layout_marginEnd="16dp"
+                        android:contentDescription="@null" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/auto_enable_on_shizuku_start"
+                            android:textSize="16sp"
+                            android:textColor="?android:attr/textColorPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/auto_enable_on_shizuku_start_description"
+                            android:textSize="12sp"
+                            android:textColor="?android:attr/textColorSecondary" />
+                    </LinearLayout>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchAutoEnableOnShizukuStart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:thumbIcon="@drawable/check_24px" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

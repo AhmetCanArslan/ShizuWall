@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +43,7 @@ class SettingsActivity : BaseActivity() {
     private lateinit var switchAdaptiveMode: SwitchCompat
     private lateinit var switchSkipConfirm: SwitchCompat
     private lateinit var switchSkipErrorDialog: SwitchCompat
+    private lateinit var cardKeepErrorApps: com.google.android.material.card.MaterialCardView
     private lateinit var layoutKeepErrorApps: LinearLayout
     private lateinit var switchKeepErrorAppsSelected: SwitchCompat
     private lateinit var layoutChangeFont: LinearLayout
@@ -55,11 +58,14 @@ class SettingsActivity : BaseActivity() {
     private lateinit var cardAutoEnableOnShizukuStart: com.google.android.material.card.MaterialCardView
     private lateinit var switchAppMonitor: SwitchCompat
 
+    private lateinit var cardAdbBroadcastUsage: com.google.android.material.card.MaterialCardView
     private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
     private lateinit var radioGroupWorkingMode: RadioGroup
     private lateinit var radioShizukuMode: RadioButton
     private lateinit var radioLadbMode: RadioButton
+    private lateinit var cardSetLadb: com.google.android.material.card.MaterialCardView
     private lateinit var layoutSetLadb: LinearLayout
+    private lateinit var cardSkipConfirm: com.google.android.material.card.MaterialCardView
     private var autoEnablePreviousState: Boolean = false  // Store previous state before disabling
 
     private val createDocumentLauncher = registerForActivityResult(
@@ -119,8 +125,10 @@ class SettingsActivity : BaseActivity() {
         switchShowSystemApps = findViewById(R.id.switchShowSystemApps)
         switchMoveSelectedTop = findViewById(R.id.switchMoveSelectedTop)
         switchAdaptiveMode = findViewById(R.id.switchAdaptiveMode)
+        cardSkipConfirm = findViewById(R.id.cardSkipConfirm)
         switchSkipConfirm = findViewById(R.id.switchSkipConfirm)
         switchSkipErrorDialog = findViewById(R.id.switchSkipErrorDialog)
+        cardKeepErrorApps = findViewById(R.id.cardKeepErrorApps)
         layoutKeepErrorApps = findViewById(R.id.layoutKeepErrorApps)
         switchKeepErrorAppsSelected = findViewById(R.id.switchKeepErrorAppsSelected)
         layoutChangeFont = findViewById(R.id.layoutChangeFont)
@@ -133,11 +141,13 @@ class SettingsActivity : BaseActivity() {
         switchUseDynamicColor = findViewById(R.id.switchUseDynamicColor)
 
         // new: bind XML item
+        cardAdbBroadcastUsage = findViewById(R.id.cardAdbBroadcastUsage)
         layoutAdbBroadcastUsage = findViewById(R.id.layoutAdbBroadcastUsage)
         // Working mode controls
         radioGroupWorkingMode = findViewById(R.id.radioGroupWorkingMode)
         radioShizukuMode = findViewById(R.id.radioShizukuMode)
         radioLadbMode = findViewById(R.id.radioLadbMode)
+        cardSetLadb = findViewById(R.id.cardSetLadb)
         layoutSetLadb = findViewById(R.id.layoutSetLadb)
         switchAppMonitor = findViewById(R.id.switchAppMonitor)
         // Auto-enable switch (new)
@@ -155,18 +165,18 @@ class SettingsActivity : BaseActivity() {
         switchSkipErrorDialog.isChecked = prefs.getBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, false)
         switchKeepErrorAppsSelected.isChecked = prefs.getBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false)
         
-        // Enable/disable keep error apps option based on skip error dialog state
-        switchKeepErrorAppsSelected.isEnabled = switchSkipErrorDialog.isChecked
-        layoutKeepErrorApps.alpha = if (switchSkipErrorDialog.isChecked) 1.0f else 0.5f
+        // Show/hide keep error apps option based on skip error dialog state
+        cardKeepErrorApps.visibility = if (switchSkipErrorDialog.isChecked) View.VISIBLE else View.GONE
 
-        // Adaptive Mode dependency: if enabled, force "Skip Confirm" to true and disable it
+        // Adaptive Mode dependency: if enabled, hide "Skip Confirm"
         if (switchAdaptiveMode.isChecked) {
-            switchSkipConfirm.isEnabled = false
-            switchSkipConfirm.alpha = 0.5f
+            cardSkipConfirm.visibility = View.GONE
             if (!switchSkipConfirm.isChecked) {
                 switchSkipConfirm.isChecked = true
                 prefs.edit().putBoolean("skip_enable_confirm", true).apply()
             }
+        } else {
+            cardSkipConfirm.visibility = View.VISIBLE
         }
 
         val currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
@@ -181,15 +191,12 @@ class SettingsActivity : BaseActivity() {
             com.arslan.shizuwall.WorkingMode.LADB -> radioGroupWorkingMode.check(R.id.radioLadbMode)
             else -> radioGroupWorkingMode.check(R.id.radioShizukuMode)
         }
-        // Dim and disable LADB card if not selected
+        // Show/hide LADB card if not selected
         val ladbSelected = radioLadbMode.isChecked
-        layoutSetLadb.alpha = if (ladbSelected) 1.0f else 0.5f
-        layoutSetLadb.isEnabled = ladbSelected
-        layoutSetLadb.isClickable = ladbSelected
+        cardSetLadb.visibility = if (ladbSelected) View.VISIBLE else View.GONE
         
-        // Disable auto-enable firewall card when LADB mode is selected
-        cardAutoEnableOnShizukuStart.isEnabled = !ladbSelected
-        cardAutoEnableOnShizukuStart.alpha = if (ladbSelected) 0.5f else 1.0f
+        // Hide auto-enable firewall card when LADB mode is selected
+        cardAutoEnableOnShizukuStart.visibility = if (ladbSelected) View.GONE else View.VISIBLE
         switchAutoEnableOnShizukuStart.isEnabled = !ladbSelected
     }
 
@@ -210,17 +217,16 @@ class SettingsActivity : BaseActivity() {
             prefs.edit().putBoolean(MainActivity.KEY_ADAPTIVE_MODE, isChecked).apply()
             setResult(RESULT_OK)
 
+            TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
             if (isChecked) {
-                // When Adaptive Mode is enabled, force Skip Confirm to ON and disable the switch
+                // When Adaptive Mode is enabled, force Skip Confirm to ON and hide the card
                 if (!switchSkipConfirm.isChecked) {
                     switchSkipConfirm.isChecked = true
                 }
-                switchSkipConfirm.isEnabled = false
-                switchSkipConfirm.alpha = 0.5f
+                cardSkipConfirm.visibility = View.GONE
             } else {
-                // When Adaptive Mode is disabled, re-enable the switch (keep current checked state)
-                switchSkipConfirm.isEnabled = true
-                switchSkipConfirm.alpha = 1.0f
+                // When Adaptive Mode is disabled, show the card
+                cardSkipConfirm.visibility = View.VISIBLE
             }
         }
 
@@ -230,9 +236,11 @@ class SettingsActivity : BaseActivity() {
 
         switchSkipErrorDialog.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, isChecked).apply()
-            // Enable/disable the keep error apps option
-            switchKeepErrorAppsSelected.isEnabled = isChecked
-            layoutKeepErrorApps.alpha = if (isChecked) 1.0f else 0.5f
+            
+            TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
+            // Show/hide the keep error apps option
+            cardKeepErrorApps.visibility = if (isChecked) View.VISIBLE else View.GONE
+            
             // If disabling skip error dialog, also disable keep error apps selected
             if (!isChecked) {
                 switchKeepErrorAppsSelected.isChecked = false
@@ -303,25 +311,22 @@ class SettingsActivity : BaseActivity() {
             val mode = if (checkedId == R.id.radioLadbMode) com.arslan.shizuwall.WorkingMode.LADB else com.arslan.shizuwall.WorkingMode.SHIZUKU
             prefs.edit().putString(MainActivity.KEY_WORKING_MODE, mode.name).apply()
             setResult(RESULT_OK)
+            
+            TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
             // Update UI affordance for LADB setup
             val isLadb = mode == com.arslan.shizuwall.WorkingMode.LADB
-            layoutSetLadb.alpha = if (isLadb) 1.0f else 0.5f
-            layoutSetLadb.isEnabled = isLadb
-            layoutSetLadb.isClickable = isLadb
-            layoutSetLadb.isFocusable = isLadb
+            cardSetLadb.visibility = if (isLadb) View.VISIBLE else View.GONE
 
             if (isLadb) {
                 autoEnablePreviousState = switchAutoEnableOnShizukuStart.isChecked
-                cardAutoEnableOnShizukuStart.isEnabled = false
-                cardAutoEnableOnShizukuStart.alpha = 0.5f
+                cardAutoEnableOnShizukuStart.visibility = View.GONE
                 switchAutoEnableOnShizukuStart.isEnabled = false
                 if (switchAutoEnableOnShizukuStart.isChecked) {
                     switchAutoEnableOnShizukuStart.isChecked = false
                     prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false).apply()
                 }
             } else {
-                cardAutoEnableOnShizukuStart.isEnabled = true
-                cardAutoEnableOnShizukuStart.alpha = 1.0f
+                cardAutoEnableOnShizukuStart.visibility = View.VISIBLE
                 switchAutoEnableOnShizukuStart.isEnabled = true
                 if (autoEnablePreviousState) {
                     switchAutoEnableOnShizukuStart.isChecked = true
