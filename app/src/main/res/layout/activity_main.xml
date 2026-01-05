@@ -190,12 +190,6 @@
                 android:text="@string/cat_favorites" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chip_system"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/cat_system" />
-
-            <com.google.android.material.chip.Chip
                 android:id="@+id/chip_selected"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -212,6 +206,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/cat_user" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_system"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cat_system" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 

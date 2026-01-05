@@ -14,10 +14,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -31,6 +33,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.chip.Chip
 import com.arslan.shizuwall.adapters.AppListAdapter
@@ -50,6 +53,7 @@ import com.arslan.shizuwall.adapters.ErrorEntry
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.radiobutton.MaterialRadioButton
 
 class MainActivity : BaseActivity() {
     companion object {
@@ -1050,28 +1054,52 @@ class MainActivity : BaseActivity() {
     }
 
     private fun showSortDialog() {
-        val options = arrayOf(
-            getString(R.string.sort_install_time),
-            getString(R.string.sort_name_asc),
-            getString(R.string.sort_name_desc)
-        )
-        
-        val sortOrders = arrayOf(
-            SortOrder.INSTALL_TIME,
-            SortOrder.NAME_ASC,
-            SortOrder.NAME_DESC
-        )
-        
-        val currentIndex = sortOrders.indexOf(currentSortOrder)
-        
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sort, null)
+        val radioGroup = dialogView.findViewById<RadioGroup>(R.id.radioGroupSort)
+        val checkboxShowSystem = dialogView.findViewById<MaterialCheckBox>(R.id.checkboxShowSystemApps)
+
+        // Set current sort order
+        when (currentSortOrder) {
+            SortOrder.INSTALL_TIME -> radioGroup.check(R.id.radioInstallTime)
+            SortOrder.NAME_ASC -> radioGroup.check(R.id.radioNameAsc)
+            SortOrder.NAME_DESC -> radioGroup.check(R.id.radioNameDesc)
+        }
+
+        // Set current show system apps state
+        checkboxShowSystem.isChecked = showSystemApps
+
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.sort)
-            .setSingleChoiceItems(options, currentIndex) { dialog, which ->
-                currentSortOrder = sortOrders[which]
-                sharedPreferences.edit().putString(KEY_SORT_ORDER, currentSortOrder.name).apply()
-                sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = true)
-                dialog.dismiss()
+            .setView(dialogView)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                // Handle sort order change
+                val newSortOrder = when (radioGroup.checkedRadioButtonId) {
+                    R.id.radioInstallTime -> SortOrder.INSTALL_TIME
+                    R.id.radioNameAsc -> SortOrder.NAME_ASC
+                    R.id.radioNameDesc -> SortOrder.NAME_DESC
+                    else -> currentSortOrder
+                }
+
+                val sortChanged = newSortOrder != currentSortOrder
+                if (sortChanged) {
+                    currentSortOrder = newSortOrder
+                    sharedPreferences.edit().putString(KEY_SORT_ORDER, currentSortOrder.name).apply()
+                }
+
+                // Handle show system apps change
+                val newShowSystem = checkboxShowSystem.isChecked
+                val showSystemChanged = newShowSystem != showSystemApps
+                if (showSystemChanged) {
+                    showSystemApps = newShowSystem
+                    sharedPreferences.edit().putBoolean(KEY_SHOW_SYSTEM_APPS, showSystemApps).apply()
+                    updateCategoryChips()
+                }
+
+                if (sortChanged || showSystemChanged) {
+                    sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = true)
+                }
             }
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
@@ -1876,15 +1904,17 @@ class MainActivity : BaseActivity() {
         // guard: views may not be initialized in some lifecycle flows
         val categoryGroup = findViewById<ChipGroup?>(R.id.categoryChipGroup) ?: return
         val chipSystem = findViewById<Chip?>(R.id.chip_system)
+        val chipUser = findViewById<Chip?>(R.id.chip_user)
         val chipSelected = findViewById<Chip?>(R.id.chip_selected)
         val chipUnselected = findViewById<Chip?>(R.id.chip_unselected)
 
         chipSystem?.visibility = if (showSystemApps) View.VISIBLE else View.GONE
+        chipUser?.visibility = if (showSystemApps) View.VISIBLE else View.GONE
 
         chipSelected?.visibility = if (moveSelectedTop) View.GONE else View.VISIBLE
 
-        // if we hid the system chip and it was selected, clear the selection (do NOT switch to a removed default)
-        if (!showSystemApps && categoryGroup.checkedChipId == R.id.chip_system) {
+        // if we hid the system/user chip and it was selected, clear the selection (do NOT switch to a removed default)
+        if (!showSystemApps && (categoryGroup.checkedChipId == R.id.chip_system || categoryGroup.checkedChipId == R.id.chip_user)) {
             categoryGroup.clearCheck()
             currentCategory = Category.NONE
             sortAndFilterApps(preserveScrollPosition = false)

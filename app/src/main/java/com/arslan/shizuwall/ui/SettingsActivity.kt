@@ -38,7 +38,6 @@ import rikka.shizuku.Shizuku
 class SettingsActivity : BaseActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var switchShowSystemApps: SwitchCompat
     private lateinit var switchMoveSelectedTop: SwitchCompat
     private lateinit var switchAdaptiveMode: SwitchCompat
     private lateinit var switchSkipConfirm: SwitchCompat
@@ -122,7 +121,6 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun initializeViews() {
-        switchShowSystemApps = findViewById(R.id.switchShowSystemApps)
         switchMoveSelectedTop = findViewById(R.id.switchMoveSelectedTop)
         switchAdaptiveMode = findViewById(R.id.switchAdaptiveMode)
         cardSkipConfirm = findViewById(R.id.cardSkipConfirm)
@@ -158,7 +156,6 @@ class SettingsActivity : BaseActivity() {
     private fun loadSettings() {
         val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
 
-        switchShowSystemApps.isChecked = prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
         switchMoveSelectedTop.isChecked = prefs.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, true)
         switchAdaptiveMode.isChecked = prefs.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
         switchSkipConfirm.isChecked = prefs.getBoolean("skip_enable_confirm", false)
@@ -202,11 +199,6 @@ class SettingsActivity : BaseActivity() {
 
     private fun setupListeners() {
         val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-
-        switchShowSystemApps.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, isChecked).apply()
-            setResult(RESULT_OK)
-        }
 
         switchMoveSelectedTop.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, isChecked).apply()
@@ -352,7 +344,6 @@ class SettingsActivity : BaseActivity() {
         layoutAdbBroadcastUsage.setOnClickListener { showAdbBroadcastDialog() }
 
         // Make the whole card area toggle the corresponding switches when tapped
-        makeCardClickableForSwitch(switchShowSystemApps)
         makeCardClickableForSwitch(switchMoveSelectedTop)
         makeCardClickableForSwitch(switchUseDynamicColor)
         makeCardClickableForSwitch(switchSkipConfirm)
