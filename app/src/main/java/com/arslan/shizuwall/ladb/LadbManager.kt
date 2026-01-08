@@ -401,71 +401,74 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
+    private suspend fun connectLocked(host: String? = null, port: Int? = null): Boolean {
+        // Check if already connected to avoid redundant connection attempts
+        if (state == State.CONNECTED && connectionRef.get() != null) {
+            return true
+        }
+
+        val targetHost = host ?: getPrefs().getString(KEY_HOST, null)
+        val targetPort = port ?: getPrefs().getInt(KEY_PORT, -1)
+
+        if (targetHost == null || targetHost.isBlank()) {
+            val e = IllegalStateException("Host is not configured")
+            recordError("connect", targetHost, targetPort, e)
+            _state.set(State.UNCONFIGURED)
+            return false
+        }
+
+        if (targetPort <= 0) {
+            val e = IllegalStateException("Port is not configured")
+            recordError("connect", targetHost, targetPort, e)
+            _state.set(State.UNCONFIGURED)
+            return false
+        }
+
+        // Close any existing connection before creating a new one
+        try {
+            connectionRef.getAndSet(null)?.close()
+        } catch (_: Exception) {
+            // ignore
+        }
+
+        val (privateKey, certificate) = getOrCreateKeyMaterial()
+        val conn = AdbConnection.Builder()
+            .setHost(targetHost)
+            .setPort(targetPort)
+            .setPrivateKey(privateKey)
+            .setCertificate(certificate)
+            .build()
+
+        return try {
+            withTimeout(10_000L) { // 10 seconds timeout for LADB connection
+                conn.connect()
+            }
+            connectionRef.set(conn)
+            _state.set(State.CONNECTED)
+            true
+        } catch (e: io.github.muntashirakon.adb.AdbPairingRequiredException) {
+            recordError("connect", targetHost, targetPort, e)
+            _state.set(State.PAIRED)
+            false
+        } catch (e: Exception) {
+            recordError("connect", targetHost, targetPort, e)
+            _state.set(State.ERROR)
+            false
+        }
+    }
+
     suspend fun connect(host: String? = null, port: Int? = null): Boolean = withContext(Dispatchers.IO) {
         connectionMutex.lock()
         try {
-            // Check if already connected to avoid redundant connection attempts
-            if (state == State.CONNECTED && connectionRef.get() != null) {
-                return@withContext true
-            }
-
-            val targetHost = host ?: getPrefs().getString(KEY_HOST, null)
-            val targetPort = port ?: getPrefs().getInt(KEY_PORT, -1)
-
-            if (targetHost == null || targetHost.isBlank()) {
-                val e = IllegalStateException("Host is not configured")
-                recordError("connect", targetHost, targetPort, e)
-                _state.set(State.UNCONFIGURED)
-                return@withContext false
-            }
-
-            if (targetPort <= 0) {
-                val e = IllegalStateException("Port is not configured")
-                recordError("connect", targetHost, targetPort, e)
-                _state.set(State.UNCONFIGURED)
-                return@withContext false
-            }
-
-            // Close any existing connection before creating a new one
-            try {
-                connectionRef.getAndSet(null)?.close()
-            } catch (_: Exception) {
-                // ignore
-            }
-
-            val (privateKey, certificate) = getOrCreateKeyMaterial()
-            val conn = AdbConnection.Builder()
-                .setHost(targetHost)
-                .setPort(targetPort)
-                .setPrivateKey(privateKey)
-                .setCertificate(certificate)
-                .build()
-
-            conn.connect()
-            connectionRef.set(conn)
-
-            _state.set(State.CONNECTED)
-            return@withContext true
-        } catch (e: io.github.muntashirakon.adb.AdbPairingRequiredException) {
-            // Pairing is required before connecting
-            val targetHost = host ?: getPrefs().getString(KEY_HOST, null)
-            val targetPort = port ?: getPrefs().getInt(KEY_PORT, 5555)
-            recordError("connect", targetHost, targetPort, e)
-            _state.set(State.PAIRED) // Set to PAIRED since pairing is needed
-            return@withContext false
-        } catch (e: Exception) {
-            val targetHost = host ?: getPrefs().getString(KEY_HOST, null)
-            val targetPort = port ?: getPrefs().getInt(KEY_PORT, 5555)
-            recordError("connect", targetHost, targetPort, e)
-            _state.set(State.ERROR)
-            return@withContext false
+            connectLocked(host, port)
         } finally {
             connectionMutex.unlock()
         }
     }
 
     suspend fun clearAllConfig(): Boolean = withContext(Dispatchers.IO) {
-        return@withContext try {
+        connectionMutex.lock()
+        try {
             try {
                 connectionRef.getAndSet(null)?.close()
             } catch (_: Exception) {
@@ -488,6 +491,8 @@ class LadbManager private constructor(private val context: Context) {
             recordError("clear_all_config", null, null, e)
             _state.set(State.ERROR)
             false
+        } finally {
+            connectionMutex.unlock()
         }
     }
 
@@ -496,24 +501,22 @@ class LadbManager private constructor(private val context: Context) {
         val timeoutMs = 15_000L // 15 seconds
 
         for (attempt in 0..maxRetries) {
-            // Use mutex to ensure only one coroutine checks/establishes connection at a time
-            val connResult = connectionMutex.lock()
+            connectionMutex.lock()
             val conn = try {
-                var connection = connectionRef.get()
-                if (connection == null || state != State.CONNECTED) {
-                    val ok = connect()
+                var currentConn = connectionRef.get()
+                if (currentConn == null || state != State.CONNECTED) {
+                    val ok = connectLocked()
                     if (!ok) {
                         return@withContext ShellResult(-1, "", "Not connected")
                     }
-                    connection = connectionRef.get()
-                    if (connection == null) {
-                        return@withContext ShellResult(-1, "", "Not connected")
-                    }
+                    currentConn = connectionRef.get()
                 }
-                connection
+                currentConn
             } finally {
                 connectionMutex.unlock()
             }
+
+            if (conn == null) return@withContext ShellResult(-1, "", "Failed to establish connection")
 
             try {
                 val stream: AdbStream = conn.open("shell:$cmd")

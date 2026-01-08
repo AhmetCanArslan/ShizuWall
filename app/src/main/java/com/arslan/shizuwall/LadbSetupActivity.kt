@@ -497,6 +497,11 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         updateStatus()
         appendLog(getString(R.string.log_setup_initialized, tvStatus.text))
 
+        // Auto-initialize components if paired to start port discovery immediately
+        if (ladbManager.isPaired() && ladbManager.state != LadbManager.State.CONNECTED) {
+            initializeConnectionComponents()
+        }
+
         btnPair.setOnClickListener {
             handlePairingClick()
         }
@@ -588,6 +593,11 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         // Initialize pairing components when pairing is requested
         initializePairingComponents()
         
+        // Clear stale pairing port for fresh pairing
+        lifecycleScope.launch {
+            ladbManager.clearPairingPort()
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 showNotificationPermissionDialog {
@@ -677,6 +687,12 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                     logs
                 }
                 appendLog(getString(R.string.log_connection_failed, errorMessage))
+                
+                // Clear state so next attempt starts fresh discovery
+                withContext(Dispatchers.IO) {
+                    ladbManager.clearConnectPort()
+                }
+                
                 showLadbErrorDialog(getString(R.string.ladb_error_title), errorMessage)
             } else {
                 appendLog(getString(R.string.log_connection_success))
@@ -869,6 +885,12 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                             if (success) {
                                 appendLog("Connect config saved")
                                 updateStatus()
+                                
+                                // Auto-connect if we're not currently connected
+                                if (ladbManager.state != LadbManager.State.CONNECTED) {
+                                    appendLog("Discovered port - attempting auto-connection...")
+                                    performConnection()
+                                }
                             } else {
                                 appendLog("Failed to save connect config")
                             }
@@ -996,10 +1018,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             }
             adbPortFinder?.startDiscovery()
         }
-        // Clear stale pairing port for fresh pairing
-        lifecycleScope.launch {
-            ladbManager.clearPairingPort()
-        }
     }
 
     private fun initializeConnectionComponents() {
@@ -1013,10 +1031,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 detectedConnectPorts.clear()
             }
             adbPortFinder?.startDiscovery()
-        }
-        // Clear stale connect port for fresh connection
-        lifecycleScope.launch {
-            ladbManager.clearConnectPort()
         }
     }
 
