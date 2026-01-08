@@ -1663,8 +1663,6 @@ class MainActivity : BaseActivity() {
                             showDimOverlay()
                         }
                     
-                    val msg = if (successful.isEmpty()) getString(R.string.firewall_enabled_adaptive) else getString(R.string.firewall_enabled_for_apps, successful.size)
-                    Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
                 } else {
                     // None succeeded, revert toggle
                     suppressToggleListener = true
