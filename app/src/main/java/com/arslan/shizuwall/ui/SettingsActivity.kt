@@ -31,8 +31,11 @@ import android.graphics.Typeface
 import android.os.Build
 import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.ladb.LadbManager
 import com.arslan.shizuwall.services.AppMonitorService
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.json.JSONArray
+import org.json.JSONObject
 import rikka.shizuku.Shizuku
 
 class SettingsActivity : BaseActivity() {
@@ -425,21 +428,53 @@ class SettingsActivity : BaseActivity() {
         withContext(Dispatchers.IO) {
             try {
                 val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-                val selected = prefs.getStringSet("selected_apps", emptySet())?.toList() ?: emptyList()
-                val favorites = prefs.getStringSet(MainActivity.KEY_FAVORITE_APPS, emptySet())?.toList() ?: emptyList()
-                val exportJson = org.json.JSONObject().apply {
-                    put("version", 1)
-                    put("selected", org.json.JSONArray(selected))
-                    put("favorites", org.json.JSONArray(favorites))
-                    put("show_system_apps", prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false))
-                    put("adaptive_mode", prefs.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false))
-                    put("skip_enable_confirm", prefs.getBoolean("skip_enable_confirm", false))
-                    put("move_selected_top", prefs.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, true))
+                val exportJson = JSONObject().apply {
+                    put("version", 2)
+                    put("exported_at", System.currentTimeMillis())
+
+                    // Main data lists
+                    put("selected", JSONArray(prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList()))
+                    put("favorites", JSONArray(prefs.getStringSet(MainActivity.KEY_FAVORITE_APPS, emptySet())?.toList() ?: emptyList()))
+
+                    // All relevant settings
+                    val keys = listOf(
+                        MainActivity.KEY_SHOW_SYSTEM_APPS,
+                        MainActivity.KEY_ADAPTIVE_MODE,
+                        MainActivity.KEY_SKIP_ENABLE_CONFIRM,
+                        MainActivity.KEY_MOVE_SELECTED_TOP,
+                        MainActivity.KEY_SKIP_ERROR_DIALOG,
+                        MainActivity.KEY_KEEP_ERROR_APPS_SELECTED,
+                        MainActivity.KEY_USE_DYNAMIC_COLOR,
+                        MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START,
+                        MainActivity.KEY_APP_MONITOR_ENABLED,
+                        MainActivity.KEY_SKIP_ANDROID11_INFO,
+                        MainActivity.KEY_SELECTED_FONT,
+                        MainActivity.KEY_WORKING_MODE,
+                        MainActivity.KEY_SORT_ORDER,
+                        MainActivity.KEY_SHOW_SETUP_PROMPT
+                    )
+
+                    for (key in keys) {
+                        if (prefs.contains(key)) {
+                            put(key, prefs.all[key])
+                        }
+                    }
+
+                    // Export LADB config
+                    val ladbPrefs = getSharedPreferences(LadbManager.PREFS_NAME, Context.MODE_PRIVATE)
+                    val ladbJson = JSONObject().apply {
+                        put(LadbManager.KEY_HOST, ladbPrefs.getString(LadbManager.KEY_HOST, null))
+                        // We skip ephemeral ports as they change on every start/reboot
+                        put(LadbManager.KEY_IS_PAIRED, ladbPrefs.getBoolean(LadbManager.KEY_IS_PAIRED, false))
+                    }
+                    put("ladb_config", ladbJson)
                 }
+
                 contentResolver.openOutputStream(uri)?.use { out ->
-                    out.write(exportJson.toString().toByteArray(Charsets.UTF_8))
+                    out.write(exportJson.toString(2).toByteArray(Charsets.UTF_8))
                     out.flush()
                 } ?: throw IllegalStateException("Unable to open output stream")
+                
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@SettingsActivity, getString(R.string.export_successful), Toast.LENGTH_SHORT).show()
                 }
@@ -458,40 +493,106 @@ class SettingsActivity : BaseActivity() {
                     input.readBytes().toString(Charsets.UTF_8)
                 } ?: throw IllegalStateException("Unable to open input stream")
 
-                val obj = org.json.JSONObject(content)
-                val selectedJson = obj.optJSONArray("selected") ?: org.json.JSONArray()
-                val selectedSet = mutableSetOf<String>()
-                for (i in 0 until selectedJson.length()) {
-                    val v = selectedJson.optString(i, null)
-                    if (!v.isNullOrEmpty()) selectedSet.add(v)
-                }
-
-                // Ensure imported selection cannot include Shizuku packages
-                val filteredSelectedSet = selectedSet.filterNot { isShizukuPackage(it) }.toMutableSet()
-
-                val favoritesJson = obj.optJSONArray("favorites") ?: org.json.JSONArray()
-                val favoritesSet = mutableSetOf<String>()
-                for (i in 0 until favoritesJson.length()) {
-                    val v = favoritesJson.optString(i, null)
-                    if (!v.isNullOrEmpty()) favoritesSet.add(v)
-                }
-
-                val showSys = obj.optBoolean("show_system_apps", false)
-                val adaptive = obj.optBoolean("adaptive_mode", false)
-                val skipConfirm = obj.optBoolean("skip_enable_confirm", false)
-                val moveTop = obj.optBoolean("move_selected_top", true)
-
+                val obj = JSONObject(content)
+                val version = obj.optInt("version", 1)
                 val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-                prefs.edit().apply {
-                    putStringSet("selected_apps", filteredSelectedSet)
-                    putInt("selected_count", filteredSelectedSet.size)
-                    putStringSet(MainActivity.KEY_FAVORITE_APPS, favoritesSet)
-                    putBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, showSys)
-                    putBoolean(MainActivity.KEY_ADAPTIVE_MODE, adaptive)
-                    putBoolean("skip_enable_confirm", skipConfirm)
-                    putBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, moveTop)
-                    apply()
+                val editor = prefs.edit()
+
+                // 1. Handle Selected Apps (legacy key "selected")
+                val selectedKey = if (obj.has("selected")) "selected" else MainActivity.KEY_SELECTED_APPS
+                val selectedJson = obj.optJSONArray(selectedKey)
+                if (selectedJson != null) {
+                    val selectedSet = mutableSetOf<String>()
+                    for (i in 0 until selectedJson.length()) {
+                        val v = selectedJson.optString(i, null)
+                        if (!v.isNullOrEmpty()) selectedSet.add(v)
+                    }
+                    val filteredSelectedSet = selectedSet.filterNot { isShizukuPackage(it) }.toSet()
+                    editor.putStringSet(MainActivity.KEY_SELECTED_APPS, filteredSelectedSet)
+                    editor.putInt(MainActivity.KEY_SELECTED_COUNT, filteredSelectedSet.size)
                 }
+
+                // 2. Handle Favorites (legacy key "favorites")
+                val favoritesKey = if (obj.has("favorites")) "favorites" else MainActivity.KEY_FAVORITE_APPS
+                val favoritesJson = obj.optJSONArray(favoritesKey)
+                if (favoritesJson != null) {
+                    val favoritesSet = mutableSetOf<String>()
+                    for (i in 0 until favoritesJson.length()) {
+                        val v = favoritesJson.optString(i, null)
+                        if (!v.isNullOrEmpty()) favoritesSet.add(v)
+                    }
+                    editor.putStringSet(MainActivity.KEY_FAVORITE_APPS, favoritesSet)
+                }
+
+                // 3. Handle All Other Settings
+                val keys = listOf(
+                    MainActivity.KEY_SHOW_SYSTEM_APPS,
+                    MainActivity.KEY_ADAPTIVE_MODE,
+                    MainActivity.KEY_SKIP_ENABLE_CONFIRM,
+                    MainActivity.KEY_MOVE_SELECTED_TOP,
+                    MainActivity.KEY_SKIP_ERROR_DIALOG,
+                    MainActivity.KEY_KEEP_ERROR_APPS_SELECTED,
+                    MainActivity.KEY_USE_DYNAMIC_COLOR,
+                    MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START,
+                    MainActivity.KEY_APP_MONITOR_ENABLED,
+                    MainActivity.KEY_SKIP_ANDROID11_INFO,
+                    MainActivity.KEY_SELECTED_FONT,
+                    MainActivity.KEY_WORKING_MODE,
+                    MainActivity.KEY_SORT_ORDER,
+                    MainActivity.KEY_SHOW_SETUP_PROMPT
+                )
+
+                for (key in keys) {
+                    if (obj.has(key)) {
+                        when (val value = obj.get(key)) {
+                            is Boolean -> editor.putBoolean(key, value)
+                            is String -> editor.putString(key, value)
+                            is Int -> editor.putInt(key, value)
+                            is Long -> editor.putLong(key, value)
+                        }
+                    } else if (version == 1) {
+                        // Legacy v1 used slightly different names for some settings in JSON
+                        // but most were matched to MainActivity constants already.
+                        // We handled 'selected' and 'favorites' above.
+                    }
+                }
+
+                editor.apply()
+
+                // 4. Handle LADB config
+                val ladbObj = obj.optJSONObject("ladb_config")
+                if (ladbObj != null) {
+                    val ladbEditor = getSharedPreferences(LadbManager.PREFS_NAME, Context.MODE_PRIVATE).edit()
+                    if (ladbObj.has(LadbManager.KEY_HOST)) {
+                        ladbEditor.putString(LadbManager.KEY_HOST, ladbObj.optString(LadbManager.KEY_HOST))
+                    }
+                    if (ladbObj.has(LadbManager.KEY_IS_PAIRED)) {
+                        ladbEditor.putBoolean(LadbManager.KEY_IS_PAIRED, ladbObj.optBoolean(LadbManager.KEY_IS_PAIRED))
+                    }
+                    ladbEditor.apply()
+                }
+
+                // 5. Update Runtime State (App Monitor Service)
+                val isMonitorEnabled = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
+                val monitorIntent = Intent(this@SettingsActivity, AppMonitorService::class.java)
+                try {
+                    if (isMonitorEnabled) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            startForegroundService(monitorIntent)
+                        } else {
+                            startService(monitorIntent)
+                        }
+                    } else {
+                        stopService(monitorIntent)
+                    }
+                } catch (e: Exception) {
+                    // Ignore service start failures during import
+                }
+
+                // 6. Mark onboarding as complete
+                getSharedPreferences("app_prefs", Context.MODE_PRIVATE).edit()
+                    .putBoolean("onboarding_complete", true)
+                    .apply()
 
                 withContext(Dispatchers.Main) {
                     loadSettings()

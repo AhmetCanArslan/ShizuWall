@@ -49,12 +49,12 @@ class LadbManager private constructor(private val context: Context) {
             }
         }
 
-        private const val PREFS_NAME = "ladb_prefs"
-        private const val KEY_HOST = "host"
-        private const val KEY_PORT = "port"
-        private const val KEY_PAIRING_PORT = "pairing_port"
-        private const val KEY_IS_PAIRED = "is_paired"
-        private const val KEY_LAST_ERROR_LOG = "last_error_log"
+        const val PREFS_NAME = "ladb_prefs"
+        const val KEY_HOST = "host"
+        const val KEY_PORT = "port"
+        const val KEY_PAIRING_PORT = "pairing_port"
+        const val KEY_IS_PAIRED = "is_paired"
+        const val KEY_LAST_ERROR_LOG = "last_error_log"
     }
 
     enum class State {
