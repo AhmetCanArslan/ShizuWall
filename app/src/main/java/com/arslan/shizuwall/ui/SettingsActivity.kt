@@ -433,8 +433,8 @@ class SettingsActivity : BaseActivity() {
                     put("exported_at", System.currentTimeMillis())
 
                     // Main data lists
-                    put("selected", JSONArray(prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList()))
-                    put("favorites", JSONArray(prefs.getStringSet(MainActivity.KEY_FAVORITE_APPS, emptySet())?.toList() ?: emptyList()))
+                    put("selected", JSONArray(prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList<String>()))
+                    put("favorites", JSONArray(prefs.getStringSet(MainActivity.KEY_FAVORITE_APPS, emptySet())?.toList() ?: emptyList<String>()))
 
                     // All relevant settings
                     val keys = listOf(
