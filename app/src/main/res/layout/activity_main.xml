@@ -64,6 +64,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="0dp"
         app:thumbIcon="@drawable/check_24px"
+        app:thumbIconTint="@color/switch_thumb_icon_tint"
         app:layout_constraintEnd_toEndOf="@id/settingsButton"
         app:layout_constraintTop_toTopOf="@id/appTitle"
         app:layout_constraintBottom_toBottomOf="@id/appTitle" />

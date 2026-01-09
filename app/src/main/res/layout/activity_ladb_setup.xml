@@ -74,7 +74,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="false"
-                        app:thumbIcon="@drawable/check_24px" />
+                        app:thumbIcon="@drawable/check_24px"
+                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -357,7 +358,8 @@
                         android:text="@string/ladb_enable_logs"
                         android:checked="false"
                         android:layout_marginBottom="8dp"
-                        app:thumbIcon="@drawable/check_24px" />
+                        app:thumbIcon="@drawable/check_24px"
+                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
 
                     <LinearLayout
                         android:id="@+id/logsContainer"

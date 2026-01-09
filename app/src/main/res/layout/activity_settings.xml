@@ -90,7 +90,8 @@
                         android:id="@+id/switchMoveSelectedTop"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px" />
+                        app:thumbIcon="@drawable/check_24px"
+                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -145,7 +146,8 @@
                         android:id="@+id/switchUseDynamicColor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px" />
+                        app:thumbIcon="@drawable/check_24px"
+                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -274,7 +276,8 @@
                         android:id="@+id/switchSkipConfirm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px" />
+                        app:thumbIcon="@drawable/check_24px"
+                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -329,7 +332,8 @@
                         android:id="@+id/switchAdaptiveMode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px" />
+                        app:thumbIcon="@drawable/check_24px"
+                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -441,7 +445,8 @@
                         android:id="@+id/switchSkipErrorDialog"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px" />
+                        app:thumbIcon="@drawable/check_24px"
+                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -498,7 +503,8 @@
                         android:id="@+id/switchKeepErrorAppsSelected"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px" />
+                        app:thumbIcon="@drawable/check_24px"
+                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
               
@@ -689,7 +695,8 @@
                         android:id="@+id/switchAutoEnableOnShizukuStart"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px" />
+                        app:thumbIcon="@drawable/check_24px"
+                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -758,7 +765,8 @@
                         android:id="@+id/switchAppMonitor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px" />
+                        app:thumbIcon="@drawable/check_24px"
+                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             
