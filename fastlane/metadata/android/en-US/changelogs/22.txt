@@ -1,0 +1,5 @@
+Added ADB Daemon
+Added loading indicator 
+Added sorting option on app list
+Added new app monitoring service
+Replaced toggles with Material Switch
