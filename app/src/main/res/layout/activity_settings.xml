@@ -565,22 +565,19 @@
                         android:id="@+id/radioGroupWorkingMode"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        
+                        android:orientation="vertical">
 
                         <RadioButton
                             android:id="@+id/radioShizukuMode"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:text="@string/working_mode_shizuku" />
 
                         <RadioButton
                             android:id="@+id/radioLadbMode"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_marginTop="8dp"
                             android:text="@string/working_mode_ladb" />
                     </RadioGroup>
                 </LinearLayout>
