@@ -129,10 +129,10 @@ dependencies {
     implementation ("dev.rikka.shizuku:api:$shizuku_version")
     implementation ("dev.rikka.shizuku:provider:$shizuku_version")
 
-    implementation ("com.github.MuntashirAkon:libadb-android:3.1.1")
-    implementation ("org.conscrypt:conscrypt-android:2.5.3")
+    "fullImplementation" ("com.github.MuntashirAkon:libadb-android:3.1.1")
+    "fullImplementation" ("org.conscrypt:conscrypt-android:2.5.3")
 
     // Required for generating a self-signed certificate for ADB-over-WiFi TLS.
-    implementation("org.bouncycastle:bcprov-jdk15to18:1.81")
-    implementation("org.bouncycastle:bcpkix-jdk15to18:1.81")
+    "fullImplementation" ("org.bouncycastle:bcprov-jdk15to18:1.81")
+    "fullImplementation" ("org.bouncycastle:bcpkix-jdk15to18:1.81")
 }

@@ -431,15 +431,15 @@ class LadbManager private constructor(private val context: Context) {
             // ignore
         }
 
-        val (privateKey, certificate) = getOrCreateKeyMaterial()
-        val conn = AdbConnection.Builder()
-            .setHost(targetHost)
-            .setPort(targetPort)
-            .setPrivateKey(privateKey)
-            .setCertificate(certificate)
-            .build()
-
         return try {
+            val (privateKey, certificate) = getOrCreateKeyMaterial()
+            val conn = AdbConnection.Builder()
+                .setHost(targetHost)
+                .setPort(targetPort)
+                .setPrivateKey(privateKey)
+                .setCertificate(certificate)
+                .build()
+
             withTimeout(10_000L) { // 10 seconds timeout for LADB connection
                 conn.connect()
             }
