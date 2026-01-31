@@ -93,7 +93,8 @@ android {
 
     splits {
         abi {
-            isEnable = true
+            val isFdroid = gradle.startParameter.taskNames.any { it.contains("fdroid", ignoreCase = true) }
+            isEnable = !isFdroid
             reset()
             include("arm64-v8a", "armeabi-v7a")
             isUniversalApk = true
