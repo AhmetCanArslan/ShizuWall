@@ -74,7 +74,23 @@ android {
     buildFeatures {
         aidl = true 
         viewBinding = true
+        buildConfig = true
     }
+
+    flavorDimensions += "version"
+    productFlavors {
+        create("full") {
+            dimension = "version"
+            buildConfigField("boolean", "HAS_DAEMON", "true")
+        }
+        create("fdroid") {
+            dimension = "version"
+            applicationIdSuffix = ".fdroid" // İsteğe bağlı: Paket adına .fdroid ekler
+            versionNameSuffix = "-fdroid"
+            buildConfigField("boolean", "HAS_DAEMON", "false")
+        }
+    }
+
     splits {
         abi {
             isEnable = true
