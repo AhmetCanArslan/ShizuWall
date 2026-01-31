@@ -113,7 +113,7 @@
     <string name="working_mode_title">Modo de trabalho</string>
     <string name="working_mode_summary">Escolha como os comandos do Firewall são executados</string>
     <string name="working_mode_shizuku">Shizuku</string>
-    <string name="working_mode_ladb">LADB (Beta)</string>
+    <string name="working_mode_ladb">LADB</string>
     <string name="notifications_section">Notificações</string>
     <string name="app_monitor_service">Serviço de Monitoramento de Apps</string>
     <string name="app_monitor_service_description">Detectar novos apps instalados e mostrar uma notificação</string>
