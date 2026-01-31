@@ -85,7 +85,6 @@ android {
         }
         create("fdroid") {
             dimension = "version"
-            applicationIdSuffix = ".fdroid" // İsteğe bağlı: Paket adına .fdroid ekler
             versionNameSuffix = "-fdroid"
             buildConfigField("boolean", "HAS_DAEMON", "false")
         }
