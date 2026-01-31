@@ -251,4 +251,5 @@
     <string name="log_logs_cleared">Protokolle gelöscht</string>
     <string name="log_logs_copied">Protokolle in die Zwischenablage kopiert</string>
     <string name="log_status_updated">Status aktualisiert: %s</string>
+    <string name="ladb_not_supported_fdroid"> (wird in der F-Droid-Version nicht unterstützt)</string>
 </resources>

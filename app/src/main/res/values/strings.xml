@@ -17,6 +17,7 @@
     <string name="select_all">Select all</string>
     <string name="cat_favorites">Favorites</string>
     <string name="made_by">Made with ❤️ by Ahmet Can Arslan</string>
+    <string name="ladb_not_supported_fdroid"> (not supported for fdroid version)</string>
     <string name="reset_app_menu">Reset App</string>
     <string name="theme_changed_title">Theme Changed</string>
     <string name="theme_changed_message">The theme has been updated. Please restart the app to apply the changes.</string>

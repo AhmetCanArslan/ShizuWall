@@ -191,6 +191,19 @@ class SettingsActivity : BaseActivity() {
             com.arslan.shizuwall.WorkingMode.LADB -> radioGroupWorkingMode.check(R.id.radioLadbMode)
             else -> radioGroupWorkingMode.check(R.id.radioShizukuMode)
         }
+
+        if (com.arslan.shizuwall.BuildConfig.FLAVOR == "fdroid") {
+            radioLadbMode.isEnabled = false
+            radioLadbMode.alpha = 0.5f
+            val notSupportedText = getString(R.string.ladb_not_supported_fdroid)
+            if (!radioLadbMode.text.toString().contains(notSupportedText)) {
+                radioLadbMode.text = "${radioLadbMode.text}$notSupportedText"
+            }
+            if (radioLadbMode.isChecked) {
+                radioGroupWorkingMode.check(R.id.radioShizukuMode)
+                prefs.edit().putString(MainActivity.KEY_WORKING_MODE, com.arslan.shizuwall.WorkingMode.SHIZUKU.name).apply()
+            }
+        }
         // Show/hide LADB card if not selected
         val ladbSelected = radioLadbMode.isChecked
         cardSetLadb.visibility = if (ladbSelected) View.VISIBLE else View.GONE

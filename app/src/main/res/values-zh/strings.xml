@@ -253,4 +253,5 @@
     <string name="log_logs_cleared">日志已清除</string>
     <string name="log_logs_copied">日志已复制到剪贴板</string>
     <string name="log_status_updated">状态已更新：%s</string>
+    <string name="ladb_not_supported_fdroid"> (F-Droid 版本不支持)</string>
 </resources>

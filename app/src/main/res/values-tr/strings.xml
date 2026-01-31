@@ -18,6 +18,7 @@
     <string name="select_all">Tümünü seç</string>
     <string name="cat_favorites">Favoriler</string>
     <string name="made_by">Ahmet Can Arslan tarafından ❤️ ile yapıldı</string>
+    <string name="ladb_not_supported_fdroid"> (fdroid versiyonu için desteklenmiyor)</string>
     <string name="reset_app_menu">Uygulamayı Sıfırla</string>
     <string name="theme_changed_title">Tema Değiştirildi</string>
     <string name="theme_changed_message">Tema güncellendi. Değişiklikleri uygulamak için lütfen uygulamayı yeniden başlatın.</string>
