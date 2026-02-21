@@ -9,6 +9,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.widget.RemoteViews
 import android.widget.Toast
+import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import rikka.shizuku.Shizuku
 import com.arslan.shizuwall.receivers.FirewallControlReceiver
@@ -40,9 +41,9 @@ class FirewallWidgetProvider : AppWidgetProvider() {
             var selectedApps: List<String> = emptyList()
             if (newState) {
                 selectedApps = loadSelectedApps(context, sharedPreferences)
-                val adaptiveMode = sharedPreferences.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
+                val firewallMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
 
-                if (selectedApps.isEmpty() && !adaptiveMode) {
+                if (selectedApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                     Toast.makeText(context, context.getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
                     return
                 }

@@ -1,0 +1,570 @@
+package com.arslan.shizuwall.services
+
+import android.accessibilityservice.AccessibilityService
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
+import android.content.pm.ServiceInfo
+import android.view.inputmethod.InputMethodManager
+import android.view.accessibility.AccessibilityEvent
+import androidx.core.app.NotificationCompat
+import com.arslan.shizuwall.FirewallMode
+import com.arslan.shizuwall.R
+import com.arslan.shizuwall.shell.ShellExecutor
+import com.arslan.shizuwall.shell.ShellExecutorProvider
+import com.arslan.shizuwall.ui.MainActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import android.util.Log
+
+/**
+ * AccessibilityService that monitors foreground app changes for Smart Foreground mode.
+ *
+ * When enabled, this service detects when a new app comes to the foreground and:
+ * 1. Allows the new foreground app (first, to minimize latency)
+ * 2. Blocks the previously allowed app
+ *
+ * Key design decisions:
+ * - Events are debounced (150 ms) to avoid thrashing during rapid app switches.
+ * - chain3 is validated before each rule-change batch; re-enabled if needed.
+ * - Failed shell commands are retried once before giving up.
+ * - Skip-packages list is refreshed on package-install/uninstall broadcasts.
+ * - The notification subtitle reflects the name of the currently-active app.
+ */
+class ForegroundDetectionService : AccessibilityService() {
+
+    companion object {
+        private const val TAG = "ForegroundDetection"
+        private const val CHANNEL_ID = "smart_foreground_channel"
+        private const val NOTIFICATION_ID = 4001
+        private const val DEBOUNCE_MS = 150L
+
+        private const val RETRY_DELAY_MS = 300L
+
+        // System packages that should never be managed by Smart Foreground
+        private val SYSTEM_PACKAGES = setOf(
+            "com.android.systemui",
+            "com.android.launcher",
+            "com.android.launcher3",
+            "com.google.android.googlequicksearchbox",
+            "com.google.android.apps.nexuslauncher",
+            "com.android.settings",
+            "com.android.keyguard",
+            "com.android.permissioncontroller",
+            "com.android.packageinstaller",
+            "com.android.shell",
+            "com.android.vending",
+            "com.samsung.android.app.routines",
+            "com.samsung.android.themestore",
+            "com.sec.android.app.launcher"
+        )
+        
+        // Known input method packages to skip
+        private val INPUT_METHOD_PACKAGES = setOf(
+            "com.google.android.inputmethod.latin",
+            "com.samsung.android.honeyboard",
+            "com.swiftkey.swiftkeyfree",
+            "com.touchtype.swiftkey",
+            "org.futo.inputmethod.latin"
+        )
+        
+        // Action for broadcasting foreground app changes
+        const val ACTION_FOREGROUND_APP_CHANGED = "com.arslan.shizuwall.FOREGROUND_APP_CHANGED"
+        const val EXTRA_PACKAGE_NAME = "package_name"
+        const val EXTRA_PREVIOUS_PACKAGE = "previous_package"
+        
+        fun isServiceEnabled(context: Context): Boolean {
+            val enabledServices = try {
+                android.provider.Settings.Secure.getString(
+                    context.contentResolver,
+                    android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+                ) ?: ""
+            } catch (e: Exception) {
+                return false
+            }
+            
+            val serviceName = "${context.packageName}/${ForegroundDetectionService::class.java.canonicalName}"
+            // Split by ":" and check exact component matches to avoid substring false positives
+            return enabledServices.split(":").any { component ->
+                component == serviceName || component.startsWith("${context.packageName}/")
+            }
+        }
+
+        /**
+         * Auto-enable the accessibility service via shell command (Shizuku or LADB daemon).
+         * Returns true if the service was successfully enabled.
+         */
+        suspend fun enableServiceViaShell(context: Context): Boolean {
+            return withContext(Dispatchers.IO) {
+                try {
+                    val executor = ShellExecutorProvider.forContext(context)
+                    val componentName = "${context.packageName}/${ForegroundDetectionService::class.java.canonicalName}"
+
+                    val currentResult = executor.exec("settings get secure enabled_accessibility_services")
+                    val currentServices = currentResult.stdout.trim().ifEmpty { "null" }
+
+                    if (currentServices.split(":").any { it == componentName }) {
+                        Log.d(TAG, "Service already in enabled_accessibility_services")
+                        return@withContext true
+                    }
+
+                    val newValue = if (currentServices.isEmpty() || currentServices == "null") {
+                        componentName
+                    } else {
+                        "$currentServices:$componentName"
+                    }
+
+                    val putResult = executor.exec("settings put secure enabled_accessibility_services '$newValue'")
+                    if (!putResult.success) {
+                        Log.w(TAG, "Failed to set enabled_accessibility_services: ${putResult.stderr}")
+                        return@withContext false
+                    }
+
+                    executor.exec("settings put secure accessibility_enabled 1")
+
+                    // Give the system time to process.
+                    delay(500)
+                    if (!isServiceEnabled(context)) {
+                        Log.w(TAG, "Service not actually enabled after shell command")
+                        return@withContext false
+                    }
+
+                    Log.d(TAG, "Accessibility service auto-enabled via shell")
+                    true
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to auto-enable accessibility service", e)
+                    false
+                }
+            }
+        }
+    }
+
+    private var currentForegroundPackage: String? = null
+    private var lastManagedPackage: String? = null
+
+    @Volatile private var pendingBlockPackage: String? = null
+
+    private val serviceJob = SupervisorJob()
+    private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
+
+    private var debounceJob: Job? = null
+
+    private lateinit var sharedPreferences: SharedPreferences
+
+    @Volatile private var cachedFirewallEnabled = false
+    @Volatile private var cachedFirewallMode = FirewallMode.DEFAULT
+
+    @Volatile private var cachedShellExecutor: ShellExecutor? = null
+    private val executorLock = Any()
+
+    @Volatile private var dynamicSkipPackages: Set<String> = emptySet()
+
+    private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
+        when (key) {
+            MainActivity.KEY_FIREWALL_ENABLED -> {
+                cachedFirewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
+            }
+            MainActivity.KEY_FIREWALL_MODE -> {
+                val modeName = prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
+                cachedFirewallMode = FirewallMode.fromName(modeName)
+            }
+            MainActivity.KEY_WORKING_MODE -> {
+                synchronized(executorLock) { cachedShellExecutor = null }
+            }
+        }
+    }
+
+    private val packageReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.action ?: return
+            if (action == Intent.ACTION_PACKAGE_ADDED || action == Intent.ACTION_PACKAGE_REMOVED) {
+                serviceScope.launch(Dispatchers.Default) {
+                    dynamicSkipPackages = resolveDynamicSkipPackages()
+                    Log.d(TAG, "Skip-packages refreshed (${dynamicSkipPackages.size} pkgs)")
+                }
+            }
+        }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        sharedPreferences = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+
+        cachedFirewallEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
+        val modeName = sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
+        cachedFirewallMode = FirewallMode.fromName(modeName)
+
+        val restoredApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
+        if (!restoredApp.isNullOrEmpty()) {
+            lastManagedPackage = restoredApp
+        }
+
+        dynamicSkipPackages = resolveDynamicSkipPackages()
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(prefListener)
+
+        val pkgFilter = IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addDataScheme("package")
+        }
+        registerReceiver(packageReceiver, pkgFilter)
+
+        createNotificationChannel()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(NOTIFICATION_ID, buildNotification(null), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+        } else {
+            startForeground(NOTIFICATION_ID, buildNotification(null))
+        }
+
+        Log.d(TAG, "Service created (restored=$restoredApp, dynamicSkip=${dynamicSkipPackages.size} pkgs)")
+    }
+
+    override fun onDestroy() {
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(prefListener)
+        try { unregisterReceiver(packageReceiver) } catch (_: Exception) {}
+        serviceScope.cancel()
+        Log.d(TAG, "Service destroyed")
+        super.onDestroy()
+    }
+
+    override fun onInterrupt() {
+        Log.d(TAG, "Service interrupted")
+    }
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        Log.d(TAG, "Service connected")
+    }
+
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        if (event == null) return
+        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
+
+        val packageName = event.packageName?.toString() ?: return
+
+        // Skip self.
+        if (packageName == this.packageName) return
+
+        // Skip same-package events immediately (no debounce needed).
+        if (packageName == currentForegroundPackage) return
+
+        // Filter non-Activity windows (dialogs, panels, toasts, etc.) but do so carefully.
+        val className = event.className?.toString()
+        if (className != null && isNonActivityWindow(className)) return
+
+        // Gate on cached state — zero SharedPrefs reads on the hot path.
+        if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND) return
+        if (!cachedFirewallEnabled) return
+
+        // Debounce: cancel any previously queued dispatch and re-schedule.
+        debounceJob?.cancel()
+        // Snapshot package name in a local val to avoid closure capture issues.
+        val newPackage = packageName
+        debounceJob = serviceScope.launch {
+            delay(DEBOUNCE_MS)
+            processPackageChange(newPackage)
+        }
+    }
+
+    private suspend fun processPackageChange(newPackage: String) {
+        if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND || !cachedFirewallEnabled) return
+        if (newPackage == currentForegroundPackage) return
+
+        val isSystem = shouldSkipPackage(newPackage)
+
+        if (isSystem) {
+            // Going to launcher/homescreen: don't manage the new package but block the previous.
+            currentForegroundPackage = newPackage
+            val previous = lastManagedPackage
+            lastManagedPackage = null
+
+            if (previous != null) {
+                // Store which package we're about to block so a quick return can cancel it.
+                pendingBlockPackage = previous
+                delay(DEBOUNCE_MS) // extra grace period before committing the block
+                if (pendingBlockPackage == previous) {
+                    pendingBlockPackage = null
+                    blockPackage(previous)
+                }
+            }
+            return
+        }
+
+        // If this package equals the one we were about to block (user switched back quickly),
+        // cancel the pending block.
+        if (newPackage == pendingBlockPackage) {
+            pendingBlockPackage = null
+        }
+
+        val previous = lastManagedPackage
+        currentForegroundPackage = newPackage
+        lastManagedPackage = newPackage
+
+        handleForegroundAppChange(previous, newPackage)
+    }
+
+    private fun isNonActivityWindow(className: String): Boolean {
+        val lower = className.lowercase()
+        return lower.endsWith("dialog") ||
+               lower.endsWith("dialogfragment") ||
+               lower.endsWith("popup") ||
+               lower.endsWith("popupwindow") ||
+               lower.endsWith("toast") ||
+               lower.endsWith("panel") ||
+               lower.endsWith("overlay") ||
+               lower.endsWith("bubble") ||
+               lower.endsWith("dropdown") ||
+               lower.contains("${'$'}") || // inner class — usually a sub-window
+               lower == "android.inputmethodservice.softinputwindow"
+    }
+
+    private fun shouldSkipPackage(packageName: String): Boolean {
+        if (packageName == this.packageName) return true
+        if (SYSTEM_PACKAGES.contains(packageName)) return true
+        if (INPUT_METHOD_PACKAGES.contains(packageName)) return true
+        if (dynamicSkipPackages.contains(packageName)) return true
+        if (packageName.contains("launcher", ignoreCase = true)) return true
+        if (packageName.startsWith("com.android.") && !packageName.contains("chrome")) return true
+        if (packageName.contains("inputmethod", ignoreCase = true) ||
+            packageName.contains("keyboard", ignoreCase = true) ||
+            packageName.contains(".ime.", ignoreCase = true) ||
+            packageName.endsWith(".ime", ignoreCase = true)) {
+            return true
+        }
+        return false
+    }
+
+    private fun resolveDynamicSkipPackages(): Set<String> {
+        val packages = mutableSetOf<String>()
+        try {
+            val homeIntent = Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_HOME) }
+            for (info in packageManager.queryIntentActivities(homeIntent, PackageManager.MATCH_ALL)) {
+                packages.add(info.activityInfo.packageName)
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to resolve launchers", e)
+        }
+        try {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            imm?.enabledInputMethodList?.forEach { packages.add(it.packageName) }
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to resolve input methods", e)
+        }
+        return packages
+    }
+
+    private suspend fun handleForegroundAppChange(previousPackage: String?, newPackage: String) {
+        val start = System.currentTimeMillis()
+        val success = updateFirewallRules(previousPackage, newPackage)
+        val elapsed = System.currentTimeMillis() - start
+
+        Log.d(TAG, "$previousPackage → $newPackage (${elapsed}ms, ok=$success)")
+
+        if (success) {
+            sharedPreferences.edit()
+                .putString(MainActivity.KEY_SMART_FOREGROUND_APP, newPackage)
+                .apply()
+
+            // Update notification to show the active app name.
+            updateNotification(newPackage)
+
+            sendBroadcast(Intent(ACTION_FOREGROUND_APP_CHANGED).apply {
+                putExtra(EXTRA_PACKAGE_NAME, newPackage)
+                putExtra(EXTRA_PREVIOUS_PACKAGE, previousPackage)
+            })
+        } else {
+            // Rule application failed — reset state so next event can re-try from scratch.
+            // Only restore previousPackage if it was a managed (non-skip) app; otherwise
+            // clear both to avoid an inconsistent state.
+            if (previousPackage != null && !shouldSkipPackage(previousPackage)) {
+                lastManagedPackage = previousPackage
+                currentForegroundPackage = previousPackage
+            } else {
+                lastManagedPackage = null
+                currentForegroundPackage = null
+            }
+        }
+    }
+
+    private suspend fun blockPackage(packageName: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val executor = getShellExecutor()
+                ensureChain3Enabled(executor)
+
+                val result = execWithRetry(executor, "cmd connectivity set-package-networking-enabled false $packageName")
+                if (!result.success) {
+                    Log.w(TAG, "Failed to block $packageName: ${result.stderr}")
+                } else {
+                    Log.d(TAG, "$packageName → [home] blocked")
+                }
+
+                sharedPreferences.edit()
+                    .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+                    .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
+                    .apply()
+
+                // Update notification to idle state.
+                withContext(Dispatchers.Main) { updateNotification(null) }
+
+                sendBroadcast(Intent(ACTION_FOREGROUND_APP_CHANGED).apply {
+                    putExtra(EXTRA_PACKAGE_NAME, "")
+                    putExtra(EXTRA_PREVIOUS_PACKAGE, packageName)
+                })
+            } catch (e: Exception) {
+                Log.e(TAG, "Error blocking $packageName", e)
+            }
+        }
+    }
+
+    private fun getShellExecutor(): ShellExecutor {
+        cachedShellExecutor?.let { return it }
+        synchronized(executorLock) {
+            cachedShellExecutor?.let { return it }
+            return ShellExecutorProvider.forContext(this).also { cachedShellExecutor = it }
+        }
+    }
+
+    /**
+     * Execute [command] and retry once on failure after a short delay.
+     */
+    private suspend fun execWithRetry(executor: ShellExecutor, command: String): com.arslan.shizuwall.shell.ShellResult {
+        val first = executor.exec(command)
+        if (first.success) return first
+        delay(RETRY_DELAY_MS)
+        return executor.exec(command)
+    }
+
+    
+    private suspend fun ensureChain3Enabled(executor: ShellExecutor) {
+        try {
+            val checkResult = executor.exec("cmd connectivity get-chain3-enabled")
+            val isEnabled = checkResult.stdout.trim().equals("true", ignoreCase = true)
+            if (!isEnabled) {
+                Log.w(TAG, "chain3 was not enabled — re-enabling")
+                executor.exec("cmd connectivity set-chain3-enabled true")
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "chain3 enable check/set failed (non-fatal)", e)
+            // If check not supported, try to re-enable anyway.
+            try {
+                executor.exec("cmd connectivity set-chain3-enabled true")
+            } catch (e2: Exception) {
+                Log.d(TAG, "chain3 fallback re-enable also failed (non-fatal)", e2)
+            }
+        }
+    }
+
+    
+    private suspend fun updateFirewallRules(previousPackage: String?, newPackage: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val executor = getShellExecutor()
+
+                ensureChain3Enabled(executor)
+
+                coroutineScope {
+                    val allowJob = async {
+                        execWithRetry(executor, "cmd connectivity set-package-networking-enabled true $newPackage")
+                    }
+
+                    val blockJob = if (previousPackage != null &&
+                                       previousPackage.isNotEmpty() &&
+                                       previousPackage != newPackage) {
+                        async {
+                            execWithRetry(executor, "cmd connectivity set-package-networking-enabled false $previousPackage")
+                        }
+                    } else null
+
+                    val allowResult = allowJob.await()
+                    val blockResult = blockJob?.await()
+
+                    val allowOk = allowResult.success
+                    val blockOk = blockResult?.success ?: true
+
+                    if (!allowOk) Log.w(TAG, "Failed to allow $newPackage: ${allowResult.stderr}")
+                    if (!blockOk) Log.w(TAG, "Failed to block $previousPackage: ${blockResult?.stderr}")
+
+                    val activePackages = if (allowOk) setOf(newPackage) else emptySet()
+                    sharedPreferences.edit()
+                        .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, activePackages)
+                        .apply()
+
+                    allowOk && blockOk
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating firewall rules", e)
+                false
+            }
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                getString(R.string.smart_foreground_notification_channel_name),
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = getString(R.string.smart_foreground_notification_channel_description)
+                setShowBadge(false)
+            }
+            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+        }
+    }
+
+    private fun buildNotification(activePackage: String?): Notification {
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0,
+            Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val contentText = if (activePackage != null) {
+            val appLabel = try {
+                packageManager.getApplicationLabel(
+                    packageManager.getApplicationInfo(activePackage, 0)
+                ).toString()
+            } catch (_: Exception) {
+                activePackage
+            }
+            getString(R.string.smart_foreground_active_app, appLabel)
+        } else {
+            getString(R.string.smart_foreground_active_description)
+        }
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(getString(R.string.smart_foreground_active))
+            .setContentText(contentText)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentIntent(pendingIntent)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+    }
+
+    private fun updateNotification(activePackage: String?) {
+        try {
+            val nm = getSystemService(NotificationManager::class.java)
+            nm.notify(NOTIFICATION_ID, buildNotification(activePackage))
+        } catch (_: Exception) {}
+    }
+}

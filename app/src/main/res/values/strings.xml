@@ -257,4 +257,26 @@
     <string name="log_logs_cleared">Logs cleared</string>
     <string name="log_logs_copied">Logs copied to clipboard</string>
     <string name="log_status_updated">Status updated: %s</string>
+    
+    <!-- Firewall Mode Selector -->
+    <string name="firewall_mode_title">Firewall Mode</string>
+    <string name="firewall_mode_default">Default</string>
+    <string name="firewall_mode_default_description">Traditional firewall - block selected apps</string>
+    <string name="firewall_mode_adaptive">Adaptive</string>
+    <string name="firewall_mode_adaptive_description">Apply rules instantly. Firewall stays on.</string>
+    <string name="firewall_mode_smart_foreground">Smart Foreground</string>
+    <string name="firewall_mode_smart_foreground_description">Only allow the app currently in foreground</string>
+    <string name="smart_foreground_requires_accessibility">Requires Accessibility permission</string>
+    <string name="smart_foreground_service_description">Monitors foreground app to manage firewall rules</string>
+    <string name="smart_foreground_notification_channel_name">Smart Foreground (Service)</string>
+    <string name="smart_foreground_notification_channel_description">Background service for monitoring foreground app</string>
+    <string name="smart_foreground_active">Smart Foreground Active</string>
+    <string name="smart_foreground_active_description">Only the foreground app has network access</string>
+    <string name="accessibility_service_label">ShizuWall Foreground Monitor</string>
+    <string name="accessibility_auto_enabled">Accessibility service enabled automatically</string>
+    <string name="smart_foreground_info_enabled">Smart Foreground mode will only allow network access for the app you are currently using. All other apps will be blocked.\n\nThe required Accessibility permission is granted automatically when you select this mode.</string>
+    <string name="smart_foreground_info_deferred">Smart Foreground mode will only allow network access for the app you are currently using. All other apps will be blocked.\n\nThe Accessibility permission will be granted automatically when Shizuku/Daemon is running or when you enable the firewall.</string>
+    <string name="firewall_enabled_smart_foreground">Firewall activated (Smart Foreground Mode)</string>
+    <string name="accessibility_manual_enable_needed">Failed to auto-enable accessibility service. Please enable it manually in your device settings.</string>
+    <string name="smart_foreground_active_app">Active: %s</string>
 </resources>

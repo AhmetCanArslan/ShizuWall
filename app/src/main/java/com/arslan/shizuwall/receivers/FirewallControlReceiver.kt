@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.SystemClock
 import android.widget.Toast
+import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
@@ -71,7 +72,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 // when app process is started by this broadcast
                 val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
                 val mode = prefs.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
-                val adaptiveMode = prefs.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
+                val firewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
 
                 // Resolve package list: CSV -> saved selected apps
                 val rawPackages = if (!csv.isNullOrBlank()) {
@@ -83,9 +84,9 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 // filter out any Shizuku packages and this app itself from incoming list
                 val packages = rawPackages.filterNot { ShizukuPackageResolver.isShizukuPackage(context, it) || it == context.packageName }
 
-                android.util.Log.d(TAG, "Packages to process: $packages, enabled: $enabled, adaptiveMode: $adaptiveMode")
+                android.util.Log.d(TAG, "Packages to process: $packages, enabled: $enabled, firewallMode: $firewallMode")
 
-                if (enabled && packages.isEmpty() && !adaptiveMode) {
+                if (enabled && packages.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, context.getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
                     }
@@ -149,7 +150,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                         }
                     }
                     val isGlobalDisable = csv.isNullOrBlank()
-                    if (!adaptiveMode || isGlobalDisable) {
+                    if (!firewallMode.allowsDynamicSelection() || isGlobalDisable) {
                         globalCommandSuccess = runShell("cmd connectivity set-chain3-enabled false")
                     }
                 }
@@ -157,13 +158,13 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 // Persist state to shared prefs (same keys MainActivity uses)
                 // val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
                 prefs.edit().apply {
-                    if (enabled && globalCommandSuccess && (successful.isNotEmpty() || adaptiveMode)) {
+                    if (enabled && globalCommandSuccess && (successful.isNotEmpty() || firewallMode.allowsDynamicSelection())) {
                         putBoolean(MainActivity.KEY_FIREWALL_ENABLED, true)
                         putLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, SystemClock.elapsedRealtime())
                         putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, successful.toSet())
                         
                         // In Adaptive Mode, sync the selected apps list with what was just enabled
-                        if (adaptiveMode && successful.isNotEmpty()) {
+                        if (firewallMode.allowsDynamicSelection() && successful.isNotEmpty()) {
                             val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
                             currentSelected.addAll(successful)
                             putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)
@@ -171,7 +172,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                         }
                     } else {
                         val isGlobalDisable = csv.isNullOrBlank()
-                        if (!adaptiveMode || isGlobalDisable) {
+                        if (!firewallMode.allowsDynamicSelection() || isGlobalDisable) {
                             if (globalCommandSuccess) {
                                 putBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
                                 remove(MainActivity.KEY_FIREWALL_SAVED_ELAPSED)

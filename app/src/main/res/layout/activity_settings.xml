@@ -281,8 +281,9 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Adaptive Mode -->
+            <!-- Firewall Mode Selector -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardFirewallMode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -294,46 +295,104 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="72dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
+                    android:orientation="vertical"
                     android:padding="16dp">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/touch_app_24px"
-                        app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
-                        android:contentDescription="@null" />
-
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/touch_app_24px"
+                            app:tint="?attr/colorPrimary"
+                            android:layout_marginEnd="16dp"
+                            android:contentDescription="@null" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/adaptive_mode"
+                            android:text="@string/firewall_mode_title"
                             android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?android:attr/textColorPrimary" />
+                    </LinearLayout>
+
+                    <RadioGroup
+                        android:id="@+id/radioGroupFirewallMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp">
+
+                        <!-- Default Mode -->
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/radioModeDefault"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/firewall_mode_default"
+                            android:textSize="15sp"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/adaptive_mode_description"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginBottom="8dp"
+                            android:text="@string/firewall_mode_default_description"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
-                    </LinearLayout>
 
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/switchAdaptiveMode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px"
-                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
+                        <!-- Adaptive Mode -->
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/radioModeAdaptive"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/firewall_mode_adaptive"
+                            android:textSize="15sp"
+                            android:textColor="?android:attr/textColorPrimary" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginBottom="8dp"
+                            android:text="@string/firewall_mode_adaptive_description"
+                            android:textSize="12sp"
+                            android:textColor="?android:attr/textColorSecondary" />
+
+                        <!-- Smart Foreground Mode -->
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/radioModeSmartForeground"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/firewall_mode_smart_foreground"
+                            android:textSize="15sp"
+                            android:textColor="?android:attr/textColorPrimary" />
+
+                        <TextView
+                            android:id="@+id/tvSmartForegroundDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:text="@string/firewall_mode_smart_foreground_description"
+                            android:textSize="12sp"
+                            android:textColor="?android:attr/textColorSecondary" />
+
+                        <TextView
+                            android:id="@+id/tvSmartForegroundWarning"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginBottom="8dp"
+                            android:text="@string/smart_foreground_requires_accessibility"
+                            android:textSize="12sp"
+                            android:textColor="?attr/colorError"
+                            android:visibility="gone" />
+
+                    </RadioGroup>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

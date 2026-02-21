@@ -27,6 +27,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.services.AppMonitorService
+import com.arslan.shizuwall.services.ForegroundDetectionService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -53,6 +54,7 @@ import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
 import kotlin.comparisons.*
 import com.arslan.shizuwall.adapters.ErrorEntry
+import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
@@ -81,7 +83,9 @@ class MainActivity : BaseActivity() {
         const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
         const val KEY_SELECTED_FONT = "selected_font"
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
-        const val KEY_ADAPTIVE_MODE = "adaptive_mode"
+        const val KEY_ADAPTIVE_MODE = "adaptive_mode" 
+        const val KEY_FIREWALL_MODE = "firewall_mode" 
+        const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"  // Current foreground app in smart mode
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
         const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"
         const val KEY_WORKING_MODE = "working_mode"
@@ -115,7 +119,7 @@ class MainActivity : BaseActivity() {
     private var currentQuery = ""
     private var showSystemApps = false 
     private var moveSelectedTop = true
-    private var adaptiveMode = false
+    private var firewallMode = FirewallMode.DEFAULT
     private enum class SortOrder { NAME_ASC, NAME_DESC, INSTALL_TIME }
     private var currentSortOrder = SortOrder.NAME_ASC
 
@@ -164,8 +168,8 @@ class MainActivity : BaseActivity() {
             }
 
             val selectedPkgs = loadSelectedApps().toList()
-            if (selectedPkgs.isEmpty() && !adaptiveMode) {
-                // Nothing to enable (and adaptive mode does not allow empty set)
+            if (selectedPkgs.isEmpty() && !firewallMode.allowsDynamicSelection()) {
+                // Nothing to enable (and adaptive/smart mode does not allow empty set)
                 return@launch
             }
 
@@ -258,13 +262,13 @@ class MainActivity : BaseActivity() {
             // Reload settings and refresh the app list
             showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
             moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
-            adaptiveMode = sharedPreferences.getBoolean(KEY_ADAPTIVE_MODE, false)
+            firewallMode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
             loadInstalledApps()
             updateCategoryChips()
             
             if (isFirewallEnabled) {
-                if (adaptiveMode) hideDimOverlay() else showDimOverlay()
-                appListAdapter.setSelectionEnabled(adaptiveMode || !isFirewallEnabled)
+                if (firewallMode.allowsDynamicSelection()) hideDimOverlay() else showDimOverlay()
+                appListAdapter.setSelectionEnabled(firewallMode.allowsDynamicSelection() || !isFirewallEnabled)
                 updateInteractiveViews()
             }
         }
@@ -357,7 +361,7 @@ class MainActivity : BaseActivity() {
 
         showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
         moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
-        adaptiveMode = sharedPreferences.getBoolean(KEY_ADAPTIVE_MODE, false)
+        firewallMode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
         currentSortOrder = try {
             SortOrder.valueOf(sharedPreferences.getString(KEY_SORT_ORDER, SortOrder.NAME_ASC.name) ?: SortOrder.NAME_ASC.name)
         } catch (e: Exception) {
@@ -390,7 +394,7 @@ class MainActivity : BaseActivity() {
                             suppressToggleListener = false
                         }
 
-                        appListAdapter.setSelectionEnabled(!state.enabled || adaptiveMode)
+                        appListAdapter.setSelectionEnabled(!state.enabled || firewallMode.allowsDynamicSelection())
                         if (state.enabled) showDimOverlay() else hideDimOverlay()
 
                         updateSelectedCount()
@@ -438,7 +442,7 @@ class MainActivity : BaseActivity() {
                         // Avoid duplicating flows if we already have a pending auto enable
                         if (!pendingAutoEnable) {
                             val pkgs = loadSelectedApps().toList()
-                            if (pkgs.isNotEmpty() || adaptiveMode) {
+                            if (pkgs.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                                 if (sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
                                     applyFirewallState(true, pkgs)
                                 } else if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
@@ -505,12 +509,30 @@ class MainActivity : BaseActivity() {
         firewallToggle.isChecked = loadFirewallEnabled()
         suppressToggleListener = false
 
+        // Update firewallMode from preferences
+        firewallMode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+
         // Reflect current firewall state in UI
         val enabled = loadFirewallEnabled()
-        appListAdapter.setSelectionEnabled(!enabled || adaptiveMode)
+        appListAdapter.setSelectionEnabled(!enabled || firewallMode.allowsDynamicSelection())
         updateInteractiveViews()
         if (enabled) showDimOverlay() else hideDimOverlay()
         loadInstalledApps()
+        
+        // Auto-enable accessibility service if revoked (e.g. after debug APK reinstall)
+        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+            if (!ForegroundDetectionService.isServiceEnabled(this)) {
+                // Try to auto-enable via Shizuku/LADB shell
+                lifecycleScope.launch {
+                    val success = ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
+                    if (success) {
+                        Toast.makeText(this@MainActivity, getString(R.string.accessibility_auto_enabled), Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@MainActivity, getString(R.string.accessibility_manual_enable_needed), Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
 
         // Register package change receiver so installs/uninstalls/updates immediately refresh the list.
         // Wrapped in try/catch to avoid IllegalArgumentException if already registered.
@@ -622,13 +644,13 @@ class MainActivity : BaseActivity() {
                         pendingAutoEnable = false
                         val pkgs = pendingAutoEnableSelectedApps ?: appList.filter { it.isSelected }.map { it.packageName }
                         pendingAutoEnableSelectedApps = null
-                        if (pkgs.isNotEmpty() || adaptiveMode) {
+                        if (pkgs.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                             val selectedApps = appList.filter { pkgs.contains(it.packageName) }
                             if (sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
                                 applyFirewallState(true, pkgs)
                             } else if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
                                 // Show confirmation dialog in foreground
-                                if (selectedApps.isNotEmpty() || adaptiveMode) {
+                                if (selectedApps.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                                     showFirewallConfirmDialog(selectedApps)
                                 }
                             } else {
@@ -824,7 +846,7 @@ class MainActivity : BaseActivity() {
             if (suppressSelectAllListener) return@setOnCheckedChangeListener
             if (!selectAllCheckbox.isEnabled) return@setOnCheckedChangeListener
             
-            if (adaptiveMode && isFirewallEnabled && !checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
+            if (firewallMode.allowsDynamicSelection() && isFirewallEnabled && !checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
                 suppressSelectAllListener = true
                 selectAllCheckbox.isChecked = !isChecked
                 suppressSelectAllListener = false
@@ -847,7 +869,7 @@ class MainActivity : BaseActivity() {
                 sortAndFilterApps(preserveScrollPosition = true)
 
                 // Adaptive Mode apply rules immediately if firewall is enabled
-                if (isFirewallEnabled && adaptiveMode) {
+                if (isFirewallEnabled && firewallMode.allowsDynamicSelection()) {
                     lifecycleScope.launch(Dispatchers.IO) {
                         val successful = mutableListOf<String>()
                         val failed = mutableListOf<String>()
@@ -925,7 +947,7 @@ class MainActivity : BaseActivity() {
                         sortAndFilterApps(preserveScrollPosition = true)
                         
                         // Unblock all previously selected apps
-                        if (isFirewallEnabled && adaptiveMode && previouslySelected.isNotEmpty()) {
+                        if (isFirewallEnabled && firewallMode.allowsDynamicSelection() && previouslySelected.isNotEmpty()) {
                             lifecycleScope.launch(Dispatchers.IO) {
                                 val successful = mutableListOf<String>()
                                 val failed = mutableListOf<String>()
@@ -970,7 +992,7 @@ class MainActivity : BaseActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         appListAdapter = AppListAdapter(
             onAppClick = { appInfo ->
-                if (adaptiveMode && isFirewallEnabled && !checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
+                if (firewallMode.allowsDynamicSelection() && isFirewallEnabled && !checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
                     appListAdapter.notifyDataSetChanged()
                     return@AppListAdapter
                 }
@@ -984,7 +1006,7 @@ class MainActivity : BaseActivity() {
                 sortAndFilterApps(preserveScrollPosition = true)
 
                 // Apply rule immediately if firewall is enabled
-                if (isFirewallEnabled && adaptiveMode) {
+                if (isFirewallEnabled && firewallMode.allowsDynamicSelection()) {
                     val pkg = appInfo.packageName
                     val isSelected = appInfo.isSelected
                     lifecycleScope.launch(Dispatchers.IO) {
@@ -1238,7 +1260,7 @@ class MainActivity : BaseActivity() {
 
                 if (animate) {
                     recyclerView.post {
-                        val targetAlpha = if (isFirewallEnabled && !adaptiveMode) 0.5f else 1f
+                        val targetAlpha = if (isFirewallEnabled && !firewallMode.allowsDynamicSelection()) 0.5f else 1f
                         recyclerView.animate()
                             .alpha(targetAlpha)
                             .setStartDelay(400)
@@ -1263,7 +1285,7 @@ class MainActivity : BaseActivity() {
             appList.sortWith(finalComparator)
             filterApps(currentQuery)
             recyclerView.animate().cancel()
-            val targetAlpha = if (isFirewallEnabled && !adaptiveMode) 0.5f else 1f
+            val targetAlpha = if (isFirewallEnabled && !firewallMode.allowsDynamicSelection()) 0.5f else 1f
             recyclerView.alpha = targetAlpha
             updateList()
         }
@@ -1279,7 +1301,7 @@ class MainActivity : BaseActivity() {
             if (suppressToggleListener) return@setOnCheckedChangeListener
             if (isChecked) {
                 val selectedApps = appList.filter { it.isSelected }
-                if (selectedApps.isEmpty() && !adaptiveMode) {
+                if (selectedApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                     Toast.makeText(this, getString(R.string.select_at_least_one_app), Toast.LENGTH_SHORT).show()
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
@@ -1473,7 +1495,7 @@ class MainActivity : BaseActivity() {
         // enable the firewall toggle if firewall is currently active (so user can disable),
         // or if there is at least one selected app (so user can enable).
         if (::firewallToggle.isInitialized) {
-            firewallToggle.isEnabled = isFirewallEnabled || count > 0 || adaptiveMode
+            firewallToggle.isEnabled = isFirewallEnabled || count > 0 || firewallMode.allowsDynamicSelection()
         }
         
         updateSelectAllCheckbox()
@@ -1484,7 +1506,7 @@ class MainActivity : BaseActivity() {
         // The select-all checkbox should be disabled when the firewall is enabled and
         // Adaptive Mode is turned OFF. Otherwise it can be used.
         if (::selectAllCheckbox.isInitialized) {
-            selectAllCheckbox.isEnabled = !isFirewallEnabled || adaptiveMode
+            selectAllCheckbox.isEnabled = !isFirewallEnabled || firewallMode.allowsDynamicSelection()
         }
     }
 
@@ -1586,7 +1608,7 @@ class MainActivity : BaseActivity() {
 
             // If firewall is enabled but no packages are active (e.g. all uninstalled), disable it
             // In Adaptive Mode, we allow firewall to stay ON even with 0 active packages
-            if (isFirewallEnabled && activeFirewallPackages.isEmpty() && !adaptiveMode) {
+            if (isFirewallEnabled && activeFirewallPackages.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                 isFirewallEnabled = false
                 saveFirewallEnabled(false)
                 // Update UI to reflect disabled state
@@ -1766,15 +1788,25 @@ class MainActivity : BaseActivity() {
     }
 
     private fun applyFirewallState(enable: Boolean, packageNames: List<String>) {
-        if (enable && packageNames.isEmpty() && !adaptiveMode) return
+        if (enable && packageNames.isEmpty() && !firewallMode.allowsDynamicSelection()) return
         firewallToggle.isEnabled = false
         lifecycleScope.launch {
             firewallProgress.visibility = android.view.View.VISIBLE
-            if (enable && !adaptiveMode) {
+            if (enable && !firewallMode.allowsDynamicSelection()) {
                 appListAdapter.setSelectionEnabled(false)
                 updateInteractiveViews()
                 showDimOverlay()
             }
+            
+            if (enable && firewallMode == FirewallMode.SMART_FOREGROUND) {
+                if (!ForegroundDetectionService.isServiceEnabled(this@MainActivity)) {
+                    val granted = ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
+                    if (granted) {
+                        Toast.makeText(this@MainActivity, getString(R.string.accessibility_auto_enabled), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            
             try {
                 // perform package existence checks and run enable/disable on IO thread
                 val (installed, missing) = withContext(Dispatchers.IO) {
@@ -1783,7 +1815,7 @@ class MainActivity : BaseActivity() {
 
                 // If enabling and none of the chosen packages remain installed -> abort
                 // In Adaptive Mode, allow enabling with empty list
-                if (enable && installed.isEmpty() && !adaptiveMode) {
+                if (enable && installed.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                     Toast.makeText(this@MainActivity, getString(R.string.none_selected_apps_installed), Toast.LENGTH_SHORT).show()
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
@@ -1809,7 +1841,7 @@ class MainActivity : BaseActivity() {
 
                 // Handle successes
                 if (enable) {
-                    if (successful.isNotEmpty() || adaptiveMode) {
+                    if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                         isFirewallEnabled = true
                         activeFirewallPackages.clear()
                         activeFirewallPackages.addAll(successful)
@@ -1820,7 +1852,7 @@ class MainActivity : BaseActivity() {
                         firewallToggle.isChecked = true
                         suppressToggleListener = false
                         
-                        if (adaptiveMode) {
+                        if (firewallMode.allowsDynamicSelection()) {
                             appListAdapter.setSelectionEnabled(true)
                             updateInteractiveViews()
                             hideDimOverlay()
@@ -1836,7 +1868,7 @@ class MainActivity : BaseActivity() {
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
                     Toast.makeText(this@MainActivity, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()
-                    if (!adaptiveMode) {
+                    if (!firewallMode.allowsDynamicSelection()) {
                         appListAdapter.setSelectionEnabled(true)
                         updateInteractiveViews()
                         hideDimOverlay()
@@ -1926,14 +1958,23 @@ class MainActivity : BaseActivity() {
 
         val chain3Result = runCommandDetailed("cmd connectivity set-chain3-enabled true")
         if (!chain3Result.success) {
-            // If chain3 enable fails, all packages fail; record the error message once with a key like "_chain3"
             val msg = chain3Result.stderr.ifEmpty { chain3Result.stdout }
+            // In Smart Foreground mode the list is empty — record a top-level chain3 error.
+            if (packageNames.isEmpty()) {
+                lastOperationErrorDetails["_chain3"] = msg
+                return Pair(successful, failed)
+            }
             for (pkg in packageNames) {
                 lastOperationErrorDetails[pkg] = msg
                 failed.add(pkg)
             }
             return Pair(successful, failed)
         }
+
+        if (packageNames.isEmpty()) {
+            return Pair(successful, failed)
+        }
+
         for (packageName in packageNames) {
             val res = runCommandDetailed("cmd connectivity set-package-networking-enabled false $packageName")
             if (res.success) {
@@ -1951,7 +1992,16 @@ class MainActivity : BaseActivity() {
         val successful = mutableListOf<String>()
         val failed = mutableListOf<String>()
         lastOperationErrorDetails.clear()
-        for (packageName in packageNames) {
+
+        val toUnblock = packageNames.toMutableList()
+        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+            val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
+            if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
+                toUnblock.add(currentFgApp)
+            }
+        }
+
+        for (packageName in toUnblock) {
             val res = runCommandDetailed("cmd connectivity set-package-networking-enabled true $packageName")
             if (res.success) {
                 successful.add(packageName)
@@ -1960,8 +2010,15 @@ class MainActivity : BaseActivity() {
                 lastOperationErrorDetails[packageName] = res.stderr.ifEmpty { res.stdout }
             }
         }
-        // Disable chain3 regardless of individual results
         runCommandDetailed("cmd connectivity set-chain3-enabled false")
+
+        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+            sharedPreferences.edit()
+                .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
+                .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+                .apply()
+        }
+
         return Pair(successful, failed)
     }
 
@@ -1977,7 +2034,7 @@ class MainActivity : BaseActivity() {
     // dim only the RecyclerView and disable its interactions
     private fun showDimOverlay() {
         // visually dim RecyclerView and block interactions
-        if (adaptiveMode) return // do not dim in Adaptive Mode
+        if (firewallMode.allowsDynamicSelection()) return // do not dim in Adaptive/Smart Foreground Mode
 
         recyclerView.alpha = 0.5f
         recyclerView.isEnabled = false

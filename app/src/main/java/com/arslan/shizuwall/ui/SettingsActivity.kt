@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.transition.AutoTransition
 import android.transition.TransitionManager
 import android.util.TypedValue
@@ -30,9 +31,11 @@ import kotlinx.coroutines.withContext
 import android.graphics.Typeface
 import android.os.Build
 import androidx.appcompat.widget.SwitchCompat
+import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.ladb.LadbManager
 import com.arslan.shizuwall.services.AppMonitorService
+import com.arslan.shizuwall.services.ForegroundDetectionService
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONArray
@@ -43,7 +46,6 @@ class SettingsActivity : BaseActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var switchMoveSelectedTop: SwitchCompat
-    private lateinit var switchAdaptiveMode: SwitchCompat
     private lateinit var switchSkipConfirm: SwitchCompat
     private lateinit var switchSkipErrorDialog: SwitchCompat
     private lateinit var cardKeepErrorApps: com.google.android.material.card.MaterialCardView
@@ -70,6 +72,13 @@ class SettingsActivity : BaseActivity() {
     private lateinit var layoutSetLadb: LinearLayout
     private lateinit var cardSkipConfirm: com.google.android.material.card.MaterialCardView
     private var autoEnablePreviousState: Boolean = false  // Store previous state before disabling
+    
+    // Firewall Mode Selector
+    private lateinit var radioGroupFirewallMode: RadioGroup
+    private lateinit var radioModeDefault: RadioButton
+    private lateinit var radioModeAdaptive: RadioButton
+    private lateinit var radioModeSmartForeground: RadioButton
+    private lateinit var tvSmartForegroundWarning: TextView
 
     private val createDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -124,9 +133,17 @@ class SettingsActivity : BaseActivity() {
         tvVersion.text = getString(R.string.version_format, packageInfo.versionName)
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Re-check accessibility state when returning from system settings
+        val mode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+        if (::tvSmartForegroundWarning.isInitialized) {
+            updateFirewallModeUI(mode)
+        }
+    }
+
     private fun initializeViews() {
         switchMoveSelectedTop = findViewById(R.id.switchMoveSelectedTop)
-        switchAdaptiveMode = findViewById(R.id.switchAdaptiveMode)
         cardSkipConfirm = findViewById(R.id.cardSkipConfirm)
         switchSkipConfirm = findViewById(R.id.switchSkipConfirm)
         switchSkipErrorDialog = findViewById(R.id.switchSkipErrorDialog)
@@ -155,13 +172,19 @@ class SettingsActivity : BaseActivity() {
         // Auto-enable switch (new)
         switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
         cardAutoEnableOnShizukuStart = findViewById(R.id.cardAutoEnableOnShizukuStart)
+        
+        // Firewall Mode Selector
+        radioGroupFirewallMode = findViewById(R.id.radioGroupFirewallMode)
+        radioModeDefault = findViewById(R.id.radioModeDefault)
+        radioModeAdaptive = findViewById(R.id.radioModeAdaptive)
+        radioModeSmartForeground = findViewById(R.id.radioModeSmartForeground)
+        tvSmartForegroundWarning = findViewById(R.id.tvSmartForegroundWarning)
     }
 
     private fun loadSettings() {
         val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
 
         switchMoveSelectedTop.isChecked = prefs.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, true)
-        switchAdaptiveMode.isChecked = prefs.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
         switchSkipConfirm.isChecked = prefs.getBoolean("skip_enable_confirm", false)
         switchSkipErrorDialog.isChecked = prefs.getBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, false)
         switchKeepErrorAppsSelected.isChecked = prefs.getBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false)
@@ -169,16 +192,19 @@ class SettingsActivity : BaseActivity() {
         // Show/hide keep error apps option based on skip error dialog state
         cardKeepErrorApps.visibility = if (switchSkipErrorDialog.isChecked) View.VISIBLE else View.GONE
 
-        // Adaptive Mode dependency: if enabled, hide "Skip Confirm"
-        if (switchAdaptiveMode.isChecked) {
-            cardSkipConfirm.visibility = View.GONE
-            if (!switchSkipConfirm.isChecked) {
-                switchSkipConfirm.isChecked = true
-                prefs.edit().putBoolean("skip_enable_confirm", true).apply()
-            }
-        } else {
-            cardSkipConfirm.visibility = View.VISIBLE
+        // Load firewall mode (migrate from old adaptive mode if needed)
+        migrateAdaptiveModeToFirewallMode(prefs)
+        val firewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+        
+        // Set the radio button based on mode
+        when (firewallMode) {
+            FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
+            FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
+            else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
         }
+        
+        // Update UI based on mode
+        updateFirewallModeUI(firewallMode)
 
         val currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         tvCurrentFont.text = if (currentFont == "ndot") getString(R.string.font_ndot) else getString(R.string.font_default)
@@ -213,6 +239,44 @@ class SettingsActivity : BaseActivity() {
         cardAutoEnableOnShizukuStart.visibility = if (ladbSelected) View.GONE else View.VISIBLE
         switchAutoEnableOnShizukuStart.isEnabled = !ladbSelected
     }
+    
+    /**
+     * Migrate from old adaptive mode boolean to new firewall mode enum
+     */
+    private fun migrateAdaptiveModeToFirewallMode(prefs: SharedPreferences) {
+        // Check if we have the old adaptive mode key but not the new firewall mode key
+        if (prefs.contains(MainActivity.KEY_ADAPTIVE_MODE) && !prefs.contains(MainActivity.KEY_FIREWALL_MODE)) {
+            val adaptiveMode = prefs.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
+            val newMode = if (adaptiveMode) FirewallMode.ADAPTIVE else FirewallMode.DEFAULT
+            prefs.edit()
+                .putString(MainActivity.KEY_FIREWALL_MODE, newMode.name)
+                .remove(MainActivity.KEY_ADAPTIVE_MODE)
+                .apply()
+        }
+    }
+    
+    /**
+     * Update UI elements based on firewall mode
+     */
+    private fun updateFirewallModeUI(mode: FirewallMode) {
+        // Show/hide skip confirm card based on mode
+        val showSkipConfirm = mode == FirewallMode.DEFAULT
+        cardSkipConfirm.visibility = if (showSkipConfirm) View.VISIBLE else View.GONE
+        
+        // If adaptive or smart foreground, force skip confirm to ON
+        if (mode != FirewallMode.DEFAULT && !switchSkipConfirm.isChecked) {
+            switchSkipConfirm.isChecked = true
+            sharedPreferences.edit().putBoolean("skip_enable_confirm", true).apply()
+        }
+        
+        // Show warning for Smart Foreground if accessibility not enabled
+        if (mode == FirewallMode.SMART_FOREGROUND) {
+            val accessibilityEnabled = ForegroundDetectionService.isServiceEnabled(this)
+            tvSmartForegroundWarning.visibility = if (!accessibilityEnabled) View.VISIBLE else View.GONE
+        } else {
+            tvSmartForegroundWarning.visibility = View.GONE
+        }
+    }
 
     private fun setupListeners() {
         val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
@@ -222,20 +286,36 @@ class SettingsActivity : BaseActivity() {
             setResult(RESULT_OK)
         }
 
-        switchAdaptiveMode.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean(MainActivity.KEY_ADAPTIVE_MODE, isChecked).apply()
+        // Firewall Mode Selector Listener
+        radioGroupFirewallMode.setOnCheckedChangeListener { _, checkedId ->
+            val newMode = when (checkedId) {
+                R.id.radioModeAdaptive -> FirewallMode.ADAPTIVE
+                R.id.radioModeSmartForeground -> FirewallMode.SMART_FOREGROUND
+                else -> FirewallMode.DEFAULT
+            }
+            
+            prefs.edit().putString(MainActivity.KEY_FIREWALL_MODE, newMode.name).apply()
             setResult(RESULT_OK)
-
+            
             TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
-            if (isChecked) {
-                // When Adaptive Mode is enabled, force Skip Confirm to ON and hide the card
-                if (!switchSkipConfirm.isChecked) {
-                    switchSkipConfirm.isChecked = true
+            updateFirewallModeUI(newMode)
+            
+            // Show info dialog and auto-enable accessibility for Smart Foreground mode
+            if (newMode == FirewallMode.SMART_FOREGROUND) {
+                if (!ForegroundDetectionService.isServiceEnabled(this)) {
+                    // Try to auto-enable via shell
+                    lifecycleScope.launch {
+                        val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
+                        if (success) {
+                            updateFirewallModeUI(newMode)
+                        }
+                        // Show info dialog regardless
+                        showSmartForegroundInfoDialog(success)
+                    }
+                } else {
+                    // Already enabled, just show info
+                    showSmartForegroundInfoDialog(true)
                 }
-                cardSkipConfirm.visibility = View.GONE
-            } else {
-                // When Adaptive Mode is disabled, show the card
-                cardSkipConfirm.visibility = View.VISIBLE
             }
         }
 
@@ -364,11 +444,43 @@ class SettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchMoveSelectedTop)
         makeCardClickableForSwitch(switchUseDynamicColor)
         makeCardClickableForSwitch(switchSkipConfirm)
-        makeCardClickableForSwitch(switchAdaptiveMode)
         makeCardClickableForSwitch(switchSkipErrorDialog)
         makeCardClickableForSwitch(switchKeepErrorAppsSelected)
         makeCardClickableForSwitch(switchAutoEnableOnShizukuStart)
         makeCardClickableForSwitch(switchAppMonitor)
+    }
+    
+
+    /**
+     * Show info dialog about Smart Foreground mode.
+     * @param accessibilityGranted true if accessibility was already enabled or just auto-granted
+     */
+    private fun showSmartForegroundInfoDialog(accessibilityGranted: Boolean) {
+        val showPrompt = sharedPreferences.getBoolean("show_smart_foreground_prompt", true)
+        if (!showPrompt) return
+
+        val message = if (accessibilityGranted) {
+            getString(R.string.smart_foreground_info_enabled)
+        } else {
+            getString(R.string.smart_foreground_info_deferred)
+        }
+        
+        val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
+        val messageText: TextView = promptView.findViewById(R.id.shizuku_prompt_message_text)
+        val checkbox: android.widget.CheckBox = promptView.findViewById(R.id.shizuku_prompt_do_not_show)
+        
+        messageText.text = message
+        checkbox.text = getString(R.string.dont_show_again)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.firewall_mode_smart_foreground)
+            .setView(promptView)
+            .setPositiveButton(R.string.ok) { _, _ ->
+                if (checkbox.isChecked) {
+                    sharedPreferences.edit().putBoolean("show_smart_foreground_prompt", false).apply()
+                }
+            }
+            .show()
     }
 
    

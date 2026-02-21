@@ -7,6 +7,7 @@ import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
+import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.shell.ShellExecutorBlocking
 import com.arslan.shizuwall.ui.MainActivity
@@ -25,7 +26,8 @@ class FirewallTileService : TileService() {
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == MainActivity.KEY_FIREWALL_ENABLED ||
             key == MainActivity.KEY_ACTIVE_PACKAGES ||
-            key == MainActivity.KEY_FIREWALL_SAVED_ELAPSED
+            key == MainActivity.KEY_FIREWALL_SAVED_ELAPSED ||
+            key == MainActivity.KEY_FIREWALL_MODE
         ) {
             // update UI to reflect new saved state
             updateTile()
@@ -71,9 +73,9 @@ class FirewallTileService : TileService() {
         } else {
             // Enable firewall
             val selectedApps = loadSelectedApps()
-            val adaptiveMode = sharedPreferences.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
+            val firewallMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
             
-            if (selectedApps.isEmpty() && !adaptiveMode) {
+            if (selectedApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                 Toast.makeText(this@FirewallTileService, getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
                 return
             }
