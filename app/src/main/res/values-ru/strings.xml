@@ -257,4 +257,29 @@
     <string name="log_logs_copied">Логи скопированы в буфер обмена</string>
     <string name="log_status_updated">Статус обновлен: %s</string>
     <string name="ladb_not_supported_fdroid"> (не поддерживается в версии F-Droid)</string>
+
+    <!-- Exit confirmation -->
+    <string name="exit_confirm_message">Нажмите назад ещё раз для выхода</string>
+
+    <!-- Firewall Mode Selector -->
+    <string name="firewall_mode_title">Режим брандмауэра</string>
+    <string name="firewall_mode_default">По умолчанию</string>
+    <string name="firewall_mode_default_description">Традиционный брандмауэр - блокировка выбранных приложений</string>
+    <string name="firewall_mode_adaptive">Адаптивный</string>
+    <string name="firewall_mode_adaptive_description">Применять правила мгновенно. Брандмауэр остается включенным.</string>
+    <string name="firewall_mode_smart_foreground">Умный передний план (Бета)</string>
+    <string name="firewall_mode_smart_foreground_description">Разрешить только приложение на переднем плане</string>
+    <string name="smart_foreground_requires_accessibility">Требуется разрешение на специальные возможности</string>
+    <string name="smart_foreground_service_description">Отслеживает приложение на переднем плане для управления правилами брандмауэра</string>
+    <string name="smart_foreground_notification_channel_name">Умный передний план (Сервис)</string>
+    <string name="smart_foreground_notification_channel_description">Фоновый сервис для мониторинга приложения на переднем плане</string>
+    <string name="smart_foreground_active">Умный передний план активен</string>
+    <string name="smart_foreground_active_description">Только приложение на переднем плане имеет доступ к сети</string>
+    <string name="accessibility_service_label">ShizuWall Монитор переднего плана</string>
+    <string name="accessibility_auto_enabled">Служба специальных возможностей включена автоматически</string>
+    <string name="smart_foreground_info_enabled">Режим умного переднего плана разрешит доступ к сети только для используемого приложения. Все остальные приложения будут заблокированы.\n\nНеобходимое разрешение на специальные возможности предоставляется автоматически при выборе этого режима.</string>
+    <string name="smart_foreground_info_deferred">Режим умного переднего плана разрешит доступ к сети только для используемого приложения. Все остальные приложения будут заблокированы.\n\nРазрешение на специальные возможности будет предоставлено автоматически, когда Shizuku/Daemon работает или когда вы включите брандмауэр.</string>
+    <string name="firewall_enabled_smart_foreground">Брандмауэр активирован (Режим умного переднего плана)</string>
+    <string name="accessibility_manual_enable_needed">Не удалось автоматически включить службу специальных возможностей. Пожалуйста, включите её вручную в настройках устройства.</string>
+    <string name="smart_foreground_active_app">Активно: %s</string>
 </resources>

@@ -266,7 +266,7 @@
     <string name="firewall_mode_default_description">Traditional firewall - block selected apps</string>
     <string name="firewall_mode_adaptive">Adaptive</string>
     <string name="firewall_mode_adaptive_description">Apply rules instantly. Firewall stays on.</string>
-    <string name="firewall_mode_smart_foreground">Smart Foreground</string>
+    <string name="firewall_mode_smart_foreground">Smart Foreground (Beta)</string>
     <string name="firewall_mode_smart_foreground_description">Only allow the app currently in foreground</string>
     <string name="smart_foreground_requires_accessibility">Requires Accessibility permission</string>
     <string name="smart_foreground_service_description">Monitors foreground app to manage firewall rules</string>

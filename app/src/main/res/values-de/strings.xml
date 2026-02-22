@@ -253,4 +253,29 @@
     <string name="log_logs_copied">Protokolle in die Zwischenablage kopiert</string>
     <string name="log_status_updated">Status aktualisiert: %s</string>
     <string name="ladb_not_supported_fdroid"> (wird in der F-Droid-Version nicht unterstützt)</string>
+
+    <!-- Exit confirmation -->
+    <string name="exit_confirm_message">Nochmal drücken zum Beenden</string>
+
+    <!-- Firewall Mode Selector -->
+    <string name="firewall_mode_title">Firewall-Modus</string>
+    <string name="firewall_mode_default">Standard</string>
+    <string name="firewall_mode_default_description">Traditionelle Firewall - ausgewählte Apps blockieren</string>
+    <string name="firewall_mode_adaptive">Adaptiv</string>
+    <string name="firewall_mode_adaptive_description">Regeln sofort anwenden. Firewall bleibt an.</string>
+    <string name="firewall_mode_smart_foreground">Smart Vordergrund (Beta)</string>
+    <string name="firewall_mode_smart_foreground_description">Nur die aktuell im Vordergrund laufende App zulassen</string>
+    <string name="smart_foreground_requires_accessibility">Erfordert Barrierefreiheits-Berechtigung</string>
+    <string name="smart_foreground_service_description">Überwacht die Vordergrund-App zur Verwaltung der Firewall-Regeln</string>
+    <string name="smart_foreground_notification_channel_name">Smart Vordergrund (Dienst)</string>
+    <string name="smart_foreground_notification_channel_description">Hintergrunddienst zur Überwachung der Vordergrund-App</string>
+    <string name="smart_foreground_active">Smart Vordergrund Aktiv</string>
+    <string name="smart_foreground_active_description">Nur die Vordergrund-App hat Netzwerkzugriff</string>
+    <string name="accessibility_service_label">ShizuWall Vordergrund-Monitor</string>
+    <string name="accessibility_auto_enabled">Barrierefreiheitsdienst automatisch aktiviert</string>
+    <string name="smart_foreground_info_enabled">Der Smart-Vordergrund-Modus erlaubt nur der aktuell verwendeten App den Netzwerkzugriff. Alle anderen Apps werden blockiert.\n\nDie erforderliche Barrierefreiheits-Berechtigung wird automatisch erteilt, wenn Sie diesen Modus auswählen.</string>
+    <string name="smart_foreground_info_deferred">Der Smart-Vordergrund-Modus erlaubt nur der aktuell verwendeten App den Netzwerkzugriff. Alle anderen Apps werden blockiert.\n\nDie Barrierefreiheits-Berechtigung wird automatisch erteilt, wenn Shizuku/Daemon läuft oder wenn Sie die Firewall aktivieren.</string>
+    <string name="firewall_enabled_smart_foreground">Firewall aktiviert (Smart-Vordergrund-Modus)</string>
+    <string name="accessibility_manual_enable_needed">Barrierefreiheitsdienst konnte nicht automatisch aktiviert werden. Bitte aktivieren Sie ihn manuell in Ihren Geräteeinstellungen.</string>
+    <string name="smart_foreground_active_app">Aktiv: %s</string>
 </resources>

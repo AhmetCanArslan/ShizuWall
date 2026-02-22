@@ -257,4 +257,29 @@
     <string name="log_logs_copied">ログがクリップボードにコピーされました</string>
     <string name="log_status_updated">ステータスが更新されました: %s</string>
     <string name="ladb_not_supported_fdroid"> (F-Droid版ではサポートされていません)</string>
+
+    <!-- Exit confirmation -->
+    <string name="exit_confirm_message">もう一度押すと終了します</string>
+
+    <!-- Firewall Mode Selector -->
+    <string name="firewall_mode_title">ファイアウォールモード</string>
+    <string name="firewall_mode_default">デフォルト</string>
+    <string name="firewall_mode_default_description">従来のファイアウォール - 選択したアプリをブロック</string>
+    <string name="firewall_mode_adaptive">アダプティブ</string>
+    <string name="firewall_mode_adaptive_description">ルールを即座に適用します。ファイアウォールはオンのままです。</string>
+    <string name="firewall_mode_smart_foreground">スマートフォアグラウンド (ベータ)</string>
+    <string name="firewall_mode_smart_foreground_description">現在フォアグラウンドにあるアプリのみ許可</string>
+    <string name="smart_foreground_requires_accessibility">ユーザー補助の権限が必要です</string>
+    <string name="smart_foreground_service_description">ファイアウォールルールを管理するためにフォアグラウンドアプリを監視します</string>
+    <string name="smart_foreground_notification_channel_name">スマートフォアグラウンド (サービス)</string>
+    <string name="smart_foreground_notification_channel_description">フォアグラウンドアプリを監視するためのバックグラウンドサービス</string>
+    <string name="smart_foreground_active">スマートフォアグラウンド アクティブ</string>
+    <string name="smart_foreground_active_description">フォアグラウンドアプリのみがネットワークにアクセスできます</string>
+    <string name="accessibility_service_label">ShizuWall フォアグラウンドモニター</string>
+    <string name="accessibility_auto_enabled">ユーザー補助サービスが自動的に有効になりました</string>
+    <string name="smart_foreground_info_enabled">スマートフォアグラウンドモードでは、現在使用しているアプリのみにネットワークアクセスを許可します。他のすべてのアプリはブロックされます。\n\nこのモードを選択すると、必要なユーザー補助の権限が自動的に付与されます。</string>
+    <string name="smart_foreground_info_deferred">スマートフォアグラウンドモードでは、現在使用しているアプリのみにネットワークアクセスを許可します。他のすべてのアプリはブロックされます。\n\nShizuku/デーモンが実行中、またはファイアウォールを有効にしたときに、ユーザー補助の権限が自動的に付与されます。</string>
+    <string name="firewall_enabled_smart_foreground">ファイアウォールが有効になりました (スマートフォアグラウンドモード)</string>
+    <string name="accessibility_manual_enable_needed">ユーザー補助サービスを自動的に有効にできませんでした。デバイスの設定から手動で有効にしてください。</string>
+    <string name="smart_foreground_active_app">アクティブ: %s</string>
 </resources>

@@ -255,4 +255,29 @@
     <string name="log_logs_cleared">Günlükler temizlendi</string>
     <string name="log_logs_copied">Günlükler panoya kopyalandı</string>
     <string name="log_status_updated">Durum güncellendi: %s</string>
+
+    <!-- Exit confirmation -->
+    <string name="exit_confirm_message">Çıkmak için tekrar geri basın</string>
+
+    <!-- Firewall Mode Selector -->
+    <string name="firewall_mode_title">Güvenlik Duvarı Modu</string>
+    <string name="firewall_mode_default">Varsayılan</string>
+    <string name="firewall_mode_default_description">Geleneksel güvenlik duvarı - seçili uygulamaları engelle</string>
+    <string name="firewall_mode_adaptive">Uyarlanabilir</string>
+    <string name="firewall_mode_adaptive_description">Kuralları anında uygula. Güvenlik duvarı açık kalır.</string>
+    <string name="firewall_mode_smart_foreground">Akıllı Ön Plan (Beta)</string>
+    <string name="firewall_mode_smart_foreground_description">Yalnızca şu anda ön plandaki uygulamaya izin ver</string>
+    <string name="smart_foreground_requires_accessibility">Erişilebilirlik izni gereklidir</string>
+    <string name="smart_foreground_service_description">Güvenlik duvarı kurallarını yönetmek için ön plan uygulamasını izler</string>
+    <string name="smart_foreground_notification_channel_name">Akıllı Ön Plan (Servis)</string>
+    <string name="smart_foreground_notification_channel_description">Ön plan uygulamasını izlemek için arka plan servisi</string>
+    <string name="smart_foreground_active">Akıllı Ön Plan Aktif</string>
+    <string name="smart_foreground_active_description">Yalnızca ön plandaki uygulamanın ağ erişimi var</string>
+    <string name="accessibility_service_label">ShizuWall Ön Plan İzleyici</string>
+    <string name="accessibility_auto_enabled">Erişilebilirlik servisi otomatik olarak etkinleştirildi</string>
+    <string name="smart_foreground_info_enabled">Akıllı Ön Plan modu, yalnızca şu anda kullandığınız uygulama için ağ erişimine izin verecektir. Diğer tüm uygulamalar engellenecektir.\n\nBu modu seçtiğinizde gerekli Erişilebilirlik izni otomatik olarak verilir.</string>
+    <string name="smart_foreground_info_deferred">Akıllı Ön Plan modu, yalnızca şu anda kullandığınız uygulama için ağ erişimine izin verecektir. Diğer tüm uygulamalar engellenecektir.\n\nShizuku/Daemon çalışırken veya güvenlik duvarını etkinleştirdiğinizde Erişilebilirlik izni otomatik olarak verilecektir.</string>
+    <string name="firewall_enabled_smart_foreground">Güvenlik duvarı etkinleştirildi (Akıllı Ön Plan Modu)</string>
+    <string name="accessibility_manual_enable_needed">Erişilebilirlik servisi otomatik olarak etkinleştirilemedi. Lütfen cihaz ayarlarınızdan manuel olarak etkinleştirin.</string>
+    <string name="smart_foreground_active_app">Aktif: %s</string>
 </resources>

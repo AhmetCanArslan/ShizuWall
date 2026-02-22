@@ -257,4 +257,29 @@
     <string name="log_logs_copied">Registros copiados al portapapeles</string>
     <string name="log_status_updated">Estado actualizado: %s</string>
     <string name="ladb_not_supported_fdroid"> (no compatible con la versión de F-Droid)</string>
+
+    <!-- Exit confirmation -->
+    <string name="exit_confirm_message">Presiona atrás de nuevo para salir</string>
+
+    <!-- Firewall Mode Selector -->
+    <string name="firewall_mode_title">Modo de Firewall</string>
+    <string name="firewall_mode_default">Predeterminado</string>
+    <string name="firewall_mode_default_description">Firewall tradicional - bloquear apps seleccionadas</string>
+    <string name="firewall_mode_adaptive">Adaptativo</string>
+    <string name="firewall_mode_adaptive_description">Aplicar reglas al instante. El firewall se mantiene activo.</string>
+    <string name="firewall_mode_smart_foreground">Primer Plano Inteligente (Beta)</string>
+    <string name="firewall_mode_smart_foreground_description">Solo permitir la app en primer plano</string>
+    <string name="smart_foreground_requires_accessibility">Requiere permiso de Accesibilidad</string>
+    <string name="smart_foreground_service_description">Monitorea la app en primer plano para gestionar reglas del firewall</string>
+    <string name="smart_foreground_notification_channel_name">Primer Plano Inteligente (Servicio)</string>
+    <string name="smart_foreground_notification_channel_description">Servicio en segundo plano para monitorear la app en primer plano</string>
+    <string name="smart_foreground_active">Primer Plano Inteligente Activo</string>
+    <string name="smart_foreground_active_description">Solo la app en primer plano tiene acceso a la red</string>
+    <string name="accessibility_service_label">ShizuWall Monitor de Primer Plano</string>
+    <string name="accessibility_auto_enabled">Servicio de accesibilidad habilitado automáticamente</string>
+    <string name="smart_foreground_info_enabled">El modo Primer Plano Inteligente solo permitirá acceso a la red para la app que estés usando. Todas las demás apps serán bloqueadas.\n\nEl permiso de Accesibilidad se otorga automáticamente al seleccionar este modo.</string>
+    <string name="smart_foreground_info_deferred">El modo Primer Plano Inteligente solo permitirá acceso a la red para la app que estés usando. Todas las demás apps serán bloqueadas.\n\nEl permiso de Accesibilidad se otorgará automáticamente cuando Shizuku/Daemon esté en ejecución o cuando actives el firewall.</string>
+    <string name="firewall_enabled_smart_foreground">Firewall activado (Modo Primer Plano Inteligente)</string>
+    <string name="accessibility_manual_enable_needed">No se pudo habilitar automáticamente el servicio de accesibilidad. Por favor, habilítalo manualmente en los ajustes de tu dispositivo.</string>
+    <string name="smart_foreground_active_app">Activo: %s</string>
 </resources>
