@@ -78,6 +78,7 @@ class SettingsActivity : BaseActivity() {
     private lateinit var radioModeDefault: RadioButton
     private lateinit var radioModeAdaptive: RadioButton
     private lateinit var radioModeSmartForeground: RadioButton
+    private lateinit var radioModeWhitelist: RadioButton
     private lateinit var tvSmartForegroundWarning: TextView
 
     private val createDocumentLauncher = registerForActivityResult(
@@ -178,6 +179,7 @@ class SettingsActivity : BaseActivity() {
         radioModeDefault = findViewById(R.id.radioModeDefault)
         radioModeAdaptive = findViewById(R.id.radioModeAdaptive)
         radioModeSmartForeground = findViewById(R.id.radioModeSmartForeground)
+        radioModeWhitelist = findViewById(R.id.radioModeWhitelist)
         tvSmartForegroundWarning = findViewById(R.id.tvSmartForegroundWarning)
     }
 
@@ -200,6 +202,7 @@ class SettingsActivity : BaseActivity() {
         when (firewallMode) {
             FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
             FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
+            FirewallMode.WHITELIST -> radioGroupFirewallMode.check(R.id.radioModeWhitelist)
             else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
         }
         
@@ -291,6 +294,7 @@ class SettingsActivity : BaseActivity() {
             val newMode = when (checkedId) {
                 R.id.radioModeAdaptive -> FirewallMode.ADAPTIVE
                 R.id.radioModeSmartForeground -> FirewallMode.SMART_FOREGROUND
+                R.id.radioModeWhitelist -> FirewallMode.WHITELIST
                 else -> FirewallMode.DEFAULT
             }
             

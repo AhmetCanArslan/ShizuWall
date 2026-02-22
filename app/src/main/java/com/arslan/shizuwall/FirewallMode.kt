@@ -10,7 +10,8 @@ package com.arslan.shizuwall
 enum class FirewallMode {
     DEFAULT,
     ADAPTIVE,
-    SMART_FOREGROUND;
+    SMART_FOREGROUND,
+    WHITELIST;
 
     companion object {
         /**
@@ -39,5 +40,5 @@ enum class FirewallMode {
     /**
      * Check if this mode allows dynamic app selection while firewall is enabled
      */
-    fun allowsDynamicSelection(): Boolean = this == ADAPTIVE || this == SMART_FOREGROUND
+    fun allowsDynamicSelection(): Boolean = this == ADAPTIVE || this == SMART_FOREGROUND || this == WHITELIST
 }

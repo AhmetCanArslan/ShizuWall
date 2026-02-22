@@ -901,7 +901,8 @@ class MainActivity : BaseActivity() {
                         lastOperationErrorDetails.clear()
                         
                         for (pkg in packagesToUpdate) {
-                            val cmd = if (isChecked) {
+                            val shouldBlock = if (firewallMode == FirewallMode.WHITELIST) !isChecked else isChecked
+                            val cmd = if (shouldBlock) {
                                 "cmd connectivity set-package-networking-enabled false $pkg"
                             } else {
                                 "cmd connectivity set-package-networking-enabled true $pkg"
@@ -916,8 +917,9 @@ class MainActivity : BaseActivity() {
                         }
                         
                         withContext(Dispatchers.Main) {
+                            val shouldBlockMain = if (firewallMode == FirewallMode.WHITELIST) !isChecked else isChecked
                             if (successful.isNotEmpty()) {
-                                if (isChecked) {
+                                if (shouldBlockMain) {
                                     activeFirewallPackages.addAll(successful)
                                 } else {
                                     activeFirewallPackages.removeAll(successful)
@@ -927,8 +929,8 @@ class MainActivity : BaseActivity() {
                             
                             // Handle failures
                             if (failed.isNotEmpty()) {
-                                if (isChecked) {
-                                    // We tried to enable firewall (select) but failed. Revert selection.
+                                if (shouldBlockMain) {
+                                    // We tried to enable firewall (block) but failed. Revert selection.
                                     val skipErrorDialog = sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)
                                     val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
                                     
@@ -936,7 +938,7 @@ class MainActivity : BaseActivity() {
                                         for (pkg in failed) {
                                             val idx = appList.indexOfFirst { it.packageName == pkg }
                                             if (idx != -1) {
-                                                appList[idx] = appList[idx].copy(isSelected = false)
+                                                appList[idx] = appList[idx].copy(isSelected = !isChecked)
                                             }
                                         }
                                         updateSelectedCount()
@@ -945,6 +947,15 @@ class MainActivity : BaseActivity() {
                                     }
                                     showOperationErrorsDialog(failed, lastOperationErrorDetails)
                                 } else {
+                                    for (pkg in failed) {
+                                        val idx = appList.indexOfFirst { it.packageName == pkg }
+                                        if (idx != -1) {
+                                            appList[idx] = appList[idx].copy(isSelected = !isChecked)
+                                        }
+                                    }
+                                    updateSelectedCount()
+                                    saveSelectedApps()
+                                    sortAndFilterApps(preserveScrollPosition = true)
                                     Toast.makeText(this@MainActivity, getString(R.string.failed_to_update_rules_count, failed.size), Toast.LENGTH_SHORT).show()
                                 }
                             }
@@ -979,7 +990,9 @@ class MainActivity : BaseActivity() {
                                 lastOperationErrorDetails.clear()
                                 
                                 for (pkg in previouslySelected) {
-                                    val res = runCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
+                                    val shouldBlock = if (firewallMode == FirewallMode.WHITELIST) true else false
+                                    val cmd = if (shouldBlock) "cmd connectivity set-package-networking-enabled false $pkg" else "cmd connectivity set-package-networking-enabled true $pkg"
+                                    val res = runCommandDetailed(cmd)
                                     if (res.success) {
                                         successful.add(pkg)
                                     } else {
@@ -989,8 +1002,13 @@ class MainActivity : BaseActivity() {
                                 }
                                 
                                 withContext(Dispatchers.Main) {
+                                    val shouldBlockMain = if (firewallMode == FirewallMode.WHITELIST) true else false
                                     if (successful.isNotEmpty()) {
-                                        activeFirewallPackages.removeAll(successful)
+                                        if (shouldBlockMain) {
+                                            activeFirewallPackages.addAll(successful)
+                                        } else {
+                                            activeFirewallPackages.removeAll(successful)
+                                        }
                                         saveActivePackages(activeFirewallPackages)
                                     }
                                     if (failed.isNotEmpty()) {
@@ -1036,7 +1054,8 @@ class MainActivity : BaseActivity() {
                     val isSelected = appInfo.isSelected
                     lifecycleScope.launch(Dispatchers.IO) {
                         lastOperationErrorDetails.clear()
-                        val res = if (isSelected) {
+                        val shouldBlock = if (firewallMode == FirewallMode.WHITELIST) !isSelected else isSelected
+                        val res = if (shouldBlock) {
                                 runCommandDetailed("cmd connectivity set-package-networking-enabled false $pkg")
                             } else {
                                 runCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
@@ -1044,8 +1063,8 @@ class MainActivity : BaseActivity() {
                         val success = res.success
                         
                         withContext(Dispatchers.Main) {
-                                    if (success) {
-                                if (isSelected) {
+                            if (success) {
+                                if (shouldBlock) {
                                     activeFirewallPackages.add(pkg)
                                 } else {
                                     activeFirewallPackages.remove(pkg)
@@ -1053,15 +1072,15 @@ class MainActivity : BaseActivity() {
                                 saveActivePackages(activeFirewallPackages)
                             } else {
                                 // Operation failed
-                                        if (isSelected) {
-                                    // Failed to block (select)
+                                if (shouldBlock) {
+                                    // Failed to block
                                     val skipErrorDialog = sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)
                                     val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
 
                                     if (!(skipErrorDialog && keepErrorAppsSelected)) {
                                         val revertIdx = appList.indexOfFirst { it.packageName == pkg }
                                         if (revertIdx != -1) {
-                                            appList[revertIdx] = appList[revertIdx].copy(isSelected = false)
+                                            appList[revertIdx] = appList[revertIdx].copy(isSelected = !isSelected)
                                         }
                                         updateSelectedCount()
                                         saveSelectedApps()
@@ -1070,15 +1089,14 @@ class MainActivity : BaseActivity() {
                                     lastOperationErrorDetails[pkg] = res.stderr.ifEmpty { res.stdout }
                                     showOperationErrorsDialog(listOf(pkg), lastOperationErrorDetails)
                                 } else {
-                                    // Failed to unblock (unselect)
+                                    // Failed to unblock
                                     val revertIdx = appList.indexOfFirst { it.packageName == pkg }
                                     if (revertIdx != -1) {
-                                        appList[revertIdx] = appList[revertIdx].copy(isSelected = true)
+                                        appList[revertIdx] = appList[revertIdx].copy(isSelected = !isSelected)
                                     }
                                     updateSelectedCount()
                                     saveSelectedApps()
                                     sortAndFilterApps(preserveScrollPosition = true)
-                                    
                                     Toast.makeText(this@MainActivity, getString(R.string.failed_to_unblock_app, appInfo.appName), Toast.LENGTH_SHORT).show()
                                 }
                             }
@@ -1316,7 +1334,13 @@ class MainActivity : BaseActivity() {
             if (suppressToggleListener) return@setOnCheckedChangeListener
             if (isChecked) {
                 val selectedApps = appList.filter { it.isSelected }
-                if (selectedApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
+                val targetApps = if (firewallMode == FirewallMode.WHITELIST) {
+                    appList.filter { !it.isSelected }
+                } else {
+                    selectedApps
+                }
+                
+                if (targetApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                     Toast.makeText(this, getString(R.string.select_at_least_one_app), Toast.LENGTH_SHORT).show()
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
@@ -1330,7 +1354,7 @@ class MainActivity : BaseActivity() {
 
                     // If daemon is running, proceed
                     if (daemonManager.isDaemonRunning()) {
-                        showFirewallConfirmDialog(selectedApps)
+                        showFirewallConfirmDialog(targetApps)
                         return@setOnCheckedChangeListener
                     }
 
@@ -1358,7 +1382,7 @@ class MainActivity : BaseActivity() {
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
                     // Permission not granted, mark that we're waiting for it
                     pendingToggleEnable = true
-                    pendingEnableSelectedApps = appList.filter { it.isSelected }.map { it.packageName }
+                    pendingEnableSelectedApps = targetApps.map { it.packageName }
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
@@ -1366,7 +1390,7 @@ class MainActivity : BaseActivity() {
                 }
                 // Permission already granted, proceed
                 pendingToggleEnable = false
-                showFirewallConfirmDialog(selectedApps)
+                showFirewallConfirmDialog(targetApps)
             } else {
                 if (!isFirewallEnabled) {
                     return@setOnCheckedChangeListener

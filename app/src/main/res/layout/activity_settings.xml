@@ -367,6 +367,24 @@
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
 
+                        <!-- Whitelist Mode -->
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/radioModeWhitelist"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/firewall_mode_whitelist"
+                            android:textSize="15sp"
+                            android:textColor="?android:attr/textColorPrimary" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginBottom="8dp"
+                            android:text="@string/firewall_mode_whitelist_description"
+                            android:textSize="12sp"
+                            android:textColor="?android:attr/textColorSecondary" />
+
                         <!-- Smart Foreground Mode -->
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/radioModeSmartForeground"
