@@ -88,7 +88,7 @@
     <string name="firewall_disabled_active_uninstalled">ファイアウォールが無効になりました（アクティブなアプリがアンインストールされました）</string>
     <string name="firewall_disabled_no_apps">ファイアウォールが無効になりました（アプリが選択されていません）</string>
     <string name="none_selected_apps_installed">選択されたアプリはいずれもインストールされていません。中止します。</string>
-    <string name="selected_apps_not_installed">選択されたアプリはインストールされておらず、無視されました。</string>
+    <string name="selected_apps_not_installed">%d 個の選択されたアプリはインストールされておらず、無視されました。</string>
     <string name="firewall_enabled_for_apps">%d 個のアプリでファイアウォールが有効になりました</string>
     <string name="firewall_enabled_adaptive">ファイアウォールが有効になりました (アダプティブモード)</string>
     <string name="failed_to_enable_firewall">アプリのファイアウォール有効化に失敗しました</string>
@@ -282,4 +282,14 @@
     <string name="firewall_enabled_smart_foreground">ファイアウォールが有効になりました (スマートフォアグラウンドモード)</string>
     <string name="accessibility_manual_enable_needed">ユーザー補助サービスを自動的に有効にできませんでした。デバイスの設定から手動で有効にしてください。</string>
     <string name="smart_foreground_active_app">アクティブ: %s</string>
+    <string name="enable_firewall_dialog_title">ファイアウォールを有効にする</string>
+    <string name="enable_firewall_dialog_message">以下の %d 個のアプリに対してファイアウォールを有効にしますか？</string>
+    <string name="selected_apps_label">選択されたアプリ:</string>
+    <string name="prev">前へ</string>
+    <string name="do_not_show_again">今後表示しない</string>
+    <string name="select_font">フォントを選択</string>
+    <string name="apply">適用</string>
+    <string name="firewall_mode_whitelist">ホワイトリスト</string>
+    <string name="firewall_mode_whitelist_description">デフォルトですべてのアプリをブロックし、選択されたアプリを許可</string>
+    <string name="firewall_mode_change_disabled">ファイアウォールが有効になっている間はモードを変更できません。まずファイアウォールを無効にしてください。</string>
 </resources>

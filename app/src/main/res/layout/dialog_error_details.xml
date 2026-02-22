@@ -31,14 +31,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="Copy" />
+            android:text="@string/copy" />
 
         <Button
             android:id="@+id/btnClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="Close" />
+            android:text="@string/close" />
 
 
     </LinearLayout>

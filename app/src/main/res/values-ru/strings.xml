@@ -88,7 +88,7 @@
     <string name="firewall_disabled_active_uninstalled">Брандмауэр отключен (активные приложения удалены)</string>
     <string name="firewall_disabled_no_apps">Брандмауэр отключен (приложения не выбраны)</string>
     <string name="none_selected_apps_installed">Ни одно из выбранных приложений не установлено. Отмена.</string>
-    <string name="selected_apps_not_installed">выбранные приложения не установлены и были проигнорированы.</string>
+    <string name="selected_apps_not_installed">%d выбранных приложений не установлены и были проигнорированы.</string>
     <string name="firewall_enabled_for_apps">Брандмауэр активирован для %d приложений</string>
     <string name="firewall_enabled_adaptive">Брандмауэр активирован (Адаптивный режим)</string>
     <string name="failed_to_enable_firewall">Не удалось включить брандмауэр ни для одного приложения</string>
@@ -282,4 +282,14 @@
     <string name="firewall_enabled_smart_foreground">Брандмауэр активирован (Режим умного переднего плана)</string>
     <string name="accessibility_manual_enable_needed">Не удалось автоматически включить службу специальных возможностей. Пожалуйста, включите её вручную в настройках устройства.</string>
     <string name="smart_foreground_active_app">Активно: %s</string>
+    <string name="enable_firewall_dialog_title">Включить брандмауэр</string>
+    <string name="enable_firewall_dialog_message">Вы хотите включить брандмауэр для %d приложений, перечисленных ниже?</string>
+    <string name="selected_apps_label">Выбранные приложения:</string>
+    <string name="prev">Назад</string>
+    <string name="do_not_show_again">Не показывать снова</string>
+    <string name="select_font">Выбрать шрифт</string>
+    <string name="apply">Применить</string>
+    <string name="firewall_mode_whitelist">Белый список</string>
+    <string name="firewall_mode_whitelist_description">Блокировать все приложения по умолчанию, разрешить выбранные приложения</string>
+    <string name="firewall_mode_change_disabled">Невозможно изменить режим брандмауэра, пока он включен. Пожалуйста, сначала отключите брандмауэр.</string>
 </resources>

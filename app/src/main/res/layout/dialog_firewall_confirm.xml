@@ -10,7 +10,7 @@
         android:id="@+id/dialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enable Firewall"
+        android:text="@string/enable_firewall_dialog_title"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="16dp"
@@ -20,7 +20,7 @@
         android:id="@+id/dialogMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Do you want to enable firewall for 0 apps listed below?"
+        android:text="@string/enable_firewall_dialog_message"
         android:textSize="16sp"
         android:layout_marginBottom="16dp"
         android:textColor="?attr/colorOnSurface" /> 
@@ -28,7 +28,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Selected Apps:"
+        android:text="@string/selected_apps_label"
         android:textSize="14sp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp"

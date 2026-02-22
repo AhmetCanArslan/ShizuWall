@@ -89,7 +89,7 @@
     <string name="firewall_disabled_active_uninstalled">防火墙已禁用（活动应用已卸载）</string>
     <string name="firewall_disabled_no_apps">防火墙已禁用（未选择应用）</string>
     <string name="none_selected_apps_installed">选定的应用均未安装。正在中止。</string>
-    <string name="selected_apps_not_installed">选定的应用未安装并被忽略。</string>
+    <string name="selected_apps_not_installed">%d 个选定的应用未安装并被忽略。</string>
     <string name="firewall_enabled_for_apps">为 %d 个应用启用了防火墙</string>
     <string name="firewall_enabled_adaptive">防火墙已启用（自适应模式）</string>
     <string name="failed_to_enable_firewall">未能为任何应用启用防火墙</string>
@@ -280,4 +280,14 @@
     <string name="firewall_enabled_smart_foreground">防火墙已激活（智能前台模式）</string>
     <string name="accessibility_manual_enable_needed">无法自动启用无障碍服务。请在设备设置中手动启用。</string>
     <string name="smart_foreground_active_app">活动: %s</string>
+    <string name="enable_firewall_dialog_title">启用防火墙</string>
+    <string name="enable_firewall_dialog_message">您要为下面列出的 %d 个应用启用防火墙吗？</string>
+    <string name="selected_apps_label">选定的应用:</string>
+    <string name="prev">上一个</string>
+    <string name="do_not_show_again">不再显示</string>
+    <string name="select_font">选择字体</string>
+    <string name="apply">应用</string>
+    <string name="firewall_mode_whitelist">白名单</string>
+    <string name="firewall_mode_whitelist_description">默认阻止所有应用，允许选定的应用</string>
+    <string name="firewall_mode_change_disabled">启用防火墙时无法更改防火墙模式。请先禁用防火墙。</string>
 </resources>

@@ -88,7 +88,7 @@
     <string name="firewall_disabled_active_uninstalled">Firewall desactivado (apps activas desinstaladas)</string>
     <string name="firewall_disabled_no_apps">Firewall desactivado (no hay apps seleccionadas)</string>
     <string name="none_selected_apps_installed">Ninguna de las apps seleccionadas está instalada. Abortando.</string>
-    <string name="selected_apps_not_installed">Las apps seleccionadas no están instaladas y fueron ignoradas.</string>
+    <string name="selected_apps_not_installed">%d apps seleccionadas no están instaladas y fueron ignoradas.</string>
     <string name="firewall_enabled_for_apps">Firewall activado para %d apps</string>
     <string name="firewall_enabled_adaptive">Firewall activado (Modo Adaptativo)</string>
     <string name="failed_to_enable_firewall">Fallo al activar el firewall para las aplicaciones</string>
@@ -282,4 +282,14 @@
     <string name="firewall_enabled_smart_foreground">Firewall activado (Modo Primer Plano Inteligente)</string>
     <string name="accessibility_manual_enable_needed">No se pudo habilitar automáticamente el servicio de accesibilidad. Por favor, habilítalo manualmente en los ajustes de tu dispositivo.</string>
     <string name="smart_foreground_active_app">Activo: %s</string>
+    <string name="enable_firewall_dialog_title">Activar Firewall</string>
+    <string name="enable_firewall_dialog_message">¿Quieres activar el firewall para las %d apps listadas a continuación?</string>
+    <string name="selected_apps_label">Apps seleccionadas:</string>
+    <string name="prev">Anterior</string>
+    <string name="do_not_show_again">No mostrar de nuevo</string>
+    <string name="select_font">Seleccionar fuente</string>
+    <string name="apply">Aplicar</string>
+    <string name="firewall_mode_whitelist">Lista blanca</string>
+    <string name="firewall_mode_whitelist_description">Bloquear todas las apps por defecto, permitir apps seleccionadas</string>
+    <string name="firewall_mode_change_disabled">No se puede cambiar el modo de firewall mientras está activado. Por favor, desactiva el firewall primero.</string>
 </resources>

@@ -91,7 +91,7 @@
     <string name="firewall_disabled_active_uninstalled">Firewall disabled (active apps uninstalled)</string>
     <string name="firewall_disabled_no_apps">Firewall disabled (no apps selected)</string>
     <string name="none_selected_apps_installed">None of the selected apps are installed. Aborting.</string>
-    <string name="selected_apps_not_installed">selected apps are not installed and were ignored.</string>
+    <string name="selected_apps_not_installed">%d selected apps are not installed and were ignored.</string>
     <string name="firewall_enabled_for_apps">Firewall activated for %d apps</string>
     <string name="firewall_enabled_adaptive">Firewall activated (Adaptive Mode)</string>
     <string name="failed_to_enable_firewall">Failed to enable firewall for any apps</string>
@@ -284,4 +284,11 @@
     <string name="firewall_enabled_smart_foreground">Firewall activated (Smart Foreground Mode)</string>
     <string name="accessibility_manual_enable_needed">Failed to auto-enable accessibility service. Please enable it manually in your device settings.</string>
     <string name="smart_foreground_active_app">Active: %s</string>
+    <string name="enable_firewall_dialog_title">Enable Firewall</string>
+    <string name="enable_firewall_dialog_message">Do you want to enable firewall for %d apps listed below?</string>
+    <string name="selected_apps_label">Selected Apps:</string>
+    <string name="prev">Prev</string>
+    <string name="do_not_show_again">Do not show again</string>
+    <string name="select_font">Select Font</string>
+    <string name="apply">Apply</string>
 </resources>

@@ -90,7 +90,7 @@
     <string name="firewall_disabled_active_uninstalled">Güvenlik duvarı devre dışı (aktif uygulamalar kaldırıldı)</string>
     <string name="firewall_disabled_no_apps">Güvenlik duvarı devre dışı (hiç uygulama seçilmedi)</string>
     <string name="none_selected_apps_installed">Seçili uygulamaların hiçbiri yüklü değil. İptal ediliyor.</string>
-    <string name="selected_apps_not_installed">seçili uygulamalar yüklü değil ve göz ardı edildi.</string>
+    <string name="selected_apps_not_installed">%d seçili uygulama yüklü değil ve göz ardı edildi.</string>
     <string name="firewall_enabled_for_apps">%d uygulama için güvenlik duvarı etkinleştirildi</string>
     <string name="firewall_enabled_adaptive">Güvenlik duvarı etkinleştirildi (Uyarlanabilir Mod)</string>
     <string name="failed_to_enable_firewall">Herhangi bir uygulama için güvenlik duvarı etkinleştirilemedi</string>
@@ -280,4 +280,14 @@
     <string name="firewall_enabled_smart_foreground">Güvenlik duvarı etkinleştirildi (Akıllı Ön Plan Modu)</string>
     <string name="accessibility_manual_enable_needed">Erişilebilirlik servisi otomatik olarak etkinleştirilemedi. Lütfen cihaz ayarlarınızdan manuel olarak etkinleştirin.</string>
     <string name="smart_foreground_active_app">Aktif: %s</string>
+    <string name="enable_firewall_dialog_title">Güvenlik Duvarını Etkinleştir</string>
+    <string name="enable_firewall_dialog_message">Aşağıda listelenen %d uygulama için güvenlik duvarını etkinleştirmek istiyor musunuz?</string>
+    <string name="selected_apps_label">Seçili Uygulamalar:</string>
+    <string name="prev">Önceki</string>
+    <string name="do_not_show_again">Bir daha gösterme</string>
+    <string name="select_font">Yazı Tipi Seç</string>
+    <string name="apply">Uygula</string>
+    <string name="firewall_mode_whitelist">Beyaz Liste</string>
+    <string name="firewall_mode_whitelist_description">Varsayılan olarak tüm uygulamaları engelle, seçili uygulamalara izin ver</string>
+    <string name="firewall_mode_change_disabled">Güvenlik duvarı etkinleştirilirken modu değiştiremezsiniz. Lütfen önce güvenlik duvarını devre dışı bırakın.</string>
 </resources>

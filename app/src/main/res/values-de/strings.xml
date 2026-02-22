@@ -87,7 +87,7 @@
     <string name="firewall_disabled_active_uninstalled">Firewall deaktiviert (aktive Apps deinstalliert)</string>
     <string name="firewall_disabled_no_apps">Firewall deaktiviert (keine Apps ausgewählt)</string>
     <string name="none_selected_apps_installed">Keine der ausgewählten Apps ist installiert. Abbruch.</string>
-    <string name="selected_apps_not_installed">ausgewählte Apps sind nicht installiert und wurden ignoriert.</string>
+    <string name="selected_apps_not_installed">%d ausgewählte Apps sind nicht installiert und wurden ignoriert.</string>
     <string name="firewall_enabled_for_apps">Firewall für %d Apps aktiviert</string>
     <string name="firewall_enabled_adaptive">Firewall aktiviert (Adaptiver Modus)</string>
     <string name="failed_to_enable_firewall">Firewall für keine Apps aktivieren fehlgeschlagen</string>
@@ -278,4 +278,14 @@
     <string name="firewall_enabled_smart_foreground">Firewall aktiviert (Smart-Vordergrund-Modus)</string>
     <string name="accessibility_manual_enable_needed">Barrierefreiheitsdienst konnte nicht automatisch aktiviert werden. Bitte aktivieren Sie ihn manuell in Ihren Geräteeinstellungen.</string>
     <string name="smart_foreground_active_app">Aktiv: %s</string>
+    <string name="enable_firewall_dialog_title">Firewall aktivieren</string>
+    <string name="enable_firewall_dialog_message">Möchten Sie die Firewall für die unten aufgeführten %d Apps aktivieren?</string>
+    <string name="selected_apps_label">Ausgewählte Apps:</string>
+    <string name="prev">Zurück</string>
+    <string name="do_not_show_again">Nicht mehr anzeigen</string>
+    <string name="select_font">Schriftart auswählen</string>
+    <string name="apply">Anwenden</string>
+    <string name="firewall_mode_whitelist">Whitelist</string>
+    <string name="firewall_mode_whitelist_description">Alle Apps standardmäßig blockieren, ausgewählte Apps erlauben</string>
+    <string name="firewall_mode_change_disabled">Firewall-Modus kann nicht geändert werden, während die Firewall aktiviert ist. Bitte deaktivieren Sie zuerst die Firewall.</string>
 </resources>

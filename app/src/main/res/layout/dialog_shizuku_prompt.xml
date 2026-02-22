@@ -21,6 +21,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Do not show again" />
+        android:text="@string/do_not_show_again" />
 
 </LinearLayout>

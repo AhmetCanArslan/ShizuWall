@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Select Font"
+        android:text="@string/select_font"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="16dp" />
@@ -49,14 +49,14 @@
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:layout_marginEnd="8dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnApplyFont"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apply" />
+            android:text="@string/apply" />
 
     </LinearLayout>
 
