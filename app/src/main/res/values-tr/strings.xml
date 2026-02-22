@@ -289,5 +289,6 @@
     <string name="apply">Uygula</string>
     <string name="firewall_mode_whitelist">Beyaz Liste</string>
     <string name="firewall_mode_whitelist_description">Varsayılan olarak tüm uygulamaları engelle, seçili uygulamalara izin ver</string>
+    <string name="whitelist_info_system_apps_warning">"Sistem uygulamalarını göster" devre dışı bırakıldığında, sistem uygulamaları Beyaz Liste modunda güvenlik duvarı tarafından engellenmez.\n\n"Sistem uygulamalarını göster" seçeneğini etkinleştirdiyseniz ve Beyaz Liste modunu kullanıyorsanız, bu kombinasyon tam olarak test edilmemiştir. Dikkatli kullanın.</string>
     <string name="firewall_mode_change_disabled">Güvenlik duvarı etkinleştirilirken modu değiştiremezsiniz. Lütfen önce güvenlik duvarını devre dışı bırakın.</string>
 </resources>

@@ -287,5 +287,6 @@
     <string name="apply">Anwenden</string>
     <string name="firewall_mode_whitelist">Whitelist</string>
     <string name="firewall_mode_whitelist_description">Alle Apps standardmäßig blockieren, ausgewählte Apps erlauben</string>
+    <string name="whitelist_info_system_apps_warning">Wenn "System-Apps anzeigen" deaktiviert ist, werden System-Apps im Whitelist-Modus nicht durch die Firewall geschützt.\n\nWenn Sie "System-Apps anzeigen" aktiviert haben und den Whitelist-Modus verwenden, wurde diese Kombination nicht vollständig getestet. Verwenden Sie sie mit Vorsicht.</string>
     <string name="firewall_mode_change_disabled">Firewall-Modus kann nicht geändert werden, während die Firewall aktiviert ist. Bitte deaktivieren Sie zuerst die Firewall.</string>
 </resources>

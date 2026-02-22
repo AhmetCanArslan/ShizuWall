@@ -366,6 +366,11 @@ class SettingsActivity : BaseActivity() {
                     showSmartForegroundInfoDialog(true)
                 }
             }
+            
+            // Show info dialog for Whitelist mode
+            if (newMode == FirewallMode.WHITELIST) {
+                showWhitelistInfoDialog()
+            }
         }
 
         switchSkipConfirm.setOnCheckedChangeListener { _, isChecked ->
@@ -532,8 +537,33 @@ class SettingsActivity : BaseActivity() {
             .show()
     }
 
-   
-    private fun makeCardClickableForSwitch(switch: SwitchCompat) {
+    /**
+     * Show info dialog about Whitelist mode and system apps behavior.
+     * Uses the same dialog_shizuku_prompt layout with a "don't show again" checkbox.
+     */
+    private fun showWhitelistInfoDialog() {
+        val showPrompt = sharedPreferences.getBoolean("show_whitelist_prompt", true)
+        if (!showPrompt) return
+
+        val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
+        val messageText: TextView = promptView.findViewById(R.id.shizuku_prompt_message_text)
+        val checkbox: android.widget.CheckBox = promptView.findViewById(R.id.shizuku_prompt_do_not_show)
+
+        messageText.text = getString(R.string.whitelist_info_system_apps_warning)
+        checkbox.text = getString(R.string.dont_show_again)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.firewall_mode_whitelist)
+            .setView(promptView)
+            .setPositiveButton(R.string.ok) { _, _ ->
+                if (checkbox.isChecked) {
+                    sharedPreferences.edit().putBoolean("show_whitelist_prompt", false).apply()
+                }
+            }
+            .show()
+    }
+
+   private fun makeCardClickableForSwitch(switch: SwitchCompat) {
         try {
             val parent = switch.parent as? View ?: return
 
