@@ -129,14 +129,16 @@ class FloatingButtonService : Service() {
             y = 0
         }
 
-        // Drag handling
+        // Use system touch slop for reliable tap vs drag detection
+        val touchSlop = ViewConfiguration.get(this).scaledTouchSlop
+
         var initialX = 0
         var initialY = 0
         var initialTouchX = 0f
         var initialTouchY = 0f
         var moved = false
 
-        floatingView?.setOnTouchListener { _, event ->
+        floatingView?.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     initialX = params.x
@@ -144,19 +146,26 @@ class FloatingButtonService : Service() {
                     initialTouchX = event.rawX
                     initialTouchY = event.rawY
                     moved = false
+                    // Press feedback
+                    v.alpha = 0.7f
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val dx = (initialTouchX - event.rawX).toInt()
                     val dy = (event.rawY - initialTouchY).toInt()
-                    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) moved = true
-                    params.x = initialX + dx
-                    params.y = initialY + dy
-                    windowManager?.updateViewLayout(floatingView, params)
+                    if (Math.abs(dx) > touchSlop || Math.abs(dy) > touchSlop) {
+                        moved = true
+                    }
+                    if (moved) {
+                        params.x = initialX + dx
+                        params.y = initialY + dy
+                        windowManager?.updateViewLayout(floatingView, params)
+                    }
                     true
                 }
-                MotionEvent.ACTION_UP -> {
-                    if (!moved) {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    v.alpha = 1.0f
+                    if (!moved && event.action == MotionEvent.ACTION_UP) {
                         onFabClicked()
                     }
                     true
@@ -201,27 +210,43 @@ class FloatingButtonService : Service() {
     // ──────────────── firewall toggle ────────────────
 
     private fun onFabClicked() {
-        val enabled = loadFirewallEnabled()
-        if (enabled) {
-            if (!checkBackendReady()) return
-            scope.launch { applyDisableFirewall() }
-        } else {
-            val selectedApps = loadSelectedApps()
-            val firewallMode = FirewallMode.fromName(
-                sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
-            )
-            val targetApps = if (firewallMode == FirewallMode.WHITELIST) {
-                val showSystem = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
-                com.arslan.shizuwall.utils.WhitelistFilter.getPackagesToBlock(this, selectedApps, showSystem)
+        try {
+            val enabled = loadFirewallEnabled()
+            if (enabled) {
+                if (!checkBackendReady()) return
+                scope.launch {
+                    try {
+                        applyDisableFirewall()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@FloatingButtonService, getString(R.string.failed_to_disable_firewall), Toast.LENGTH_SHORT).show()
+                    }
+                }
             } else {
-                selectedApps
+                val selectedApps = loadSelectedApps()
+                val firewallMode = FirewallMode.fromName(
+                    sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
+                )
+                val targetApps = if (firewallMode == FirewallMode.WHITELIST) {
+                    val showSystem = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
+                    com.arslan.shizuwall.utils.WhitelistFilter.getPackagesToBlock(this, selectedApps, showSystem)
+                } else {
+                    selectedApps
+                }
+                if (targetApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
+                    Toast.makeText(this, getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
+                    return
+                }
+                if (!checkBackendReady()) return
+                scope.launch {
+                    try {
+                        applyEnableFirewall(targetApps)
+                    } catch (e: Exception) {
+                        Toast.makeText(this@FloatingButtonService, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
-            if (targetApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
-                Toast.makeText(this, getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
-                return
-            }
-            if (!checkBackendReady()) return
-            scope.launch { applyEnableFirewall(targetApps) }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -270,11 +295,31 @@ class FloatingButtonService : Service() {
     }
 
     private suspend fun applyEnableFirewall(packageNames: List<String>) {
+        val firewallMode = FirewallMode.fromName(
+            sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
+        )
+
+        // For Smart Foreground mode, try to auto-enable accessibility service
+        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+            if (!ForegroundDetectionService.isServiceEnabled(this@FloatingButtonService)) {
+                withContext(Dispatchers.IO) {
+                    ForegroundDetectionService.enableServiceViaShell(this@FloatingButtonService)
+                }
+            }
+        }
+
         withContext(Dispatchers.IO) {
             val successful = enableFirewall(packageNames)
-            if (successful.isNotEmpty()) {
+            // In dynamic-selection modes (Adaptive, Smart Foreground, Whitelist),
+            // the firewall is valid even if no individual apps were blocked yet —
+            // chain3 was turned on and that's enough.
+            if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                 saveFirewallEnabled(true)
                 saveActivePackages(successful.toSet())
+            } else {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@FloatingButtonService, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()
+                }
             }
         }
         updateFabAppearance()
@@ -312,11 +357,32 @@ class FloatingButtonService : Service() {
     private fun disableFirewall(packageNames: List<String>): Boolean {
         var all = true
         val selfPkg = packageName
-        for (pkg in packageNames) {
+        val toUnblock = packageNames.toMutableList()
+
+        // In Smart Foreground mode, also unblock the current foreground app
+        val firewallMode = FirewallMode.fromName(
+            sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
+        )
+        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+            val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
+            if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
+                toUnblock.add(currentFgApp)
+            }
+        }
+
+        for (pkg in toUnblock) {
             if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
             if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")) all = false
         }
         if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled false")) all = false
+
+        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+            sharedPreferences.edit()
+                .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
+                .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+                .apply()
+        }
+
         return all
     }
 
