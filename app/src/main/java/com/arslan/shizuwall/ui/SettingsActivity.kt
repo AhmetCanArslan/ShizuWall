@@ -672,8 +672,8 @@ class SettingsActivity : BaseActivity() {
         try {
             val parser = resources.getXml(R.xml.locales_config)
             var eventType = parser.eventType
-            while (eventType != android.util.XmlPullParser.END_DOCUMENT) {
-                if (eventType == android.util.XmlPullParser.START_TAG && parser.name == "locale") {
+            while (eventType != org.xmlpull.v1.XmlPullParser.END_DOCUMENT) {
+                if (eventType == org.xmlpull.v1.XmlPullParser.START_TAG && parser.name == "locale") {
                     val tag = parser.getAttributeValue(
                         "http://schemas.android.com/apk/res/android", "name"
                     )
