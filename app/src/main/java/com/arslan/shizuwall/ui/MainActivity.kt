@@ -2373,7 +2373,8 @@ class MainActivity : BaseActivity() {
             com.arslan.shizuwall.daemon.PersistentDaemonManager(this).readRecentDaemonLogs(20)
                 ?.lineSequence()
                 ?.filter { it.isNotBlank() }
-                ?.takeLast(8)
+                ?.toList()
+                ?.takeLast(2)
                 ?.joinToString("\n")
                 ?.trim()
                 ?.ifBlank { null }
