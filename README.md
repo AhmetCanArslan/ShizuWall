@@ -30,7 +30,7 @@
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/image?repos=AhmetCanArslan/ShizuWall&type=date&legend=top-left)](https://www.star-history.com/?repos=AhmetCanArslan%2FShizuWall&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/image?repos=AhmetCanArslan/ShizuWall&type=date&legend=top-left)](https://www.star-history.com/?repos=AhmetCanArslan%2FShizuWall&type=date&theme=dark)legend=top-left)
 
 
 ## Why ShizuWall
