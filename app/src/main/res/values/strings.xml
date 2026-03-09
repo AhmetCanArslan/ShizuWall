@@ -283,7 +283,7 @@
     <string name="firewall_mode_whitelist">Whitelist</string>
     <string name="firewall_mode_whitelist_description">Block all apps by default, allow selected apps</string>
     <string name="whitelist_info_system_apps_warning">When "Show system apps" is disabled, system apps will not be firewalled in Whitelist mode.\n\nIf you have enabled "Show system apps" and are using Whitelist mode, this combination has not been fully tested. Use with caution.</string>
-    <string name="firewall_mode_smart_foreground">Smart Foreground (Beta)</string>
+    <string name="firewall_mode_smart_foreground">Smart Foreground</string>
     <string name="firewall_mode_smart_foreground_description">Only allow the app currently in foreground</string>
     <string name="smart_foreground_requires_accessibility">Requires Accessibility permission</string>
     <string name="firewall_mode_change_disabled">Cannot change firewall mode while firewall is enabled. Please disable the firewall first.</string>
