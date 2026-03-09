@@ -57,12 +57,10 @@
     <string name="grant_permission">Povolit oprávnění</string>
     <string name="favorites_title">Oblíbené</string>
     <string name="favorites_message">Dlouhým stisknutím aplikace ji přidáte do oblíbených pro rychlý přístup.</string>
-    <string name="app_visibility_title">Inteligentní filtrování aplikací</string>
-    <string name="app_visibility_message">ShizuWall automaticky filtruje aplikace, které nemají povolení k přístupu na internet. Díky tomu zůstává váš seznam přehledný a zaměřený na aplikace, které skutečně vyžadují kontrolu brány firewall.</string>
     <string name="shizuku_required_title">Shizuku režim</string>
     <string name="shizuku_required_message">Vývojář nenese odpovědnost za žádné negativní důsledky. Před pokračováním nainstalujte a aktivujte Shizuku.</string>
     <string name="onboarding_mode_selection_title">Zvolte Pracovní režim</string>
-    <string name="onboarding_mode_selection_message">ShizuWall může pracovat ve dvou režimech. Pro většinu uživatelů se doporučuje Shizuku. LADB je alternativa, která používá lokální ADB daemon. Pracovní režim lze změnit později.</string>
+    <string name="onboarding_mode_selection_message">ShizuWall může pracovat ve dvou režimech. Pro většinu uživatelů se doporučuje Shizuku. Pokud vaše zařízení nepodporuje Shizuku, můžete zvolit režim LADB. LADB je alternativa, která používá lokální ADB daemon. Pracovní režim lze změnit později.</string>
     <string name="use_shizuku">Použít Shizuku</string>
     <string name="use_ladb">Použít LADB</string>
     <string name="ladb_onboarding_message">Režim LADB umožňuje ShizuWall pracovat pomocí lokálního daemona ADB. Na stránce Nastavení LADB v nastaveních budete muset jednou spárovat přes Bezdrátové ladění. Vývojář nenese odpovědnost za žádné negativní důsledky.</string>
@@ -106,7 +104,7 @@
     <string name="display_section">Displej</string>
     <string name="show_system_apps_description">Zahrnout systémové aplikace do seznamu</string>
     <string name="move_selected_top">Přesunout vybrané aplikace nahoru</string>
-    <string name="move_selected_top_description">Zobrazit vybrané aplikace na začátku</string>
+    <string name="move_selected_top_description">Zobrazit vybrané aplikace na začátek</string>
     <string name="use_dynamic_color">Použít dynamické barvy</string>
     <string name="use_dynamic_color_description">Použít barvy tapety na motiv aplikace</string>
     <string name="firewall_section">Firewall</string>
@@ -153,7 +151,7 @@
     <string name="loading_apps">Načítání aplikací</string>
 
     <string name="shizuku_setup_guide">Shizuku příručka nastavení</string>
-    <string name="shizuku_step_1">Nejprve musíte povolit možnosti pro vývojáře. Poté otevřete aplikaci Shizuku a stiskněte tlačítko Spárování.</string>
+    <string name="shizuku_step_1">Nejprve musíte povolit možnosti pro vývojáře. Poté otevřete aplikaci Shizuku a stiskněte tlačítko Párování.</string>
     <string name="shizuku_step_2">Stiskněte tlačítko možností vývojáře, které vás tam přesměruje.</string>
     <string name="shizuku_step_3">Zde vyhledejte možnost Bezdrátové ladění a stiskněte toto tlačítko. Otevře se stránka bezdrátového ladění.</string>
     <string name="shizuku_step_4">Vyberte párované zařízení a zadejte párovací kód.</string>
@@ -161,12 +159,12 @@
     <string name="shizuku_step_6">Po potvrzení párovacího kódu se vraťte zpět do aplikace Shizuku a stiskněte tlačítko Start.</string>
     <string name="shizuku_step_7">Počkejte, až bude služba aktivní.</string>
     <string name="shizuku_step_8">Otevřete ShizuWall a zkuste povolit bránu firewall.</string>
-    <string name="shizuku_step_9">Povolte Shizuku oprávnění, aktivujte firewall. Shizuku by měla být spuštěna, když zapínáte nebo vypínáte firewall. Po zapnutí firewallu zůstane firewall aktivní, i když se Shizuku zastaví, dokud Shizuku znovu nespustíte a ručně nevypnete.</string>
+    <string name="shizuku_step_9">Povolte Shizuku oprávnění, aktivujte firewall. Shizuku by měla být spuštěno, když zapínáte nebo vypínáte firewall. Po zapnutí firewallu zůstane firewall aktivní, i když se Shizuku zastaví, dokud Shizuku znovu nespustíte a ručně nevypnete.</string>
     <string name="shizuku_step_10">Párování je nutné provést pouze jednou. Po restartování zařízení je nutné Shizuku znovu aktivovat. Pro zapnutí a vypnutí firewallu je nutné Shizuku aktivovat. Pokud chcete Shizuku používat bez Wi-Fi (předtím je nutné jej spustit přes Wi-Fi), povolte ladění přes USB, aby Shizuku zůstalo zapnuté až do restartu.</string>
     <string name="shizuku_prompt_title">Zobrazit průvodce nastavením Shizuku?</string>
-    <string name="shizuku_prompt_message">Chcete si nyní prohlédnout prezentaci o nastavení Shizuku? Můžete ji kdykoli otevřít později z nabídky se třemi tečkami v nastavení.</string>
+    <string name="shizuku_prompt_message">Chcete si nyní prohlédnout prezentaci o nastavení Shizuku? Můžete ji kdykoli otevřít později z nabídky pomocí tří teček v nastavení.</string>
     <string name="shizuku_prompt_do_not_show">Znovu nezobrazovat</string>
-    <string name="show_now">Ukázat teď</string>
+    <string name="show_now">Ukázat</string>
     <string name="open_ladb_setup">Otevřít LADB nastavení</string>
     <string name="working_mode_select_ladb_prompt">Nejprve vyberte režim LADB, abyste nakonfigurovali LADB</string>
     <string name="pair">Párovat</string>
@@ -215,7 +213,8 @@
     <string name="sort">Třídit</string>
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
-    <string name="sort_install_time">Newest app first</string>
+    <string name="sort_install_time">Nejdřív nejnovější aplikace</string>
+    <string name="app_filtering_note">Aplikace bez oprávnění k přístupu k internetu se v seznamu nezobrazují.</string>
     <string name="failed_to_update_rules_count">Nepodařilo se aktualizovat pravidla pro %d aplikací</string>
     <string name="failed_to_unblock_count">Nepodařilo se odblokovat %d aplikací</string>
     <string name="all_apps_unselected">Všechny aplikace nezaškrtnuté</string>
@@ -294,4 +293,18 @@
     <string name="do_not_show_again">Znovu nezobrazovat</string>
     <string name="select_font">Vybrat písmo</string>
     <string name="apply">Aplikovat</string>
+    <string name="accessibility_permission_title">Vyžadováno oprávnění k přístupnosti</string>
+    <string name="accessibility_permission_message">Tato aplikace vyžaduje rozhraní AccessibilityService API ke sledování změn aplikací na popředí pro režim inteligentního popředí. Rozhraní API bude použito k detekci přepínání mezi aplikacemi a k automatické aktualizaci pravidel brány firewall. Nejsou shromažďovány ani přenášeny žádné osobní údaje.</string>
+    <string name="accept">Přijmout</string>
+    <string name="decline">Odmítnout</string>
+
+        <!-- Floating Firewall Button -->
+    <string name="floating_button">Plovoucí tlačítko firewallu</string>
+    <string name="floating_button_description">Zobrazit přetahovatelné překryvné tlačítko pro přepínání firewallu odkudkoli</string>
+    <string name="floating_button_notification_channel_name">Plovoucí tlačítko (Služba)</string>
+    <string name="floating_button_notification_channel_description">Služba na pozadí pro plovoucí tlačítko firewallu</string>
+    <string name="floating_button_notification_title">Plovoucí tlačítko firewallu</string>
+    <string name="floating_button_notification_text">Klepnutím na plovoucí tlačítko přepnete firewall</string>
+    <string name="floating_button_content_description">Přepnout firewall</string>
+    <string name="overlay_permission_required">Pro plovoucí tlačítko je vyžadováno oprávnění k překrytí</string>
 </resources>

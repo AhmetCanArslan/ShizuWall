@@ -54,12 +54,10 @@
     <string name="grant_permission">Otorgar permiso</string>
     <string name="favorites_title">Favoritos</string>
     <string name="favorites_message">Mantén presionada una app para añadirla a favoritos y acceder rápidamente.</string>
-    <string name="app_visibility_title">Filtro inteligente de apps</string>
-    <string name="app_visibility_message">ShizuWall filtra automáticamente las apps que no tienen permiso de internet. Esto mantiene tu lista limpia y enfocada en las apps que realmente necesitan control del firewall.</string>
     <string name="shizuku_required_title">Modo Shizuku</string>
     <string name="shizuku_required_message">El desarrollador no se hace responsable de consecuencias negativas. Instala y activa Shizuku antes de continuar.</string>
     <string name="onboarding_mode_selection_title">Elige el modo de trabajo</string>
-    <string name="onboarding_mode_selection_message">ShizuWall puede funcionar en dos modos. Se recomienda Shizuku para la mayoría. LADB es una alternativa que usa un demonio ADB local. El modo se puede cambiar después.</string>
+    <string name="onboarding_mode_selection_message">ShizuWall puede funcionar en dos modos. Se recomienda Shizuku para la mayoría de los usuarios. Si tu dispositivo no es compatible con Shizuku, puedes elegir el modo LADB. LADB es una alternativa que usa un demonio ADB local. el modo se puede cambiar después.</string>
     <string name="use_shizuku">Usar Shizuku</string>
     <string name="use_ladb">Usar LADB</string>
     <string name="ladb_onboarding_message">LADB permite que ShizuWall funcione usando un demonio ADB local. Deberás vincularlo con Depuración inalámbrica una vez en la página de configuración de LADB en ajustes. El desarrollador no se hace responsable de consecuencias negativas.</string>
@@ -213,6 +211,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">Recientes primero</string>
+    <string name="app_filtering_note">Las aplicaciones sin permiso de acceso a Internet no se muestran en la lista.</string>
     <string name="failed_to_update_rules_count">Error al actualizar reglas para %d apps</string>
     <string name="failed_to_unblock_count">Error al desbloquear %d apps</string>
     <string name="all_apps_unselected">Todas las aplicaciones deseleccionadas</string>
@@ -299,4 +298,12 @@
     <string name="firewall_mode_whitelist_description">Bloquear todas las apps por defecto, permitir apps seleccionadas</string>
     <string name="whitelist_info_system_apps_warning">Cuando "Mostrar apps del sistema" está desactivado, las apps del sistema no serán bloqueadas por el firewall en modo Lista blanca.\n\nSi has activado "Mostrar apps del sistema" y estás usando el modo Lista blanca, esta combinación no ha sido completamente probada. Úsala con precaución.</string>
     <string name="firewall_mode_change_disabled">No se puede cambiar el modo de firewall mientras está activado. Por favor, desactiva el firewall primero.</string>
+    <string name="floating_button">Botón flotante de firewall</string>
+    <string name="floating_button_description">Mostrar un botón superpuesto arrastrable para activar el firewall desde cualquier lugar</string>
+    <string name="floating_button_notification_channel_name">Botón flotante (Servicio)</string>
+    <string name="floating_button_notification_channel_description">Servicio en segundo plano para el botón de firewall flotante</string>
+    <string name="floating_button_notification_title">Botón flotante de firewall</string>
+    <string name="floating_button_notification_text">Toque el botón flotante para activar el firewall</string>
+    <string name="floating_button_content_description">Activar firewall</string>
+    <string name="overlay_permission_required">Se requiere permiso de superposición para el botón flotante</string>
 </resources>

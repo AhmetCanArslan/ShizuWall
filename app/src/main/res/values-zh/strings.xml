@@ -55,12 +55,10 @@
     <string name="grant_permission">授予权限</string>
     <string name="favorites_title">收藏夹</string>
     <string name="favorites_message">长按应用以将其添加到收藏夹以快速访问。</string>
-    <string name="app_visibility_title">智能应用过滤</string>
-    <string name="app_visibility_message">ShizuWall 自动过滤掉没有网络权限的应用。这可以保持列表整洁，并专注于真正需要防火墙控制的应用。</string>
     <string name="shizuku_required_title">Shizuku 模式</string>
     <string name="shizuku_required_message">开发者不对任何负面后果负责。请在继续之前安装并激活 Shizuku。</string>
     <string name="onboarding_mode_selection_title">选择工作模式</string>
-    <string name="onboarding_mode_selection_message">ShizuWall 可以工作在两种模式下。Shizuku 推荐给大多数用户。LADB 是一个使用本地 ADB 守护进程的替代方案。工作模式稍后可以更改。</string>
+    <string name="onboarding_mode_selection_message">ShizuWall 可以工作在两种模式下。Shizuku 推荐给大多数用户。如果您的设备不支持 Shizuku，您可以选择 LADB 模式。LADB 是一个使用本地 ADB 守护进程的替代方案。工作模式稍后可以更改。</string>
     <string name="use_shizuku">使用 Shizuku</string>
     <string name="use_ladb">使用 LADB</string>
     <string name="ladb_onboarding_message">LADB 模式允许 ShizuWall 通过使用本地 ADB 守护进程来工作。您需要在设置中的 LADB 设置页面上与无线调试配对一次。开发者不对任何负面后果负责。</string>
@@ -211,6 +209,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">最新安装优先</string>
+    <string name="app_filtering_note">未获得互联网访问权限的应用不会显示在列表中。</string>
     <string name="failed_to_update_rules_count">无法更新 %d 个应用的规则</string>
     <string name="failed_to_unblock_count">无法取消阻止 %d 个应用</string>
     <string name="all_apps_unselected">已取消选择所有应用</string>
@@ -297,4 +296,12 @@
     <string name="firewall_mode_whitelist_description">默认阻止所有应用，允许选定的应用</string>
     <string name="whitelist_info_system_apps_warning">当"显示系统应用"被禁用时，系统应用将不会在白名单模式下被防火墙阻止。\n\n如果您已启用"显示系统应用"并使用白名单模式，此组合尚未完全测试。请谨慎使用。</string>
     <string name="firewall_mode_change_disabled">启用防火墙时无法更改防火墙模式。请先禁用防火墙。</string>
+    <string name="floating_button">悬浮防火墙按钮</string>
+    <string name="floating_button_description">显示一个可拖动的悬浮按钮，随时随地切换防火墙</string>
+    <string name="floating_button_notification_channel_name">悬浮按钮 (服务)</string>
+    <string name="floating_button_notification_channel_description">悬浮防火墙按钮的后台服务</string>
+    <string name="floating_button_notification_title">悬浮防火墙按钮</string>
+    <string name="floating_button_notification_text">点击悬浮按钮切换防火墙</string>
+    <string name="floating_button_content_description">切换防火墙</string>
+    <string name="overlay_permission_required">悬浮按钮需要悬浮窗权限</string>
 </resources>

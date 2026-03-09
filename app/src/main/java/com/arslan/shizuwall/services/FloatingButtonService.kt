@@ -344,6 +344,14 @@ class FloatingButtonService : Service() {
     private fun enableFirewall(packageNames: List<String>): List<String> {
         val successful = mutableListOf<String>()
         if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled true")) return successful
+
+        val firewallMode = FirewallMode.fromName(
+            sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
+        )
+        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+            return successful
+        }
+
         val selfPkg = packageName
         for (pkg in packageNames) {
             if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue

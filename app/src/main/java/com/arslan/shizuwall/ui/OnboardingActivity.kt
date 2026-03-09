@@ -5,9 +5,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import com.arslan.shizuwall.ui.BaseActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.viewpager2.widget.ViewPager2
 import android.content.res.Configuration
 import com.arslan.shizuwall.R
@@ -21,7 +24,14 @@ class OnboardingActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_onboarding)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.onboarding_root)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         viewPager = findViewById(R.id.viewPager)
 
@@ -58,16 +68,6 @@ class OnboardingActivity : BaseActivity() {
                 buttonText = getString(R.string.next),
                 onButtonClick = { goToNextPage() },
                 imageResId = R.drawable.ic_favorite
-            )
-        )
-
-        pages.add(
-            OnboardingPage(
-                title = getString(R.string.app_visibility_title),
-                message = getString(R.string.app_visibility_message),
-                buttonText = getString(R.string.next),
-                onButtonClick = { goToNextPage() },
-                imageResId = R.drawable.ic_sort
             )
         )
 

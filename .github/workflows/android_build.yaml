@@ -5,7 +5,9 @@ name: Android CI - Nightly Build
 on:
   # Triggers the workflow on push events but only for the "main" branch
   push:
-    branches: [ main ] # Change this if your main branch is "master"
+    branches:
+     - main
+     - root-implement 
   
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:

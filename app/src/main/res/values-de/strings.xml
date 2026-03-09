@@ -15,7 +15,9 @@
     <string name="enable_firewall">Firewall</string>
     <string name="font_default">Standard</string>
     <string name="font_ndot">Ndot</string>
-    <string name="select_all">Alle auswählen</string>    <string name="cat_favorites">Favoriten</string>    <string name="made_by">Mit ❤️ gemacht von Ahmet Can Arslan</string>
+    <string name="select_all">Alle auswählen</string>
+    <string name="cat_favorites">Favoriten</string>
+    <string name="made_by">Mit ❤️ gemacht von Ahmet Can Arslan</string>
     <string name="reset_app_menu">App zurücksetzen</string>
     <string name="theme_changed_title">Theme geändert</string>
     <string name="theme_changed_message">Das Theme wurde aktualisiert. Bitte starten Sie die App neu, um die Änderungen anzuwenden.</string>
@@ -53,12 +55,10 @@
     <string name="grant_permission">Berechtigung erteilen</string>
     <string name="favorites_title">Favoriten</string>
     <string name="favorites_message">Drücken Sie lange auf eine App, um sie zu Ihren Favoriten für schnellen Zugriff hinzuzufügen.</string>
-    <string name="app_visibility_title">Intelligente App-Filterung</string>
-    <string name="app_visibility_message">ShizuWall filtert automatisch Apps heraus, die keine Internetberechtigung haben. Dies hält Ihre Liste sauber und konzentriert sich auf Apps, die tatsächlich eine Firewall-Steuerung benötigen.</string>
     <string name="shizuku_required_title">Shizuku-Modus</string>
     <string name="shizuku_required_message">Der Entwickler ist nicht verantwortlich für negative Konsequenzen. Bitte installieren und aktivieren Sie Shizuku, bevor Sie fortfahren.</string>
     <string name="onboarding_mode_selection_title">Arbeitsmodus wählen</string>
-    <string name="onboarding_mode_selection_message">ShizuWall kann in zwei Modi arbeiten. Shizuku wird für die meisten Benutzer empfohlen. LADB ist eine Alternative, die einen lokalen ADB-Daemon verwendet. Der Arbeitsmodus kann später geändert werden.</string>
+    <string name="onboarding_mode_selection_message">ShizuWall kann in zwei Modi arbeiten. Shizuku wird für die meisten Benutzer empfohlen. Wenn Ihr Gerät Shizuku nicht unterstützt, können Sie den LADB-Modus wählen. LADB ist eine Alternative, die einen lokalen ADB-Daemon verwendet. Der Arbeitsmodus kann später geändert werden.</string>
     <string name="use_shizuku">Shizuku verwenden</string>
     <string name="use_ladb">LADB verwenden</string>
     <string name="ladb_onboarding_message">Der LADB-Modus ermöglicht es ShizuWall, einen lokalen ADB-Daemon zu verwenden. Sie müssen einmalig eine Kopplung mit Wireless-Debugging auf der LADB-Setup-Seite in den Einstellungen durchführen. Der Entwickler ist nicht verantwortlich für negative Konsequenzen.</string>
@@ -209,6 +209,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">Neueste zuerst</string>
+    <string name="app_filtering_note">Anwendungen ohne Internetzugriffsberechtigung werden in der Liste nicht angezeigt.</string>
     <string name="failed_to_update_rules_count">Regeln für %d Apps konnten nicht aktualisiert werden</string>
     <string name="failed_to_unblock_count">%d Apps konnten nicht entsperrt werden</string>
     <string name="all_apps_unselected">Alle Apps abgewählt</string>
@@ -295,4 +296,12 @@
     <string name="firewall_mode_whitelist_description">Alle Apps standardmäßig blockieren, ausgewählte Apps erlauben</string>
     <string name="whitelist_info_system_apps_warning">Wenn "System-Apps anzeigen" deaktiviert ist, werden System-Apps im Whitelist-Modus nicht durch die Firewall geschützt.\n\nWenn Sie "System-Apps anzeigen" aktiviert haben und den Whitelist-Modus verwenden, wurde diese Kombination nicht vollständig getestet. Verwenden Sie sie mit Vorsicht.</string>
     <string name="firewall_mode_change_disabled">Firewall-Modus kann nicht geändert werden, während die Firewall aktiviert ist. Bitte deaktivieren Sie zuerst die Firewall.</string>
+    <string name="floating_button">Schwebende Firewall-Schaltfläche</string>
+    <string name="floating_button_description">Zeigt eine schwebende Schaltfläche an, um die Firewall von überall aus zu schalten</string>
+    <string name="floating_button_notification_channel_name">Schwebende Schaltfläche (Dienst)</string>
+    <string name="floating_button_notification_channel_description">Hintergrunddienst für die schwebende Firewall-Schaltfläche</string>
+    <string name="floating_button_notification_title">Schwebende Firewall-Schaltfläche</string>
+    <string name="floating_button_notification_text">Tippen Sie auf die schwebende Schaltfläche, um die Firewall umzuschalten</string>
+    <string name="floating_button_content_description">Firewall umschalten</string>
+    <string name="overlay_permission_required">Überlagerungsberechtigung ist für die schwebende Schaltfläche erforderlich</string>
 </resources>

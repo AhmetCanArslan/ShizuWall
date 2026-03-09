@@ -54,12 +54,10 @@
     <string name="grant_permission">Предоставить разрешение</string>
     <string name="favorites_title">Избранное</string>
     <string name="favorites_message">Удерживайте приложение, чтобы добавить его в избранное для быстрого доступа.</string>
-    <string name="app_visibility_title">Умная фильтрация приложений</string>
-    <string name="app_visibility_message">ShizuWall автоматически отфильтровывает приложения, у которых нет разрешения на доступ к Интернету. Это позволяет поддерживать список чистым и сфокусированным на приложениях, которым действительно нужен контроль брандмауэра.</string>
     <string name="shizuku_required_title">Режим Shizuku</string>
     <string name="shizuku_required_message">Разработчик не несет ответственности за любые негативные последствия. Пожалуйста, установите и активируйте Shizuku перед продолжением.</string>
     <string name="onboarding_mode_selection_title">Выберите рабочий режим</string>
-    <string name="onboarding_mode_selection_message">ShizuWall может работать в двух режимах. Shizuku рекомендуется для большинства пользователей. LADB — это альтернатива, использующая локальный демон ADB. Рабочий режим можно изменить позже</string>
+    <string name="onboarding_mode_selection_message">ShizuWall может работать в двух режимах. Shizuku рекомендуется для большинства пользователей. Если ваше устройство не поддерживает Shizuku, вы можете выбрать режим LADB. LADB — это альтернатива, использующая локальный демон ADB. Рабочий режим можно изменить позже</string>
     <string name="use_shizuku">Использовать Shizuku</string>
     <string name="use_ladb">Использовать LADB</string>
     <string name="ladb_onboarding_message">Режим LADB позволяет ShizuWall работать с использованием локального демона ADB. Вам потребуется один раз выполнить сопряжение с Беспроводной отладкой на странице настройки LADB в настройках. Разработчик не несет ответственности за любые негативные последствия.</string>
@@ -213,6 +211,7 @@
     <string name="sort_name_asc">А-Я</string>
     <string name="sort_name_desc">Я-А</string>
     <string name="sort_install_time">Сначала новые приложения</string>
+        <string name="app_filtering_note">Приложения без разрешения на доступ к Интернету не отображаются в списке.</string>
     <string name="failed_to_update_rules_count">Не удалось обновить правила для %d приложений</string>
     <string name="failed_to_unblock_count">Не удалось разблокировать %d приложений</string>
     <string name="all_apps_unselected">Выделение со всех приложений снято</string>
@@ -299,4 +298,12 @@
     <string name="firewall_mode_whitelist_description">Блокировать все приложения по умолчанию, разрешить выбранные приложения</string>
     <string name="whitelist_info_system_apps_warning">Когда "Показать системные приложения" отключено, системные приложения не будут заблокированы брандмауэром в режиме Белого списка.\n\nЕсли вы включили "Показать системные приложения" и используете режим Белого списка, эта комбинация не была полностью протестирована. Используйте с осторожностью.</string>
     <string name="firewall_mode_change_disabled">Невозможно изменить режим брандмауэра, пока он включен. Пожалуйста, сначала отключите брандмауэр.</string>
+    <string name="floating_button">Плавающая кнопка брандмауэра</string>
+    <string name="floating_button_description">Показывать перетаскиваемую наложенную кнопку для включения брандмауэра из любого места</string>
+    <string name="floating_button_notification_channel_name">Плавающая кнопка (Служба)</string>
+    <string name="floating_button_notification_channel_description">Фоновая служба для плавающей кнопки брандмауэра</string>
+    <string name="floating_button_notification_title">Плавающая кнопка брандмауэра</string>
+    <string name="floating_button_notification_text">Нажмите на плавающую кнопку, чтобы переключить брандмауэр</string>
+    <string name="floating_button_content_description">Переключить брандмауэр</string>
+    <string name="overlay_permission_required">Для плавающей кнопки требуется разрешение на отображение поверх других окон</string>
 </resources>

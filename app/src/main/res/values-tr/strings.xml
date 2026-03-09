@@ -56,12 +56,10 @@
     <string name="grant_permission">İzin Ver</string>
     <string name="favorites_title">Favoriler</string>
     <string name="favorites_message">Hızlı erişim için bir uygulamaya uzun basın ve favorilerinize ekleyin.</string>
-    <string name="app_visibility_title">Akıllı Uygulama Filtreleme</string>
-    <string name="app_visibility_message">ShizuWall, internet izni olmayan uygulamaları otomatik olarak filtreler. Bu, listenizi temiz tutar ve gerçekten güvenlik duvarı kontrolüne ihtiyaç duyan uygulamalara odaklanmanızı sağlar.</string>
     <string name="shizuku_required_title">Shizuku Modu</string>
     <string name="shizuku_required_message">Geliştirici herhangi bir olumsuz sonuçtan sorumlu değildir. Lütfen devam etmeden önce Shizuku\'yu kurun ve etkinleştirin.</string>
     <string name="onboarding_mode_selection_title">Çalışma Modunu Seçin</string>
-    <string name="onboarding_mode_selection_message">ShizuWall iki modda çalışabilir. Shizuku çoğu kullanıcı için önerilir. LADB, yerel bir ADB daemon\'ı kullanan bir alternatiftir. Çalışma Modu daha sonra değiştirilebilir.</string>
+    <string name="onboarding_mode_selection_message">ShizuWall iki modda çalışabilir. Shizuku çoğu kullanıcı için önerilir. Cihazınız Shizuku\'yu desteklemiyorsa LADB modunu seçebilirsiniz. LADB, yerel bir ADB daemon\'ı kullanan bir alternatiftir. Çalışma Modu daha sonra değiştirilebilir.</string>
     <string name="use_shizuku">Shizuku Kullan</string>
     <string name="use_ladb">LADB Kullan</string>
     <string name="ladb_onboarding_message">LADB modu, ShizuWall\'un yerel bir ADB daemon\'ı kullanarak çalışmasını sağlar. Ayarlarda bulunan LADB Kurulum sayfasında bir kez Kablosuz Hata Ayıklama ile eşleştirmeniz gerekecektir. Geliştirici herhangi bir olumsuz sonuçtan sorumlu değildir.</string>
@@ -210,6 +208,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">En yeni önce</string>
+    <string name="app_filtering_note">İnternet erişim izni bulunmayan uygulamalar listede gösterilmez.</string>
     <string name="daemon_kill">Daemon\'ı Durdur</string>
     <string name="daemon_installing">Yükleniyor...</string>
     <string name="failed_to_update_rules_count">%d uygulama için kurallar güncellenemedi</string>
@@ -297,4 +296,12 @@
     <string name="firewall_mode_whitelist_description">Varsayılan olarak tüm uygulamaları engelle, seçili uygulamalara izin ver</string>
     <string name="whitelist_info_system_apps_warning">"Sistem uygulamalarını göster" devre dışı bırakıldığında, sistem uygulamaları Beyaz Liste modunda güvenlik duvarı tarafından engellenmez.\n\n"Sistem uygulamalarını göster" seçeneğini etkinleştirdiyseniz ve Beyaz Liste modunu kullanıyorsanız, bu kombinasyon tam olarak test edilmemiştir. Dikkatli kullanın.</string>
     <string name="firewall_mode_change_disabled">Güvenlik duvarı etkinleştirilirken modu değiştiremezsiniz. Lütfen önce güvenlik duvarını devre dışı bırakın.</string>
+    <string name="floating_button">Yüzen Güvenlik Duvarı Butonu</string>
+    <string name="floating_button_description">Güvenlik duvarını her yerden değiştirmek için sürüklenebilir bir yer paylaşımı butonu gösterin</string>
+    <string name="floating_button_notification_channel_name">Yüzen Buton (Servis)</string>
+    <string name="floating_button_notification_channel_description">Yüzen güvenlik duvarı butonu için arka plan servisi</string>
+    <string name="floating_button_notification_title">Yüzen Güvenlik Duvarı Butonu</string>
+    <string name="floating_button_notification_text">Güvenlik duvarını değiştirmek için yüzen butona dokunun</string>
+    <string name="floating_button_content_description">Güvenlik duvarını değiştir</string>
+    <string name="overlay_permission_required">Yüzen buton için üzerine yazma izni gereklidir</string>
 </resources>

@@ -54,12 +54,10 @@
     <string name="grant_permission">権限を許可</string>
     <string name="favorites_title">お気に入り</string>
     <string name="favorites_message">アプリを長押しすると、クイックアクセスのためにお気に入りに追加できます。</string>
-    <string name="app_visibility_title">スマートアプリフィルタリング</string>
-    <string name="app_visibility_message">ShizuWall は、インターネット権限を持たないアプリを自動的に除外します。これにより、リストが整理され、ファイアウォール制御が必要なアプリのみに集中できます。</string>
     <string name="shizuku_required_title">Shizuku モード</string>
     <string name="shizuku_required_message">開発者は、発生したいかなる悪影響についても責任を負いません。続行する前に Shizuku をインストールして起動してください。</string>
     <string name="onboarding_mode_selection_title">動作モードの選択</string>
-    <string name="onboarding_mode_selection_message">ShizuWall は 2 つのモードで動作します。ほとんどのユーザーには Shizuku が推奨されます。LADB はローカル ADB デーモンを使用する代替手段です。動作モードは後で変更できます</string>
+    <string name="onboarding_mode_selection_message">ShizuWall は 2 つのモードで動作します。ほとんどのユーザーには Shizuku が推奨されます。デバイスが Shizuku をサポートしていない場合は、LADB モードを選択できます。LADB はローカル ADB デーモンを使用する代替手段です。動作モードは後で変更できます</string>
     <string name="use_shizuku">Shizuku を使用</string>
     <string name="use_ladb">LADB を使用</string>
     <string name="ladb_onboarding_message">LADB モードでは、ローカル ADB デーモンを使用して ShizuWall を動作させることができます。設定内の LADB セットアップページで、一度「ワイヤレスデバッグ」とペアリングする必要があります。開発者は、発生したいかなる悪影響についても責任を負いません。</string>
@@ -213,6 +211,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">新しい順</string>
+    <string name="app_filtering_note">インターネットアクセス権限のないアプリは一覧に表示されません。</string>
     <string name="failed_to_update_rules_count">%d 個のアプリのルールの更新に失敗しました</string>
     <string name="failed_to_unblock_count">%d 個のアプリのブロック解除に失敗しました</string>
     <string name="all_apps_unselected">すべてのアプリの選択が解除されました</string>
@@ -299,4 +298,12 @@
     <string name="firewall_mode_whitelist_description">デフォルトですべてのアプリをブロックし、選択されたアプリを許可</string>
     <string name="whitelist_info_system_apps_warning">"システムアプリを表示"が無効の場合、ホワイトリストモードでシステムアプリはファイアウォールの対象になりません。\n\n"システムアプリを表示"を有効にしてホワイトリストモードを使用している場合、この組み合わせは十分にテストされていません。注意して使用してください。</string>
     <string name="firewall_mode_change_disabled">ファイアウォールが有効になっている間はモードを変更できません。まずファイアウォールを無効にしてください。</string>
+    <string name="floating_button">フローティング・ファイアウォール・ボタン</string>
+    <string name="floating_button_description">どこからでもファイアウォールを切り替えるためのドラッグ可能なオーバーレイボタンを表示します</string>
+    <string name="floating_button_notification_channel_name">フローティングボタン (サービス)</string>
+    <string name="floating_button_notification_channel_description">フローティング・ファイアウォール・ボタンのバックグラウンドサービス</string>
+    <string name="floating_button_notification_title">フローティング・ファイアウォール・ボタン</string>
+    <string name="floating_button_notification_text">フローティングボタンをタップしてファイアウォールを切り替えます</string>
+    <string name="floating_button_content_description">ファイアウォールを切り替え</string>
+    <string name="overlay_permission_required">フローティングボタンにはオーバーレイ権限が必要です</string>
 </resources>

@@ -22,12 +22,11 @@ import com.arslan.shizuwall.shell.ShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -56,6 +55,7 @@ class ForegroundDetectionService : AccessibilityService() {
         private const val DEBOUNCE_MS = 150L
 
         private const val RETRY_DELAY_MS = 300L
+        private const val UNMANAGED_ALLOW_THROTTLE_MS = 2000L
 
         // System packages that should never be managed by Smart Foreground
         private val SYSTEM_PACKAGES = setOf(
@@ -221,6 +221,9 @@ class ForegroundDetectionService : AccessibilityService() {
     private val executorLock = Any()
 
     @Volatile private var dynamicSkipPackages: Set<String> = emptySet()
+    @Volatile private var selectedPackages: Set<String> = emptySet()
+    @Volatile private var lastUnmanagedAllowedPackage: String? = null
+    @Volatile private var lastUnmanagedAllowedAtMs: Long = 0L
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
         when (key) {
@@ -297,6 +300,9 @@ class ForegroundDetectionService : AccessibilityService() {
             MainActivity.KEY_WORKING_MODE -> {
                 synchronized(executorLock) { cachedShellExecutor = null }
             }
+            MainActivity.KEY_SELECTED_APPS -> {
+                selectedPackages = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+            }
         }
     }
 
@@ -325,7 +331,13 @@ class ForegroundDetectionService : AccessibilityService() {
             lastManagedPackage = restoredApp
         }
 
+        selectedPackages = sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+
         dynamicSkipPackages = resolveDynamicSkipPackages()
+
+        serviceScope.launch(Dispatchers.IO) {
+            cleanupStaleBlockedPackages()
+        }
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(prefListener)
 
@@ -338,10 +350,12 @@ class ForegroundDetectionService : AccessibilityService() {
 
         createNotificationChannel()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(NOTIFICATION_ID, buildNotification(null), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
-        } else {
-            startForeground(NOTIFICATION_ID, buildNotification(null))
+        if (cachedFirewallEnabled && cachedFirewallMode == FirewallMode.SMART_FOREGROUND) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(NOTIFICATION_ID, buildNotification(null), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            } else {
+                startForeground(NOTIFICATION_ID, buildNotification(null))
+            }
         }
 
         Log.d(TAG, "Service created (restored=$restoredApp, dynamicSkip=${dynamicSkipPackages.size} pkgs)")
@@ -398,10 +412,13 @@ class ForegroundDetectionService : AccessibilityService() {
         if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND || !cachedFirewallEnabled) return
         if (newPackage == currentForegroundPackage) return
 
-        val isSystem = shouldSkipPackage(newPackage)
+        val isPlatformSkip = shouldAlwaysSkipPackage(newPackage)
+        val isSelected = selectedPackages.contains(newPackage)
+        val shouldManage = isSelected && !isPlatformSkip
 
-        if (isSystem) {
-            // Going to launcher/homescreen: don't manage the new package but block the previous.
+        if (!shouldManage) {
+            // Going to launcher/system or an unselected app: don't manage the new package,
+            // but block the previously managed selected package.
             currentForegroundPackage = newPackage
             val previous = lastManagedPackage
             lastManagedPackage = null
@@ -414,6 +431,12 @@ class ForegroundDetectionService : AccessibilityService() {
                     pendingBlockPackage = null
                     blockPackage(previous)
                 }
+            }
+
+            // If the user switched to an unselected normal app, proactively allow it.
+            // This self-heals stale blocks from past states without bringing it into managed set.
+            if (!isPlatformSkip && !isSelected) {
+                allowUnmanagedPackage(newPackage)
             }
             return
         }
@@ -447,10 +470,19 @@ class ForegroundDetectionService : AccessibilityService() {
     }
 
     private fun shouldSkipPackage(packageName: String): Boolean {
+        if (shouldAlwaysSkipPackage(packageName)) return true
+
+        if (!selectedPackages.contains(packageName)) return true
+        return false
+    }
+
+    private fun shouldAlwaysSkipPackage(packageName: String): Boolean {
         if (packageName == this.packageName) return true
         if (SYSTEM_PACKAGES.contains(packageName)) return true
         if (INPUT_METHOD_PACKAGES.contains(packageName)) return true
         if (dynamicSkipPackages.contains(packageName)) return true
+
+
         if (packageName.contains("launcher", ignoreCase = true)) return true
         if (packageName.startsWith("com.android.") && !packageName.contains("chrome")) return true
         if (packageName.contains("inputmethod", ignoreCase = true) ||
@@ -528,7 +560,7 @@ class ForegroundDetectionService : AccessibilityService() {
                 }
 
                 sharedPreferences.edit()
-                    .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+                    .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, setOf(packageName))
                     .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                     .apply()
 
@@ -541,6 +573,35 @@ class ForegroundDetectionService : AccessibilityService() {
                 })
             } catch (e: Exception) {
                 Log.e(TAG, "Error blocking $packageName", e)
+            }
+        }
+    }
+
+    private suspend fun allowUnmanagedPackage(packageName: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val now = System.currentTimeMillis()
+                if (packageName == lastUnmanagedAllowedPackage &&
+                    now - lastUnmanagedAllowedAtMs < UNMANAGED_ALLOW_THROTTLE_MS
+                ) {
+                    return@withContext
+                }
+
+                val executor = getShellExecutor()
+                val result = execWithRetry(executor, "cmd connectivity set-package-networking-enabled true $packageName")
+                if (result.success || isUidOwnerMapMissingEntry(result)) {
+                    lastUnmanagedAllowedPackage = packageName
+                    lastUnmanagedAllowedAtMs = now
+                    Log.d(TAG, "$packageName -> [unmanaged] allowed")
+                } else {
+                    val err = result.stderr.ifEmpty { result.stdout }
+                    Log.w(TAG, "Failed to allow unmanaged package $packageName: $err")
+                }
+            } catch (e: CancellationException) {
+                // Expected when rapid app switches cancel the in-flight debounce job.
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed unmanaged allow for $packageName", e)
             }
         }
     }
@@ -563,6 +624,39 @@ class ForegroundDetectionService : AccessibilityService() {
         return executor.exec(command)
     }
 
+    private fun isUidOwnerMapMissingEntry(result: com.arslan.shizuwall.shell.ShellResult): Boolean {
+        val details = (result.stderr + "\n" + result.stdout).lowercase()
+        return details.contains("suidownermap does not have entry for uid")
+    }
+
+    private suspend fun cleanupStaleBlockedPackages() {
+        val blocked = sharedPreferences.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
+        if (blocked.isEmpty()) return
+
+        val stale = blocked.filter { !selectedPackages.contains(it) }.toSet()
+        if (stale.isEmpty()) return
+
+        try {
+            val executor = getShellExecutor()
+            val remaining = blocked.toMutableSet()
+            for (pkg in stale) {
+                val result = execWithRetry(executor, "cmd connectivity set-package-networking-enabled true $pkg")
+                if (result.success || isUidOwnerMapMissingEntry(result)) {
+                    remaining.remove(pkg)
+                    Log.d(TAG, "Cleared stale blocked package: $pkg")
+                } else {
+                    val err = result.stderr.ifEmpty { result.stdout }
+                    Log.w(TAG, "Failed to clear stale blocked package $pkg: $err")
+                }
+            }
+            sharedPreferences.edit()
+                .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, remaining)
+                .apply()
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed stale-block cleanup", e)
+        }
+    }
+
     
     private suspend fun ensureChain3Enabled(executor: ShellExecutor) {
         try {
@@ -572,11 +666,15 @@ class ForegroundDetectionService : AccessibilityService() {
                 Log.w(TAG, "chain3 was not enabled — re-enabling")
                 executor.exec("cmd connectivity set-chain3-enabled true")
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d(TAG, "chain3 enable check/set failed (non-fatal)", e)
             // If check not supported, try to re-enable anyway.
             try {
                 executor.exec("cmd connectivity set-chain3-enabled true")
+            } catch (e3: CancellationException) {
+                throw e3
             } catch (e2: Exception) {
                 Log.d(TAG, "chain3 fallback re-enable also failed (non-fatal)", e2)
             }
@@ -590,36 +688,41 @@ class ForegroundDetectionService : AccessibilityService() {
                 val executor = getShellExecutor()
 
                 ensureChain3Enabled(executor)
-
-                coroutineScope {
-                    val allowJob = async {
-                        execWithRetry(executor, "cmd connectivity set-package-networking-enabled true $newPackage")
-                    }
-
-                    val blockJob = if (previousPackage != null &&
-                                       previousPackage.isNotEmpty() &&
-                                       previousPackage != newPackage) {
-                        async {
-                            execWithRetry(executor, "cmd connectivity set-package-networking-enabled false $previousPackage")
-                        }
-                    } else null
-
-                    val allowResult = allowJob.await()
-                    val blockResult = blockJob?.await()
-
-                    val allowOk = allowResult.success
-                    val blockOk = blockResult?.success ?: true
-
-                    if (!allowOk) Log.w(TAG, "Failed to allow $newPackage: ${allowResult.stderr}")
-                    if (!blockOk) Log.w(TAG, "Failed to block $previousPackage: ${blockResult?.stderr}")
-
-                    val activePackages = if (allowOk) setOf(newPackage) else emptySet()
-                    sharedPreferences.edit()
-                        .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, activePackages)
-                        .apply()
-
-                    allowOk && blockOk
+                val allowResult = execWithRetry(executor, "cmd connectivity set-package-networking-enabled true $newPackage")
+                val allowOk = allowResult.success || isUidOwnerMapMissingEntry(allowResult)
+                if (!allowOk) {
+                    val allowErr = allowResult.stderr.ifEmpty { allowResult.stdout }
+                    Log.w(TAG, "Failed to allow $newPackage: $allowErr")
+                    return@withContext false
+                } else if (!allowResult.success && isUidOwnerMapMissingEntry(allowResult)) {
+                    Log.d(TAG, "Allow for $newPackage already effective (uid not present in owner map)")
                 }
+
+                val shouldBlockPrevious = !previousPackage.isNullOrEmpty() && previousPackage != newPackage
+                val blockResult = if (shouldBlockPrevious) {
+                    execWithRetry(executor, "cmd connectivity set-package-networking-enabled false $previousPackage")
+                } else {
+                    null
+                }
+                val blockOk = blockResult?.success ?: true
+
+                if (!blockOk) {
+                    val blockErr = blockResult?.stderr?.ifEmpty { blockResult.stdout } ?: ""
+                    Log.w(TAG, "Failed to block $previousPackage: $blockErr")
+                }
+
+                val activePackages = if (blockOk && shouldBlockPrevious) {
+                    setOf(previousPackage!!)
+                } else {
+                    emptySet()
+                }
+                sharedPreferences.edit()
+                    .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, activePackages)
+                    .apply()
+
+                allowOk && blockOk
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating firewall rules", e)
                 false

@@ -43,4 +43,13 @@
         android:layout_height="wrap_content"
         android:text="@string/show_system_apps" />
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textFilteringNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/app_filtering_note"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:alpha="0.75" />
+
 </LinearLayout>
