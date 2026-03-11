@@ -22,6 +22,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.core.graphics.createBitmap
 import com.arslan.shizuwall.R
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.color.MaterialColors
+import androidx.core.graphics.ColorUtils
 
 class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
     override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
@@ -58,6 +61,7 @@ class AppListAdapter(
     }
 
     inner class AppViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val card: MaterialCardView = itemView as MaterialCardView
         val appIcon: ImageView = itemView.findViewById(R.id.appIcon)
         val appName: TextView = itemView.findViewById(R.id.appName)
         val packageName: TextView = itemView.findViewById(R.id.packageName)
@@ -99,6 +103,16 @@ class AppListAdapter(
             // Avoid triggering listener when recycling views
             checkbox.setOnCheckedChangeListener(null)
             checkbox.isChecked = appInfo.isSelected
+
+            val surfaceColor = MaterialColors.getColor(itemView, com.google.android.material.R.attr.colorSurface)
+            val surfaceVariantColor = MaterialColors.getColor(itemView, com.google.android.material.R.attr.colorSurfaceVariant)
+            val cardBgColor = if (appInfo.isSelected) {
+                val primaryContainer = MaterialColors.getColor(itemView, com.google.android.material.R.attr.colorPrimaryContainer)
+                ColorUtils.blendARGB(surfaceColor, primaryContainer, 0.55f)
+            } else {
+                ColorUtils.blendARGB(surfaceColor, surfaceVariantColor, 0.25f)
+            }
+            card.setCardBackgroundColor(cardBgColor)
 
             if (selectionEnabled) {
                 checkbox.isEnabled = true

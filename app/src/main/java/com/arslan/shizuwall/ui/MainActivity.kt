@@ -117,7 +117,6 @@ class MainActivity : BaseActivity() {
     private lateinit var firewallProgress: android.widget.ProgressBar
     private lateinit var searchView: SearchView
     private lateinit var selectedCountText: TextView
-    private lateinit var selectAllCheckbox: CheckBox
     private lateinit var appListLoadingContainer: View
     private val appList = mutableListOf<AppInfo>()
     private val filteredAppList = mutableListOf<AppInfo>()
@@ -226,7 +225,6 @@ class MainActivity : BaseActivity() {
     }
 
     private var suppressToggleListener = false
-    private var suppressSelectAllListener = false
     private val activeFirewallPackages = mutableSetOf<String>()
     // store the last operation and its console output per package so we can show details dialogs
     private val lastOperationErrorDetails = mutableMapOf<String, String>()
@@ -358,13 +356,13 @@ class MainActivity : BaseActivity() {
         val appTitle: TextView = findViewById(R.id.appTitle)
         appTitle.setOnClickListener { openGithub() }
 
-        val settingsButton: MaterialButton? = findViewById(R.id.settingsButton)
+        val settingsButton: View? = findViewById(R.id.settingsButton)
         settingsButton?.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             settingsLauncher.launch(intent)
         }
 
-        val sortButton: MaterialButton? = findViewById(R.id.sortButton)
+        val sortButton: View? = findViewById(R.id.sortButton)
         sortButton?.setOnClickListener {
             showSortDialog()
         }
@@ -421,7 +419,7 @@ class MainActivity : BaseActivity() {
         setupSelectAllCheckbox()
         setupRecyclerView()
 
-        val scrollTopButton: MaterialButton? = findViewById(R.id.scrollTopButton)
+        val scrollTopButton: View? = findViewById(R.id.scrollTopButton)
         scrollTopButton?.setOnClickListener {
             if (filteredAppList.isNotEmpty()) {
                 recyclerView.smoothScrollToPosition(0)
@@ -906,20 +904,18 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupSelectAllCheckbox() {
-        selectAllCheckbox = findViewById(R.id.selectAllCheckbox)
         selectedCountText = findViewById(R.id.selectedCountText)
-        
-        selectAllCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            if (suppressSelectAllListener) return@setOnCheckedChangeListener
-            if (!selectAllCheckbox.isEnabled) return@setOnCheckedChangeListener
-            
+
+        selectedCountText.setOnClickListener {
+            if (!selectedCountText.isEnabled) return@setOnClickListener
+
+            val allSelected = filteredAppList.all { it.isSelected }
+            val isChecked = !allSelected
+
             if (firewallMode.allowsDynamicSelection() && isFirewallEnabled && !checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
-                suppressSelectAllListener = true
-                selectAllCheckbox.isChecked = !isChecked
-                suppressSelectAllListener = false
-                return@setOnCheckedChangeListener
+                return@setOnClickListener
             }
-            
+
             val changedApps = filteredAppList.filter { it.isSelected != isChecked }
             if (changedApps.isNotEmpty()) {
                 val packagesToUpdate = changedApps.map { it.packageName }
@@ -1007,8 +1003,8 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        selectAllCheckbox.setOnLongClickListener {
-            if (!selectAllCheckbox.isEnabled) return@setOnLongClickListener false
+        selectedCountText.setOnLongClickListener {
+            if (!selectedCountText.isEnabled) return@setOnLongClickListener false
 
             if (appList.any { it.isSelected }) {
                 MaterialAlertDialogBuilder(this@MainActivity)
@@ -1599,22 +1595,16 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateInteractiveViews() {
-        // The select-all checkbox should be disabled when the firewall is enabled and
+        // The select-all badge should be disabled when the firewall is enabled and
         // Adaptive Mode is turned OFF. Otherwise it can be used.
-        if (::selectAllCheckbox.isInitialized) {
-            selectAllCheckbox.isEnabled = !isFirewallEnabled || firewallMode.allowsDynamicSelection()
+        if (::selectedCountText.isInitialized) {
+            selectedCountText.isEnabled = !isFirewallEnabled || firewallMode.allowsDynamicSelection()
+            selectedCountText.alpha = if (selectedCountText.isEnabled) 1.0f else 0.4f
         }
     }
 
     private fun updateSelectAllCheckbox() {
-        if (!::selectAllCheckbox.isInitialized || filteredAppList.isEmpty()) return
-        
-        suppressSelectAllListener = true
-        val allSelected = filteredAppList.all { it.isSelected }
-        val noneSelected = filteredAppList.none { it.isSelected }
-        
-        selectAllCheckbox.isChecked = allSelected
-        suppressSelectAllListener = false
+        // Badge visual is driven by selectedCountText.text; no extra state needed.
     }
 
     @SuppressLint("NotifyDataSetChanged")
