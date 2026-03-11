@@ -15,6 +15,7 @@
     <string name="font_default">Základní</string>
     <string name="font_ndot">Ndot</string>
     <string name="select_all">Vybrat vše</string>
+    <string name="scroll_to_top">Přejít nahoru</string>
     <string name="cat_favorites">Oblíbené</string>
     <string name="made_by">Vytvořil s ❤️ Ahmet Can Arslan</string>
     <string name="ladb_not_supported_fdroid"> (není podporováno ve fdroid verzi)</string>
