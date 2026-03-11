@@ -735,6 +735,13 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="@string/working_mode_ladb" />
+
+                        <RadioButton
+                            android:id="@+id/radioRootMode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/working_mode_root" />
                     </RadioGroup>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -848,6 +855,64 @@
 
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchAutoEnableOnShizukuStart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:thumbIcon="@drawable/check_24px"
+                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Apply Root Rules After Reboot -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardApplyRootRulesAfterReboot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="72dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/adb_24px"
+                        app:tint="?attr/colorPrimary"
+                        android:layout_marginEnd="16dp"
+                        android:contentDescription="@null" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/apply_root_rules_after_reboot"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?android:attr/textColorPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/apply_root_rules_after_reboot_description"
+                            android:textSize="12sp"
+                            android:textColor="?android:attr/textColorSecondary" />
+                    </LinearLayout>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchApplyRootRulesAfterReboot"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:thumbIcon="@drawable/check_24px"

@@ -59,7 +59,10 @@ class NotificationActionReceiver : BroadcastReceiver() {
         val selectedApps = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
         
         if (selectedApps.add(packageName)) {
-            prefs.edit().putStringSet(MainActivity.KEY_SELECTED_APPS, selectedApps).apply()
+            prefs.edit()
+                .putStringSet(MainActivity.KEY_SELECTED_APPS, selectedApps)
+                .putInt(MainActivity.KEY_SELECTED_COUNT, selectedApps.size)
+                .apply()
             if (showToast) {
                 Toast.makeText(context, context.getString(R.string.added_to_selected_list, packageName), Toast.LENGTH_SHORT).show()
             }

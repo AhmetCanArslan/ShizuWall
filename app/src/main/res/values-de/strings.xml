@@ -266,7 +266,7 @@
     <string name="firewall_mode_default_description">Traditionelle Firewall - ausgewählte Apps blockieren</string>
     <string name="firewall_mode_adaptive">Adaptiv</string>
     <string name="firewall_mode_adaptive_description">Regeln sofort anwenden. Firewall bleibt an.</string>
-    <string name="firewall_mode_smart_foreground">Smart Vordergrund (Beta)</string>
+    <string name="firewall_mode_smart_foreground">Smart Vordergrund</string>
     <string name="firewall_mode_smart_foreground_description">Nur die aktuell im Vordergrund laufende App zulassen</string>
     <string name="smart_foreground_requires_accessibility">Erfordert Barrierefreiheits-Berechtigung</string>
     <string name="smart_foreground_service_description">Überwacht die Vordergrund-App zur Verwaltung der Firewall-Regeln</string>

@@ -3,6 +3,8 @@ package com.arslan.shizuwall.ui
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.app.ActivityManager
+import android.app.NotificationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -26,16 +28,22 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.graphics.Typeface
 import android.os.Build
+import java.io.File
 import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.FirewallMode
+import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.ladb.LadbManager
+import com.arslan.shizuwall.shell.RootShellExecutor
+import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.ForegroundDetectionService
+import com.arslan.shizuwall.services.FloatingButtonService
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONArray
@@ -43,6 +51,11 @@ import org.json.JSONObject
 import rikka.shizuku.Shizuku
 
 class SettingsActivity : BaseActivity() {
+
+    companion object {
+        private const val EXPORT_SCHEMA = "shizuwall.preferences"
+        private const val EXPORT_VERSION = 3
+    }
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var prefs: SharedPreferences
@@ -64,6 +77,8 @@ class SettingsActivity : BaseActivity() {
     private lateinit var switchUseDynamicColor: SwitchCompat
     private lateinit var switchAutoEnableOnShizukuStart: SwitchCompat
     private lateinit var cardAutoEnableOnShizukuStart: com.google.android.material.card.MaterialCardView
+    private lateinit var switchApplyRootRulesAfterReboot: SwitchCompat
+    private lateinit var cardApplyRootRulesAfterReboot: com.google.android.material.card.MaterialCardView
     private lateinit var switchAppMonitor: SwitchCompat
     private lateinit var switchFloatingButton: SwitchCompat
 
@@ -72,10 +87,13 @@ class SettingsActivity : BaseActivity() {
     private lateinit var radioGroupWorkingMode: RadioGroup
     private lateinit var radioShizukuMode: RadioButton
     private lateinit var radioLadbMode: RadioButton
+    private lateinit var radioRootMode: RadioButton
     private lateinit var cardSetLadb: com.google.android.material.card.MaterialCardView
     private lateinit var layoutSetLadb: LinearLayout
     private lateinit var cardSkipConfirm: com.google.android.material.card.MaterialCardView
     private var autoEnablePreviousState: Boolean = false  // Store previous state before disabling
+    private var rootReapplyPreviousState: Boolean = false
+    private var suppressWorkingModeListener = false
     
     // Firewall Mode Selector
     private lateinit var radioGroupFirewallMode: RadioGroup
@@ -198,6 +216,7 @@ class SettingsActivity : BaseActivity() {
         radioGroupWorkingMode = findViewById(R.id.radioGroupWorkingMode)
         radioShizukuMode = findViewById(R.id.radioShizukuMode)
         radioLadbMode = findViewById(R.id.radioLadbMode)
+        radioRootMode = findViewById(R.id.radioRootMode)
         cardSetLadb = findViewById(R.id.cardSetLadb)
         layoutSetLadb = findViewById(R.id.layoutSetLadb)
         switchAppMonitor = findViewById(R.id.switchAppMonitor)
@@ -205,6 +224,8 @@ class SettingsActivity : BaseActivity() {
         // Auto-enable switch (new)
         switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
         cardAutoEnableOnShizukuStart = findViewById(R.id.cardAutoEnableOnShizukuStart)
+        switchApplyRootRulesAfterReboot = findViewById(R.id.switchApplyRootRulesAfterReboot)
+        cardApplyRootRulesAfterReboot = findViewById(R.id.cardApplyRootRulesAfterReboot)
         
         // Firewall Mode Selector
         radioGroupFirewallMode = findViewById(R.id.radioGroupFirewallMode)
@@ -251,15 +272,18 @@ class SettingsActivity : BaseActivity() {
         updateCurrentLanguageDisplay()
         switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
         switchAutoEnableOnShizukuStart.isChecked = prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
+        switchApplyRootRulesAfterReboot.isChecked = prefs.getBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, false)
         switchAppMonitor.isChecked = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
         switchFloatingButton.isChecked = prefs.getBoolean(
             com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false
         )
 
         // Load working mode
-        val workingModeName = prefs.getString(MainActivity.KEY_WORKING_MODE, com.arslan.shizuwall.WorkingMode.SHIZUKU.name)
-        when (com.arslan.shizuwall.WorkingMode.fromName(workingModeName)) {
-            com.arslan.shizuwall.WorkingMode.LADB -> radioGroupWorkingMode.check(R.id.radioLadbMode)
+        val workingModeName = prefs.getString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name)
+        val workingMode = WorkingMode.fromName(workingModeName)
+        when (workingMode) {
+            WorkingMode.LADB -> radioGroupWorkingMode.check(R.id.radioLadbMode)
+            WorkingMode.ROOT -> radioGroupWorkingMode.check(R.id.radioRootMode)
             else -> radioGroupWorkingMode.check(R.id.radioShizukuMode)
         }
 
@@ -272,16 +296,11 @@ class SettingsActivity : BaseActivity() {
             }
             if (radioLadbMode.isChecked) {
                 radioGroupWorkingMode.check(R.id.radioShizukuMode)
-                prefs.edit().putString(MainActivity.KEY_WORKING_MODE, com.arslan.shizuwall.WorkingMode.SHIZUKU.name).apply()
+                prefs.edit().putString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name).apply()
             }
         }
-        // Show/hide LADB card if not selected
-        val ladbSelected = radioLadbMode.isChecked
-        cardSetLadb.visibility = if (ladbSelected) View.VISIBLE else View.GONE
-        
-        // Hide auto-enable firewall card when LADB mode is selected
-        cardAutoEnableOnShizukuStart.visibility = if (ladbSelected) View.GONE else View.VISIBLE
-        switchAutoEnableOnShizukuStart.isEnabled = !ladbSelected
+
+        updateWorkingModeDependentUi(workingMode, restoreAutoEnable = false)
     }
     
     /**
@@ -470,6 +489,11 @@ class SettingsActivity : BaseActivity() {
             setResult(RESULT_OK)
         }
 
+        switchApplyRootRulesAfterReboot.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, isChecked).apply()
+            setResult(RESULT_OK)
+        }
+
         switchAppMonitor.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
@@ -490,31 +514,33 @@ class SettingsActivity : BaseActivity() {
         }
 
         radioGroupWorkingMode.setOnCheckedChangeListener { _, checkedId ->
-            val mode = if (checkedId == R.id.radioLadbMode) com.arslan.shizuwall.WorkingMode.LADB else com.arslan.shizuwall.WorkingMode.SHIZUKU
+            if (suppressWorkingModeListener) return@setOnCheckedChangeListener
+
+            val currentMode = WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name))
+            val mode = when (checkedId) {
+                R.id.radioLadbMode -> WorkingMode.LADB
+                R.id.radioRootMode -> WorkingMode.ROOT
+                else -> WorkingMode.SHIZUKU
+            }
+            if (mode == currentMode) return@setOnCheckedChangeListener
+
+            if (mode == WorkingMode.ROOT && !RootShellExecutor.hasRootAccess()) {
+                showRootNotFoundDialog()
+                suppressWorkingModeListener = true
+                when (currentMode) {
+                    WorkingMode.LADB -> radioGroupWorkingMode.check(R.id.radioLadbMode)
+                    WorkingMode.ROOT -> radioGroupWorkingMode.check(R.id.radioRootMode)
+                    else -> radioGroupWorkingMode.check(R.id.radioShizukuMode)
+                }
+                suppressWorkingModeListener = false
+                return@setOnCheckedChangeListener
+            }
+
             prefs.edit().putString(MainActivity.KEY_WORKING_MODE, mode.name).apply()
             setResult(RESULT_OK)
             
             TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
-            // Update UI affordance for LADB setup
-            val isLadb = mode == com.arslan.shizuwall.WorkingMode.LADB
-            cardSetLadb.visibility = if (isLadb) View.VISIBLE else View.GONE
-
-            if (isLadb) {
-                autoEnablePreviousState = switchAutoEnableOnShizukuStart.isChecked
-                cardAutoEnableOnShizukuStart.visibility = View.GONE
-                switchAutoEnableOnShizukuStart.isEnabled = false
-                if (switchAutoEnableOnShizukuStart.isChecked) {
-                    switchAutoEnableOnShizukuStart.isChecked = false
-                    prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false).apply()
-                }
-            } else {
-                cardAutoEnableOnShizukuStart.visibility = View.VISIBLE
-                switchAutoEnableOnShizukuStart.isEnabled = true
-                if (autoEnablePreviousState) {
-                    switchAutoEnableOnShizukuStart.isChecked = true
-                    prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, true).apply()
-                }
-            }
+            updateWorkingModeDependentUi(mode, restoreAutoEnable = true)
         }
 
         layoutSetLadb.setOnClickListener {
@@ -566,6 +592,7 @@ class SettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchSkipErrorDialog)
         makeCardClickableForSwitch(switchKeepErrorAppsSelected)
         makeCardClickableForSwitch(switchAutoEnableOnShizukuStart)
+        makeCardClickableForSwitch(switchApplyRootRulesAfterReboot)
         makeCardClickableForSwitch(switchAppMonitor)
         makeCardClickableForSwitch(switchFloatingButton)
     }
@@ -597,6 +624,49 @@ class SettingsActivity : BaseActivity() {
                 }
             }
             .show()
+    }
+
+    private fun showRootNotFoundDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.working_mode_root)
+            .setMessage(R.string.root_not_found_message)
+            .setPositiveButton(R.string.ok, null)
+            .setCancelable(true)
+            .show()
+    }
+
+    private fun updateWorkingModeDependentUi(mode: WorkingMode, restoreAutoEnable: Boolean) {
+        val isLadb = mode == WorkingMode.LADB
+        val isShizuku = mode == WorkingMode.SHIZUKU
+        val isRoot = mode == WorkingMode.ROOT
+
+        cardSetLadb.visibility = if (isLadb) View.VISIBLE else View.GONE
+        cardAutoEnableOnShizukuStart.visibility = if (isShizuku) View.VISIBLE else View.GONE
+        switchAutoEnableOnShizukuStart.isEnabled = isShizuku
+        cardApplyRootRulesAfterReboot.visibility = if (isRoot) View.VISIBLE else View.GONE
+        switchApplyRootRulesAfterReboot.isEnabled = isRoot
+
+        if (!isShizuku) {
+            autoEnablePreviousState = switchAutoEnableOnShizukuStart.isChecked
+            if (switchAutoEnableOnShizukuStart.isChecked) {
+                switchAutoEnableOnShizukuStart.isChecked = false
+                prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false).apply()
+            }
+        } else if (restoreAutoEnable && autoEnablePreviousState) {
+            switchAutoEnableOnShizukuStart.isChecked = true
+            prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, true).apply()
+        }
+
+        if (!isRoot) {
+            rootReapplyPreviousState = switchApplyRootRulesAfterReboot.isChecked
+            if (switchApplyRootRulesAfterReboot.isChecked) {
+                switchApplyRootRulesAfterReboot.isChecked = false
+                prefs.edit().putBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, false).apply()
+            }
+        } else if (restoreAutoEnable && rootReapplyPreviousState) {
+            switchApplyRootRulesAfterReboot.isChecked = true
+            prefs.edit().putBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, true).apply()
+        }
     }
 
     private fun showAccessibilityPermissionDialog() {
@@ -812,47 +882,30 @@ class SettingsActivity : BaseActivity() {
     private suspend fun exportToUri(uri: Uri) {
         withContext(Dispatchers.IO) {
             try {
-                val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-                val exportJson = JSONObject().apply {
-                    put("version", 2)
-                    put("exported_at", System.currentTimeMillis())
-
-                    // Main data lists
-                    put("selected", JSONArray(prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList<String>()))
-                    put("favorites", JSONArray(prefs.getStringSet(MainActivity.KEY_FAVORITE_APPS, emptySet())?.toList() ?: emptyList<String>()))
-
-                    // All relevant settings
-                    val keys = listOf(
-                        MainActivity.KEY_SHOW_SYSTEM_APPS,
-                        MainActivity.KEY_ADAPTIVE_MODE,
-                        MainActivity.KEY_SKIP_ENABLE_CONFIRM,
-                        MainActivity.KEY_MOVE_SELECTED_TOP,
-                        MainActivity.KEY_SKIP_ERROR_DIALOG,
-                        MainActivity.KEY_KEEP_ERROR_APPS_SELECTED,
-                        MainActivity.KEY_USE_DYNAMIC_COLOR,
-                        MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START,
-                        MainActivity.KEY_APP_MONITOR_ENABLED,
-                        MainActivity.KEY_SKIP_ANDROID11_INFO,
-                        MainActivity.KEY_SELECTED_FONT,
-                        MainActivity.KEY_WORKING_MODE,
-                        MainActivity.KEY_SORT_ORDER,
-                        MainActivity.KEY_SHOW_SETUP_PROMPT
+                val files = JSONObject().apply {
+                    put(
+                        MainActivity.PREF_NAME,
+                        exportSharedPreferences(
+                            MainActivity.PREF_NAME,
+                            setOf(
+                                MainActivity.KEY_FIREWALL_ENABLED,
+                                MainActivity.KEY_ACTIVE_PACKAGES,
+                                MainActivity.KEY_FIREWALL_SAVED_ELAPSED,
+                                MainActivity.KEY_FIREWALL_UPDATE_TS,
+                                MainActivity.KEY_SMART_FOREGROUND_APP
+                            )
+                        )
                     )
+                    put("app_prefs", exportSharedPreferences("app_prefs"))
+                    put(LadbManager.PREFS_NAME, exportSharedPreferences(LadbManager.PREFS_NAME))
+                    put("daemon_prefs", exportSharedPreferences("daemon_prefs"))
+                }
 
-                    for (key in keys) {
-                        if (prefs.contains(key)) {
-                            put(key, prefs.all[key])
-                        }
-                    }
-
-                    // Export LADB config
-                    val ladbPrefs = getSharedPreferences(LadbManager.PREFS_NAME, Context.MODE_PRIVATE)
-                    val ladbJson = JSONObject().apply {
-                        put(LadbManager.KEY_HOST, ladbPrefs.getString(LadbManager.KEY_HOST, null))
-                        // We skip ephemeral ports as they change on every start/reboot
-                        put(LadbManager.KEY_IS_PAIRED, ladbPrefs.getBoolean(LadbManager.KEY_IS_PAIRED, false))
-                    }
-                    put("ladb_config", ladbJson)
+                val exportJson = JSONObject().apply {
+                    put("schema", EXPORT_SCHEMA)
+                    put("version", EXPORT_VERSION)
+                    put("exported_at", System.currentTimeMillis())
+                    put("files", files)
                 }
 
                 contentResolver.openOutputStream(uri)?.use { out ->
@@ -879,83 +932,22 @@ class SettingsActivity : BaseActivity() {
                 } ?: throw IllegalStateException("Unable to open input stream")
 
                 val obj = JSONObject(content)
-                val version = obj.optInt("version", 1)
-                val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-                val editor = prefs.edit()
-
-                // 1. Handle Selected Apps (legacy key "selected")
-                val selectedKey = if (obj.has("selected")) "selected" else MainActivity.KEY_SELECTED_APPS
-                val selectedJson = obj.optJSONArray(selectedKey)
-                if (selectedJson != null) {
-                    val selectedSet = mutableSetOf<String>()
-                    for (i in 0 until selectedJson.length()) {
-                        val v = selectedJson.optString(i, null)
-                        if (!v.isNullOrEmpty()) selectedSet.add(v)
-                    }
-                    val filteredSelectedSet = selectedSet.filterNot { isShizukuPackage(it) }.toSet()
-                    editor.putStringSet(MainActivity.KEY_SELECTED_APPS, filteredSelectedSet)
-                    editor.putInt(MainActivity.KEY_SELECTED_COUNT, filteredSelectedSet.size)
-                }
-
-                // 2. Handle Favorites (legacy key "favorites")
-                val favoritesKey = if (obj.has("favorites")) "favorites" else MainActivity.KEY_FAVORITE_APPS
-                val favoritesJson = obj.optJSONArray(favoritesKey)
-                if (favoritesJson != null) {
-                    val favoritesSet = mutableSetOf<String>()
-                    for (i in 0 until favoritesJson.length()) {
-                        val v = favoritesJson.optString(i, null)
-                        if (!v.isNullOrEmpty()) favoritesSet.add(v)
-                    }
-                    editor.putStringSet(MainActivity.KEY_FAVORITE_APPS, favoritesSet)
-                }
-
-                // 3. Handle All Other Settings
-                val keys = listOf(
-                    MainActivity.KEY_SHOW_SYSTEM_APPS,
-                    MainActivity.KEY_ADAPTIVE_MODE,
-                    MainActivity.KEY_SKIP_ENABLE_CONFIRM,
-                    MainActivity.KEY_MOVE_SELECTED_TOP,
-                    MainActivity.KEY_SKIP_ERROR_DIALOG,
-                    MainActivity.KEY_KEEP_ERROR_APPS_SELECTED,
-                    MainActivity.KEY_USE_DYNAMIC_COLOR,
-                    MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START,
-                    MainActivity.KEY_APP_MONITOR_ENABLED,
-                    MainActivity.KEY_SKIP_ANDROID11_INFO,
-                    MainActivity.KEY_SELECTED_FONT,
-                    MainActivity.KEY_WORKING_MODE,
-                    MainActivity.KEY_SORT_ORDER,
-                    MainActivity.KEY_SHOW_SETUP_PROMPT
-                )
-
-                for (key in keys) {
-                    if (obj.has(key)) {
-                        when (val value = obj.get(key)) {
-                            is Boolean -> editor.putBoolean(key, value)
-                            is String -> editor.putString(key, value)
-                            is Int -> editor.putInt(key, value)
-                            is Long -> editor.putLong(key, value)
+                if (obj.optString("schema") == EXPORT_SCHEMA && obj.has("files")) {
+                    val version = obj.optInt("version", 1)
+                    if (version <= EXPORT_VERSION) {
+                        if (!importStructuredBackup(obj)) {
+                            android.util.Log.w("SettingsActivity", "Structured import completed with warnings")
                         }
-                    } else if (version == 1) {
-                        // Legacy v1 used slightly different names for some settings in JSON
-                        // but most were matched to MainActivity constants already.
-                        // We handled 'selected' and 'favorites' above.
+                    } else {
+                        // Fall back to legacy import for unknown future versions
+                        importLegacyBackup(obj)
                     }
+                } else {
+                    importLegacyBackup(obj)
                 }
 
-                editor.apply()
-
-                // 4. Handle LADB config
-                val ladbObj = obj.optJSONObject("ladb_config")
-                if (ladbObj != null) {
-                    val ladbEditor = getSharedPreferences(LadbManager.PREFS_NAME, Context.MODE_PRIVATE).edit()
-                    if (ladbObj.has(LadbManager.KEY_HOST)) {
-                        ladbEditor.putString(LadbManager.KEY_HOST, ladbObj.optString(LadbManager.KEY_HOST))
-                    }
-                    if (ladbObj.has(LadbManager.KEY_IS_PAIRED)) {
-                        ladbEditor.putBoolean(LadbManager.KEY_IS_PAIRED, ladbObj.optBoolean(LadbManager.KEY_IS_PAIRED))
-                    }
-                    ladbEditor.apply()
-                }
+                val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                sanitizeSelectedApps(prefs)
 
                 // 5. Update Runtime State (App Monitor Service)
                 val isMonitorEnabled = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
@@ -991,6 +983,191 @@ class SettingsActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun exportSharedPreferences(
+        prefsName: String,
+        excludedKeys: Set<String> = emptySet()
+    ): JSONObject {
+        val prefsMap = getSharedPreferences(prefsName, Context.MODE_PRIVATE).all
+        val entries = JSONArray()
+
+        for (key in prefsMap.keys.sorted()) {
+            if (key in excludedKeys) continue
+            val value = prefsMap[key] ?: continue
+            val entry = JSONObject().put("key", key)
+
+            when (value) {
+                is Boolean -> {
+                    entry.put("type", "boolean")
+                    entry.put("value", value)
+                }
+                is String -> {
+                    entry.put("type", "string")
+                    entry.put("value", value)
+                }
+                is Int -> {
+                    entry.put("type", "int")
+                    entry.put("value", value)
+                }
+                is Long -> {
+                    entry.put("type", "long")
+                    entry.put("value", value)
+                }
+                is Float -> {
+                    entry.put("type", "float")
+                    entry.put("value", value.toDouble())
+                }
+                is Set<*> -> {
+                    val stringSet = value.filterIsInstance<String>().toSet()
+                    val arr = JSONArray()
+                    stringSet.sorted().forEach { arr.put(it) }
+                    entry.put("type", "string_set")
+                    entry.put("value", arr)
+                }
+                else -> continue
+            }
+
+            entries.put(entry)
+        }
+
+        return JSONObject().put("entries", entries)
+    }
+
+    private fun importStructuredBackup(root: JSONObject): Boolean {
+        val files = root.optJSONObject("files")
+        if (files == null) {
+            android.util.Log.w("SettingsActivity", "Import failed: missing files object")
+            return false
+        }
+        val fileNames = files.keys()
+
+        var success = false
+        while (fileNames.hasNext()) {
+            val prefsName = fileNames.next()
+            val fileObj = files.optJSONObject(prefsName)
+            if (fileObj == null) {
+                android.util.Log.w("SettingsActivity", "Import warning: missing object for $prefsName")
+                continue
+            }
+            val entries = fileObj.optJSONArray("entries")
+            if (entries == null) {
+                android.util.Log.w("SettingsActivity", "Import warning: missing entries for $prefsName")
+                continue
+            }
+
+            val editor = getSharedPreferences(prefsName, Context.MODE_PRIVATE).edit()
+            for (i in 0 until entries.length()) {
+                val entry = entries.optJSONObject(i) ?: continue
+                applyPreferenceEntry(editor, entry)
+            }
+            editor.apply()
+            success = true
+        }
+        return success
+    }
+
+    private fun importLegacyBackup(obj: JSONObject) {
+        val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+
+        // Legacy selected/favorites arrays.
+        val selectedKey = if (obj.has("selected")) "selected" else MainActivity.KEY_SELECTED_APPS
+        val selectedJson = obj.optJSONArray(selectedKey)
+        if (selectedJson != null) {
+            editor.putStringSet(MainActivity.KEY_SELECTED_APPS, jsonArrayToStringSet(selectedJson))
+        }
+
+        val favoritesKey = if (obj.has("favorites")) "favorites" else MainActivity.KEY_FAVORITE_APPS
+        val favoritesJson = obj.optJSONArray(favoritesKey)
+        if (favoritesJson != null) {
+            editor.putStringSet(MainActivity.KEY_FAVORITE_APPS, jsonArrayToStringSet(favoritesJson))
+        }
+
+        val reserved = setOf(
+            "schema",
+            "files",
+            "version",
+            "exported_at",
+            "selected",
+            "favorites",
+            "ladb_config"
+        )
+
+        val keys = obj.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            if (key in reserved) continue
+
+            val value = obj.opt(key)
+            when (value) {
+                is Boolean -> editor.putBoolean(key, value)
+                is String -> editor.putString(key, value)
+                is Int -> editor.putInt(key, value)
+                is Long -> editor.putLong(key, value)
+                is Double -> editor.putFloat(key, value.toFloat())
+                is JSONArray -> editor.putStringSet(key, jsonArrayToStringSet(value))
+            }
+        }
+
+        editor.apply()
+
+        // Legacy LADB section
+        val ladbObj = obj.optJSONObject("ladb_config")
+        if (ladbObj != null) {
+            val ladbEditor = getSharedPreferences(LadbManager.PREFS_NAME, Context.MODE_PRIVATE).edit()
+            val ladbKeys = ladbObj.keys()
+            while (ladbKeys.hasNext()) {
+                val key = ladbKeys.next()
+                when (val value = ladbObj.opt(key)) {
+                    is Boolean -> ladbEditor.putBoolean(key, value)
+                    is String -> ladbEditor.putString(key, value)
+                    is Int -> ladbEditor.putInt(key, value)
+                    is Long -> ladbEditor.putLong(key, value)
+                    is Double -> ladbEditor.putFloat(key, value.toFloat())
+                    is JSONArray -> ladbEditor.putStringSet(key, jsonArrayToStringSet(value))
+                }
+            }
+            ladbEditor.apply()
+        }
+    }
+
+    private fun applyPreferenceEntry(editor: SharedPreferences.Editor, entry: JSONObject) {
+        val key = entry.optString("key", "")
+        if (key.isEmpty()) return
+
+        when (entry.optString("type", "")) {
+            "boolean" -> editor.putBoolean(key, entry.optBoolean("value"))
+            "string" -> editor.putString(key, if (entry.isNull("value")) null else entry.optString("value"))
+            "int" -> {
+                val longValue = entry.getLong("value")
+                if (longValue in Int.MIN_VALUE..Int.MAX_VALUE) {
+                    editor.putInt(key, longValue.toInt())
+                }
+            }
+            "long" -> editor.putLong(key, entry.optLong("value"))
+            "float" -> editor.putFloat(key, entry.optDouble("value").toFloat())
+            "string_set" -> editor.putStringSet(key, jsonArrayToStringSet(entry.optJSONArray("value")))
+        }
+    }
+
+    private fun jsonArrayToStringSet(array: JSONArray?): Set<String> {
+        if (array == null) return emptySet()
+        val result = linkedSetOf<String>()
+        for (i in 0 until array.length()) {
+            val value = array.optString(i, null)
+            if (!value.isNullOrEmpty()) result.add(value)
+        }
+        return result
+    }
+
+    private fun sanitizeSelectedApps(prefs: SharedPreferences) {
+        val selected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+        val filtered = selected.filterNot { isShizukuPackage(it) }.toSet()
+        prefs.edit()
+            .putStringSet(MainActivity.KEY_SELECTED_APPS, filtered)
+            .putInt(MainActivity.KEY_SELECTED_COUNT, filtered.size)
+            .apply()
     }
 
     // helper to detect shizuku packages (supports both official and forked packages)
@@ -1059,80 +1236,189 @@ class SettingsActivity : BaseActivity() {
     private fun resetApp() {
         lifecycleScope.launch {
             try {
-                val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                stopResetSensitiveComponents()
 
-                // If firewall is enabled, try to disable it first to revert system changes
-                if (prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)) {
-                    val activePackages = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
-                    val selectedApps = prefs.getStringSet("selected_apps", emptySet()) ?: emptySet()
-                    // Combine lists to ensure we catch everything
-                    val allPackages = activePackages + selectedApps
-
-                    var cleanupPerformed = false
-                    withContext(Dispatchers.IO) {
-                        try {
-                            val prefsLocal = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-                            val mode = prefsLocal.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
-
-                            val canPerformCleanup = if (mode == "SHIZUKU") {
-                                try {
-                                    Shizuku.pingBinder() && Shizuku.checkSelfPermission() == android.content.pm.PackageManager.PERMISSION_GRANTED
-                                } catch (t: Throwable) {
-                                    false
-                                }
-                            } else {
-                                com.arslan.shizuwall.ladb.LadbManager.getInstance(this@SettingsActivity).isConnected()
-                            }
-
-                            if (canPerformCleanup) {
-                                // 1. Disable global chain first (most important to restore internet)
-                                com.arslan.shizuwall.shell.ShellExecutorBlocking.runBlockingSuccess(this@SettingsActivity, "cmd connectivity set-chain3-enabled false")
-
-                                // 2. Clean up individual package rules
-                                for (pkg in allPackages) {
-                                    com.arslan.shizuwall.shell.ShellExecutorBlocking.runBlockingSuccess(this@SettingsActivity, "cmd connectivity set-package-networking-enabled true $pkg")
-                                }
-                                cleanupPerformed = true
-                            }
-                        } catch (e: Exception) {
-                            // Proceed with reset even if cleanup fails
-                        }
-                    }
-
-                    if (!cleanupPerformed) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(this@SettingsActivity, getString(R.string.firewall_cleanup_warning), Toast.LENGTH_LONG).show()
-                        }
-                    }
+                val cleanupPerformed = withContext(Dispatchers.IO) {
+                    performBestEffortFirewallCleanup()
+                }
+                if (!cleanupPerformed) {
+                    Toast.makeText(this@SettingsActivity, getString(R.string.firewall_cleanup_warning), Toast.LENGTH_LONG).show()
                 }
 
-                // Clear main prefs
-                prefs.edit().clear().commit()
+                // Prefer system-level data clear because it remains correct as new prefs/files are added.
+                val clearRequested = requestSystemDataClear()
+                if (clearRequested) {
+                    Toast.makeText(this@SettingsActivity, getString(R.string.app_reset_complete), Toast.LENGTH_SHORT).show()
+                    delay(1200)
+                    finishAffinity()
+                    android.os.Process.killProcess(android.os.Process.myPid())
+                    System.exit(0)
+                    return@launch
+                }
 
-                // Clear onboarding prefs
-                getSharedPreferences("app_prefs", Context.MODE_PRIVATE).edit().clear().commit()
-
-                // Clear device protected prefs if applicable
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    try {
-                        createDeviceProtectedStorageContext().getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE).edit().clear().commit()
-                    } catch (e: Exception) {
-                        // ignore
-                    }
+                val fallbackSuccess = withContext(Dispatchers.IO) { performManualDataClearFallback() }
+                if (!fallbackSuccess) {
+                    throw IllegalStateException("Manual reset fallback failed")
                 }
 
                 Toast.makeText(this@SettingsActivity, getString(R.string.app_reset_complete), Toast.LENGTH_SHORT).show()
-
-                // Close all activities
                 finishAffinity()
-
-                // Kill process to ensure fresh start
                 android.os.Process.killProcess(android.os.Process.myPid())
                 System.exit(0)
             } catch (e: Exception) {
                 Toast.makeText(this@SettingsActivity, getString(R.string.reset_app_failed, e.message), Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun stopResetSensitiveComponents() {
+        try { stopService(Intent(this, AppMonitorService::class.java)) } catch (_: Exception) {}
+        try { stopService(Intent(this, ForegroundDetectionService::class.java)) } catch (_: Exception) {}
+        try { FloatingButtonService.stop(this) } catch (_: Exception) {}
+        try { (getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager)?.cancelAll() } catch (_: Exception) {}
+    }
+
+    private suspend fun performBestEffortFirewallCleanup(): Boolean {
+        return try {
+            val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+            if (!prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)) return true
+
+            val activePackages = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
+            val selectedApps = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+            val allPackages = (activePackages + selectedApps)
+                .filterNot { it == packageName || ShizukuPackageResolver.isShizukuPackage(this, it) }
+
+            val mode = prefs.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+            val canPerformCleanup = when (mode) {
+                "SHIZUKU" -> {
+                    try {
+                        Shizuku.pingBinder() && Shizuku.checkSelfPermission() == android.content.pm.PackageManager.PERMISSION_GRANTED
+                    } catch (_: Throwable) {
+                        false
+                    }
+                }
+                "ROOT" -> RootShellExecutor.hasRootAccess()
+                else -> {
+                    val dm = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
+                    dm.isDaemonRunning() || LadbManager.getInstance(this).isConnected()
+                }
+            }
+
+            if (!canPerformCleanup) return false
+
+            val executor = ShellExecutorProvider.forContext(this)
+            val chainResult = executor.exec("cmd connectivity set-chain3-enabled false")
+
+            for (pkg in allPackages) {
+                executor.exec("cmd connectivity set-package-networking-enabled true $pkg")
+            }
+
+            // Best-effort daemon cleanup in LADB mode so next launch starts fresh.
+            if (mode == "LADB") {
+                executor.exec("kill \\$(cat /data/local/tmp/daemon.pid 2>/dev/null) 2>/dev/null; pkill -f 'com.arslan.shizuwall.daemon.SystemDaemon' 2>/dev/null || true")
+            }
+
+            chainResult.success
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun requestSystemDataClear(): Boolean {
+        return try {
+            val am = getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+            am?.clearApplicationUserData() == true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun performManualDataClearFallback(): Boolean {
+        var ok = true
+
+        // Clear all discovered SharedPreferences in credential-protected storage.
+        ok = clearAllSharedPrefs(this) && ok
+
+        // Clear all discovered SharedPreferences in device-protected storage.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            try {
+                val dp = createDeviceProtectedStorageContext()
+                ok = clearAllSharedPrefs(dp) && ok
+            } catch (_: Exception) {
+                ok = false
+            }
+        }
+
+        // Clear databases.
+        try {
+            for (dbName in databaseList()) {
+                if (!deleteDatabase(dbName)) ok = false
+            }
+        } catch (_: Exception) {
+            ok = false
+        }
+
+        // Clear app-private files and caches.
+        ok = deleteChildren(filesDir) && ok
+        ok = deleteChildren(cacheDir) && ok
+        ok = deleteChildren(codeCacheDir) && ok
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ok = deleteChildren(noBackupFilesDir) && ok
+        }
+        ok = deleteChildren(externalCacheDir) && ok
+        ok = deleteChildren(getExternalFilesDir(null)) && ok
+
+        return ok
+    }
+
+    private fun clearAllSharedPrefs(context: Context): Boolean {
+        var ok = true
+        val sharedPrefsDir = File(context.filesDir.parentFile, "shared_prefs")
+        val prefNames = sharedPrefsDir.listFiles()
+            ?.mapNotNull { file ->
+                val name = file.name
+                if (name.endsWith(".xml")) name.removeSuffix(".xml") else null
+            }
+            ?.toSet()
+            ?: emptySet()
+
+        for (name in prefNames) {
+            try {
+                val deleted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    context.deleteSharedPreferences(name)
+                } else {
+                    context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit()
+                }
+                if (!deleted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit()
+                }
+            } catch (_: Exception) {
+                ok = false
+            }
+        }
+        return ok
+    }
+
+    private fun deleteChildren(dir: File?): Boolean {
+        if (dir == null || !dir.exists()) return true
+        var ok = true
+        val children = dir.listFiles() ?: return true
+        for (child in children) {
+            if (!deleteRecursively(child)) ok = false
+        }
+        return ok
+    }
+
+    private fun deleteRecursively(file: File): Boolean {
+        if (file.isDirectory) {
+            val children = file.listFiles()
+            if (children != null) {
+                for (child in children) {
+                    if (!deleteRecursively(child)) return false
+                }
+            }
+        }
+        return file.delete() || !file.exists()
     }
 
 

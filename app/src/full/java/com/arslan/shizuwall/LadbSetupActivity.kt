@@ -495,7 +495,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         }
 
         updateStatus()
-        appendLog(getString(R.string.log_setup_initialized, tvStatus.text))
 
         // Auto-initialize components if paired to start port discovery immediately
         if (ladbManager.isPaired() && ladbManager.state != LadbManager.State.CONNECTED) {
@@ -507,6 +506,9 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         }
 
         btnPairSimple.setOnClickListener {
+            if (connectProgress.visibility == View.VISIBLE || connectProgressSimple.visibility == View.VISIBLE) {
+                return@setOnClickListener
+            }
             val state = ladbManager.state
             val savedHost = ladbManager.getSavedHost()
             val savedPairingPort = ladbManager.getSavedPairingPort()
@@ -556,6 +558,9 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         }
 
         btnConnect.setOnClickListener {
+            if (connectProgress.visibility == View.VISIBLE || connectProgressSimple.visibility == View.VISIBLE) {
+                return@setOnClickListener
+            }
             performConnection()
         }
 
@@ -572,12 +577,13 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         btnClearLogs.setOnClickListener {
             tvLadbLogs.text = ""
             saveLogs("")
-            appendLog(getString(R.string.log_logs_cleared))
+            Snackbar.make(rootView, R.string.log_logs_cleared, Snackbar.LENGTH_SHORT).show()
         }
 
         btnCopyLogs.setOnClickListener {
             val logs = tvLadbLogs.text.toString()
-            if (logs.isNotEmpty()) {
+            val placeholder = getString(R.string.ladb_logs_empty)
+            if (logs.isNotBlank() && logs != placeholder) {
                 val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                 val clip = android.content.ClipData.newPlainText("ladb_logs", logs)
                 clipboard.setPrimaryClip(clip)
@@ -717,27 +723,13 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         // Refresh status in case pairing happened via notification while we were away.
         tvStatus.post { 
             try {
-                val oldStatus = tvStatus.text.toString()
                 updateStatus()
-                val newStatus = tvStatus.text.toString()
-                if (oldStatus != newStatus) {
-                    appendLog(getString(R.string.log_status_updated, newStatus))
-                }
 
                 // After pairing completes, check if we have detected connect ports but no saved connect config
                 // This handles the race condition where connect port is detected before pairing finishes
                 val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 || ladbManager.isPaired()
                 val hasConnectConfig = ladbManager.getSavedConnectPort() > 0
                 
-                // Auto-connect if paired but not connected
-                if (hasPairingConfig && !hasConnectConfig && 
-                    ladbManager.state != LadbManager.State.CONNECTED && 
-                    connectProgress.visibility != View.VISIBLE &&
-                    connectProgressSimple.visibility != View.VISIBLE) {
-                    appendLog("Device paired but not connected. Attempting auto-connection...")
-                    performConnection()
-                }
-
                 if (hasPairingConfig && !hasConnectConfig) {
                     val savedHost = ladbManager.getSavedHost()
                     if (!savedHost.isNullOrBlank()) {
@@ -745,7 +737,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                             detectedConnectPorts.any { it.first == savedHost }
                         }
                         if (hasPorts) {
-                            appendLog("Pairing complete but no connect config - scanning detected ports...")
                             scanForOpenPort(savedHost)
                         }
                     }
@@ -757,7 +748,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                         val h = logs.hashCode()
                         if (lastShownErrorHash != h) {
                             lastShownErrorHash = h
-                            appendLog("Showing last LADB error details")
                             showLadbErrorDialog(getString(R.string.ladb_error_title), logs)
                         }
                     }

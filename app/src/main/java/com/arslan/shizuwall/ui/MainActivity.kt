@@ -58,7 +58,9 @@ import com.arslan.shizuwall.R
 import kotlin.comparisons.*
 import com.arslan.shizuwall.adapters.ErrorEntry
 import com.arslan.shizuwall.FirewallMode
+import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
+import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -90,6 +92,7 @@ class MainActivity : BaseActivity() {
         const val KEY_FIREWALL_MODE = "firewall_mode" 
         const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"  // Current foreground app in smart mode
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
+        const val KEY_APPLY_ROOT_RULES_AFTER_REBOOT = "apply_root_rules_after_reboot"
         const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"
         const val KEY_WORKING_MODE = "working_mode"
         const val KEY_SORT_ORDER = "sort_order"
@@ -114,7 +117,6 @@ class MainActivity : BaseActivity() {
     private lateinit var firewallProgress: android.widget.ProgressBar
     private lateinit var searchView: SearchView
     private lateinit var selectedCountText: TextView
-    private lateinit var selectAllCheckbox: CheckBox
     private lateinit var appListLoadingContainer: View
     private val appList = mutableListOf<AppInfo>()
     private val filteredAppList = mutableListOf<AppInfo>()
@@ -142,7 +144,7 @@ class MainActivity : BaseActivity() {
 
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
         val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
-        if (workingMode == "LADB") return@OnBinderReceivedListener
+        if (workingMode != WorkingMode.SHIZUKU.name) return@OnBinderReceivedListener
 
         val autoEnable = sharedPreferences.getBoolean(KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
         if (!autoEnable) {
@@ -216,14 +218,13 @@ class MainActivity : BaseActivity() {
 
     private val binderDeadListener = Shizuku.OnBinderDeadListener {
         val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
-        if (workingMode == "LADB") return@OnBinderDeadListener
+        if (workingMode != WorkingMode.SHIZUKU.name) return@OnBinderDeadListener
 
         Toast.makeText(this, getString(R.string.shizuku_service_dead), Toast.LENGTH_SHORT).show()
         finish()
     }
 
     private var suppressToggleListener = false
-    private var suppressSelectAllListener = false
     private val activeFirewallPackages = mutableSetOf<String>()
     // store the last operation and its console output per package so we can show details dialogs
     private val lastOperationErrorDetails = mutableMapOf<String, String>()
@@ -269,6 +270,7 @@ class MainActivity : BaseActivity() {
             showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
             moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
             firewallMode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+            updateFirewallToggleThumbIcon()
             loadInstalledApps()
             updateCategoryChips()
             
@@ -354,13 +356,13 @@ class MainActivity : BaseActivity() {
         val appTitle: TextView = findViewById(R.id.appTitle)
         appTitle.setOnClickListener { openGithub() }
 
-        val settingsButton: MaterialButton? = findViewById(R.id.settingsButton)
+        val settingsButton: View? = findViewById(R.id.settingsButton)
         settingsButton?.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             settingsLauncher.launch(intent)
         }
 
-        val sortButton: MaterialButton? = findViewById(R.id.sortButton)
+        val sortButton: View? = findViewById(R.id.sortButton)
         sortButton?.setOnClickListener {
             showSortDialog()
         }
@@ -412,9 +414,17 @@ class MainActivity : BaseActivity() {
         }
 
         setupFirewallToggle()
+        updateFirewallToggleThumbIcon()
         setupSearchView()
         setupSelectAllCheckbox()
         setupRecyclerView()
+
+        val scrollTopButton: View? = findViewById(R.id.scrollTopButton)
+        scrollTopButton?.setOnClickListener {
+            if (filteredAppList.isNotEmpty()) {
+                recyclerView.smoothScrollToPosition(0)
+            }
+        }
 
         // wire category bar AFTER views are created
         val categoryGroup = findViewById<ChipGroup>(R.id.categoryChipGroup)
@@ -535,6 +545,7 @@ class MainActivity : BaseActivity() {
 
         // Update firewallMode from preferences
         firewallMode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+        updateFirewallToggleThumbIcon()
 
         // Reflect current firewall state in UI
         if (!isFirewallProcessRunning) {
@@ -747,6 +758,18 @@ class MainActivity : BaseActivity() {
 
     private fun checkPermission(code: Int): Boolean {
         val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+        if (workingMode == WorkingMode.ROOT.name) {
+            if (RootShellExecutor.hasRootAccess()) return true
+
+            MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.working_mode_root))
+                .setMessage(getString(R.string.root_not_found_message))
+                .setPositiveButton(getString(R.string.ok), null)
+                .setCancelable(true)
+                .show()
+            return false
+        }
+
         if (workingMode == "LADB") {
             val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
             if (daemonManager.isDaemonRunning()) return true
@@ -881,20 +904,18 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupSelectAllCheckbox() {
-        selectAllCheckbox = findViewById(R.id.selectAllCheckbox)
         selectedCountText = findViewById(R.id.selectedCountText)
-        
-        selectAllCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            if (suppressSelectAllListener) return@setOnCheckedChangeListener
-            if (!selectAllCheckbox.isEnabled) return@setOnCheckedChangeListener
-            
+
+        selectedCountText.setOnClickListener {
+            if (!selectedCountText.isEnabled) return@setOnClickListener
+
+            val allSelected = filteredAppList.all { it.isSelected }
+            val isChecked = !allSelected
+
             if (firewallMode.allowsDynamicSelection() && isFirewallEnabled && !checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
-                suppressSelectAllListener = true
-                selectAllCheckbox.isChecked = !isChecked
-                suppressSelectAllListener = false
-                return@setOnCheckedChangeListener
+                return@setOnClickListener
             }
-            
+
             val changedApps = filteredAppList.filter { it.isSelected != isChecked }
             if (changedApps.isNotEmpty()) {
                 val packagesToUpdate = changedApps.map { it.packageName }
@@ -982,8 +1003,8 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        selectAllCheckbox.setOnLongClickListener {
-            if (!selectAllCheckbox.isEnabled) return@setOnLongClickListener false
+        selectedCountText.setOnLongClickListener {
+            if (!selectedCountText.isEnabled) return@setOnLongClickListener false
 
             if (appList.any { it.isSelected }) {
                 MaterialAlertDialogBuilder(this@MainActivity)
@@ -1458,6 +1479,20 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private fun updateFirewallToggleThumbIcon() {
+        if (!::firewallToggle.isInitialized) return
+
+        val workingMode = WorkingMode.fromName(
+            sharedPreferences.getString(KEY_WORKING_MODE, WorkingMode.SHIZUKU.name)
+        )
+        val iconRes = when (workingMode) {
+            WorkingMode.SHIZUKU -> R.drawable.ic_shizuku
+            WorkingMode.LADB -> R.drawable.adb_24px
+            WorkingMode.ROOT -> R.drawable.hashtag_24px
+        }
+        firewallToggle.setThumbIconResource(iconRes)
+    }
+
     private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>) {
         // If user opted to skip the confirmation, directly apply the firewall
         val prefsLocal = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -1560,22 +1595,16 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateInteractiveViews() {
-        // The select-all checkbox should be disabled when the firewall is enabled and
+        // The select-all badge should be disabled when the firewall is enabled and
         // Adaptive Mode is turned OFF. Otherwise it can be used.
-        if (::selectAllCheckbox.isInitialized) {
-            selectAllCheckbox.isEnabled = !isFirewallEnabled || firewallMode.allowsDynamicSelection()
+        if (::selectedCountText.isInitialized) {
+            selectedCountText.isEnabled = !isFirewallEnabled || firewallMode.allowsDynamicSelection()
+            selectedCountText.alpha = if (selectedCountText.isEnabled) 1.0f else 0.4f
         }
     }
 
     private fun updateSelectAllCheckbox() {
-        if (!::selectAllCheckbox.isInitialized || filteredAppList.isEmpty()) return
-        
-        suppressSelectAllListener = true
-        val allSelected = filteredAppList.all { it.isSelected }
-        val noneSelected = filteredAppList.none { it.isSelected }
-        
-        selectAllCheckbox.isChecked = allSelected
-        suppressSelectAllListener = false
+        // Badge visual is driven by selectedCountText.text; no extra state needed.
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -1820,12 +1849,7 @@ class MainActivity : BaseActivity() {
         }
 
         val currentElapsed = SystemClock.elapsedRealtime()
-        // if currentElapsed < savedElapsed a reboot happened -> clear saved state
         if (currentElapsed < savedElapsed) {
-            sharedPreferences.edit()
-                .remove(KEY_FIREWALL_ENABLED)
-                .remove(KEY_FIREWALL_SAVED_ELAPSED)
-                .apply()
             return false
         }
 
@@ -1958,6 +1982,8 @@ class MainActivity : BaseActivity() {
                 }
             }
 
+            val showedLadbRecoveryDialog = enable && maybeShowLadbDaemonRecoveryDialog(failed, lastOperationErrorDetails)
+
             // Handle failures: unselect failed apps and show error dialog
             if (failed.isNotEmpty()) {
                 val skipErrorDialog = sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)
@@ -1980,7 +2006,9 @@ class MainActivity : BaseActivity() {
                     saveSelectedApps()
                     sortAndFilterApps(preserveScrollPosition = false)
                 }
-                showOperationErrorsDialog(failed, lastOperationErrorDetails)
+                if (!showedLadbRecoveryDialog) {
+                    showOperationErrorsDialog(failed, lastOperationErrorDetails)
+                }
             }
             } finally {
                 firewallProgress.visibility = android.view.View.GONE
@@ -2251,7 +2279,9 @@ class MainActivity : BaseActivity() {
             .setPositiveButton(getString(R.string.ok), null)
 
         // show details button only if we have any details for the failed packages
-        val hasDetails = failedPackages.any { errorDetails[it]?.isNotEmpty() == true } || errorDetails.containsKey("_chain3")
+        val hasDetails = failedPackages.any { errorDetails[it]?.isNotEmpty() == true } ||
+            errorDetails.containsKey("_chain3") ||
+            errorDetails.containsKey("_daemon_log")
         if (hasDetails) {
             builder.setNeutralButton(getString(R.string.details)) { _, _ ->
                 showErrorDetailsDialog(failedPackages, errorDetails)
@@ -2270,6 +2300,10 @@ class MainActivity : BaseActivity() {
         val chain3Msg = errorDetails["_chain3"] ?: errorDetails.values.firstOrNull { it.contains("no command found set chain 3", ignoreCase = true) }
         if (chain3Msg != null) {
             dialogMessage.append("\n\n${getString(R.string.android11_unsupported_hint)}")
+        }
+
+        if (!errorDetails["_daemon_log"].isNullOrBlank()) {
+            dialogMessage.append("\n\n${getString(R.string.ladb_daemon_log_detected_hint)}")
         }
 
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -2295,6 +2329,120 @@ class MainActivity : BaseActivity() {
         dialog.show()
     }
 
+    private suspend fun maybeShowLadbDaemonRecoveryDialog(
+        failedPackages: List<String>,
+        errorDetails: MutableMap<String, String>
+    ): Boolean {
+        val daemonLogs = loadRecentDaemonLogsForDiagnostics()
+        if (!daemonLogs.isNullOrBlank()) {
+            errorDetails["_daemon_log"] = daemonLogs
+        }
+
+        if (!hasLadbDaemonRecoveryError(errorDetails, daemonLogs)) {
+            return false
+        }
+
+        val diagnosis = buildLadbDaemonRecoveryMessage(errorDetails, daemonLogs)
+
+        val builder = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.ladb_daemon_restart_required_title)
+            .setMessage(diagnosis)
+            .setPositiveButton(R.string.open_ladb_setup) { _, _ ->
+                try {
+                    startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java))
+                } catch (_: Exception) {
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+
+        if (failedPackages.isNotEmpty()) {
+            builder.setNeutralButton(R.string.details) { _, _ ->
+                showErrorDetailsDialog(failedPackages, errorDetails)
+            }
+        }
+
+        builder.show()
+        return true
+    }
+
+    private fun hasLadbDaemonRecoveryError(errorDetails: Map<String, String>, daemonLogs: String?): Boolean {
+        val combined = buildList {
+            addAll(errorDetails.values)
+            if (!daemonLogs.isNullOrBlank()) add(daemonLogs)
+        }
+
+        return combined.any { error ->
+            val normalizedError = error.lowercase()
+            normalizedError.contains("unauthorized") ||
+                normalizedError.contains("failed to authorizate daemon") ||
+                normalizedError.contains("daemon not responding") ||
+                normalizedError.contains("daemon not responing") ||
+                normalizedError.contains("token file") ||
+                normalizedError.contains("token")
+        }
+    }
+
+    private suspend fun loadRecentDaemonLogsForDiagnostics(): String? {
+        return try {
+            com.arslan.shizuwall.daemon.PersistentDaemonManager(this).readRecentDaemonLogs(20)
+                ?.lineSequence()
+                ?.filter { it.isNotBlank() }
+                ?.toList()
+                ?.takeLast(2)
+                ?.joinToString("\n")
+                ?.trim()
+                ?.ifBlank { null }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun buildLadbDaemonRecoveryMessage(errorDetails: Map<String, String>, daemonLogs: String?): String {
+        val reasons = linkedSetOf<String>()
+        val combined = buildList {
+            addAll(errorDetails.values)
+            if (!daemonLogs.isNullOrBlank()) add(daemonLogs)
+        }
+
+        combined.forEach { error ->
+            val normalizedError = error.lowercase()
+            when {
+                normalizedError.contains("unauthorized") ||
+                    normalizedError.contains("failed to authorizate daemon") -> {
+                    reasons.add(getString(R.string.ladb_daemon_restart_reason_auth))
+                }
+
+                normalizedError.contains("daemon not responding") ||
+                    normalizedError.contains("daemon not responing") ||
+                    normalizedError.contains("timeout") ||
+                    normalizedError.contains("connection refused") -> {
+                    reasons.add(getString(R.string.ladb_daemon_restart_reason_unresponsive))
+                }
+
+                normalizedError.contains("token file") || normalizedError.contains("token") -> {
+                    reasons.add(getString(R.string.ladb_daemon_restart_reason_token))
+                }
+            }
+        }
+
+        val builder = StringBuilder(getString(R.string.ladb_daemon_restart_required_message))
+        if (reasons.isNotEmpty()) {
+            builder.append("\n\n")
+            builder.append(getString(R.string.ladb_daemon_restart_reason_prefix))
+            builder.append("\n")
+            builder.append(reasons.joinToString("\n") { "- $it" })
+        }
+
+        if (!daemonLogs.isNullOrBlank()) {
+            builder.append("\n\n")
+            builder.append(getString(R.string.ladb_daemon_restart_log_prefix))
+            builder.append("\n")
+            builder.append(daemonLogs)
+        }
+
+        return builder.toString()
+    }
+
     private fun showErrorDetailsDialog(failedPackages: List<String>, errorDetails: Map<String, String> = emptyMap()) {
         val failedApps = appList.filter { it.packageName in failedPackages }
         if (failedApps.isEmpty()) return
@@ -2315,7 +2463,10 @@ class MainActivity : BaseActivity() {
         messageView.text = getString(R.string.operation_failed_message, failedApps.size)
 
         val list = failedApps.map { ai ->
-            val err = errorDetails[ai.packageName] ?: errorDetails["_chain3"] ?: getString(R.string.no_error_details)
+            val err = errorDetails[ai.packageName]
+                ?: errorDetails["_chain3"]
+                ?: errorDetails["_daemon_log"]
+                ?: getString(R.string.no_error_details)
             ErrorEntry(ai.appName, ai.packageName, err)
         }
 

@@ -268,7 +268,7 @@
     <string name="firewall_mode_default_description">Firewall tradicional - bloquear apps seleccionadas</string>
     <string name="firewall_mode_adaptive">Adaptativo</string>
     <string name="firewall_mode_adaptive_description">Aplicar reglas al instante. El firewall se mantiene activo.</string>
-    <string name="firewall_mode_smart_foreground">Primer Plano Inteligente (Beta)</string>
+    <string name="firewall_mode_smart_foreground">Primer Plano Inteligente</string>
     <string name="firewall_mode_smart_foreground_description">Solo permitir la app en primer plano</string>
     <string name="smart_foreground_requires_accessibility">Requiere permiso de Accesibilidad</string>
     <string name="smart_foreground_service_description">Monitorea la app en primer plano para gestionar reglas del firewall</string>

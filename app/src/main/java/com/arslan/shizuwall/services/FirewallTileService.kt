@@ -9,6 +9,7 @@ import android.service.quicksettings.TileService
 import android.widget.Toast
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorBlocking
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.*
@@ -129,7 +130,14 @@ class FirewallTileService : TileService() {
 
     private fun checkBackendReady(): Boolean {
         val mode = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
-        return if (mode == "LADB") {
+        return if (mode == "ROOT") {
+            if (RootShellExecutor.hasRootAccess()) {
+                true
+            } else {
+                Toast.makeText(this, getString(R.string.root_not_found_message), Toast.LENGTH_SHORT).show()
+                false
+            }
+        } else if (mode == "LADB") {
             val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
             
             if (daemonManager.isDaemonRunning()) {
@@ -157,11 +165,18 @@ class FirewallTileService : TileService() {
     }
 
     private suspend fun applyEnableFirewall(packageNames: List<String>) {
+        val firewallMode = FirewallMode.fromName(
+            sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
+        )
         withContext(Dispatchers.IO) {
             val successful = enableFirewall(packageNames)
-            if (successful.isNotEmpty()) {
+            if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                 saveFirewallEnabled(true)
                 saveActivePackages(successful.toSet())
+            } else {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@FirewallTileService, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()
+                }
             }
         }
         updateTile()

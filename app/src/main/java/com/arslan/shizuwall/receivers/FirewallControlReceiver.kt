@@ -9,6 +9,9 @@ import android.os.SystemClock
 import android.widget.Toast
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.ladb.LadbLogStore
+import com.arslan.shizuwall.shell.RootShellExecutor
+import com.arslan.shizuwall.shell.ShellResult
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
@@ -52,6 +55,23 @@ class FirewallControlReceiver : BroadcastReceiver() {
         }
         android.util.Log.w(TAG, "Shizuku binder not available after $SHIZUKU_WAIT_MAX_ATTEMPTS attempts")
         return false
+    }
+
+    private fun appendLadbFailureLog(context: Context, message: String, result: ShellResult? = null) {
+        val details = when {
+            result == null -> null
+            result.success -> null
+            result.stderr.isNotBlank() -> result.stderr.trim()
+            result.stdout.isNotBlank() -> result.stdout.trim()
+            else -> "exit=${result.exitCode}"
+        }
+
+        val fullMessage = if (details.isNullOrBlank()) {
+            "Firewall daemon failure: $message"
+        } else {
+            "Firewall daemon failure: $message | $details"
+        }
+        LadbLogStore.append(context, fullMessage)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -107,6 +127,8 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     } catch (e: Exception) {
                         false
                     }
+                } else if (mode == "ROOT") {
+                    RootShellExecutor.hasRootAccess()
                 } else {
                     val binderAvailable = waitForShizukuBinder()
                     if (binderAvailable) {
@@ -121,10 +143,19 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 }
 
                 if (!backendReady) {
+                    if (mode == "LADB") {
+                        appendLadbFailureLog(context, "Daemon is not running while applying firewall state=${if (enabled) "enable" else "disable"}")
+                    }
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            if (mode == "LADB") context.getString(R.string.daemon_not_running) else context.getString(R.string.shizuku_not_available),
+                            if (mode == "LADB") {
+                                context.getString(R.string.daemon_not_running)
+                            } else if (mode == "ROOT") {
+                                context.getString(R.string.root_not_found_message)
+                            } else {
+                                context.getString(R.string.shizuku_not_available)
+                            },
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -132,8 +163,8 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     return@launch
                 }
 
-                suspend fun runShell(cmd: String): Boolean {
-                    return ShellExecutorProvider.forContext(context).exec(cmd).success
+                suspend fun execShell(cmd: String): ShellResult {
+                    return ShellExecutorProvider.forContext(context).exec(cmd)
                 }
 
                 val successful = mutableListOf<String>()
@@ -141,23 +172,37 @@ class FirewallControlReceiver : BroadcastReceiver() {
 
                 if (enabled) {
                     // enable chain3
-                    globalCommandSuccess = runShell("cmd connectivity set-chain3-enabled true")
+                    val chainEnableResult = execShell("cmd connectivity set-chain3-enabled true")
+                    globalCommandSuccess = chainEnableResult.success
+                    if (!chainEnableResult.success && mode == "LADB") {
+                        appendLadbFailureLog(context, "Failed to enable firewall chain", chainEnableResult)
+                    }
                     if (globalCommandSuccess) {
                         for (pkg in packages) {
-                            if (runShell("cmd connectivity set-package-networking-enabled false $pkg")) {
+                            val blockResult = execShell("cmd connectivity set-package-networking-enabled false $pkg")
+                            if (blockResult.success) {
                                 successful.add(pkg)
+                            } else if (mode == "LADB") {
+                                appendLadbFailureLog(context, "Failed to block package $pkg", blockResult)
                             }
                         }
                     }
                 } else {
                     for (pkg in packages) {
-                        if (runShell("cmd connectivity set-package-networking-enabled true $pkg")) {
+                        val allowResult = execShell("cmd connectivity set-package-networking-enabled true $pkg")
+                        if (allowResult.success) {
                             successful.add(pkg)
+                        } else if (mode == "LADB") {
+                            appendLadbFailureLog(context, "Failed to unblock package $pkg", allowResult)
                         }
                     }
                     val isGlobalDisable = csv.isNullOrBlank()
                     if (!firewallMode.allowsDynamicSelection() || isGlobalDisable) {
-                        globalCommandSuccess = runShell("cmd connectivity set-chain3-enabled false")
+                        val chainDisableResult = execShell("cmd connectivity set-chain3-enabled false")
+                        globalCommandSuccess = chainDisableResult.success
+                        if (!chainDisableResult.success && mode == "LADB") {
+                            appendLadbFailureLog(context, "Failed to disable firewall chain", chainDisableResult)
+                        }
                     }
                 }
 

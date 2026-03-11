@@ -13,6 +13,7 @@ import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import rikka.shizuku.Shizuku
 import com.arslan.shizuwall.receivers.FirewallControlReceiver
+import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 
@@ -107,8 +108,9 @@ class FirewallWidgetProvider : AppWidgetProvider() {
         }
 
         private fun loadSelectedApps(context: Context, sharedPreferences: SharedPreferences): List<String> {
+            val selfPkg = context.packageName
             return sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())
-                ?.filterNot { ShizukuPackageResolver.isShizukuPackage(context, it) }
+                ?.filterNot { ShizukuPackageResolver.isShizukuPackage(context, it) || it == selfPkg }
                 ?.toList() ?: emptyList()
         }
 
@@ -116,6 +118,14 @@ class FirewallWidgetProvider : AppWidgetProvider() {
             // Respect the configured working mode. If LADB is selected, ensure the daemon is running.
             val sharedPreferences = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
             val workingMode = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+            if (workingMode == "ROOT") {
+                if (RootShellExecutor.hasRootAccess()) {
+                    return true
+                }
+                Toast.makeText(context, context.getString(R.string.root_not_found_message), Toast.LENGTH_SHORT).show()
+                return false
+            }
+
             if (workingMode == "LADB") {
                 val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(context)
                 return try {

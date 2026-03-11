@@ -2,7 +2,8 @@ package com.arslan.shizuwall
 
 enum class WorkingMode {
     SHIZUKU,
-    LADB;
+    LADB,
+    ROOT;
 
     companion object {
         fun fromName(name: String?): WorkingMode {

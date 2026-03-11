@@ -212,6 +212,14 @@
     <string name="daemon_start">Spustit Daemon</string>
     <string name="daemon_kill">Killnout Daemon</string>
     <string name="daemon_installing">Instalování...</string>
+    <string name="ladb_daemon_restart_required_title">Restartovat LADB daemona</string>
+    <string name="ladb_daemon_restart_required_message">Firewall nemohl být aktivován, protože LADB daemon selhal při autorizaci nebo přestal reagovat. Otevři nastavení LADB, zapni Pokročilý režim, pak použij Killnutí Daemona a Spusť jej znovu.</string>
+    <string name="ladb_daemon_restart_reason_prefix">Zjištěné problémy:</string>
+    <string name="ladb_daemon_restart_reason_auth">Autorizace daeona selhala. Token daemona v aplikaci a spuštěný daeon mohou být nesynchronizované.</string>
+    <string name="ladb_daemon_restart_reason_unresponsive">Daemon neodpovídá nebo jeho socket odmítá připojení.</string>
+    <string name="ladb_daemon_restart_reason_token">Daemon logy zmiňují problém a tokenem nebo chybějící soubor tokenu.</string>
+    <string name="ladb_daemon_restart_log_prefix">Poslední daemon log:</string>
+    <string name="ladb_daemon_log_detected_hint">Poslední daemon log je k dispozici v detailech.</string>
     <string name="sort">Třídit</string>
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>

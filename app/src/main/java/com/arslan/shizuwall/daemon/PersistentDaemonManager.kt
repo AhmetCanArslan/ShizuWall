@@ -218,6 +218,17 @@ class PersistentDaemonManager(private val context: Context) {
         }
     }
 
+    suspend fun readRecentDaemonLogs(maxLines: Int = 20): String? = withContext(Dispatchers.IO) {
+        val ladb = LadbManager.getInstance(context)
+        if (!ladb.isConnected()) {
+            return@withContext null
+        }
+
+        val result = ladb.execShell("tail -$maxLines /data/local/tmp/daemon.log 2>/dev/null")
+        val logs = result.stdout.ifBlank { result.stderr }.trim()
+        return@withContext logs.ifBlank { null }
+    }
+
     private fun copyAssetToCache(assetName: String, targetName: String = assetName): String {
         // Use externalCacheDir so the 'shell' user can access it via /sdcard/Android/data/...
         val cacheDir = context.externalCacheDir ?: context.cacheDir

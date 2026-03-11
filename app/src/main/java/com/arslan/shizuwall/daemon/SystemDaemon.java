@@ -19,7 +19,6 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import android.util.Log;
 
 public class SystemDaemon {
     
@@ -44,6 +43,21 @@ public class SystemDaemon {
     private static final Semaphore commandSemaphore = new Semaphore(MAX_CONCURRENT_COMMANDS);
     private static final AtomicInteger activeConnections = new AtomicInteger(0);
     private static volatile boolean running = true;
+
+    private static void logD(String message) {
+        System.out.println(TAG + " [D] " + message);
+    }
+
+    private static void logW(String message) {
+        System.err.println(TAG + " [W] " + message);
+    }
+
+    private static void logE(String message, Throwable t) {
+        System.err.println(TAG + " [E] " + message);
+        if (t != null) {
+            t.printStackTrace(System.err);
+        }
+    }
     
     public static void main(String[] args) {
         // Setup shutdown hook for graceful termination
@@ -79,7 +93,7 @@ public class SystemDaemon {
             System.exit(1);
         }
 
-        Log.d(TAG, "Daemon starting...");
+        logD("Daemon starting...");
         System.out.println("SystemDaemon: Starting...");
         System.out.flush();
         try {
@@ -88,14 +102,14 @@ public class SystemDaemon {
             
             // Start TCP socket server
             startSocketServer();
-            Log.d(TAG, "TCP server started on port " + PORT);
+            logD("TCP server started on port " + PORT);
             System.out.println("SystemDaemon: TCP server started on port " + PORT);
             System.out.flush();
             
             // Keep the process alive with health logging
             while(running) {
                 Thread.sleep(30000); // 30 seconds
-                Log.d(TAG, "Heartbeat - Active connections: " + activeConnections.get());
+                logD("Heartbeat - Active connections: " + activeConnections.get());
             }
         } catch (Exception e) {
             System.err.println("SystemDaemon: Fatal error in main");
@@ -167,7 +181,7 @@ public class SystemDaemon {
         ) {
             String token = reader.readLine();
             if (!safeEquals(token, authToken)) {
-                Log.w(TAG, "Unauthorized access attempt");
+                logW("Unauthorized access attempt");
                 System.out.println("SystemDaemon: Unauthorized access attempt");
                 writer.println("Error: Unauthorized");
                 return;
@@ -182,7 +196,7 @@ public class SystemDaemon {
             }
             
             if (command.length() > MAX_COMMAND_LENGTH) {
-                Log.w(TAG, "Command too long: " + command.length() + " chars");
+                logW("Command too long: " + command.length() + " chars");
                 writer.println("Error: Command too long");
                 return;
             }
@@ -191,13 +205,13 @@ public class SystemDaemon {
             String lowerCmd = command.toLowerCase();
             for (String blocked : BLOCKED_PATTERNS) {
                 if (lowerCmd.contains(blocked.toLowerCase())) {
-                    Log.w(TAG, "Blocked dangerous command: " + command);
+                    logW("Blocked dangerous command: " + command);
                     writer.println("Error: Command blocked for safety");
                     return;
                 }
             }
             
-            Log.d(TAG, "Received command: [" + command + "]");
+            logD("Received command: [" + command + "]");
             System.out.println("SystemDaemon: Received command: [" + command + "]");
             System.out.flush();
 
@@ -224,7 +238,7 @@ public class SystemDaemon {
                 result = "(No output from command)";
             }
 
-            Log.d(TAG, "Sending result: " + result.substring(0, Math.min(100, result.length())));
+            logD("Sending result: " + result.substring(0, Math.min(100, result.length())));
             System.out.println("SystemDaemon: Sending result (" + result.length() + " chars)");
             System.out.flush();
             
@@ -232,9 +246,9 @@ public class SystemDaemon {
             writer.flush();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            Log.w(TAG, "Command interrupted: " + command);
+            logW("Command interrupted: " + command);
         } catch (Exception e) {
-            Log.e(TAG, "Client handler error for command: " + command, e);
+            logE("Client handler error for command: " + command, e);
             System.err.println("SystemDaemon: Client handler error");
             e.printStackTrace();
         } finally {
@@ -290,7 +304,7 @@ public class SystemDaemon {
             
             return result;
         } catch (Exception e) {
-            Log.e(TAG, "Execution error", e);
+            logE("Execution error", e);
             System.err.println("SystemDaemon: Exception executing command");
             e.printStackTrace();
             return "Error: " + e.getMessage();

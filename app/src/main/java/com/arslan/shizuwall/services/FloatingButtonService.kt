@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.shell.ShellExecutorBlocking
+import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.widgets.FirewallWidgetProvider
@@ -112,6 +113,12 @@ class FloatingButtonService : Service() {
     // ──────────────── floating window ────────────────
 
     private fun showFloatingButton() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
+            Toast.makeText(this, getString(R.string.overlay_permission_required), Toast.LENGTH_SHORT).show()
+            stopSelf()
+            return
+        }
+
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
 
         floatingView = LayoutInflater.from(this).inflate(R.layout.floating_firewall_button, null)
@@ -273,7 +280,14 @@ class FloatingButtonService : Service() {
 
     private fun checkBackendReady(): Boolean {
         val mode = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
-        return if (mode == "LADB") {
+        return if (mode == "ROOT") {
+            if (RootShellExecutor.hasRootAccess()) {
+                true
+            } else {
+                Toast.makeText(this, getString(R.string.root_not_found_message), Toast.LENGTH_SHORT).show()
+                false
+            }
+        } else if (mode == "LADB") {
             val dm = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
             if (dm.isDaemonRunning()) {
                 true
@@ -282,11 +296,21 @@ class FloatingButtonService : Service() {
                 false
             }
         } else {
-            if (!Shizuku.pingBinder()) {
+            val binderAlive = try {
+                Shizuku.pingBinder()
+            } catch (_: Throwable) {
+                false
+            }
+            if (!binderAlive) {
                 Toast.makeText(this, getString(R.string.shizuku_not_running), Toast.LENGTH_SHORT).show()
                 return false
             }
-            if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
+            val granted = try {
+                Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
+            } catch (_: Throwable) {
+                false
+            }
+            if (!granted) {
                 Toast.makeText(this, getString(R.string.shizuku_permission_required), Toast.LENGTH_SHORT).show()
                 return false
             }

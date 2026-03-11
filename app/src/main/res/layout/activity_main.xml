@@ -18,13 +18,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@+id/appTitle"
-        app:tint="?attr/colorOnSurface" />
+        app:tint="?attr/colorPrimary" />
 
     <TextView
         android:id="@+id/appTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
+        android:textColor="?attr/colorPrimary"
         android:textSize="24dp"
         android:textStyle="bold"
         android:paddingTop="16dp"
@@ -62,123 +63,111 @@
         android:id="@+id/firewallToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="0dp"
+        android:layout_marginEnd="16dp"
         app:thumbIcon="@drawable/check_24px"
         app:thumbIconTint="@color/switch_thumb_icon_tint"
-        app:layout_constraintEnd_toEndOf="@id/settingsButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/appTitle"
         app:layout_constraintBottom_toBottomOf="@id/appTitle" />
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchView"
+    <LinearLayout
+        android:id="@+id/searchContainer"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:minHeight="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/search_box_outline"
-        android:queryHint="@string/search_app"
-        android:iconifiedByDefault="false"
-        app:iconifiedByDefault="false"
-        app:queryBackground="@null"
-        app:layout_constraintTop_toBottomOf="@id/appTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/sortButton"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/sortButton"
-        style="@style/Widget.MaterialComponents.Button.Icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:minWidth="48dp"
-        android:layout_marginEnd="8dp"
-        android:contentDescription="@string/sort"
-        app:icon="@drawable/ic_sort"
-        app:iconSize="18dp"
-        app:layout_constraintTop_toTopOf="@id/searchView"
-        app:layout_constraintBottom_toBottomOf="@id/searchView"
-        app:layout_constraintEnd_toStartOf="@id/settingsButton"
-        android:background="@drawable/round_button_bg"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
-        android:gravity="center"
-        app:iconPadding="0dp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/settingsButton"
-        style="@style/Widget.MaterialComponents.Button.Icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:minWidth="48dp"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="@string/settings"
-        app:icon="@drawable/ic_settings"
-        app:iconSize="18dp"
-        app:layout_constraintTop_toTopOf="@id/searchView"
-        app:layout_constraintBottom_toBottomOf="@id/searchView"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/round_button_bg"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
-        android:gravity="center"
-        app:iconPadding="0dp" />
-
-    <LinearLayout
-        android:id="@+id/selectAllContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginStart="8dp"
+        android:background="@drawable/search_box_outline"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/appTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchView"
-        app:layout_constraintBottom_toBottomOf="@id/categoryContainer">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <CheckBox
-            android:id="@+id/selectAllCheckbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/select_all" />
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:queryHint="@string/search_app"
+            android:iconifiedByDefault="false"
+            app:iconifiedByDefault="false"
+            app:queryBackground="@null" />
 
-        <TextView
-            android:id="@+id/selectedCountText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/selected_count_zero"
-            android:textSize="14sp"
-            android:minWidth="24dp"
-            android:gravity="center" />
+        <ImageButton
+            android:id="@+id/sortButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_sort"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/sort"
+            android:scaleType="center"
+            android:padding="13dp" />
+
+        <ImageButton
+            android:id="@+id/settingsButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:contentDescription="@string/settings"
+            android:src="@drawable/ic_settings"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:padding="13dp"
+            android:layout_marginEnd="4dp"
+            app:tint="?attr/colorPrimary" />
+
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/scrollTopButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/scroll_to_top"
+        app:srcCompat="@drawable/arrow_upward_24px"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@id/recyclerView"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/selectedCountText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/selected_count_zero"
+        android:textSize="13sp"
+        android:textColor="?attr/colorPrimary"
+        android:minWidth="36dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:gravity="center"
+        android:background="@drawable/selected_count_badge"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchContainer"
+        app:layout_constraintBottom_toBottomOf="@id/categoryContainer" />
 
     <HorizontalScrollView
         android:id="@+id/categoryContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fillViewport="true"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
         android:clipToPadding="false"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintStart_toEndOf="@id/selectAllContainer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchView">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/selectedCountText"
+        app:layout_constraintTop_toBottomOf="@id/searchContainer">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/categoryChipGroup"
@@ -222,8 +211,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
         android:layout_marginTop="0dp"
         app:layout_constraintTop_toBottomOf="@id/categoryContainer"
         app:layout_constraintBottom_toBottomOf="parent"

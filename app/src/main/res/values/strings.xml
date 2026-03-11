@@ -15,6 +15,7 @@
     <string name="font_default">Default</string>
     <string name="font_ndot">Ndot</string>
     <string name="select_all">Select all</string>
+    <string name="scroll_to_top">Scroll to top</string>
     <string name="cat_favorites">Favorites</string>
     <string name="made_by">Made with ❤️ by Ahmet Can Arslan</string>
     <string name="ladb_not_supported_fdroid"> (not supported for fdroid version)</string>
@@ -117,10 +118,14 @@
     <string name="keep_failed_apps_selected_description">Don\'t unselect apps on failure</string>
     <string name="auto_enable_on_shizuku_start">Auto-enable firewall when Shizuku starts</string>
     <string name="auto_enable_on_shizuku_start_description">Automatically enable the firewall when the Shizuku service becomes available</string>
+    <string name="apply_root_rules_after_reboot">Apply firewall rules after reboot</string>
+    <string name="apply_root_rules_after_reboot_description">Re-apply the last active firewall rules after boot completes with root</string>
     <string name="working_mode_title">Working mode</string>
     <string name="working_mode_summary">Choose how Firewall commands are executed</string>
     <string name="working_mode_shizuku">Shizuku</string>
     <string name="working_mode_ladb">LADB</string>
+    <string name="working_mode_root">Root (su)</string>
+    <string name="root_not_found_message">Root not found, please allow ShizuWall for accessing root permissions.</string>
     <string name="notifications_section">Notifications</string>
     <string name="app_monitor_service">App Monitor Service</string>
     <string name="app_monitor_service_description">Detect new installed apps and show a notification</string>
@@ -210,6 +215,14 @@
     <string name="daemon_start">Start Daemon</string>
     <string name="daemon_kill">Kill Daemon</string>
     <string name="daemon_installing">Installing...</string>
+    <string name="ladb_daemon_restart_required_title">Restart LADB daemon</string>
+    <string name="ladb_daemon_restart_required_message">The firewall could not be enabled because the LADB daemon failed authorization or stopped responding. Open LADB setup, enable Advanced Mode, then use Kill Daemon and Start Daemon.</string>
+    <string name="ladb_daemon_restart_reason_prefix">Detected issues:</string>
+    <string name="ladb_daemon_restart_reason_auth">Daemon authorization failed. The daemon token in the app and the running daemon may be out of sync.</string>
+    <string name="ladb_daemon_restart_reason_unresponsive">Daemon is not responding or its socket is refusing connections.</string>
+    <string name="ladb_daemon_restart_reason_token">Daemon logs mention a token problem or a missing token file.</string>
+    <string name="ladb_daemon_restart_log_prefix">Recent daemon log:</string>
+    <string name="ladb_daemon_log_detected_hint">Recent daemon logs are available in Details.</string>
     <string name="sort">Sort</string>
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
@@ -233,6 +246,7 @@
     <string name="already_in_list">%s already in list</string>
     <string name="error_format">Error: %s</string>
     <string name="firewall_reboot_message">Firewall should be enabled again after rebooting. Tap to open the app.</string>
+    <string name="firewall_reboot_apply_failed_message">Failed to re-apply firewall rules after reboot. Tap to open the app.</string>
     <string name="open_developer_settings">Open Developer Settings</string>
     <string name="ladb_connection_failed_help">Connection failed. Please check:\n1. Wireless debugging is enabled in Developer options\n2. The device is on the same network\n3. No firewall is blocking the connection</string>
     <string name="copy_logs_success">Logs copied to clipboard!</string>
@@ -270,7 +284,7 @@
     <string name="firewall_mode_whitelist">Whitelist</string>
     <string name="firewall_mode_whitelist_description">Block all apps by default, allow selected apps</string>
     <string name="whitelist_info_system_apps_warning">When "Show system apps" is disabled, system apps will not be firewalled in Whitelist mode.\n\nIf you have enabled "Show system apps" and are using Whitelist mode, this combination has not been fully tested. Use with caution.</string>
-    <string name="firewall_mode_smart_foreground">Smart Foreground (Beta)</string>
+    <string name="firewall_mode_smart_foreground">Smart Foreground</string>
     <string name="firewall_mode_smart_foreground_description">Only allow the app currently in foreground</string>
     <string name="smart_foreground_requires_accessibility">Requires Accessibility permission</string>
     <string name="firewall_mode_change_disabled">Cannot change firewall mode while firewall is enabled. Please disable the firewall first.</string>

@@ -48,7 +48,10 @@ class AppMonitorService : Service() {
     }
 
     override fun onDestroy() {
-        unregisterReceiver(packageReceiver)
+        try {
+            unregisterReceiver(packageReceiver)
+        } catch (_: Exception) {
+        }
         super.onDestroy()
     }
 

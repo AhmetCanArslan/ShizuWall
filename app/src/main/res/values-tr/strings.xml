@@ -266,7 +266,7 @@
     <string name="firewall_mode_default_description">Geleneksel güvenlik duvarı - seçili uygulamaları engelle</string>
     <string name="firewall_mode_adaptive">Uyarlanabilir</string>
     <string name="firewall_mode_adaptive_description">Kuralları anında uygula. Güvenlik duvarı açık kalır.</string>
-    <string name="firewall_mode_smart_foreground">Akıllı Ön Plan (Beta)</string>
+    <string name="firewall_mode_smart_foreground">Akıllı Ön Plan</string>
     <string name="firewall_mode_smart_foreground_description">Yalnızca şu anda ön plandaki uygulamaya izin ver</string>
     <string name="smart_foreground_requires_accessibility">Erişilebilirlik izni gereklidir</string>
     <string name="smart_foreground_service_description">Güvenlik duvarı kurallarını yönetmek için ön plan uygulamasını izler</string>
