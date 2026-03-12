@@ -103,6 +103,10 @@ class SettingsActivity : BaseActivity() {
     private lateinit var radioModeWhitelist: RadioButton
     private lateinit var tvSmartForegroundWarning: TextView
     private lateinit var tvFirewallModeDisabledWarning: TextView
+    private lateinit var warningContainer: LinearLayout
+    private lateinit var retryButton: android.widget.ImageButton
+    private lateinit var retryLoadingProgress: android.widget.ProgressBar
+    private var isRetryLoading = false
 
     private val createDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -235,6 +239,16 @@ class SettingsActivity : BaseActivity() {
         radioModeWhitelist = findViewById(R.id.radioModeWhitelist)
         tvSmartForegroundWarning = findViewById(R.id.tvSmartForegroundWarning)
         tvFirewallModeDisabledWarning = findViewById(R.id.tvFirewallModeDisabledWarning)
+        warningContainer = findViewById(R.id.warningContainer)
+        retryButton = findViewById(R.id.retryButton)
+        retryLoadingProgress = findViewById(R.id.retryLoadingProgress)
+        
+        // Set up retry button click listener
+        retryButton.setOnClickListener {
+            if (!isRetryLoading) {
+                retryAccessibilityGrant()
+            }
+        }
     }
 
     private fun loadSettings() {
@@ -335,9 +349,13 @@ class SettingsActivity : BaseActivity() {
         // Show warning for Smart Foreground if accessibility not enabled
         if (mode == FirewallMode.SMART_FOREGROUND) {
             val accessibilityEnabled = ForegroundDetectionService.isServiceEnabled(this)
-            tvSmartForegroundWarning.visibility = if (!accessibilityEnabled) View.VISIBLE else View.GONE
+            warningContainer.visibility = if (!accessibilityEnabled) View.VISIBLE else View.GONE
+            // Reset retry loading state
+            isRetryLoading = false
+            retryLoadingProgress.visibility = View.GONE
+            retryButton.visibility = View.VISIBLE
         } else {
-            tvSmartForegroundWarning.visibility = View.GONE
+            warningContainer.visibility = View.GONE
         }
     }
 
@@ -410,13 +428,8 @@ class SettingsActivity : BaseActivity() {
                         // Show permission dialog
                         showAccessibilityPermissionDialog()
                     } else {
-                        // Previously accepted, try to auto-enable again
-                        lifecycleScope.launch {
-                            val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
-                            if (success) {
-                                updateFirewallModeUI(newMode)
-                            }
-                        }
+                        // Previously accepted, try to auto-enable with loading dialog
+                        showAccessibilityAutoGrantDialog(newMode)
                     }
                 }
             }
@@ -1421,5 +1434,114 @@ class SettingsActivity : BaseActivity() {
         return file.delete() || !file.exists()
     }
 
+    private fun showAccessibilityAutoGrantDialog(firewallMode: FirewallMode) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
+        val messageText: TextView = dialogView.findViewById(R.id.loading_message)
+        val progressBar: android.widget.ProgressBar = dialogView.findViewById(R.id.loading_progress)
+        
+        messageText.text = getString(R.string.accessibility_auto_granting)
+        progressBar.visibility = View.VISIBLE
+        
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .show()
+        
+        // Background task to enable accessibility service
+        lifecycleScope.launch {
+            val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
+            
+            withContext(Dispatchers.Main) {
+                dialog.dismiss()
+                
+                if (success) {
+                    // Mark as shown and accepted
+                    sharedPreferences.edit()
+                        .putBoolean("accessibility_dialog_shown", true)
+                        .putBoolean("accessibility_dialog_accepted", true)
+                        .apply()
+                    
+                    // Update UI
+                    updateFirewallModeUI(firewallMode)
+                    Toast.makeText(
+                        this@SettingsActivity,
+                        getString(R.string.accessibility_auto_enabled),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    // Failed to auto-grant - show error dialog
+                    MaterialAlertDialogBuilder(this@SettingsActivity)
+                        .setTitle(R.string.accessibility_permission_title)
+                        .setMessage(R.string.accessibility_auto_grant_failed)
+                        .setPositiveButton(R.string.open_settings) { _, _ ->
+                            // Open accessibility settings for manual enable
+                            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                            startActivity(intent)
+                        }
+                        .setNegativeButton(R.string.cancel) { _, _ ->
+                            // Revert to default mode
+                            revertToDefaultMode()
+                        }
+                        .show()
+                }
+            }
+        }
+    }
+
+    private fun retryAccessibilityGrant() {
+        // Show full loading dialog, same as initial attempt
+        val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
+        val messageText: TextView = dialogView.findViewById(R.id.loading_message)
+        val progressBar: android.widget.ProgressBar = dialogView.findViewById(R.id.loading_progress)
+        
+        messageText.text = getString(R.string.accessibility_auto_granting)
+        progressBar.visibility = View.VISIBLE
+        
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .show()
+        
+        lifecycleScope.launch {
+            val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
+            
+            withContext(Dispatchers.Main) {
+                dialog.dismiss()
+                
+                if (success) {
+                    // Mark as shown and accepted
+                    sharedPreferences.edit()
+                        .putBoolean("accessibility_dialog_shown", true)
+                        .putBoolean("accessibility_dialog_accepted", true)
+                        .apply()
+                    
+                    // Update UI - hide warning
+                    val mode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+                    updateFirewallModeUI(mode)
+                    
+                    Toast.makeText(
+                        this@SettingsActivity,
+                        getString(R.string.accessibility_auto_enabled),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    // Failed - show error dialog
+                    MaterialAlertDialogBuilder(this@SettingsActivity)
+                        .setTitle(R.string.accessibility_permission_title)
+                        .setMessage(R.string.accessibility_auto_grant_failed)
+                        .setPositiveButton(R.string.open_settings) { _, _ ->
+                            // Open accessibility settings for manual enable
+                            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                            startActivity(intent)
+                        }
+                        .setNegativeButton(R.string.cancel) { _, _ ->
+                            // Revert to default mode
+                            revertToDefaultMode()
+                        }
+                        .show()
+                }
+            }
+        }
+    }
 
 }

@@ -44,6 +44,7 @@
     <string name="app_reset_complete">App reset complete. Closing…</string>
     <string name="reset_app_failed">Failed to reset app: %s</string>
     <string name="adb_broadcast_usage_title">ADB Broadcast Usage (Copiable)</string>
+    <string name="retry">Retry</string>
     <string name="ok">OK</string>
     <string name="adb_broadcast_usage_text" formatted="false">Action:\n%1$s\n\nComponent:\n%2$s\n\nExtras:\n\n%3$s (boolean) — true = enable, false = disable\n\n%4$s (string, optional) — comma-separated package list to operate on. If omitted, app falls back to saved selected apps.\n\n\nExamples:\n\nEnable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nDisable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nEnable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\nDisable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\nNotes:\n\n- The receiver is exported for adb automation; prefer targeting the receiver explicitly (for example: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver) to avoid external broadcasts.\n\n- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.\n\n- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.</string>
     <string name="no_apps_selected">No apps selected</string>
@@ -312,8 +313,11 @@
     <string name="apply">Apply</string>
     <string name="accessibility_permission_title">Accessibility Permission Required</string>
     <string name="accessibility_permission_message">This app requires AccessibilityService API to monitor foreground app changes for Smart Foreground mode. The API will be used to detect when you switch between apps and automatically update firewall rules accordingly. No personal data is collected or transmitted.</string>
+    <string name="accessibility_auto_granting">Enabling Accessibility service...</string>
+    <string name="accessibility_auto_grant_failed">Failed to enable Accessibility service automatically. Please enable it manually in Settings.</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
+    <string name="open_settings">Open Settings</string>
 
     <!-- Floating Firewall Button -->
     <string name="floating_button">Floating Firewall Button</string>

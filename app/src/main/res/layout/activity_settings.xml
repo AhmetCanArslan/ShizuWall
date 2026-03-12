@@ -464,16 +464,47 @@
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
 
-                        <TextView
-                            android:id="@+id/tvSmartForegroundWarning"
+                        <LinearLayout
+                            android:id="@+id/warningContainer"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
                             android:layout_marginBottom="8dp"
-                            android:text="@string/smart_foreground_requires_accessibility"
-                            android:textSize="12sp"
-                            android:textColor="?attr/colorError"
-                            android:visibility="gone" />
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:id="@+id/tvSmartForegroundWarning"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/smart_foreground_requires_accessibility"
+                                android:textSize="12sp"
+                                android:textColor="?attr/colorError" />
+
+                            <ProgressBar
+                                android:id="@+id/retryLoadingProgress"
+                                style="?android:attr/progressBarStyleSmall"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginStart="8dp"
+                                android:indeterminate="true"
+                                android:visibility="gone" />
+
+                            <ImageButton
+                                android:id="@+id/retryButton"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_marginStart="8dp"
+                                android:padding="4dp"
+                                android:src="@drawable/ic_refresh_24px"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="@string/retry"
+                                android:scaleType="fitCenter"
+                                app:tint="?attr/colorError" />
+
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/tvFirewallModeDisabledWarning"
