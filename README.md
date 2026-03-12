@@ -48,13 +48,14 @@
 ## Screenshots
 
 <p align="center">
-  <img src="assets/screenShots/v4.3/1.png" width="30%" />
-  <img src="assets/screenShots/v4.3/2.png" width="30%" />
-  <img src="assets/screenShots/v4.3/3.png" width="30%" />
-  <img src="assets/screenShots/v4.3/4.png" width="30%" />
-  <img src="assets/screenShots/v4.3/5.png" width="30%" />
-  <img src="assets/screenShots/v4.3/6.png" width="30%" />
-  <img src="assets/screenShots/v4.0/7.png" width="30%" />
+  <img src="assets/screenShots/v4.4/1.png" width="30%" />
+  <img src="assets/screenShots/v4.4/2.png" width="30%" />
+  <img src="assets/screenShots/v4.4/3.png" width="30%" />
+  <img src="assets/screenShots/v4.4/4.png" width="30%" />
+  <img src="assets/screenShots/v4.4/5.png" width="30%" />
+  <img src="assets/screenShots/v4.4/6.png" width="30%" />
+  <img src="assets/screenShots/v4.4/7.png" width="30%" />
+  <img src="assets/screenShots/v4.4/8.png" width="30%" />
 </p>
 
 ## Requirements
