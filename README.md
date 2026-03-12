@@ -4,7 +4,7 @@
   </a>
   <h1>ShizuWall</h1>
   <strong>Android firewall without root or VPN.</strong><br/>
-  Privacy-first, local-only, powered by Shizuku / local ADB daemon.
+  Privacy-first, local-only, powered by Shizuku / local ADB daemon / Root.
 </div>
 <div style="height: 20px;">&nbsp;</div>
 <p align="center">
@@ -40,10 +40,11 @@
 
 ## Why ShizuWall
 
-- **No root / no VPN**: avoids packet interception and persistent VPN tunnel side effects.
+- **No VPN**: avoids packet interception and persistent VPN tunnel side effects.
 - **Per-app network control**: toggles app networking through Android's `connectivity` chain-3 controls.
 - **Privacy-first by design**: offline-first, no analytics, no telemetry, no tracking.
 - **Automation ready**: supports `adb broadcast` commands for scripts and task automation.
+- **Control Methods**: ShizuWall provides three convenient ways (Quick Settings Toggle, App Widget, Floating Firewall Button) to control the firewall.
 
 ## Screenshots
 
@@ -61,13 +62,23 @@
 ## Requirements
 
 - Android 11 (API 30) or higher
-- One control backend:
-  - Shizuku or
-  - built in local ADB daemon (LibADB flow)
+- One control backend: Shizuku, local ADB daemon or root access
+
+## Control Backends
+
+ShizuWall supports three methods to execute firewall commands:
+
+| Method | Description | Setup |
+|--------|---------|---------|
+| **Shizuku** | Secure API that communicates with system services. Requires Shizuku app. Forks are supported. | Install and setup Shizuku app, grant permissions |
+| **Root** | Direct root access. | Root your device using standard methods |
+| **LibADB** | Local ADB daemon connection via wireless debugging. | Enable wireless debugging and pair daemon in Developer Options (Guide is in app) |
 
 ## How It Works
 
-These are the platform commands used through Shizuku or the local daemon:
+ShizuWall uses Android's **Chain 3** (connectivity chain) to control per-app networking. These are the platform commands executed through Shizuku or the local daemon:
+
+### ADB Chain 3 Commands
 
 ```bash
 # Enable firewall framework
@@ -82,6 +93,8 @@ cmd connectivity set-package-networking-enabled true <package.name>
 # Disable firewall framework
 cmd connectivity set-chain3-enabled false
 ```
+
+**Chain 3** is an Android platform mechanism that intercepts and controls per-package network access at the system level, allowing fine-grained firewall control.
 
 ## Automation (ADB Broadcast)
 
@@ -111,7 +124,7 @@ adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.F
 adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state false --es apps "com.example.app1,com.example.app2"
 ```
 
-> Shizuku or the local daemon must be running for broadcasts to succeed.
+> One of the control backends (Shizuku, local ADB daemon or Root) must be active for broadcasts to succeed.
 
 ## Notes & Limitations
 
@@ -152,7 +165,7 @@ chmod +x scripts/compile_daemon.sh
 
 ShizuWall is provided **"as is"** without warranty of any kind.
 
-By using this app, you acknowledge that it relies on advanced system permissions (Shizuku/ADB), and you accept all related risks. The developer is not responsible for damages such as system instability, data loss, service interruption, or side effects from blocked networking.
+By using this app, you acknowledge that it relies on advanced system permissions (Shizuku/ADB/Root), and you accept all related risks. The developer is not responsible for damages such as system instability, data loss, service interruption, or side effects from blocked networking.
 
 Always verify which apps you block.
 
