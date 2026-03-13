@@ -28,7 +28,7 @@
     <string name="later">Později</string>
     <string name="export_successful">Export úspěšný</string>
     <string name="export_failed">Export selhal: %s</string>
-    <string name="import_successful">Import úspěšný. Prosím restarujte aplikaci.</string>
+    <string name="import_successful">Import byl úspěšný. Prosím restarujte aplikaci.</string>
     <string name="import_failed">Import selhal: %s</string>
     <!-- Exit confirmation -->
     <string name="exit_confirm_message">Zmáčkněte tlačítko zpět pro zavření</string>
@@ -51,7 +51,7 @@
     <string name="shizuku_permission_required">Oprávnění Shizuku vyžadováno.</string>
     <string name="firewall">Firewall</string>
     <string name="welcome_title">Vítejte v ShizuWall</string>
-    <string name="welcome_message">Blokujte nežádoucí síťová připojení bez rootování nebo VPN</string>
+    <string name="welcome_message">Blokovat nežádoucí síťová připojení bez rootu nebo VPN</string>
     <string name="next">Další</string>
     <string name="notification_permission_title">Oprávnění k zasílání oznámení</string>
     <string name="notification_permission_message">Potřebujeme povolení k zasílání oznámení, abychom vás mohli informovat o stavu brány firewall, pokud restartujete zařízení, když je brána firewall aktivní.</string>
@@ -117,11 +117,11 @@
     <string name="skip_error_dialog">Přeskočit dialog chyby</string>
     <string name="skip_error_dialog_description">Nezobrazovat varování při selhání</string>
     <string name="keep_failed_apps_selected">Nechat neúspěšné aplikace označené</string>
-    <string name="keep_failed_apps_selected_description">Při selhání neodnačujte zvolené aplikace</string>
+    <string name="keep_failed_apps_selected_description">Při selhání neodznačujte zvolené aplikace</string>
     <string name="auto_enable_on_shizuku_start">Automaticky zapnout firewall při spuštění Shizuku</string>
     <string name="auto_enable_on_shizuku_start_description">Automaticky povolit bránu firewall, když bude služba Shizuku k dispozici</string>
     <string name="apply_root_rules_after_reboot">Aplikovat firewall pravidla po restartu</string>
-    <string name="apply_root_rules_after_reboot_description">Znovu aplikujte poslední aktivní firewall pravidla po dokončení bootu pomocí root</string>
+    <string name="apply_root_rules_after_reboot_description">Znovu aplikovat poslední aktivní pravidla firewallu po dokončení bootu pomocí root</string>
     <string name="working_mode_title">Pracovní režim</string>
     <string name="working_mode_summary">Vyberte způsob provádění příkazů brány firewall</string>
     <string name="working_mode_shizuku">Shizuku</string>
@@ -201,7 +201,7 @@
     <string name="ladb_pairing_result_missing_port">Chybějící párovací port. Zadejte: PORTU (z bezdrátového ladění → Párování zařízení).</string>
     <string name="ladb_notification_permission_required">K zobrazení výzvy k zadání párovacího kódu je nutné povolení k zasílání oznámení.</string>
     <string name="set_ladb_title">LADB &amp; Daemon nastavení</string>
-    <string name="set_ladb_summary">Spárujte LADB a nainstalujte přetrvávající daemom na pozadí</string>
+    <string name="set_ladb_summary">Spárovat LADB a nainstalovat perzistentní daemon na pozadí</string>
     <string name="ladb_logs_title">Logy</string>
     <string name="ladb_logs_empty">Zatím žádné protokoly. Pro zobrazení protokolů zde proveďte operace LADB.</string>
     <string name="ladb_clear_logs">Vyčisit logy</string>
@@ -282,14 +282,14 @@
     <string name="firewall_mode_default">Základní</string>
     <string name="firewall_mode_default_description">Tradiční firewall – blokování vybraných aplikací</string>
     <string name="firewall_mode_adaptive">Adaptivní</string>
-    <string name="firewall_mode_adaptive_description">Okamžitě aplikujte pravidla. Firewall zůstává zapnutý.</string>
+    <string name="firewall_mode_adaptive_description">Okamžitě aplikovat pravidla. Firewall zůstává zapnutý.</string>
     <string name="firewall_mode_whitelist">Whitelist</string>
     <string name="firewall_mode_whitelist_description">Ve výchozím nastavení blokovat všechny aplikace, povolit vybrané aplikace</string>
     <string name="whitelist_info_system_apps_warning">Pokud je možnost „Zobrazit systémové aplikace“ deaktivována, systémové aplikace nebudou v režimu Whitelist chráněny firewallem. Pokud jste aktivovali možnost „Zobrazit systémové aplikace“ a používáte režim Whitelist, tato kombinace nebyla plně otestována. Používejte ji s opatrností.</string>
     <string name="firewall_mode_smart_foreground">Inteligentní popředí</string>
     <string name="firewall_mode_smart_foreground_description">Povolit pouze aplikaci, která je aktuálně v popředí</string>
     <string name="smart_foreground_requires_accessibility">Vyžaduje oprávnění přístupnosti</string>
-    <string name="firewall_mode_change_disabled">Nelze změnit režim brány firewall, když je brána firewall aktivní. Nejprve bránu firewall deaktivujte.</string>
+    <string name="firewall_mode_change_disabled">Nelze změnit režim brány firewall, když je brána firewall aktivní. Nejprve ji deaktivujte.</string>
     <string name="smart_foreground_service_description">Sleduje aplikaci v popředí pro správu pravidel brány firewall</string>
     <string name="smart_foreground_notification_channel_name">Inteligentní popředí (služba)</string>
     <string name="smart_foreground_notification_channel_description">Služba na pozadí pro monitorování aplikace na popředí</string>
