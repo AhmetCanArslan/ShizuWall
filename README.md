@@ -3,7 +3,7 @@
     <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" alt="ShizuWall Icon" width="72" />
   </a>
   <h1>ShizuWall</h1>
-  <strong>Android firewall without root or VPN.</strong><br/>
+  <strong>Android firewall without VPN.</strong><br/>
   Privacy-first, local-only, powered by Shizuku / local ADB daemon / Root.
 </div>
 <div style="height: 20px;">&nbsp;</div>
