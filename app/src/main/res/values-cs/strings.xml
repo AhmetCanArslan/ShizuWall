@@ -282,12 +282,12 @@
     <string name="firewall_mode_default">Základní</string>
     <string name="firewall_mode_default_description">Tradiční firewall – blokování vybraných aplikací</string>
     <string name="firewall_mode_adaptive">Adaptivní</string>
-    <string name="firewall_mode_adaptive_description">Okamžitě aplikovat pravidla. Firewall zůstává zapnutý.</string>
+    <string name="firewall_mode_adaptive_description">Okamžitě aplikuje pravidla. Firewall zůstává zapnutý.</string>
     <string name="firewall_mode_whitelist">Whitelist</string>
-    <string name="firewall_mode_whitelist_description">Ve výchozím nastavení blokovat všechny aplikace, povolit vybrané aplikace</string>
+    <string name="firewall_mode_whitelist_description">Ve výchozím nastavení blokuje všechny aplikace, vybrané aplikace povolí</string>
     <string name="whitelist_info_system_apps_warning">Pokud je možnost „Zobrazit systémové aplikace“ deaktivována, systémové aplikace nebudou v režimu Whitelist chráněny firewallem. Pokud jste aktivovali možnost „Zobrazit systémové aplikace“ a používáte režim Whitelist, tato kombinace nebyla plně otestována. Používejte ji s opatrností.</string>
     <string name="firewall_mode_smart_foreground">Inteligentní popředí</string>
-    <string name="firewall_mode_smart_foreground_description">Povolit pouze aplikaci, která je aktuálně v popředí</string>
+    <string name="firewall_mode_smart_foreground_description">Povolí pouze aplikaci, která je aktuálně v popředí</string>
     <string name="smart_foreground_requires_accessibility">Vyžaduje oprávnění přístupnosti</string>
     <string name="firewall_mode_change_disabled">Nelze změnit režim brány firewall, když je brána firewall aktivní. Nejprve ji deaktivujte.</string>
     <string name="smart_foreground_service_description">Sleduje aplikaci v popředí pro správu pravidel brány firewall</string>
