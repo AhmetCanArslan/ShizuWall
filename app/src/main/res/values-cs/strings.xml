@@ -107,7 +107,7 @@
     <string name="display_section">Displej</string>
     <string name="show_system_apps_description">Zahrnout systémové aplikace do seznamu</string>
     <string name="move_selected_top">Přesunout vybrané aplikace nahoru</string>
-    <string name="move_selected_top_description">Zobrazit vybrané aplikace na začátek</string>
+    <string name="move_selected_top_description">Zobrazit vybrané aplikace na začátku</string>
     <string name="use_dynamic_color">Použít dynamické barvy</string>
     <string name="use_dynamic_color_description">Použít barvy tapety na motiv aplikace</string>
     <string name="firewall_section">Firewall</string>
