@@ -565,7 +565,7 @@ class MainActivity : BaseActivity() {
         loadInstalledApps()
         
         // Auto-enable accessibility service if revoked (e.g. after debug APK reinstall)
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
             if (!ForegroundDetectionService.isServiceEnabled(this)) {
                 // Try to auto-enable via Shizuku/LADB shell
                 lifecycleScope.launch {
@@ -1894,7 +1894,7 @@ class MainActivity : BaseActivity() {
             updateInteractiveViews()
             showDimOverlay(force = true)
             
-            if (enable && firewallMode == FirewallMode.SMART_FOREGROUND) {
+            if (enable && (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER)) {
                 if (!ForegroundDetectionService.isServiceEnabled(this@MainActivity)) {
                     val granted = ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
                     if (granted) {
@@ -2081,7 +2081,7 @@ class MainActivity : BaseActivity() {
             return Pair(successful, failed)
         }
 
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
             return Pair(successful, failed)
         }
 
@@ -2106,7 +2106,7 @@ class MainActivity : BaseActivity() {
         lastOperationErrorDetails.clear()
 
         val toUnblock = packageNames.toMutableList()
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
             val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
             if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
                 toUnblock.add(currentFgApp)
@@ -2127,7 +2127,7 @@ class MainActivity : BaseActivity() {
         }
         runCommandDetailed("cmd connectivity set-chain3-enabled false")
 
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
             sharedPreferences.edit()
                 .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                 .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
