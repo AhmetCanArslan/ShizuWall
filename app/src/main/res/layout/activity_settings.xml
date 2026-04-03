@@ -503,8 +503,25 @@
                                 android:contentDescription="@string/retry"
                                 android:scaleType="fitCenter"
                                 app:tint="?attr/colorError" />
-
+                            
                         </LinearLayout>
+
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/radioModeFocusTracker"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/firewall_mode_focus_tracker"
+                            android:textSize="15sp"
+                            android:textColor="?android:attr/textColorPrimary" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginBottom="8dp"
+                            android:text="@string/firewall_mode_focus_tracker_description"
+                            android:textSize="12sp"
+                            android:textColor="?android:attr/textColorSecondary" />
 
                         <TextView
                             android:id="@+id/tvFirewallModeDisabledWarning"
