@@ -292,6 +292,10 @@
     <string name="whitelist_info_system_apps_warning">When "Show system apps" is disabled, system apps will not be firewalled in Whitelist mode.\n\nIf you have enabled "Show system apps" and are using Whitelist mode, this combination has not been fully tested. Use with caution.</string>
     <string name="firewall_mode_smart_foreground">Smart Foreground</string>
     <string name="firewall_mode_smart_foreground_description">Only allow the app currently in foreground</string>
+    
+    <string name="firewall_mode_focus_tracker">Focus Tracker</string>
+    <string name="firewall_mode_focus_tracker_description">Disable firewall when ShizuWall is unfocused, and enable when focused.</string>
+    
     <string name="smart_foreground_requires_accessibility">Requires Accessibility permission</string>
     <string name="firewall_mode_change_disabled">Cannot change firewall mode while firewall is enabled. Please disable the firewall first.</string>
     <string name="smart_foreground_service_description">Monitors foreground app to manage firewall rules</string>
@@ -299,6 +303,10 @@
     <string name="smart_foreground_notification_channel_description">Background service for monitoring foreground app</string>
     <string name="smart_foreground_active">Smart Foreground Active</string>
     <string name="smart_foreground_active_description">Only the foreground app has network access</string>
+    
+    <string name="focus_tracker_active">Focus Tracker: Active</string>
+    <string name="focus_tracker_paused">Focus Tracker: Inactive</string>
+    
     <string name="accessibility_service_label">ShizuWall Foreground Monitor</string>
     <string name="accessibility_auto_enabled">Accessibility service enabled automatically</string>
     <string name="smart_foreground_info_enabled">Smart Foreground mode will only allow network access for the app you are currently using. All other apps will be blocked.\n\nThe required Accessibility permission is granted automatically when you select this mode.</string>
