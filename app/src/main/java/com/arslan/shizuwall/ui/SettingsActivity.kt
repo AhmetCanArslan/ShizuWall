@@ -100,6 +100,7 @@ class SettingsActivity : BaseActivity() {
     private lateinit var radioModeDefault: RadioButton
     private lateinit var radioModeAdaptive: RadioButton
     private lateinit var radioModeSmartForeground: RadioButton
+    private lateinit var radioModeFocusTracker: RadioButton
     private lateinit var radioModeWhitelist: RadioButton
     private lateinit var tvSmartForegroundWarning: TextView
     private lateinit var tvFirewallModeDisabledWarning: TextView
@@ -236,6 +237,7 @@ class SettingsActivity : BaseActivity() {
         radioModeDefault = findViewById(R.id.radioModeDefault)
         radioModeAdaptive = findViewById(R.id.radioModeAdaptive)
         radioModeSmartForeground = findViewById(R.id.radioModeSmartForeground)
+        radioModeFocusTracker = findViewById(R.id.radioModeFocusTracker)
         radioModeWhitelist = findViewById(R.id.radioModeWhitelist)
         tvSmartForegroundWarning = findViewById(R.id.tvSmartForegroundWarning)
         tvFirewallModeDisabledWarning = findViewById(R.id.tvFirewallModeDisabledWarning)
@@ -270,6 +272,7 @@ class SettingsActivity : BaseActivity() {
         when (firewallMode) {
             FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
             FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
+            FirewallMode.FOCUS_TRACKER -> radioGroupFirewallMode.check(R.id.radioModeFocusTracker)
             FirewallMode.WHITELIST -> radioGroupFirewallMode.check(R.id.radioModeWhitelist)
             else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
         }
@@ -346,8 +349,8 @@ class SettingsActivity : BaseActivity() {
             sharedPreferences.edit().putBoolean("skip_enable_confirm", true).apply()
         }
         
-        // Show warning for Smart Foreground if accessibility not enabled
-        if (mode == FirewallMode.SMART_FOREGROUND) {
+        // Show warning for tracking modes if accessibility not enabled
+        if (mode == FirewallMode.SMART_FOREGROUND || mode == FirewallMode.FOCUS_TRACKER) {
             val accessibilityEnabled = ForegroundDetectionService.isServiceEnabled(this)
             warningContainer.visibility = if (!accessibilityEnabled) View.VISIBLE else View.GONE
             // Reset retry loading state
@@ -368,6 +371,7 @@ class SettingsActivity : BaseActivity() {
         radioModeDefault.isEnabled = !isFirewallEnabled
         radioModeAdaptive.isEnabled = !isFirewallEnabled
         radioModeSmartForeground.isEnabled = !isFirewallEnabled
+        radioModeFocusTracker.isEnabled = !isFirewallEnabled
         radioModeWhitelist.isEnabled = !isFirewallEnabled
         
         // Update alpha for visual feedback
@@ -398,6 +402,7 @@ class SettingsActivity : BaseActivity() {
                 when (currentMode) {
                     FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
                     FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
+                    FirewallMode.FOCUS_TRACKER -> radioGroupFirewallMode.check(R.id.radioModeFocusTracker)
                     FirewallMode.WHITELIST -> radioGroupFirewallMode.check(R.id.radioModeWhitelist)
                     else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
                 }
@@ -407,6 +412,7 @@ class SettingsActivity : BaseActivity() {
             val newMode = when (checkedId) {
                 R.id.radioModeAdaptive -> FirewallMode.ADAPTIVE
                 R.id.radioModeSmartForeground -> FirewallMode.SMART_FOREGROUND
+                R.id.radioModeFocusTracker -> FirewallMode.FOCUS_TRACKER
                 R.id.radioModeWhitelist -> FirewallMode.WHITELIST
                 else -> FirewallMode.DEFAULT
             }
@@ -417,8 +423,8 @@ class SettingsActivity : BaseActivity() {
             TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
             updateFirewallModeUI(newMode)
             
-            // Handle accessibility for Smart Foreground mode
-            if (newMode == FirewallMode.SMART_FOREGROUND) {
+            // Handle accessibility for tracking modes
+            if (newMode == FirewallMode.SMART_FOREGROUND || newMode == FirewallMode.FOCUS_TRACKER) {
                 if (!ForegroundDetectionService.isServiceEnabled(this)) {
                     // Check dialog status
                     val dialogShown = sharedPreferences.getBoolean("accessibility_dialog_shown", false)
