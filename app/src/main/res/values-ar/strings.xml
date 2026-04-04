@@ -42,7 +42,23 @@
     <string name="firewall_cleanup_warning">تحذير: فشل تنظيف الجدار الناري. يرجى إعادة تشغيل جهازك لاستعادة الوصول إلى الإنترنت.</string>
     <string name="app_reset_complete">اكتمل إعادة تعيين التطبيق. جاري الإغلاق…</string>
     <string name="reset_app_failed">فشل إعادة تعيين التطبيق: %s</string>
-    <string name="adb_broadcast_usage_title">استخدام بث ADB (قابل للنسخ)</string>
+    <string name="adb_broadcast_usage_title">استخدام بث ADB</string>
+    <string name="adb_broadcast_field_action">الإجراء</string>
+    <string name="adb_broadcast_field_component">المكون</string>
+    <string name="adb_broadcast_field_extras">الإضافات</string>
+    <string name="adb_broadcast_examples_title">الأوامر الشائعة</string>
+    <string name="adb_broadcast_example_enable_selected">تفعيل الجدار الناري للتطبيقات المحددة</string>
+    <string name="adb_broadcast_example_disable_selected">تعطيل الجدار الناري للتطبيقات المحددة</string>
+    <string name="adb_broadcast_example_enable_csv">تفعيل الجدار الناري لحزم محددة (CSV)</string>
+    <string name="adb_broadcast_example_disable_csv">تعطيل الجدار الناري لحزم محددة (CSV)</string>
+    <string name="adb_broadcast_developer_section_title">للمطورين</string>
+    <string name="adb_broadcast_dev_enable_framework">تفعيل إطار عمل الجدار الناري</string>
+    <string name="adb_broadcast_dev_block_package">حظر تطبيق محدد</string>
+    <string name="adb_broadcast_dev_unblock_package">إلغاء حظر تطبيق محدد</string>
+    <string name="adb_broadcast_dev_disable_framework">تعطيل إطار عمل الجدار الناري</string>
+    <string name="adb_broadcast_extras_summary" formatted="false">%1$s (boolean): true = تفعيل، false = تعطيل
+
+%2$s (string، اختياري): قائمة حزم مفصولة بفاصلة. إذا تم تجاهلها، يستخدم التطبيق الحزم المحددة المحفوظة في ShizuWall.</string>
     <string name="ok">موافق</string>
     <string name="adb_broadcast_usage_text" formatted="false">الإجراء:\n%1$s\n\nالمكون:\n%2$s\n\nالإضافات:\n\n%3$s (boolean) — true = تفعيل، false = تعطيل\n\n%4$s (string، اختياري) — قائمة حزم مفصولة بفاصلة للعمل عليها. إذا تم حذفها، يعود التطبيق إلى التطبيقات المحددة المحفوظة.\n\n\nأمثلة:\n\nتفعيل الجدار الناري للتطبيقات المختارة (المحددة في ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nتعطيل الجدار الناري للتطبيقات المختارة (المحددة في ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nتفعيل الجدار الناري لحزم محددة (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\nتعطيل الجدار الناري لحزم محددة (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\nملاحظات:\n\n- المستقبل مكشوف لأتمتة adb؛ يفضل استهداف المستقبل بشكل صريح (على سبيل المثال: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver) لتجنب عمليات البث الخارجية.\n\n- يجب تشغيل Shizuku ويجب أن يحصل التطبيق على إذن Shizuku لنجاح عمليات البث هذه.\n\n- يطبق المستقبل نفس الأوامر الموجودة في واجهة المستخدم (cmd connectivity ...). استخدام بحذر.</string>
     <string name="no_apps_selected">لا توجد تطبيقات محددة</string>
@@ -100,6 +116,7 @@
     <string name="operation_failed_message">فشلت العملية لـ %d من التطبيقات التالية. تم إلغاء تحديدهم.</string>
     <string name="details">التفاصيل</string>
     <string name="copy">نسخ</string>
+    <string name="copied">تم النسخ</string>
     <string name="no_error_details">لا توجد تفاصيل إضافية متاحة.</string>
     <string name="close">إغلاق</string>
     <string name="settings_title">الإعدادات</string>

@@ -39,7 +39,23 @@
     <string name="firewall_cleanup_warning">Внимание: Очистка брандмауэра не удалась. Пожалуйста, ПЕРЕЗАГРУЗИТЕ устройство, чтобы восстановить доступ в Интернет.</string>
     <string name="app_reset_complete">Сброс приложения завершен. Закрытие…</string>
     <string name="reset_app_failed">Не удалось сбросить приложение: %s</string>
-    <string name="adb_broadcast_usage_title">Использование ADB Broadcast (копируемое)</string>
+    <string name="adb_broadcast_usage_title">Использование ADB Broadcast</string>
+    <string name="adb_broadcast_field_action">Действие</string>
+    <string name="adb_broadcast_field_component">Компонент</string>
+    <string name="adb_broadcast_field_extras">Дополнительно</string>
+    <string name="adb_broadcast_examples_title">Частые команды</string>
+    <string name="adb_broadcast_example_enable_selected">Включить брандмауэр для выбранных приложений</string>
+    <string name="adb_broadcast_example_disable_selected">Выключить брандмауэр для выбранных приложений</string>
+    <string name="adb_broadcast_example_enable_csv">Включить брандмауэр для определенных пакетов (CSV)</string>
+    <string name="adb_broadcast_example_disable_csv">Выключить брандмауэр для определенных пакетов (CSV)</string>
+    <string name="adb_broadcast_developer_section_title">Для разработчиков</string>
+    <string name="adb_broadcast_dev_enable_framework">Включить фреймворк брандмауэра</string>
+    <string name="adb_broadcast_dev_block_package">Заблокировать конкретное приложение</string>
+    <string name="adb_broadcast_dev_unblock_package">Разблокировать конкретное приложение</string>
+    <string name="adb_broadcast_dev_disable_framework">Отключить фреймворк брандмауэра</string>
+    <string name="adb_broadcast_extras_summary" formatted="false">%1$s (boolean): true = включить, false = выключить
+
+%2$s (string, необязательно): список пакетов через запятую. Если не указано, приложение использует выбранные пакеты, сохраненные в ShizuWall.</string>
     <string name="ok">ОК</string>
     <string name="adb_broadcast_usage_text" formatted="false">Действие:\n%1$s\n\nКомпонент:\n%2$s\n\nДополнительно:\n\n%3$s (boolean) — true = включить, false = выключить\n\n%4$s (string, необязательно) — список пакетов через запятую. Если пропущено, приложение использует сохраненные выбранные приложения.\n\n\nПримеры:\n\nВключить брандмауэр для выбранных (в ShizuWall) приложений:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nВыключить брандмауэр для выбранных (в ShizuWall) приложений:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nВключить брандмауэр для определенных пакетов (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\nВыключить брандмауэр для определенных пакетов (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\nПримечания:\n\n- Слушатель (receiver) экспортирован для автоматизации ADB; предпочтительно указывать его явно (например: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver), чтобы избежать внешних трансляций.\n\n- Shizuku должен быть запущен, и у приложения должно быть разрешение Shizuku для успешной работы этих трансляций.\n\n- Слушатель применяет те же команды, что и интерфейс (cmd connectivity ...). Используйте с осторожностью.</string>
     <string name="no_apps_selected">Приложения не выбраны</string>
@@ -97,6 +113,7 @@
     <string name="operation_failed_message">Операция не удалась для следующих %d приложений. Выделение с них было снято.</string>
     <string name="details">Подробности</string>
     <string name="copy">Копировать</string>
+    <string name="copied">Скопировано</string>
     <string name="no_error_details">Дополнительные сведения отсутствуют.</string>
     <string name="close">Закрыть</string>
     <string name="settings_title">Настройки</string>

@@ -41,7 +41,23 @@
     <string name="android11_unsupported_message">Android 11\'deki bazı cihazlar ShizuWall\'i desteklemiyor. Aşağıdaki gibi bir hata görürseniz:\n - no command found set chain3 - \nbu, cihazınızın desteklenmediği ve şu anda yapılacak bir şey olmadığı anlamına gelir.</string>
     <string name="dont_show_again">Bir daha gösterme</string>
     <string name="android11_unsupported_hint">Hata -no command found set chain 3- içeriyorsa, cihazınızın bu Android sürümünde muhtemelen desteklenmediği anlamına gelir.</string>
-    <string name="adb_broadcast_usage_title">ADB Yayın Kullanımı (Kopyalanabilir)</string>
+    <string name="adb_broadcast_usage_title">ADB Yayın Kullanımı</string>
+    <string name="adb_broadcast_field_action">Eylem</string>
+    <string name="adb_broadcast_field_component">Bileşen</string>
+    <string name="adb_broadcast_field_extras">Ekstralar</string>
+    <string name="adb_broadcast_examples_title">Yaygın komutlar</string>
+    <string name="adb_broadcast_example_enable_selected">Seçili uygulamalar için güvenlik duvarını etkinleştir</string>
+    <string name="adb_broadcast_example_disable_selected">Seçili uygulamalar için güvenlik duvarını devre dışı bırak</string>
+    <string name="adb_broadcast_example_enable_csv">Belirli paketler için güvenlik duvarını etkinleştir (CSV)</string>
+    <string name="adb_broadcast_example_disable_csv">Belirli paketler için güvenlik duvarını devre dışı bırak (CSV)</string>
+    <string name="adb_broadcast_developer_section_title">Geliştiriciler İçin</string>
+    <string name="adb_broadcast_dev_enable_framework">Güvenlik duvarı altyapısını etkinleştir</string>
+    <string name="adb_broadcast_dev_block_package">Belirli bir uygulamayı engelle</string>
+    <string name="adb_broadcast_dev_unblock_package">Belirli bir uygulamanın engelini kaldır</string>
+    <string name="adb_broadcast_dev_disable_framework">Güvenlik duvarı altyapısını devre dışı bırak</string>
+    <string name="adb_broadcast_extras_summary" formatted="false">%1$s (boolean): true = etkinleştir, false = devre dışı bırak
+
+%2$s (string, isteğe bağlı): virgülle ayrılmış paket listesi. Belirtilmezse uygulama ShizuWall içinde kaydedilmiş seçili paketleri kullanır.</string>
     <string name="ok">Tamam</string>
     <string name="adb_broadcast_usage_text" formatted="false">Eylem:\n%1$s\n\nBileşen:\n%2$s\n\nEkstralar:\n\n%3$s (boolean) — true = etkinleştir, false = devre dışı bırak\n\n%4$s (string, isteğe bağlı) — işlem yapılacak virgülle ayrılmış paket listesi. Belirtilmezse, uygulama kaydedilen seçili uygulamalara geri döner.\n\n\nÖrnekler:\n\nSeçili (ShizuWall\'da seçilen) uygulamalar için güvenlik duvarını etkinleştir:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nSeçili (ShizuWall\'da seçilen) uygulamalar için güvenlik duvarını devre dışı bırak:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nBelirli paketler için güvenlik duvarını etkinleştir (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s "com.example.app1,com.example.app2"\n\nBelirli paketler için güvenlik duvarını devre dışı bırak (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s "com.example.app1,com.example.app2"\n\n\nNotlar:\n\n- Alıcı adb otomasyonu için dışa aktarılmıştır; harici yayınlardan kaçınmak için alıcıyı açıkça hedeflemeyi tercih edin (örneğin: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver).\n\n- Bu yayınların başarılı olması için Shizuku çalışıyor olmalı ve uygulamanın Shizuku izni olmalıdır.\n\n- Alıcı, kullanıcı arayüzü ile aynı komutları uygular (cmd connectivity ...). Dikkatli kullanın.</string>
     <string name="no_apps_selected">Hiç uygulama seçilmedi</string>
@@ -99,6 +115,7 @@
     <string name="operation_failed_message">Aşağıdaki %d uygulama için işlem başarısız oldu. Seçimleri kaldırıldı.</string>
     <string name="details">Detaylar</string>
     <string name="copy">Kopyala</string>
+    <string name="copied">Kopyalandı</string>
     <string name="no_error_details">Ek ayrıntı yok.</string>
     <string name="close">Kapat</string>
     <string name="settings_title">Ayarlar</string>

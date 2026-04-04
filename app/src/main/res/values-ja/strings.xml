@@ -39,7 +39,23 @@
     <string name="firewall_cleanup_warning">警告: ファイアウォールのクリーンアップに失敗しました。インターネット接続を復元するには、デバイスを再起動してください。</string>
     <string name="app_reset_complete">アプリのリセットが完了しました。終了中…</string>
     <string name="reset_app_failed">アプリのリセットに失敗しました: %s</string>
-    <string name="adb_broadcast_usage_title">ADB ブロードキャストの使用法（コピー可能）</string>
+    <string name="adb_broadcast_usage_title">ADB ブロードキャストの使用法</string>
+    <string name="adb_broadcast_field_action">アクション</string>
+    <string name="adb_broadcast_field_component">コンポーネント</string>
+    <string name="adb_broadcast_field_extras">エクストラ</string>
+    <string name="adb_broadcast_examples_title">よく使うコマンド</string>
+    <string name="adb_broadcast_example_enable_selected">選択したアプリのファイアウォールを有効化</string>
+    <string name="adb_broadcast_example_disable_selected">選択したアプリのファイアウォールを無効化</string>
+    <string name="adb_broadcast_example_enable_csv">特定パッケージのファイアウォールを有効化 (CSV)</string>
+    <string name="adb_broadcast_example_disable_csv">特定パッケージのファイアウォールを無効化 (CSV)</string>
+    <string name="adb_broadcast_developer_section_title">開発者向け</string>
+    <string name="adb_broadcast_dev_enable_framework">ファイアウォール フレームワークを有効化</string>
+    <string name="adb_broadcast_dev_block_package">特定のアプリをブロック</string>
+    <string name="adb_broadcast_dev_unblock_package">特定のアプリのブロックを解除</string>
+    <string name="adb_broadcast_dev_disable_framework">ファイアウォール フレームワークを無効化</string>
+    <string name="adb_broadcast_extras_summary" formatted="false">%1$s (boolean): true = 有効, false = 無効
+
+%2$s (string, オプション): カンマ区切りのパッケージ一覧。省略した場合、アプリは ShizuWall に保存された選択済みパッケージを使用します。</string>
     <string name="ok">OK</string>
     <string name="adb_broadcast_usage_text" formatted="false">アクション:\n%1$s\n\nコンポーネント:\n%2$s\n\n拡張機能（Extras）:\n\n%3$s (boolean) — true = 有効, false = 無効\n\n%4$s (string, オプション) — 操作対象のパッケージリスト（カンマ区切り）。省略した場合、アプリで保存された選択済みアプリが使用されます。\n\n\n例:\n\n（ShizuWallで）選択したアプリのファイアウォールを有効にする:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\n（ShizuWallで）選択したアプリのファイアウォールを無効にする:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\n特定のパッケージ（CSV）のファイアウォールを有効にする:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n特定のパッケージ（CSV）のファイアウォールを無効にする:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\n注意:\n\n- レシーバーは ADB 自動化用に公開されています。外部のブロードキャストを避けるため、明示的にレシーバーを指定すること（例: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver）をお勧めします。\n\n- これらのブロードキャストを成功させるには、Shizuku が実行されており、アプリに Shizuku の権限が付与されている必要があります。\n\n- レシーバーは UI と同じコマンド（cmd connectivity ...）を適用します。慎重に使用してください。</string>
     <string name="no_apps_selected">アプリが選択されていません</string>
@@ -97,6 +113,7 @@
     <string name="operation_failed_message">以下の %d 個のアプリで操作に失敗しました。これらは選択解除されました。</string>
     <string name="details">詳細</string>
     <string name="copy">コピー</string>
+    <string name="copied">コピーしました</string>
     <string name="no_error_details">利用可能な追加の詳細情報はありません。</string>
     <string name="close">閉じる</string>
     <string name="settings_title">設定</string>

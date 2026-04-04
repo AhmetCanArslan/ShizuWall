@@ -40,7 +40,23 @@
     <string name="android11_unsupported_message">Alguns dispositivos no Android 11 não suportam o ShizuWall. Se você vir um erro como:\n - no command found set chain3 - \nsignifica que seu dispositivo não é compatível e não há nada a fazer no momento.</string>
     <string name="dont_show_again">Não mostrar novamente</string>
     <string name="android11_unsupported_hint">Se o erro contém -no command found set chain 3-, é provável que seu dispositivo não seja compatível com esta versão do Android.</string>
-    <string name="adb_broadcast_usage_title">Uso de Broadcast ADB (Copiável)</string>
+    <string name="adb_broadcast_usage_title">Uso de Broadcast ADB</string>
+    <string name="adb_broadcast_field_action">Ação</string>
+    <string name="adb_broadcast_field_component">Componente</string>
+    <string name="adb_broadcast_field_extras">Extras</string>
+    <string name="adb_broadcast_examples_title">Comandos comuns</string>
+    <string name="adb_broadcast_example_enable_selected">Ativar firewall para apps selecionados</string>
+    <string name="adb_broadcast_example_disable_selected">Desativar firewall para apps selecionados</string>
+    <string name="adb_broadcast_example_enable_csv">Ativar firewall para pacotes específicos (CSV)</string>
+    <string name="adb_broadcast_example_disable_csv">Desativar firewall para pacotes específicos (CSV)</string>
+    <string name="adb_broadcast_developer_section_title">Para desenvolvedores</string>
+    <string name="adb_broadcast_dev_enable_framework">Ativar framework do firewall</string>
+    <string name="adb_broadcast_dev_block_package">Bloquear app específico</string>
+    <string name="adb_broadcast_dev_unblock_package">Desbloquear app específico</string>
+    <string name="adb_broadcast_dev_disable_framework">Desativar framework do firewall</string>
+    <string name="adb_broadcast_extras_summary" formatted="false">%1$s (boolean): true = ativar, false = desativar
+
+%2$s (string, opcional): lista de pacotes separada por vírgulas. Se omitido, o app usa os pacotes selecionados salvos no ShizuWall.</string>
     <string name="ok">OK</string>
     <string name="adb_broadcast_usage_text" formatted="false">Action:\n%1$s\n\nComponent:\n%2$s\n\nExtras:\n\n%3$s (boolean) — true = enable, false = disable\n\n%4$s (string, optional) — comma-separated package list to operate on. If omitted, app falls back to saved selected apps.\n\n\nExamples:\n\nEnable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nDisable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nEnable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s "com.example.app1,com.example.app2"\n\nDisable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s "com.example.app1,com.example.app2"\n\n\nNotes:\n\n- The receiver is exported for adb automation; prefer targeting the receiver explicitly (for example: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver) to avoid external broadcasts.\n\n- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.\n\n- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.</string>
     <string name="no_apps_selected">Nenhum app selecionado</string>
@@ -98,6 +114,7 @@
     <string name="operation_failed_message">Operação falhou para os seguintes %d apps. Eles foram desmarcados.</string>
     <string name="details">Detalhes</string>
     <string name="copy">Copiar</string>
+    <string name="copied">Copiado</string>
     <string name="no_error_details">Não há detalhes adicionais disponíveis.</string>
     <string name="close">Fechar</string>
     <string name="settings_title">Configurações</string>
