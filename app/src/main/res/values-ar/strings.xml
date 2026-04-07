@@ -126,6 +126,8 @@
     <string name="move_selected_top_description">إظهار التطبيقات المحددة في البداية</string>
     <string name="use_dynamic_color">استخدام ألوان ديناميكية</string>
     <string name="use_dynamic_color_description">تطبيق ألوان خلفية الشاشة على مظهر التطبيق</string>
+    <string name="use_amoled_black">استخدام سمة AMOLED</string>
+    <string name="use_amoled_black_description">أسود نقي لشاشات OLED</string>
     <string name="firewall_section">الجدار الناري</string>
     <string name="skip_enable_confirmation_description">لا تسأل عند تفعيل الجدار الناري</string>
     <string name="adaptive_mode">الوضع التكيفي</string>

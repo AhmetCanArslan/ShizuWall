@@ -89,6 +89,7 @@ class MainActivity : BaseActivity() {
         const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
         const val KEY_SELECTED_FONT = "selected_font"
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
+        const val KEY_USE_AMOLED_BLACK = "use_amoled_black"
         const val KEY_ADAPTIVE_MODE = "adaptive_mode" 
         const val KEY_FIREWALL_MODE = "firewall_mode" 
         const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"  // Current foreground app in smart mode

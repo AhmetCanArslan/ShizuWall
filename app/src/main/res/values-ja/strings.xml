@@ -123,6 +123,8 @@
     <string name="move_selected_top_description">選択したアプリをリストの最初に表示する</string>
     <string name="use_dynamic_color">ダイナミックカラーを使用</string>
     <string name="use_dynamic_color_description">壁紙の色をアプリのテーマに適用する</string>
+    <string name="use_amoled_black">AMOLEDテーマを使用</string>
+    <string name="use_amoled_black_description">OLED画面向けの純粋な黒</string>
     <string name="firewall_section">ファイアウォール</string>
     <string name="skip_enable_confirmation_description">ファイアウォール有効化時に確認しない</string>
     <string name="adaptive_mode">アダプティブモード</string>

@@ -123,6 +123,8 @@
     <string name="move_selected_top_description">Mostrar apps seleccionadas al principio</string>
     <string name="use_dynamic_color">Usar color dinámico</string>
     <string name="use_dynamic_color_description">Aplicar colores de fondo de pantalla al tema de la app</string>
+    <string name="use_amoled_black">Usar tema AMOLED</string>
+    <string name="use_amoled_black_description">Negro puro para pantallas OLED</string>
     <string name="firewall_section">Firewall</string>
     <string name="skip_enable_confirmation_description">No preguntar al activar el firewall</string>
     <string name="adaptive_mode">Modo Adaptativo</string>

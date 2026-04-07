@@ -123,6 +123,8 @@
     <string name="move_selected_top_description">Показывать выбранные приложения в начале списка</string>
     <string name="use_dynamic_color">Использовать динамические цвета</string>
     <string name="use_dynamic_color_description">Применять цвета обоев к теме приложения</string>
+    <string name="use_amoled_black">Использовать AMOLED-тему</string>
+    <string name="use_amoled_black_description">Чистый черный для OLED-экранов</string>
     <string name="firewall_section">Брандмауэр</string>
     <string name="skip_enable_confirmation_description">Не спрашивать при включении брандмауэра</string>
     <string name="adaptive_mode">Адаптивный режим</string>

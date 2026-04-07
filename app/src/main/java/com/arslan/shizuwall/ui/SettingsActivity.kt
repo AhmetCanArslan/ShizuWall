@@ -36,6 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.graphics.Typeface
+import android.graphics.Color
 import android.os.Build
 import java.io.File
 import androidx.appcompat.widget.SwitchCompat
@@ -79,6 +80,7 @@ class SettingsActivity : BaseActivity() {
     private lateinit var btnGithub: LinearLayout
     private lateinit var tvVersion: TextView
     private lateinit var switchUseDynamicColor: SwitchCompat
+    private lateinit var switchUseAmoledBlack: SwitchCompat
     private lateinit var switchAutoEnableOnShizukuStart: SwitchCompat
     private lateinit var cardAutoEnableOnShizukuStart: com.google.android.material.card.MaterialCardView
     private lateinit var switchApplyRootRulesAfterReboot: SwitchCompat
@@ -131,6 +133,10 @@ class SettingsActivity : BaseActivity() {
 
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
+
+        if (sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)) {
+            findViewById<View>(R.id.settingsRoot).setBackgroundColor(Color.BLACK)
+        }
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationOnClickListener { finish() }
@@ -216,6 +222,7 @@ class SettingsActivity : BaseActivity() {
         btnGithub = findViewById(R.id.btnGithub)
         tvVersion = findViewById(R.id.tvVersion)
         switchUseDynamicColor = findViewById(R.id.switchUseDynamicColor)
+        switchUseAmoledBlack = findViewById(R.id.switchUseAmoledBlack)
 
         // new: bind XML item
         cardAdbBroadcastUsage = findViewById(R.id.cardAdbBroadcastUsage)
@@ -289,6 +296,7 @@ class SettingsActivity : BaseActivity() {
         tvCurrentFont.text = if (currentFont == "ndot") getString(R.string.font_ndot) else getString(R.string.font_default)
         updateCurrentLanguageDisplay()
         switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
+        switchUseAmoledBlack.isChecked = prefs.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
         switchAutoEnableOnShizukuStart.isChecked = prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
         switchApplyRootRulesAfterReboot.isChecked = prefs.getBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, false)
         switchAppMonitor.isChecked = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
@@ -501,6 +509,13 @@ class SettingsActivity : BaseActivity() {
             recreateWithAnimation()
         }
 
+        switchUseAmoledBlack.setOnCheckedChangeListener { _, isChecked ->
+            sharedPreferences.edit()
+                .putBoolean(MainActivity.KEY_USE_AMOLED_BLACK, isChecked)
+                .apply()
+            recreateWithAnimation()
+        }
+
         switchAutoEnableOnShizukuStart.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, isChecked).apply()
             setResult(RESULT_OK)
@@ -605,6 +620,7 @@ class SettingsActivity : BaseActivity() {
         // Make the whole card area toggle the corresponding switches when tapped
         makeCardClickableForSwitch(switchMoveSelectedTop)
         makeCardClickableForSwitch(switchUseDynamicColor)
+        makeCardClickableForSwitch(switchUseAmoledBlack)
         makeCardClickableForSwitch(switchSkipConfirm)
         makeCardClickableForSwitch(switchSkipErrorDialog)
         makeCardClickableForSwitch(switchKeepErrorAppsSelected)

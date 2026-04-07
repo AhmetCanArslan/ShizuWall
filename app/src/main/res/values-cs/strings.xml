@@ -127,6 +127,8 @@
     <string name="move_selected_top_description">Zobrazit vybrané aplikace na začátku</string>
     <string name="use_dynamic_color">Použít dynamické barvy</string>
     <string name="use_dynamic_color_description">Použít barvy tapety na motiv aplikace</string>
+    <string name="use_amoled_black">Použít AMOLED motiv</string>
+    <string name="use_amoled_black_description">Čistě černá pro OLED displeje</string>
     <string name="firewall_section">Firewall</string>
     <string name="skip_enable_confirmation_description">Neptat se při zapínání firewallu</string>
     <string name="adaptive_mode">Adaptivní režim</string>

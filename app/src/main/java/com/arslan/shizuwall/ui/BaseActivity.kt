@@ -11,6 +11,7 @@ import com.google.android.material.color.DynamicColors
 open class BaseActivity : AppCompatActivity() {
     private var currentFont: String? = null
     private var currentDynamicColor: Boolean = true
+    private var currentAmoledBlack: Boolean = false
 
     companion object {
         private var shouldAnimateFadeIn = false
@@ -34,12 +35,15 @@ open class BaseActivity : AppCompatActivity() {
         val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         currentDynamicColor = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
-        
-        if (currentFont == "ndot") {
-            setTheme(R.style.Theme_ShizuWall_Ndot)
-        } else {
-            setTheme(R.style.Theme_ShizuWall)
+        currentAmoledBlack = prefs.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
+
+        val themeRes = when {
+            currentAmoledBlack && currentFont == "ndot" -> R.style.Theme_ShizuWall_Amoled_Ndot
+            currentAmoledBlack -> R.style.Theme_ShizuWall_Amoled
+            currentFont == "ndot" -> R.style.Theme_ShizuWall_Ndot
+            else -> R.style.Theme_ShizuWall
         }
+        setTheme(themeRes)
         
         super.onCreate(savedInstanceState)
 
@@ -67,8 +71,9 @@ open class BaseActivity : AppCompatActivity() {
         val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         val savedFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         val savedDynamicColor = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
+        val savedAmoledBlack = prefs.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
 
-        if (savedFont != currentFont || savedDynamicColor != currentDynamicColor) {
+        if (savedFont != currentFont || savedDynamicColor != currentDynamicColor || savedAmoledBlack != currentAmoledBlack) {
             recreateWithAnimation()
         }
     }
