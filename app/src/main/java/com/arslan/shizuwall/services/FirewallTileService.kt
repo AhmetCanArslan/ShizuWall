@@ -11,6 +11,7 @@ import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorBlocking
+import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.*
 import com.arslan.shizuwall.widgets.FirewallWidgetProvider
@@ -210,6 +211,10 @@ class FirewallTileService : TileService() {
             return successful
         }
 
+        if (firewallMode == FirewallMode.SCREEN_LOCK_MODE && !ScreenLockModeReceiver.isDeviceLocked(this)) {
+            return successful
+        }
+
         val selfPkg = packageName
         for (pkg in packageNames) {
             // never target the app itself or Shizuku
@@ -248,6 +253,8 @@ class FirewallTileService : TileService() {
         val intent = Intent(this, FirewallWidgetProvider::class.java)
         intent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
         sendBroadcast(intent)
+
+        ScreenLockMonitorService.sync(this)
     }
 
     private fun saveActivePackages(packages: Set<String>) {

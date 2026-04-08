@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.shell.ShellExecutorBlocking
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.ui.MainActivity
@@ -376,6 +377,10 @@ class FloatingButtonService : Service() {
             return successful
         }
 
+        if (firewallMode == FirewallMode.SCREEN_LOCK_MODE && !ScreenLockModeReceiver.isDeviceLocked(this)) {
+            return successful
+        }
+
         val selfPkg = packageName
         for (pkg in packageNames) {
             if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
@@ -427,6 +432,8 @@ class FloatingButtonService : Service() {
         val intent = Intent(this, FirewallWidgetProvider::class.java)
         intent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
         sendBroadcast(intent)
+
+        ScreenLockMonitorService.sync(this)
     }
 
     private fun saveActivePackages(packages: Set<String>) {

@@ -19,6 +19,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.NumberPicker
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -105,8 +106,12 @@ class SettingsActivity : BaseActivity() {
     private lateinit var radioGroupFirewallMode: RadioGroup
     private lateinit var radioModeDefault: RadioButton
     private lateinit var radioModeAdaptive: RadioButton
+    private lateinit var radioModeScreenLock: RadioButton
     private lateinit var radioModeSmartForeground: RadioButton
     private lateinit var radioModeWhitelist: RadioButton
+    private lateinit var cardScreenLockDelay: com.google.android.material.card.MaterialCardView
+    private lateinit var layoutScreenLockDelay: LinearLayout
+    private lateinit var tvScreenLockDelayValue: TextView
     private lateinit var tvSmartForegroundWarning: TextView
     private lateinit var tvFirewallModeDisabledWarning: TextView
     private lateinit var warningContainer: LinearLayout
@@ -246,8 +251,12 @@ class SettingsActivity : BaseActivity() {
         radioGroupFirewallMode = findViewById(R.id.radioGroupFirewallMode)
         radioModeDefault = findViewById(R.id.radioModeDefault)
         radioModeAdaptive = findViewById(R.id.radioModeAdaptive)
+        radioModeScreenLock = findViewById(R.id.radioModeScreenLock)
         radioModeSmartForeground = findViewById(R.id.radioModeSmartForeground)
         radioModeWhitelist = findViewById(R.id.radioModeWhitelist)
+        cardScreenLockDelay = findViewById(R.id.cardScreenLockDelay)
+        layoutScreenLockDelay = findViewById(R.id.layoutScreenLockDelay)
+        tvScreenLockDelayValue = findViewById(R.id.tvScreenLockDelayValue)
         tvSmartForegroundWarning = findViewById(R.id.tvSmartForegroundWarning)
         tvFirewallModeDisabledWarning = findViewById(R.id.tvFirewallModeDisabledWarning)
         warningContainer = findViewById(R.id.warningContainer)
@@ -280,10 +289,12 @@ class SettingsActivity : BaseActivity() {
         // Set the radio button based on mode
         when (firewallMode) {
             FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
+            FirewallMode.SCREEN_LOCK_MODE -> radioGroupFirewallMode.check(R.id.radioModeScreenLock)
             FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
             FirewallMode.WHITELIST -> radioGroupFirewallMode.check(R.id.radioModeWhitelist)
             else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
         }
+        updateScreenLockDelaySummary()
         
         // Update UI based on mode
         updateFirewallModeUI(firewallMode)
@@ -351,6 +362,11 @@ class SettingsActivity : BaseActivity() {
         // Show/hide skip confirm card based on mode
         val showSkipConfirm = mode == FirewallMode.DEFAULT
         cardSkipConfirm.visibility = if (showSkipConfirm) View.VISIBLE else View.GONE
+
+        cardScreenLockDelay.visibility = if (mode == FirewallMode.SCREEN_LOCK_MODE) View.VISIBLE else View.GONE
+        if (mode == FirewallMode.SCREEN_LOCK_MODE) {
+            updateScreenLockDelaySummary()
+        }
         
         // If adaptive or smart foreground, force skip confirm to ON
         if (mode != FirewallMode.DEFAULT && !switchSkipConfirm.isChecked) {
@@ -379,6 +395,7 @@ class SettingsActivity : BaseActivity() {
         radioGroupFirewallMode.isEnabled = !isFirewallEnabled
         radioModeDefault.isEnabled = !isFirewallEnabled
         radioModeAdaptive.isEnabled = !isFirewallEnabled
+        radioModeScreenLock.isEnabled = !isFirewallEnabled
         radioModeSmartForeground.isEnabled = !isFirewallEnabled
         radioModeWhitelist.isEnabled = !isFirewallEnabled
         
@@ -409,6 +426,7 @@ class SettingsActivity : BaseActivity() {
                 val currentMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
                 when (currentMode) {
                     FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
+                    FirewallMode.SCREEN_LOCK_MODE -> radioGroupFirewallMode.check(R.id.radioModeScreenLock)
                     FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
                     FirewallMode.WHITELIST -> radioGroupFirewallMode.check(R.id.radioModeWhitelist)
                     else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
@@ -418,6 +436,7 @@ class SettingsActivity : BaseActivity() {
             
             val newMode = when (checkedId) {
                 R.id.radioModeAdaptive -> FirewallMode.ADAPTIVE
+                R.id.radioModeScreenLock -> FirewallMode.SCREEN_LOCK_MODE
                 R.id.radioModeSmartForeground -> FirewallMode.SMART_FOREGROUND
                 R.id.radioModeWhitelist -> FirewallMode.WHITELIST
                 else -> FirewallMode.DEFAULT
@@ -480,6 +499,10 @@ class SettingsActivity : BaseActivity() {
 
         layoutChangeLanguage.setOnClickListener {
             showLanguageSelectorDialog()
+        }
+
+        layoutScreenLockDelay.setOnClickListener {
+            showScreenLockDelayDialog()
         }
 
         btnExport.setOnClickListener {
@@ -628,6 +651,44 @@ class SettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchApplyRootRulesAfterReboot)
         makeCardClickableForSwitch(switchAppMonitor)
         makeCardClickableForSwitch(switchFloatingButton)
+    }
+
+    private fun updateScreenLockDelaySummary() {
+        val delay = sharedPreferences
+            .getInt(
+                MainActivity.KEY_SCREEN_LOCK_DELAY_SECONDS,
+                MainActivity.DEFAULT_SCREEN_LOCK_DELAY_SECONDS
+            )
+            .coerceIn(2, 10)
+        tvScreenLockDelayValue.text = getString(R.string.screen_lock_delay_value, delay)
+    }
+
+    private fun showScreenLockDelayDialog() {
+        val picker = NumberPicker(this).apply {
+            minValue = 2
+            maxValue = 10
+            value = sharedPreferences
+                .getInt(
+                    MainActivity.KEY_SCREEN_LOCK_DELAY_SECONDS,
+                    MainActivity.DEFAULT_SCREEN_LOCK_DELAY_SECONDS
+                )
+                .coerceIn(2, 10)
+            wrapSelectorWheel = false
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.screen_lock_delay_dialog_title)
+            .setView(picker)
+            .setPositiveButton(R.string.apply) { _, _ ->
+                val selectedDelay = picker.value.coerceIn(2, 10)
+                sharedPreferences.edit()
+                    .putInt(MainActivity.KEY_SCREEN_LOCK_DELAY_SECONDS, selectedDelay)
+                    .apply()
+                updateScreenLockDelaySummary()
+                setResult(RESULT_OK)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
     
 

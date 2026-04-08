@@ -32,6 +32,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.ForegroundDetectionService
+import com.arslan.shizuwall.services.ScreenLockMonitorService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -63,6 +64,7 @@ import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
+import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.radiobutton.MaterialRadioButton
@@ -92,6 +94,8 @@ class MainActivity : BaseActivity() {
         const val KEY_USE_AMOLED_BLACK = "use_amoled_black"
         const val KEY_ADAPTIVE_MODE = "adaptive_mode" 
         const val KEY_FIREWALL_MODE = "firewall_mode" 
+        const val KEY_SCREEN_LOCK_DELAY_SECONDS = "screen_lock_delay_seconds"
+        const val DEFAULT_SCREEN_LOCK_DELAY_SECONDS = 2
         const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"  // Current foreground app in smart mode
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
         const val KEY_APPLY_ROOT_RULES_AFTER_REBOOT = "apply_root_rules_after_reboot"
@@ -1851,6 +1855,8 @@ class MainActivity : BaseActivity() {
         val intent = Intent(this, FirewallWidgetProvider::class.java)
         intent.action = ACTION_FIREWALL_STATE_CHANGED
         sendBroadcast(intent)
+
+        ScreenLockMonitorService.sync(this)
     }
 
     private fun loadFirewallEnabled(): Boolean {
@@ -1886,6 +1892,17 @@ class MainActivity : BaseActivity() {
 
     private fun applyFirewallState(enable: Boolean, packageNames: List<String>) {
         if (enable && packageNames.isEmpty() && !firewallMode.allowsDynamicSelection()) return
+
+        val effectivePackageNames = if (
+            enable &&
+            firewallMode == FirewallMode.SCREEN_LOCK_MODE &&
+            !ScreenLockModeReceiver.isDeviceLocked(this)
+        ) {
+            emptyList()
+        } else {
+            packageNames
+        }
+
         firewallToggle.isEnabled = false
         isFirewallProcessRunning = true
         isEnablingProcess = enable
@@ -1907,7 +1924,7 @@ class MainActivity : BaseActivity() {
             try {
                 // perform package existence checks and run enable/disable on IO thread
                 val (installed, missing) = withContext(Dispatchers.IO) {
-                    filterInstalledPackages(packageNames)
+                    filterInstalledPackages(effectivePackageNames)
                 }
 
                 // If enabling and none of the chosen packages remain installed -> abort

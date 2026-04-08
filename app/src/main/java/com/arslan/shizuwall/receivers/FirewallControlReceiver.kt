@@ -13,6 +13,7 @@ import com.arslan.shizuwall.ladb.LadbLogStore
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellResult
 import com.arslan.shizuwall.shell.ShellExecutorProvider
+import com.arslan.shizuwall.services.ScreenLockMonitorService
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +38,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
         private const val TAG = "FirewallControl"
         private const val SHIZUKU_WAIT_MAX_ATTEMPTS = 10
         private const val SHIZUKU_WAIT_DELAY_MS = 300L
+        const val EXTRA_AUTOMATION_EVENT = "com.arslan.shizuwall.EXTRA_AUTOMATION_EVENT"
     }
 
     private suspend fun waitForShizukuBinder(): Boolean {
@@ -85,6 +87,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
         val pending = goAsync()
         val enabled = intent.getBooleanExtra(MainActivity.EXTRA_FIREWALL_ENABLED, false)
         val csv = intent.getStringExtra(MainActivity.EXTRA_PACKAGES_CSV)
+        val automationEvent = intent.getBooleanExtra(EXTRA_AUTOMATION_EVENT, false)
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -108,7 +111,16 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 }
 
                 // filter out any Shizuku packages and this app itself from incoming list
-                val packages = rawPackages.filterNot { ShizukuPackageResolver.isShizukuPackage(context, it) || it == context.packageName }
+                val requestedPackages = rawPackages.filterNot { ShizukuPackageResolver.isShizukuPackage(context, it) || it == context.packageName }
+                val packages = if (
+                    enabled &&
+                    firewallMode == FirewallMode.SCREEN_LOCK_MODE &&
+                    !ScreenLockModeReceiver.isDeviceLocked(context)
+                ) {
+                    emptyList()
+                } else {
+                    requestedPackages
+                }
 
                 android.util.Log.d(TAG, "Packages to process: $packages, enabled: $enabled, firewallMode: $firewallMode")
 
@@ -143,13 +155,16 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 }
 
                 if (!backendReady) {
+                    android.util.Log.w(TAG, "Backend is not ready for mode=$mode while applying firewall state=${if (enabled) "enable" else "disable"}")
                     if (mode == "LADB") {
                         appendLadbFailureLog(context, "Daemon is not running while applying firewall state=${if (enabled) "enable" else "disable"}")
                     }
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            if (mode == "LADB") {
+                            if (automationEvent) {
+                                context.getString(R.string.screen_lock_mode_operation_failed)
+                            } else if (mode == "LADB") {
                                 context.getString(R.string.daemon_not_running)
                             } else if (mode == "ROOT") {
                                 context.getString(R.string.root_not_found_message)
@@ -169,6 +184,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
 
                 val successful = mutableListOf<String>()
                 var globalCommandSuccess = true
+                var hadCommandFailure = false
 
                 if (enabled) {
                     // enable chain3
@@ -177,6 +193,9 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     if (!chainEnableResult.success && mode == "LADB") {
                         appendLadbFailureLog(context, "Failed to enable firewall chain", chainEnableResult)
                     }
+                    if (!chainEnableResult.success) {
+                        hadCommandFailure = true
+                    }
                     if (globalCommandSuccess) {
                         for (pkg in packages) {
                             val blockResult = execShell("cmd connectivity set-package-networking-enabled false $pkg")
@@ -184,6 +203,9 @@ class FirewallControlReceiver : BroadcastReceiver() {
                                 successful.add(pkg)
                             } else if (mode == "LADB") {
                                 appendLadbFailureLog(context, "Failed to block package $pkg", blockResult)
+                                hadCommandFailure = true
+                            } else {
+                                hadCommandFailure = true
                             }
                         }
                     }
@@ -194,6 +216,9 @@ class FirewallControlReceiver : BroadcastReceiver() {
                             successful.add(pkg)
                         } else if (mode == "LADB") {
                             appendLadbFailureLog(context, "Failed to unblock package $pkg", allowResult)
+                            hadCommandFailure = true
+                        } else {
+                            hadCommandFailure = true
                         }
                     }
                     val isGlobalDisable = csv.isNullOrBlank()
@@ -202,6 +227,9 @@ class FirewallControlReceiver : BroadcastReceiver() {
                         globalCommandSuccess = chainDisableResult.success
                         if (!chainDisableResult.success && mode == "LADB") {
                             appendLadbFailureLog(context, "Failed to disable firewall chain", chainDisableResult)
+                        }
+                        if (!chainDisableResult.success) {
+                            hadCommandFailure = true
                         }
                     }
                 }
@@ -230,8 +258,10 @@ class FirewallControlReceiver : BroadcastReceiver() {
                                 putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
                             } else {
                                 // Global disable failed, show error but don't update state
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(context, context.getString(R.string.failed_to_disable_firewall), Toast.LENGTH_SHORT).show()
+                                if (!automationEvent) {
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(context, context.getString(R.string.failed_to_disable_firewall), Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             }
                         } else {
@@ -239,22 +269,31 @@ class FirewallControlReceiver : BroadcastReceiver() {
                             val currentActive = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
                             currentActive.removeAll(successful)
                             putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, currentActive)
-                            
-                            // Also update selected apps to reflect unblocking
-                            val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
-                            currentSelected.removeAll(successful)
-                            putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)
-                            putInt(MainActivity.KEY_SELECTED_COUNT, currentSelected.size)
+
+                            // For Screen Lock Mode, selected apps stay intact across unlock events.
+                            if (firewallMode != FirewallMode.SCREEN_LOCK_MODE) {
+                                val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
+                                currentSelected.removeAll(successful)
+                                putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)
+                                putInt(MainActivity.KEY_SELECTED_COUNT, currentSelected.size)
+                            }
                         }
                     }
                     putLong(MainActivity.KEY_FIREWALL_UPDATE_TS, System.currentTimeMillis())
                     apply()
                 }
 
+                if (automationEvent && hadCommandFailure) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, context.getString(R.string.screen_lock_mode_operation_failed), Toast.LENGTH_SHORT).show()
+                    }
+                }
+
                 // Notify widget to update
                 val updateIntent = Intent(context, FirewallWidgetProvider::class.java)
                 updateIntent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
                 context.sendBroadcast(updateIntent)
+                ScreenLockMonitorService.sync(context)
 
             } catch (t: Throwable) {
                 withContext(Dispatchers.Main) {

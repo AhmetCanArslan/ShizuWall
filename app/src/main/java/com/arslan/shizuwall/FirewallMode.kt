@@ -5,11 +5,13 @@ package com.arslan.shizuwall
  * 
  * - DEFAULT: Traditional firewall mode where selected apps are blocked
  * - ADAPTIVE: Dynamic mode where apps can be selected/deselected while firewall is ON
+ * - SCREEN_LOCK_MODE: Blocks selected apps after lock and unblocks on unlock
  * - SMART_FOREGROUND: Only the foreground app is allowed network access
  */
 enum class FirewallMode {
     DEFAULT,
     ADAPTIVE,
+    SCREEN_LOCK_MODE,
     SMART_FOREGROUND,
     WHITELIST;
 
@@ -40,5 +42,6 @@ enum class FirewallMode {
     /**
      * Check if this mode allows dynamic app selection while firewall is enabled
      */
-    fun allowsDynamicSelection(): Boolean = this == ADAPTIVE || this == SMART_FOREGROUND || this == WHITELIST
+    fun allowsDynamicSelection(): Boolean =
+        this == ADAPTIVE || this == SCREEN_LOCK_MODE || this == SMART_FOREGROUND || this == WHITELIST
 }

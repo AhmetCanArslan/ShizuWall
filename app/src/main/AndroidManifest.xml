@@ -71,6 +71,12 @@
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".services.ScreenLockMonitorService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
         <receiver
             android:name=".receivers.LadbPairingCodeReceiver"
             android:exported="false">
