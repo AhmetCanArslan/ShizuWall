@@ -33,7 +33,6 @@ class ScreenLockMonitorService : Service() {
         private const val CHANNEL_ID = "screen_lock_mode_channel"
         private const val NOTIFICATION_ID = 4003
         private const val UNLOCK_CHECK_INTERVAL_MS = 500L
-        private const val UNLOCK_CHECK_MAX_MS = 30000L
 
         fun sync(context: Context) {
             val appContext = context.applicationContext
@@ -126,17 +125,34 @@ class ScreenLockMonitorService : Service() {
     private fun startUnlockPolling() {
         unlockCheckJob?.cancel()
         unlockCheckJob = serviceScope.launch {
-            var waited = 0L
-            while (waited <= UNLOCK_CHECK_MAX_MS) {
-                if (!isModeActive()) return@launch
-
+            while (isModeActive()) {
                 if (!ScreenLockModeReceiver.isDeviceLocked(this@ScreenLockMonitorService)) {
                     dispatchToReceiver(Intent.ACTION_USER_PRESENT)
                     return@launch
                 }
 
                 delay(UNLOCK_CHECK_INTERVAL_MS)
-                waited += UNLOCK_CHECK_INTERVAL_MS
+            }
+        }
+    }
+
+    private fun reconcileCurrentState() {
+        if (!isModeActive()) return
+
+        val activePackages =
+            prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
+        val hasActiveBlocks = activePackages.any { it.isNotBlank() }
+        val locked = ScreenLockModeReceiver.isDeviceLocked(this)
+
+        when {
+            locked && !hasActiveBlocks -> {
+                Log.d(TAG, "Reconcile: locked with no active blocks, requesting lock action")
+                dispatchToReceiver(Intent.ACTION_SCREEN_OFF)
+            }
+
+            !locked && hasActiveBlocks -> {
+                Log.d(TAG, "Reconcile: unlocked with active blocks, requesting unlock action")
+                dispatchToReceiver(Intent.ACTION_USER_PRESENT)
             }
         }
     }
@@ -172,6 +188,8 @@ class ScreenLockMonitorService : Service() {
 
         if (!isModeActive()) {
             stopSelf()
+        } else {
+            reconcileCurrentState()
         }
     }
 
@@ -180,6 +198,7 @@ class ScreenLockMonitorService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
+        reconcileCurrentState()
         return START_STICKY
     }
 
