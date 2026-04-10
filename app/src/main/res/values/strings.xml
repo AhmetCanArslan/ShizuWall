@@ -376,4 +376,6 @@
     <string name="wifi_indicator_notification_title">Foreground Wifi Indicator</string>
     <string name="wifi_indicator_notification_text">Monitoring foreground app firewall state</string>
     <string name="wifi_indicator_overlay_permission_required">Overlay permission is required for the wifi indicator</string>
+    <string name="decrease">Decrease</string>
+    <string name="increase">Increase</string>
 </resources>

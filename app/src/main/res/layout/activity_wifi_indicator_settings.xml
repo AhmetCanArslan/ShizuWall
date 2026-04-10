@@ -55,14 +55,44 @@
                     android:text="0"
                     android:textColor="?android:attr/textColorSecondary" />
 
-                <com.google.android.material.slider.Slider
-                    android:id="@+id/sliderIndicatorX"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:valueFrom="0"
-                    android:valueTo="2000"
-                    android:stepSize="1" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btnIndicatorXMinus"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/round_button_bg"
+                        android:contentDescription="@string/decrease"
+                        android:padding="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_remove_24px"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sliderIndicatorX"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:valueFrom="0"
+                        android:valueTo="2000"
+                        android:stepSize="1" />
+
+                    <ImageButton
+                        android:id="@+id/btnIndicatorXPlus"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/round_button_bg"
+                        android:contentDescription="@string/increase"
+                        android:padding="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_add_24px"
+                        app:tint="?attr/colorOnSurface" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -94,14 +124,44 @@
                     android:text="0"
                     android:textColor="?android:attr/textColorSecondary" />
 
-                <com.google.android.material.slider.Slider
-                    android:id="@+id/sliderIndicatorY"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:valueFrom="-600"
-                    android:valueTo="3000"
-                    android:stepSize="1" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btnIndicatorYMinus"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/round_button_bg"
+                        android:contentDescription="@string/decrease"
+                        android:padding="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_remove_24px"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sliderIndicatorY"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:valueFrom="-600"
+                        android:valueTo="3000"
+                        android:stepSize="1" />
+
+                    <ImageButton
+                        android:id="@+id/btnIndicatorYPlus"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/round_button_bg"
+                        android:contentDescription="@string/increase"
+                        android:padding="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_add_24px"
+                        app:tint="?attr/colorOnSurface" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -132,14 +192,44 @@
                     android:text="0"
                     android:textColor="?android:attr/textColorSecondary" />
 
-                <com.google.android.material.slider.Slider
-                    android:id="@+id/sliderIndicatorSize"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:valueFrom="24"
-                    android:valueTo="180"
-                    android:stepSize="1" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btnIndicatorSizeMinus"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/round_button_bg"
+                        android:contentDescription="@string/decrease"
+                        android:padding="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_remove_24px"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sliderIndicatorSize"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:valueFrom="24"
+                        android:valueTo="180"
+                        android:stepSize="1" />
+
+                    <ImageButton
+                        android:id="@+id/btnIndicatorSizePlus"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/round_button_bg"
+                        android:contentDescription="@string/increase"
+                        android:padding="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_add_24px"
+                        app:tint="?attr/colorOnSurface" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

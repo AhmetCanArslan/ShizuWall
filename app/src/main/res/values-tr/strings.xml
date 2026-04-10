@@ -361,4 +361,6 @@
     <string name="wifi_indicator_notification_title">Ön Plan Wifi Göstergesi</string>
     <string name="wifi_indicator_notification_text">Ön plan uygulamanın firewall durumu izleniyor</string>
     <string name="wifi_indicator_overlay_permission_required">Wifi göstergesi için üzerine yazma izni gereklidir</string>
+    <string name="decrease">Azalt</string>
+    <string name="increase">Artır</string>
 </resources>

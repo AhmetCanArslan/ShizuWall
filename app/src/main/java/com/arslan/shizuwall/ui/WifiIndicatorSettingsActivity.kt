@@ -3,6 +3,7 @@ package com.arslan.shizuwall.ui
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
@@ -17,6 +18,12 @@ class WifiIndicatorSettingsActivity : BaseActivity() {
     private lateinit var sliderX: Slider
     private lateinit var sliderY: Slider
     private lateinit var sliderSize: Slider
+    private lateinit var btnXMinus: ImageButton
+    private lateinit var btnXPlus: ImageButton
+    private lateinit var btnYMinus: ImageButton
+    private lateinit var btnYPlus: ImageButton
+    private lateinit var btnSizeMinus: ImageButton
+    private lateinit var btnSizePlus: ImageButton
     private lateinit var valueX: TextView
     private lateinit var valueY: TextView
     private lateinit var valueSize: TextView
@@ -43,6 +50,12 @@ class WifiIndicatorSettingsActivity : BaseActivity() {
         sliderX = findViewById(R.id.sliderIndicatorX)
         sliderY = findViewById(R.id.sliderIndicatorY)
         sliderSize = findViewById(R.id.sliderIndicatorSize)
+        btnXMinus = findViewById(R.id.btnIndicatorXMinus)
+        btnXPlus = findViewById(R.id.btnIndicatorXPlus)
+        btnYMinus = findViewById(R.id.btnIndicatorYMinus)
+        btnYPlus = findViewById(R.id.btnIndicatorYPlus)
+        btnSizeMinus = findViewById(R.id.btnIndicatorSizeMinus)
+        btnSizePlus = findViewById(R.id.btnIndicatorSizePlus)
         valueX = findViewById(R.id.tvIndicatorXValue)
         valueY = findViewById(R.id.tvIndicatorYValue)
         valueSize = findViewById(R.id.tvIndicatorSizeValue)
@@ -63,6 +76,10 @@ class WifiIndicatorSettingsActivity : BaseActivity() {
         valueX.text = sliderX.value.toInt().toString()
         valueY.text = sliderY.value.toInt().toString()
         valueSize.text = sliderSize.value.toInt().toString()
+
+        bindStepButtons(sliderX, btnXMinus, btnXPlus)
+        bindStepButtons(sliderY, btnYMinus, btnYPlus)
+        bindStepButtons(sliderSize, btnSizeMinus, btnSizePlus)
     }
 
     private fun setupSlider(
@@ -78,6 +95,17 @@ class WifiIndicatorSettingsActivity : BaseActivity() {
         slider.value = initial.coerceIn(min, max).toFloat()
         slider.addOnChangeListener { _, value, _ ->
             onValueChanged(value.toInt())
+        }
+    }
+
+    private fun bindStepButtons(slider: Slider, minus: ImageButton, plus: ImageButton) {
+        minus.setOnClickListener {
+            val next = (slider.value - slider.stepSize).coerceAtLeast(slider.valueFrom)
+            slider.value = next
+        }
+        plus.setOnClickListener {
+            val next = (slider.value + slider.stepSize).coerceAtMost(slider.valueTo)
+            slider.value = next
         }
     }
 }
