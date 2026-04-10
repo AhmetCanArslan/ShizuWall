@@ -575,7 +575,8 @@ class MainActivity : BaseActivity() {
         loadInstalledApps()
         
         // Auto-enable accessibility service if revoked (e.g. after debug APK reinstall)
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        val isIndicatorEnabled = sharedPreferences.getBoolean(KEY_WIFI_INDICATOR_ENABLED, false)
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || isIndicatorEnabled) {
             if (!ForegroundDetectionService.isServiceEnabled(this)) {
                 // Try to auto-enable via Shizuku/LADB shell
                 lifecycleScope.launch {

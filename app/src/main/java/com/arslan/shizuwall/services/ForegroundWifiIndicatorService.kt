@@ -55,7 +55,7 @@ class ForegroundWifiIndicatorService : Service() {
 
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == MainActivity.KEY_FIREWALL_ENABLED ||
-            key == MainActivity.KEY_ACTIVE_PACKAGES ||
+            key == MainActivity.KEY_SELECTED_APPS ||
             key == MainActivity.KEY_WIFI_INDICATOR_X ||
             key == MainActivity.KEY_WIFI_INDICATOR_Y ||
             key == MainActivity.KEY_WIFI_INDICATOR_SIZE ||
@@ -265,8 +265,7 @@ class ForegroundWifiIndicatorService : Service() {
             return
         }
 
-        val foregroundPkg = currentForegroundPackage
-            ?: prefs.getString(MainActivity.KEY_LAST_FOREGROUND_APP, null)
+        val foregroundPkg = prefs.getString(MainActivity.KEY_LAST_FOREGROUND_APP, null)
 
         if (foregroundPkg.isNullOrBlank()) {
             tintDot(dot, 0xFF9E9E9E.toInt())
@@ -275,17 +274,17 @@ class ForegroundWifiIndicatorService : Service() {
 
         val firewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
         if (!firewallEnabled) {
-            tintDot(dot, 0xFFF44336.toInt())
+            tintDot(dot, 0xFF9E9E9E.toInt())
             return
         }
 
-        val activeBlocked = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
-        val isBlocked = activeBlocked.contains(foregroundPkg)
+        val selectedApps = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+        val isFirewalled = selectedApps.contains(foregroundPkg)
 
-        if (isBlocked) {
-            tintDot(dot, 0xFF4CAF50.toInt())
+        if (isFirewalled) {
+            tintDot(dot, 0xFFF44336.toInt()) // Red when it's a firewalled (selected) app
         } else {
-            tintDot(dot, 0xFFF44336.toInt())
+            tintDot(dot, 0xFF4CAF50.toInt()) // Green when it's not a firewalled app
         }
     }
 
