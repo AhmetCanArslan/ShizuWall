@@ -42,6 +42,11 @@
             android:label="Settings"
             android:parentActivityName=".ui.MainActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.WifiIndicatorSettingsActivity"
+            android:label="Indicator Settings"
+            android:parentActivityName=".ui.SettingsActivity"
+            android:exported="false" />
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
@@ -120,6 +125,12 @@
 
         <service
             android:name=".services.FloatingButtonService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
+        <service
+            android:name=".services.ForegroundWifiIndicatorService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse" />

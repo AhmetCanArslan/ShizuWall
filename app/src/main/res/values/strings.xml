@@ -360,4 +360,20 @@
     <string name="floating_button_notification_text">Tap the floating button to toggle firewall</string>
     <string name="floating_button_content_description">Toggle firewall</string>
     <string name="overlay_permission_required">Overlay permission is required for the floating button</string>
+
+    <!-- Foreground Wifi Indicator -->
+    <string name="wifi_indicator">Foreground Wifi Indicator</string>
+    <string name="wifi_indicator_description">Shows if the current foreground app is firewalled</string>
+    <string name="wifi_indicator_settings">Indicator settings</string>
+    <string name="wifi_indicator_settings_title">Indicator Settings</string>
+    <string name="wifi_indicator_settings_description">Adjust foreground indicator position and size.</string>
+    <string name="wifi_indicator_x">X Coordinate</string>
+    <string name="wifi_indicator_y">Y Coordinate</string>
+    <string name="wifi_indicator_size">Indicator Size</string>
+    <string name="wifi_indicator_content_description">Foreground firewall indicator</string>
+    <string name="wifi_indicator_notification_channel_name">Wifi Indicator (Service)</string>
+    <string name="wifi_indicator_notification_channel_description">Background service for foreground firewall indicator</string>
+    <string name="wifi_indicator_notification_title">Foreground Wifi Indicator</string>
+    <string name="wifi_indicator_notification_text">Monitoring foreground app firewall state</string>
+    <string name="wifi_indicator_overlay_permission_required">Overlay permission is required for the wifi indicator</string>
 </resources>

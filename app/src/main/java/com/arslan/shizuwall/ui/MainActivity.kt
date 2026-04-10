@@ -97,6 +97,11 @@ class MainActivity : BaseActivity() {
         const val KEY_SCREEN_LOCK_DELAY_SECONDS = "screen_lock_delay_seconds"
         const val DEFAULT_SCREEN_LOCK_DELAY_SECONDS = 2
         const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"  // Current foreground app in smart mode
+        const val KEY_LAST_FOREGROUND_APP = "last_foreground_app"
+        const val KEY_WIFI_INDICATOR_ENABLED = "wifi_indicator_enabled"
+        const val KEY_WIFI_INDICATOR_X = "wifi_indicator_x"
+        const val KEY_WIFI_INDICATOR_Y = "wifi_indicator_y"
+        const val KEY_WIFI_INDICATOR_SIZE = "wifi_indicator_size"
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
         const val KEY_APPLY_ROOT_RULES_AFTER_REBOOT = "apply_root_rules_after_reboot"
         const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"

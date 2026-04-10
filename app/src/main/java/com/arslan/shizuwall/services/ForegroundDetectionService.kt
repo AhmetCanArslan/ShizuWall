@@ -204,6 +204,7 @@ class ForegroundDetectionService : AccessibilityService() {
 
     private var currentForegroundPackage: String? = null
     private var lastManagedPackage: String? = null
+    private var lastObservedForegroundPackage: String? = null
 
     @Volatile private var pendingBlockPackage: String? = null
 
@@ -330,6 +331,7 @@ class ForegroundDetectionService : AccessibilityService() {
         if (!restoredApp.isNullOrEmpty()) {
             lastManagedPackage = restoredApp
         }
+        lastObservedForegroundPackage = sharedPreferences.getString(MainActivity.KEY_LAST_FOREGROUND_APP, null)
 
         selectedPackages = sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
 
@@ -393,6 +395,8 @@ class ForegroundDetectionService : AccessibilityService() {
         // Filter non-Activity windows (dialogs, panels, toasts, etc.) but do so carefully.
         val className = event.className?.toString()
         if (className != null && isNonActivityWindow(className)) return
+
+        publishObservedForegroundApp(packageName)
 
         // Gate on cached state — zero SharedPrefs reads on the hot path.
         if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND) return
@@ -467,6 +471,17 @@ class ForegroundDetectionService : AccessibilityService() {
                lower.endsWith("dropdown") ||
                lower.contains("${'$'}") || // inner class — usually a sub-window
                lower == "android.inputmethodservice.softinputwindow"
+    }
+
+    private fun publishObservedForegroundApp(packageName: String) {
+        if (packageName == lastObservedForegroundPackage) return
+        val previous = lastObservedForegroundPackage
+        lastObservedForegroundPackage = packageName
+        sharedPreferences.edit().putString(MainActivity.KEY_LAST_FOREGROUND_APP, packageName).apply()
+        sendBroadcast(Intent(ACTION_FOREGROUND_APP_CHANGED).apply {
+            putExtra(EXTRA_PACKAGE_NAME, packageName)
+            putExtra(EXTRA_PREVIOUS_PACKAGE, previous)
+        })
     }
 
     private fun shouldSkipPackage(packageName: String): Boolean {
