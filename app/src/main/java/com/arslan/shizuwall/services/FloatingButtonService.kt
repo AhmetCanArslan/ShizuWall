@@ -341,6 +341,15 @@ class FloatingButtonService : Service() {
             if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                 saveFirewallEnabled(true)
                 saveActivePackages(successful.toSet())
+                
+                withContext(Dispatchers.Main) {
+                    if (sharedPreferences.getBoolean(MainActivity.KEY_WIFI_INDICATOR_ENABLED, false)) {
+                        ForegroundWifiIndicatorService.start(this@FloatingButtonService)
+                    }
+                    if (sharedPreferences.getBoolean(KEY_FLOATING_BUTTON_ENABLED, false)) {
+                        start(this@FloatingButtonService)
+                    }
+                }
             } else {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@FloatingButtonService, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()

@@ -249,6 +249,14 @@ class FirewallControlReceiver : BroadcastReceiver() {
                             putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)
                             putInt(MainActivity.KEY_SELECTED_COUNT, currentSelected.size)
                         }
+                        
+                        // Start indicator and floating button if they are enabled
+                        if (prefs.getBoolean(MainActivity.KEY_WIFI_INDICATOR_ENABLED, false)) {
+                            com.arslan.shizuwall.services.ForegroundWifiIndicatorService.start(context)
+                        }
+                        if (prefs.getBoolean(com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
+                            com.arslan.shizuwall.services.FloatingButtonService.start(context)
+                        }
                     } else {
                         val isGlobalDisable = csv.isNullOrBlank()
                         if (!firewallMode.allowsDynamicSelection() || isGlobalDisable) {

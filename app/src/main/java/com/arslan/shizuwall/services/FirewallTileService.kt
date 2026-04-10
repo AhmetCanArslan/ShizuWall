@@ -174,6 +174,15 @@ class FirewallTileService : TileService() {
             if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                 saveFirewallEnabled(true)
                 saveActivePackages(successful.toSet())
+                
+                withContext(Dispatchers.Main) {
+                    if (sharedPreferences.getBoolean(MainActivity.KEY_WIFI_INDICATOR_ENABLED, false)) {
+                        ForegroundWifiIndicatorService.start(this@FirewallTileService)
+                    }
+                    if (sharedPreferences.getBoolean(FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
+                        FloatingButtonService.start(this@FirewallTileService)
+                    }
+                }
             } else {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@FirewallTileService, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()

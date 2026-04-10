@@ -324,6 +324,16 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        // Start Foreground Wifi Indicator if enabled
+        if (sharedPreferences.getBoolean(KEY_WIFI_INDICATOR_ENABLED, false)) {
+            com.arslan.shizuwall.services.ForegroundWifiIndicatorService.start(this)
+        }
+
+        // Start Floating Button Service if enabled
+        if (sharedPreferences.getBoolean(com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
+            com.arslan.shizuwall.services.FloatingButtonService.start(this)
+        }
+
 
         // Show Android 11 compatibility warning if needed
         showAndroid11WarningDialog()
@@ -1970,6 +1980,13 @@ class MainActivity : BaseActivity() {
                         suppressToggleListener = true
                         firewallToggle.isChecked = true
                         suppressToggleListener = false
+                        
+                        if (sharedPreferences.getBoolean(KEY_WIFI_INDICATOR_ENABLED, false)) {
+                            com.arslan.shizuwall.services.ForegroundWifiIndicatorService.start(this@MainActivity)
+                        }
+                        if (sharedPreferences.getBoolean(com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
+                            com.arslan.shizuwall.services.FloatingButtonService.start(this@MainActivity)
+                        }
                         
                         if (firewallMode.allowsDynamicSelection()) {
                             appListAdapter.setSelectionEnabled(true)
