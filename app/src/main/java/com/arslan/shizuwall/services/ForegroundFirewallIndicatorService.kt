@@ -25,6 +25,7 @@ import android.view.ViewConfiguration
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.ui.MainActivity
 
@@ -272,15 +273,24 @@ class ForegroundFirewallIndicatorService : Service() {
             return
         }
 
-        val foregroundPkg = prefs.getString(MainActivity.KEY_LAST_FOREGROUND_APP, null)
-
-        if (foregroundPkg.isNullOrBlank()) {
+        val firewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
+        if (!firewallEnabled) {
             tintDot(dot, 0xFF9E9E9E.toInt())
             return
         }
 
-        val firewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
-        if (!firewallEnabled) {
+        val firewallMode = FirewallMode.fromName(
+            prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
+        )
+        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+            // In Smart Foreground mode, the active foreground app is always allowed.
+            tintDot(dot, 0xFF4CAF50.toInt())
+            return
+        }
+
+        val foregroundPkg = prefs.getString(MainActivity.KEY_LAST_FOREGROUND_APP, null)
+
+        if (foregroundPkg.isNullOrBlank()) {
             tintDot(dot, 0xFF9E9E9E.toInt())
             return
         }
