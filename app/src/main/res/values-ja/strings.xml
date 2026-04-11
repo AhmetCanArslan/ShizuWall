@@ -348,4 +348,5 @@
     <string name="accessibility_auto_granting">ユーザー補助サービスを有効化しています...</string>
     <string name="accessibility_auto_grant_failed">ユーザー補助サービスを自動で有効化できませんでした。設定で手動で有効にしてください。</string>
     <string name="open_settings">設定を開く</string>
+    <string name="notification_permission_background_request">バックグラウンドで実行し続けるには権限を付与してください。</string>
 </resources>

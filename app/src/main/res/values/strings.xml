@@ -72,6 +72,7 @@
     <string name="welcome_message">Block unwanted network connections without root or vpn</string>
     <string name="next">Next</string>
     <string name="notification_permission_title">Notification Permission</string>
+    <string name="notification_permission_background_request">Please grant permission to keep running in the background.</string>
     <string name="notification_permission_message">We need notification permission to keep you informed about firewall status if you reboot while firewall is active.</string>
     <string name="grant_permission">Grant Permission</string>
     <string name="favorites_title">Favorites</string>

@@ -363,4 +363,5 @@
     <string name="firewall_indicator_overlay_permission_required">Firewall göstergesi için üzerine yazma izni gereklidir</string>
     <string name="decrease">Azalt</string>
     <string name="increase">Artır</string>
+    <string name="notification_permission_background_request">Arka planda aktif kalması için izin verin.</string>
 </resources>

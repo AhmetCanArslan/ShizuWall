@@ -348,4 +348,5 @@
     <string name="accessibility_auto_granting">Activando el servicio de accesibilidad...</string>
     <string name="accessibility_auto_grant_failed">No se pudo activar automáticamente el servicio de accesibilidad. Actívalo manualmente en Ajustes.</string>
     <string name="open_settings">Abrir Ajustes</string>
+    <string name="notification_permission_background_request">Por favor, conceda permiso para seguir ejecutándose en segundo plano.</string>
 </resources>

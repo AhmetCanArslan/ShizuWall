@@ -637,6 +637,24 @@ class SettingsActivity : BaseActivity() {
             }
         }
 
+        fun checkAndRequestNotificationPermission() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    val hasAsked = prefs.getBoolean("has_asked_notif", false)
+                    if (!hasAsked || androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.POST_NOTIFICATIONS)) {
+                        prefs.edit().putBoolean("has_asked_notif", true).apply()
+                        androidx.core.app.ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1002)
+                    } else {
+                        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+                        }
+                        startActivity(intent)
+                        Toast.makeText(this, getString(R.string.notification_permission_background_request), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
         switchFloatingButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 // Check overlay permission
@@ -651,6 +669,7 @@ class SettingsActivity : BaseActivity() {
                     startActivity(intent)
                     return@setOnCheckedChangeListener
                 }
+                checkAndRequestNotificationPermission()
                 prefs.edit().putBoolean(
                     com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, true
                 ).apply()
@@ -687,6 +706,7 @@ class SettingsActivity : BaseActivity() {
                 }
 
                 if (ForegroundDetectionService.isServiceEnabled(this)) {
+                    checkAndRequestNotificationPermission()
                     prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, true).apply()
                     ForegroundFirewallIndicatorService.start(this)
                     return@setOnCheckedChangeListener
@@ -708,6 +728,7 @@ class SettingsActivity : BaseActivity() {
                     withContext(Dispatchers.Main) {
                         dialog.dismiss()
                         if (success && ForegroundDetectionService.isServiceEnabled(this@SettingsActivity)) {
+                            checkAndRequestNotificationPermission()
                             prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, true).apply()
                             ForegroundFirewallIndicatorService.start(this@SettingsActivity)
                         } else {

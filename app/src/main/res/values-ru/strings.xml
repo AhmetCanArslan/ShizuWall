@@ -348,4 +348,5 @@
     <string name="accessibility_auto_granting">Включение службы специальных возможностей...</string>
     <string name="accessibility_auto_grant_failed">Не удалось автоматически включить службу специальных возможностей. Пожалуйста, включите ее вручную в настройках.</string>
     <string name="open_settings">Открыть настройки</string>
+    <string name="notification_permission_background_request">Пожалуйста, предоставьте разрешение для продолжения работы в фоновом режиме.</string>
 </resources>

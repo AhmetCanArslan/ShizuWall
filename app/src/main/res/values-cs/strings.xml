@@ -349,4 +349,5 @@
     <string name="accessibility_auto_granting">Povoluje se služba přístupnosti...</string>
     <string name="accessibility_auto_grant_failed">Službu přístupnosti se nepodařilo povolit automaticky. Povolte ji prosím ručně v Nastavení.</string>
     <string name="open_settings">Otevřít Nastavení</string>
+    <string name="notification_permission_background_request">Udělte prosím oprávnění k běhu na pozadí.</string>
 </resources>

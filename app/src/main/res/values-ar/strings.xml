@@ -349,4 +349,5 @@
     <string name="accessibility_auto_granting">جارٍ تفعيل خدمة إمكانية الوصول...</string>
     <string name="accessibility_auto_grant_failed">فشل تفعيل خدمة إمكانية الوصول تلقائياً. يرجى تفعيلها يدوياً من الإعدادات.</string>
     <string name="open_settings">فتح الإعدادات</string>
+    <string name="notification_permission_background_request">يرجى منح الإذن للتشغيل في الخلفية.</string>
 </resources>

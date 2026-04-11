@@ -346,4 +346,5 @@
     <string name="accessibility_auto_granting">Bedienungshilfedienst wird aktiviert...</string>
     <string name="accessibility_auto_grant_failed">Der Bedienungshilfedienst konnte nicht automatisch aktiviert werden. Bitte aktivieren Sie ihn manuell in den Einstellungen.</string>
     <string name="open_settings">Einstellungen öffnen</string>
+    <string name="notification_permission_background_request">Bitte erteilen Sie die Berechtigung, weiterhin im Hintergrund ausgeführt zu werden.</string>
 </resources>

@@ -346,4 +346,5 @@
     <string name="accessibility_auto_granting">正在启用无障碍服务...</string>
     <string name="accessibility_auto_grant_failed">无法自动启用无障碍服务。请在设置中手动启用。</string>
     <string name="open_settings">打开设置</string>
+    <string name="notification_permission_background_request">请授予权限以继续在后台运行。</string>
 </resources>
