@@ -113,6 +113,7 @@
     <string name="firewall_enabled_adaptive">Firewall aktivován (Adaptivní režim)</string>
     <string name="failed_to_enable_firewall">Nepodařilo se povolit bránu firewall pro žádné aplikace</string>
     <string name="failed_to_disable_firewall">Nepodařilo se deaktivovat bránu firewall pro žádnou aplikaci</string>
+    <string name="screen_lock_mode_operation_failed">Režim zamknutí obrazovky selhal</string>
     <string name="operation_failed_for_apps">Operace se nezdařila pro %d aplikací</string>
     <string name="operation_failed_message">Operace se nezdařila u následujících %d aplikací. Byly odznačeny.</string>
     <string name="details">Detaily</string>
@@ -304,6 +305,8 @@
     <string name="firewall_mode_adaptive_description">Okamžitě aplikuje pravidla. Firewall zůstává zapnutý.</string>
     <string name="firewall_mode_whitelist">Whitelist</string>
     <string name="firewall_mode_whitelist_description">Ve výchozím nastavení blokuje všechny aplikace, vybrané aplikace povolí</string>
+    <string name="firewall_mode_screen_lock">Režim zamknutí obrazovky</string>
+    <string name="firewall_mode_screen_lock_description">Blokovat vybrané aplikace při uzamčení, odblokovat při odemčení</string>
     <string name="whitelist_info_system_apps_warning">Pokud je možnost „Zobrazit systémové aplikace“ deaktivována, systémové aplikace nebudou v režimu Whitelist chráněny firewallem. Pokud jste aktivovali možnost „Zobrazit systémové aplikace“ a používáte režim Whitelist, tato kombinace nebyla plně otestována. Používejte ji s opatrností.</string>
     <string name="firewall_mode_smart_foreground">Inteligentní popředí</string>
     <string name="firewall_mode_smart_foreground_description">Povolí pouze aplikaci, která je aktuálně v popředí</string>
@@ -348,6 +351,13 @@
     <string name="double_tap_or_long_press">Dvojitým klepnutím vyberete vše, dlouhým stiskem zrušíte výběr všeho</string>
     <string name="accessibility_auto_granting">Povoluje se služba přístupnosti...</string>
     <string name="accessibility_auto_grant_failed">Službu přístupnosti se nepodařilo povolit automaticky. Povolte ji prosím ručně v Nastavení.</string>
+    <string name="screen_lock_delay_title">Zpoždění uzamknutí</string>
+    <string name="screen_lock_delay_value">Povolit po %1$d vteřinách zamknutí</string>
+    <string name="screen_lock_delay_dialog_title">Zpoždění uzamknutí obrazovky</string>
+    <string name="screen_lock_mode_notification_channel_name">Režim uzamknutí obrazovky (služba)</string>
+    <string name="screen_lock_mode_notification_channel_description">Služba na pozadí pro automatizaci zamykání obrazovkyn</string>
+    <string name="screen_lock_mode_notification_title">Režim uzamčení obrazovky</string>
+    <string name="screen_lock_mode_notification_text">Monitorování uzamykání/odemykání pro použití pravidel firewallu</string>
     <string name="open_settings">Otevřít Nastavení</string>
     <string name="notification_permission_background_request">Udělte prosím oprávnění k běhu na pozadí.</string>
 </resources>
