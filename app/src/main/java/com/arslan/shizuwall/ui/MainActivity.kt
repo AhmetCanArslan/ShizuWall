@@ -113,10 +113,11 @@ class MainActivity : BaseActivity() {
         const val EXTRA_ACTIVE_PACKAGES = "com.arslan.shizuwall.EXTRA_ACTIVE_PACKAGES"
 
         const val ACTION_FIREWALL_CONTROL = "shizuwall.CONTROL" 
-        const val EXTRA_PACKAGES_CSV = "apps" 
+        const val EXTRA_PACKAGES_CSV = "apps"
 
         const val KEY_FIREWALL_UPDATE_TS = "firewall_update_ts"
         const val KEY_APP_MONITOR_ENABLED = "app_monitor_enabled"
+        const val KEY_APP_MODES = "app_modes_json"
         private const val KEY_APPS_CACHE_JSON = "apps_cache_json_v1"
 
 
@@ -1686,6 +1687,8 @@ class MainActivity : BaseActivity() {
                 }
 
                 val favoritePackages = loadFavoriteApps()
+                val modesStr = sharedPreferences.getString(KEY_APP_MODES, "{}")
+                val modesJson = try { JSONObject(modesStr!!) } catch (e: Exception) { JSONObject() }
                 
                 // Process packages in parallel chunks for better performance
                 val chunkSize = 50
@@ -1714,8 +1717,9 @@ class MainActivity : BaseActivity() {
                             val isSelected = savedSelected.contains(packageName)
                             val isFavorite = favoritePackages.contains(packageName)
                             val installTime = packageInfo.firstInstallTime
+                            val appMode = modesJson.optInt(packageName, 0)
 
-                            chunkResult.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite, installTime))
+                            chunkResult.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite, installTime, appMode))
                         }
                         chunkResult
                     }
@@ -1771,6 +1775,8 @@ class MainActivity : BaseActivity() {
         val json = sharedPreferences.getString(KEY_APPS_CACHE_JSON, null) ?: return false
         val selectedPackages = loadSelectedApps()
         val favoritePackages = loadFavoriteApps()
+        val modesStr = sharedPreferences.getString(KEY_APP_MODES, "{}")
+        val modesJson = try { JSONObject(modesStr!!) } catch (e: Exception) { JSONObject() }
 
         val cachedList = try {
             val arr = JSONArray(json)
@@ -1788,7 +1794,7 @@ class MainActivity : BaseActivity() {
                         isSystem = obj.optBoolean("isSystem", false),
                         isFavorite = favoritePackages.contains(packageName),
                         installTime = obj.optLong("installTime", 0L),
-                        appFirewallMode = obj.optInt("appFirewallMode", 0)
+                        appFirewallMode = modesJson.optInt(packageName, 0)
                     )
                 )
             }
@@ -1834,9 +1840,16 @@ class MainActivity : BaseActivity() {
             .filter { it.isSelected && !ShizukuPackageResolver.isShizukuPackage(this, it.packageName) }
             .map { it.packageName }
             .toSet()
+            
+        val modesJson = JSONObject()
+        appList.filter { it.appFirewallMode != 0 }.forEach {
+            modesJson.put(it.packageName, it.appFirewallMode)
+        }
+            
         sharedPreferences.edit()
             .putStringSet(KEY_SELECTED_APPS, selectedPackages)
             .putInt(KEY_SELECTED_COUNT, selectedPackages.size)
+            .putString(KEY_APP_MODES, modesJson.toString())
             .apply()
     }
 
