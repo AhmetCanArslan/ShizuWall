@@ -589,7 +589,7 @@ class MainActivity : BaseActivity() {
         
         // Auto-enable accessibility service if revoked (e.g. after debug APK reinstall)
         val isIndicatorEnabled = sharedPreferences.getBoolean(KEY_FIREWALL_INDICATOR_ENABLED, false)
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || isIndicatorEnabled) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || isIndicatorEnabled) {
             if (!ForegroundDetectionService.isServiceEnabled(this)) {
                 // Try to auto-enable via Shizuku/LADB shell
                 lifecycleScope.launch {
@@ -1927,12 +1927,26 @@ class MainActivity : BaseActivity() {
     private fun applyFirewallState(enable: Boolean, packageNames: List<String>) {
         if (enable && packageNames.isEmpty() && !firewallMode.allowsDynamicSelection()) return
 
-        val effectivePackageNames = if (
-            enable &&
-            firewallMode == FirewallMode.SCREEN_LOCK_MODE &&
-            !ScreenLockModeReceiver.isDeviceLocked(this)
-        ) {
-            emptyList()
+        val effectivePackageNames = if (enable) {
+            if (firewallMode == FirewallMode.SCREEN_LOCK_MODE && !ScreenLockModeReceiver.isDeviceLocked(this)) {
+                emptyList()
+            } else if (firewallMode == FirewallMode.HYBRID) {
+                val appModesStr = sharedPreferences.getString(KEY_APP_MODES, "{}")
+                val appModes = try { JSONObject(appModesStr!!) } catch (e: Exception) { JSONObject() }
+                val isLocked = ScreenLockModeReceiver.isDeviceLocked(this)
+                packageNames.filter {
+                    val mode = appModes.optInt(it, 0)
+                    when (mode) {
+                        1 -> false // SMART_FOREGROUND app -> handled dynamically by accessibility service
+                        2 -> isLocked // SCREEN_LOCK app -> block if screen locked
+                        else -> true // DEFAULT app -> block immediately
+                    }
+                }
+            } else if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+                emptyList()
+            } else {
+                packageNames
+            }
         } else {
             packageNames
         }
@@ -1946,7 +1960,7 @@ class MainActivity : BaseActivity() {
             updateInteractiveViews()
             showDimOverlay(force = true)
             
-            if (enable && firewallMode == FirewallMode.SMART_FOREGROUND) {
+            if (enable && (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID)) {
                 if (!ForegroundDetectionService.isServiceEnabled(this@MainActivity)) {
                     val granted = ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
                     if (granted) {
@@ -2165,7 +2179,7 @@ class MainActivity : BaseActivity() {
         lastOperationErrorDetails.clear()
 
         val toUnblock = packageNames.toMutableList()
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID) {
             val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
             if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
                 toUnblock.add(currentFgApp)
@@ -2186,7 +2200,7 @@ class MainActivity : BaseActivity() {
         }
         runCommandDetailed("cmd connectivity set-chain3-enabled false")
 
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID) {
             sharedPreferences.edit()
                 .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                 .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())

@@ -112,12 +112,26 @@ class FirewallControlReceiver : BroadcastReceiver() {
 
                 // filter out any Shizuku packages and this app itself from incoming list
                 val requestedPackages = rawPackages.filterNot { ShizukuPackageResolver.isShizukuPackage(context, it) || it == context.packageName }
-                val packages = if (
-                    enabled &&
-                    firewallMode == FirewallMode.SCREEN_LOCK_MODE &&
-                    !ScreenLockModeReceiver.isDeviceLocked(context)
-                ) {
-                    emptyList()
+                val packages = if (enabled) {
+                    if (firewallMode == FirewallMode.SCREEN_LOCK_MODE && !ScreenLockModeReceiver.isDeviceLocked(context)) {
+                        emptyList()
+                    } else if (firewallMode == FirewallMode.HYBRID) {
+                        val appModesStr = prefs.getString(MainActivity.KEY_APP_MODES, "{}")
+                        val appModes = try { org.json.JSONObject(appModesStr!!) } catch (e: Exception) { org.json.JSONObject() }
+                        val isLocked = ScreenLockModeReceiver.isDeviceLocked(context)
+                        requestedPackages.filter {
+                            val modeApp = appModes.optInt(it, 0)
+                            when (modeApp) {
+                                1 -> false // SMART_FOREGROUND app -> handled dynamically by accessibility service
+                                2 -> isLocked // SCREEN_LOCK app -> block if screen locked
+                                else -> true // DEFAULT app -> block immediately
+                            }
+                        }
+                    } else if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+                        emptyList()
+                    } else {
+                        requestedPackages
+                    }
                 } else {
                     requestedPackages
                 }
@@ -264,6 +278,9 @@ class FirewallControlReceiver : BroadcastReceiver() {
                                 putBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
                                 remove(MainActivity.KEY_FIREWALL_SAVED_ELAPSED)
                                 putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+                                if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID) {
+                                    putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
+                                }
                             } else {
                                 // Global disable failed, show error but don't update state
                                 if (!automationEvent) {

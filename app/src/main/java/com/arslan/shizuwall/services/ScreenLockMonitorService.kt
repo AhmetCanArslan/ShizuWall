@@ -42,7 +42,7 @@ class ScreenLockMonitorService : Service() {
             val mode = FirewallMode.fromName(
                 prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
             )
-            val shouldRun = enabled && mode == FirewallMode.SCREEN_LOCK_MODE
+            val shouldRun = enabled && (mode == FirewallMode.SCREEN_LOCK_MODE || mode == FirewallMode.HYBRID)
 
             ScreenLockModeWatchdogWorker.sync(appContext, shouldRun)
 
@@ -227,7 +227,7 @@ class ScreenLockMonitorService : Service() {
         val mode = FirewallMode.fromName(
             prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
-        return enabled && mode == FirewallMode.SCREEN_LOCK_MODE
+        return enabled && (mode == FirewallMode.SCREEN_LOCK_MODE || mode == FirewallMode.HYBRID)
     }
 
     private fun createNotificationChannel() {

@@ -70,7 +70,7 @@ class ScreenLockModeReceiver {
         val mode = FirewallMode.fromName(
             prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
-        return mode == FirewallMode.SCREEN_LOCK_MODE
+        return mode == FirewallMode.SCREEN_LOCK_MODE || mode == FirewallMode.HYBRID
     }
 
     private fun isFirewallEnabled(prefs: android.content.SharedPreferences): Boolean {
@@ -79,6 +79,17 @@ class ScreenLockModeReceiver {
 
     private fun activePackagesCsv(prefs: android.content.SharedPreferences): String {
         val active = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
+        val mode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+        
+        if (mode == FirewallMode.HYBRID) {
+            val appModesStr = prefs.getString(MainActivity.KEY_APP_MODES, "{}")
+            val appModes = try { org.json.JSONObject(appModesStr!!) } catch (e: Exception) { org.json.JSONObject() }
+            return active
+                .map { it.trim() }
+                .filter { it.isNotEmpty() && appModes.optInt(it, 0) == 2 }
+                .joinToString(",")
+        }
+        
         return active
             .map { it.trim() }
             .filter { it.isNotEmpty() }
@@ -87,6 +98,17 @@ class ScreenLockModeReceiver {
 
     private fun selectedPackagesCsv(prefs: android.content.SharedPreferences): String {
         val selected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+        val mode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+        
+        if (mode == FirewallMode.HYBRID) {
+            val appModesStr = prefs.getString(MainActivity.KEY_APP_MODES, "{}")
+            val appModes = try { org.json.JSONObject(appModesStr!!) } catch (e: Exception) { org.json.JSONObject() }
+            return selected
+                .map { it.trim() }
+                .filter { it.isNotEmpty() && appModes.optInt(it, 0) == 2 }
+                .joinToString(",")
+        }
+
         return selected
             .map { it.trim() }
             .filter { it.isNotEmpty() }

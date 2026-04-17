@@ -223,6 +223,7 @@ class ForegroundDetectionService : AccessibilityService() {
 
     @Volatile private var dynamicSkipPackages: Set<String> = emptySet()
     @Volatile private var selectedPackages: Set<String> = emptySet()
+    @Volatile private var cachedAppModes: Map<String, Int> = emptyMap()
     @Volatile private var lastUnmanagedAllowedPackage: String? = null
     @Volatile private var lastUnmanagedAllowedAtMs: Long = 0L
 
@@ -245,7 +246,7 @@ class ForegroundDetectionService : AccessibilityService() {
                         .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                         .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
                         .apply()
-                } else if (cachedFirewallMode == FirewallMode.SMART_FOREGROUND) {
+                } else if (cachedFirewallMode == FirewallMode.SMART_FOREGROUND || cachedFirewallMode == FirewallMode.HYBRID) {
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                             startForeground(
@@ -267,7 +268,7 @@ class ForegroundDetectionService : AccessibilityService() {
                 val modeName = prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
                 cachedFirewallMode = FirewallMode.fromName(modeName)
 
-                if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND) {
+                if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && cachedFirewallMode != FirewallMode.HYBRID) {
                     try {
                         stopForeground(true)
                     } catch (e: Exception) {
@@ -304,7 +305,21 @@ class ForegroundDetectionService : AccessibilityService() {
             MainActivity.KEY_SELECTED_APPS -> {
                 selectedPackages = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
             }
+            MainActivity.KEY_APP_MODES -> {
+                cachedAppModes = parseAppModes(prefs.getString(MainActivity.KEY_APP_MODES, "{}"))
+            }
         }
+    }
+
+    private fun parseAppModes(modesStr: String?): Map<String, Int> {
+        val map = mutableMapOf<String, Int>()
+        try {
+            val json = org.json.JSONObject(modesStr ?: "{}")
+            for (key in json.keys()) {
+                map[key] = json.optInt(key, 0)
+            }
+        } catch (_: Exception) {}
+        return map
     }
 
     private val packageReceiver = object : BroadcastReceiver() {
@@ -334,6 +349,7 @@ class ForegroundDetectionService : AccessibilityService() {
         lastObservedForegroundPackage = sharedPreferences.getString(MainActivity.KEY_LAST_FOREGROUND_APP, null)
 
         selectedPackages = sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+        cachedAppModes = parseAppModes(sharedPreferences.getString(MainActivity.KEY_APP_MODES, "{}"))
 
         dynamicSkipPackages = resolveDynamicSkipPackages()
 
@@ -352,7 +368,7 @@ class ForegroundDetectionService : AccessibilityService() {
 
         createNotificationChannel()
 
-        if (cachedFirewallEnabled && cachedFirewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (cachedFirewallEnabled && (cachedFirewallMode == FirewallMode.SMART_FOREGROUND || cachedFirewallMode == FirewallMode.HYBRID)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 startForeground(NOTIFICATION_ID, buildNotification(null), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
             } else {
@@ -399,7 +415,7 @@ class ForegroundDetectionService : AccessibilityService() {
         publishObservedForegroundApp(packageName)
 
         // Gate on cached state — zero SharedPrefs reads on the hot path.
-        if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND) return
+        if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && cachedFirewallMode != FirewallMode.HYBRID) return
         if (!cachedFirewallEnabled) return
 
         // Debounce: cancel any previously queued dispatch and re-schedule.
@@ -413,12 +429,14 @@ class ForegroundDetectionService : AccessibilityService() {
     }
 
     private suspend fun processPackageChange(newPackage: String) {
-        if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND || !cachedFirewallEnabled) return
+        if ((cachedFirewallMode != FirewallMode.SMART_FOREGROUND && cachedFirewallMode != FirewallMode.HYBRID) || !cachedFirewallEnabled) return
         if (newPackage == currentForegroundPackage) return
 
         val isPlatformSkip = shouldAlwaysSkipPackage(newPackage)
         val isSelected = selectedPackages.contains(newPackage)
-        val shouldManage = isSelected && !isPlatformSkip
+        val appMode = cachedAppModes[newPackage] ?: 0
+        val isSmartForegroundApp = cachedFirewallMode == FirewallMode.SMART_FOREGROUND || (cachedFirewallMode == FirewallMode.HYBRID && appMode == 1)
+        val shouldManage = isSelected && !isPlatformSkip && isSmartForegroundApp
 
         if (!shouldManage) {
             // Going to launcher/system or an unselected app: don't manage the new package,
@@ -574,8 +592,11 @@ class ForegroundDetectionService : AccessibilityService() {
                     Log.d(TAG, "$packageName → [home] blocked")
                 }
 
+                val currentActive = sharedPreferences.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
+                currentActive.add(packageName)
+
                 sharedPreferences.edit()
-                    .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, setOf(packageName))
+                    .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, currentActive)
                     .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                     .apply()
 
@@ -726,13 +747,16 @@ class ForegroundDetectionService : AccessibilityService() {
                     Log.w(TAG, "Failed to block $previousPackage: $blockErr")
                 }
 
-                val activePackages = if (blockOk && shouldBlockPrevious) {
-                    setOf(previousPackage!!)
-                } else {
-                    emptySet()
+                val currentActive = sharedPreferences.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
+                if (blockOk && shouldBlockPrevious) {
+                    currentActive.add(previousPackage!!)
                 }
+                if (allowOk) {
+                    currentActive.remove(newPackage)
+                }
+
                 sharedPreferences.edit()
-                    .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, activePackages)
+                    .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, currentActive)
                     .apply()
 
                 allowOk && blockOk
