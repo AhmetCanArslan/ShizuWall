@@ -391,8 +391,8 @@ class SettingsActivity : BaseActivity() {
         val showSkipConfirm = mode == FirewallMode.DEFAULT
         cardSkipConfirm.visibility = if (showSkipConfirm) View.VISIBLE else View.GONE
 
-        cardScreenLockDelay.visibility = if (mode == FirewallMode.SCREEN_LOCK_MODE) View.VISIBLE else View.GONE
-        if (mode == FirewallMode.SCREEN_LOCK_MODE) {
+        cardScreenLockDelay.visibility = if (mode == FirewallMode.SCREEN_LOCK_MODE || mode == FirewallMode.HYBRID) View.VISIBLE else View.GONE
+        if (mode == FirewallMode.SCREEN_LOCK_MODE || mode == FirewallMode.HYBRID) {
             updateScreenLockDelaySummary()
         }
         
@@ -402,8 +402,8 @@ class SettingsActivity : BaseActivity() {
             sharedPreferences.edit().putBoolean("skip_enable_confirm", true).apply()
         }
         
-        // Show warning for Smart Foreground if accessibility not enabled
-        if (mode == FirewallMode.SMART_FOREGROUND) {
+        // Show warning for Smart Foreground / Hybrid if accessibility not enabled
+        if (mode == FirewallMode.SMART_FOREGROUND || mode == FirewallMode.HYBRID) {
             val accessibilityEnabled = ForegroundDetectionService.isServiceEnabled(this)
             warningContainer.visibility = if (!accessibilityEnabled) View.VISIBLE else View.GONE
             // Reset retry loading state
@@ -479,8 +479,8 @@ class SettingsActivity : BaseActivity() {
             TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
             updateFirewallModeUI(newMode)
             
-            // Handle accessibility for Smart Foreground mode
-            if (newMode == FirewallMode.SMART_FOREGROUND) {
+            // Handle accessibility for Smart Foreground / Hybrid mode
+            if (newMode == FirewallMode.SMART_FOREGROUND || newMode == FirewallMode.HYBRID) {
                 if (!ForegroundDetectionService.isServiceEnabled(this)) {
                     // Check dialog status
                     val dialogShown = sharedPreferences.getBoolean("accessibility_dialog_shown", false)
