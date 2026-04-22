@@ -43,7 +43,24 @@
     <string name="firewall_cleanup_warning">Warning: Firewall cleanup failed. Please REBOOT your device to restore internet access.</string>
     <string name="app_reset_complete">App reset complete. Closing…</string>
     <string name="reset_app_failed">Failed to reset app: %s</string>
-    <string name="adb_broadcast_usage_title">ADB Broadcast Usage (Copiable)</string>
+    <string name="adb_broadcast_usage_title">ADB Broadcast Usage</string>
+    <string name="adb_broadcast_quick_reference">Quick reference with copy-ready values and commands.</string>
+    <string name="adb_broadcast_field_action">Action</string>
+    <string name="adb_broadcast_field_component">Component</string>
+    <string name="adb_broadcast_field_extras">Extras</string>
+    <string name="adb_broadcast_examples_title">Common commands</string>
+    <string name="adb_broadcast_example_enable_selected">Enable firewall for selected apps</string>
+    <string name="adb_broadcast_example_disable_selected">Disable firewall for selected apps</string>
+    <string name="adb_broadcast_example_enable_csv">Enable firewall for specific packages (CSV)</string>
+    <string name="adb_broadcast_example_disable_csv">Disable firewall for specific packages (CSV)</string>
+    <string name="adb_broadcast_developer_section_title">For developers</string>
+    <string name="adb_broadcast_dev_enable_framework">Enable firewall framework</string>
+    <string name="adb_broadcast_dev_block_package">Block specific app</string>
+    <string name="adb_broadcast_dev_unblock_package">Unblock specific app</string>
+    <string name="adb_broadcast_dev_disable_framework">Disable firewall framework</string>
+    <string name="adb_broadcast_extras_summary" formatted="false">%1$s (boolean): true = enable, false = disable
+
+%2$s (string, optional): comma-separated package list. If omitted, the app uses selected packages saved in ShizuWall.</string>
     <string name="retry">Retry</string>
     <string name="ok">OK</string>
     <string name="adb_broadcast_usage_text" formatted="false">Action:\n%1$s\n\nComponent:\n%2$s\n\nExtras:\n\n%3$s (boolean) — true = enable, false = disable\n\n%4$s (string, optional) — comma-separated package list to operate on. If omitted, app falls back to saved selected apps.\n\n\nExamples:\n\nEnable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nDisable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nEnable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\nDisable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\nNotes:\n\n- The receiver is exported for adb automation; prefer targeting the receiver explicitly (for example: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver) to avoid external broadcasts.\n\n- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.\n\n- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.</string>
@@ -106,6 +123,7 @@
     <string name="operation_failed_message">Operation failed for the following %d apps. They have been unselected.</string>
     <string name="details">Details</string>
     <string name="copy">Copy</string>
+    <string name="copied">Copied</string>
     <string name="no_error_details">No additional details are available.</string>
     <string name="close">Close</string>
     <string name="settings_title">Settings</string>

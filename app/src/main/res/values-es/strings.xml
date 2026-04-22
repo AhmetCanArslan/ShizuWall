@@ -39,7 +39,23 @@
     <string name="firewall_cleanup_warning">Advertencia: Falló la limpieza del firewall. Por favor, REINICIA tu dispositivo para restaurar el acceso a internet.</string>
     <string name="app_reset_complete">Restablecimiento completado. Cerrando…</string>
     <string name="reset_app_failed">Error al restablecer la aplicación: %s</string>
-    <string name="adb_broadcast_usage_title">Uso de ADB Broadcast (copiable)</string>
+    <string name="adb_broadcast_usage_title">Uso de ADB Broadcast</string>
+    <string name="adb_broadcast_field_action">Acción</string>
+    <string name="adb_broadcast_field_component">Componente</string>
+    <string name="adb_broadcast_field_extras">Extras</string>
+    <string name="adb_broadcast_examples_title">Comandos comunes</string>
+    <string name="adb_broadcast_example_enable_selected">Activar firewall para apps seleccionadas</string>
+    <string name="adb_broadcast_example_disable_selected">Desactivar firewall para apps seleccionadas</string>
+    <string name="adb_broadcast_example_enable_csv">Activar firewall para paquetes específicos (CSV)</string>
+    <string name="adb_broadcast_example_disable_csv">Desactivar firewall para paquetes específicos (CSV)</string>
+    <string name="adb_broadcast_developer_section_title">Para desarrolladores</string>
+    <string name="adb_broadcast_dev_enable_framework">Habilitar framework del firewall</string>
+    <string name="adb_broadcast_dev_block_package">Bloquear app específica</string>
+    <string name="adb_broadcast_dev_unblock_package">Desbloquear app específica</string>
+    <string name="adb_broadcast_dev_disable_framework">Deshabilitar framework del firewall</string>
+    <string name="adb_broadcast_extras_summary" formatted="false">%1$s (boolean): true = activar, false = desactivar
+
+%2$s (string, opcional): lista de paquetes separada por comas. Si se omite, la app usa los paquetes seleccionados guardados en ShizuWall.</string>
     <string name="ok">Aceptar</string>
     <string name="adb_broadcast_usage_text" formatted="false">Acción:\n%1$s\n\nComponente:\n%2$s\n\nExtras:\n\n%3$s (boolean) — true = activar, false = desactivar\n\n%4$s (string, opcional) — lista de paquetes separados por comas. Si se omite, se usan las apps seleccionadas guardadas.\n\n\nEjemplos:\n\nActivar firewall para apps seleccionadas (en ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nDesactivar firewall para apps seleccionadas (en ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nActivar firewall para paquetes específicos (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\nDesactivar firewall para paquetes específicos (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\nNotas:\n\n- El receptor está exportado para automatización por adb; se recomienda apuntar al receptor explícitamente (ej: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver) para evitar broadcasts externos.\n\n- Shizuku debe estar ejecutándose y la app debe tener permiso de Shizuku para que funcionen estos comandos.\n\n- El receptor aplica los mismos comandos que la interfaz (cmd connectivity ...). Usar con precaución.</string>
     <string name="no_apps_selected">No hay aplicaciones seleccionadas</string>
@@ -97,6 +113,7 @@
     <string name="operation_failed_message">Falló la operación para las siguientes %d apps. Han sido deseleccionadas.</string>
     <string name="details">Detalles</string>
     <string name="copy">Copiar</string>
+    <string name="copied">Copiado</string>
     <string name="no_error_details">No hay detalles adicionales disponibles.</string>
     <string name="close">Cerrar</string>
     <string name="settings_title">Ajustes</string>

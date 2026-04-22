@@ -3,21 +3,25 @@ package com.arslan.shizuwall.ui
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.ClipboardManager
+import android.content.ClipData
 import android.app.ActivityManager
 import android.app.NotificationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Selection
+import android.text.Spannable
 import android.transition.AutoTransition
 import android.transition.TransitionManager
 import android.util.TypedValue
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.RadioButton
 import android.widget.RadioGroup
-import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -1391,46 +1395,109 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun showAdbBroadcastDialog() {
-        // Compose the instructions using the same constants the app uses so examples stay correct.
         val pkg = "com.arslan.shizuwall"
         val action = MainActivity.ACTION_FIREWALL_CONTROL
         val extraEnabled = MainActivity.EXTRA_FIREWALL_ENABLED
         val extraCsv = MainActivity.EXTRA_PACKAGES_CSV
         val component = "$pkg/.receivers.FirewallControlReceiver"
 
-        val adbUsageText = getString(
-            R.string.adb_broadcast_usage_text,
-            action,
-            component,
+        val cmdEnableSelected = "adb shell am broadcast -a $action -n $component --ez $extraEnabled true"
+        val cmdDisableSelected = "adb shell am broadcast -a $action -n $component --ez $extraEnabled false"
+        val cmdEnableCsv = "adb shell am broadcast -a $action -n $component --ez $extraEnabled true --es $extraCsv \"com.example.app1,com.example.app2\""
+        val cmdDisableCsv = "adb shell am broadcast -a $action -n $component --ez $extraEnabled false --es $extraCsv \"com.example.app1,com.example.app2\""
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_adb_broadcast_usage, null)
+
+        val tvBroadcastAction = dialogView.findViewById<TextView>(R.id.tvBroadcastActionValue)
+        val tvBroadcastComponent = dialogView.findViewById<TextView>(R.id.tvBroadcastComponentValue)
+        val tvCmdEnableSelected = dialogView.findViewById<TextView>(R.id.tvCmdEnableSelected)
+        val tvCmdDisableSelected = dialogView.findViewById<TextView>(R.id.tvCmdDisableSelected)
+        val tvCmdEnableCsv = dialogView.findViewById<TextView>(R.id.tvCmdEnableCsv)
+        val tvCmdDisableCsv = dialogView.findViewById<TextView>(R.id.tvCmdDisableCsv)
+        val tvBroadcastExtras = dialogView.findViewById<TextView>(R.id.tvBroadcastExtrasValue)
+        val tvDevCmdEnableFramework = dialogView.findViewById<TextView>(R.id.tvDevCmdEnableFramework)
+        val tvDevCmdBlockPackage = dialogView.findViewById<TextView>(R.id.tvDevCmdBlockPackage)
+        val tvDevCmdUnblockPackage = dialogView.findViewById<TextView>(R.id.tvDevCmdUnblockPackage)
+        val tvDevCmdDisableFramework = dialogView.findViewById<TextView>(R.id.tvDevCmdDisableFramework)
+        val btnCopyBroadcastAction = dialogView.findViewById<View>(R.id.btnCopyBroadcastAction)
+        val btnCopyBroadcastComponent = dialogView.findViewById<View>(R.id.btnCopyBroadcastComponent)
+        val btnCopyCmdEnableSelected = dialogView.findViewById<View>(R.id.btnCopyCmdEnableSelected)
+        val btnCopyCmdDisableSelected = dialogView.findViewById<View>(R.id.btnCopyCmdDisableSelected)
+        val btnCopyCmdEnableCsv = dialogView.findViewById<View>(R.id.btnCopyCmdEnableCsv)
+        val btnCopyCmdDisableCsv = dialogView.findViewById<View>(R.id.btnCopyCmdDisableCsv)
+        val btnCopyDevCmdEnableFramework = dialogView.findViewById<View>(R.id.btnCopyDevCmdEnableFramework)
+        val btnCopyDevCmdBlockPackage = dialogView.findViewById<View>(R.id.btnCopyDevCmdBlockPackage)
+        val btnCopyDevCmdUnblockPackage = dialogView.findViewById<View>(R.id.btnCopyDevCmdUnblockPackage)
+        val btnCopyDevCmdDisableFramework = dialogView.findViewById<View>(R.id.btnCopyDevCmdDisableFramework)
+
+        tvBroadcastAction.text = action
+        tvBroadcastComponent.text = component
+        tvCmdEnableSelected.text = cmdEnableSelected
+        tvCmdDisableSelected.text = cmdDisableSelected
+        tvCmdEnableCsv.text = cmdEnableCsv
+        tvCmdDisableCsv.text = cmdDisableCsv
+
+        tvBroadcastExtras.text = getString(
+            R.string.adb_broadcast_extras_summary,
             extraEnabled,
             extraCsv
         )
 
-        val tv = TextView(this).apply {
-            setTextIsSelectable(true)
-            typeface = android.graphics.Typeface.MONOSPACE
-            setPadding(
-                (16 * resources.displayMetrics.density).toInt(),
-                (8 * resources.displayMetrics.density).toInt(),
-                (16 * resources.displayMetrics.density).toInt(),
-                (8 * resources.displayMetrics.density).toInt()
-            )
-            // Ensure text is set and TextView spans dialog width
-            text = adbUsageText
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-        }
-        val scroll = ScrollView(this).apply {
-            addView(tv)
+        val selectableTextViews = listOf(
+            tvBroadcastAction,
+            tvBroadcastComponent,
+            tvCmdEnableSelected,
+            tvCmdDisableSelected,
+            tvCmdEnableCsv,
+            tvCmdDisableCsv,
+            tvDevCmdEnableFramework,
+            tvDevCmdBlockPackage,
+            tvDevCmdUnblockPackage,
+            tvDevCmdDisableFramework
+        )
+
+        val clipboardManager = getSystemService(ClipboardManager::class.java)
+
+        fun View.enableCopyFrom(source: TextView, copyLabel: String) {
+            setOnClickListener {
+                val value = source.text?.toString().orEmpty()
+                if (value.isNotEmpty()) {
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText(copyLabel, value))
+                    Toast.makeText(this@SettingsActivity, getString(R.string.copied), Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.adb_broadcast_usage_title))
-            .setView(scroll)
-            .setPositiveButton(getString(R.string.ok), null)
-            .show()
+        btnCopyBroadcastAction.enableCopyFrom(tvBroadcastAction, "adb_action")
+        btnCopyBroadcastComponent.enableCopyFrom(tvBroadcastComponent, "adb_component")
+        btnCopyCmdEnableSelected.enableCopyFrom(tvCmdEnableSelected, "adb_enable_selected")
+        btnCopyCmdDisableSelected.enableCopyFrom(tvCmdDisableSelected, "adb_disable_selected")
+        btnCopyCmdEnableCsv.enableCopyFrom(tvCmdEnableCsv, "adb_enable_csv")
+        btnCopyCmdDisableCsv.enableCopyFrom(tvCmdDisableCsv, "adb_disable_csv")
+        btnCopyDevCmdEnableFramework.enableCopyFrom(tvDevCmdEnableFramework, "dev_enable_firewall_framework")
+        btnCopyDevCmdBlockPackage.enableCopyFrom(tvDevCmdBlockPackage, "dev_block_specific_app")
+        btnCopyDevCmdUnblockPackage.enableCopyFrom(tvDevCmdUnblockPackage, "dev_unblock_specific_app")
+        btnCopyDevCmdDisableFramework.enableCopyFrom(tvDevCmdDisableFramework, "dev_disable_firewall_framework")
+
+        dialogView.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                selectableTextViews.forEach { textView ->
+                    (textView.text as? Spannable)?.let { Selection.removeSelection(it) }
+                    textView.clearFocus()
+                }
+                dialogView.clearFocus()
+            }
+            false
+        }
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.adb_broadcast_usage_title)
+            .setView(dialogView)
+            .setPositiveButton(R.string.ok, null)
+            .create()
+        
+
+        dialog.show()
     }
 
     private fun showResetConfirmationDialog() {
