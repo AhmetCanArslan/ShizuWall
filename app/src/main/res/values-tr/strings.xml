@@ -319,9 +319,9 @@
     <string name="firewall_mode_change_disabled">Güvenlik duvarı etkinleştirilirken modu değiştiremezsiniz. Lütfen önce güvenlik duvarını devre dışı bırakın.</string>
     <string name="firewall_mode_hybrid">Hibrit Mod</string>
     <string name="firewall_mode_hybrid_description">Her uygulama için modu ayrı ayrı yapılandır</string>
-    <string name="hybrid_mode_default_block">🚫 Varsayılan Engel</string>
-    <string name="hybrid_mode_smart_foreground">📱 Akıllı Ön Plan</string>
-    <string name="hybrid_mode_screen_lock">🔒 Ekran Kilidi</string>
+    <string name="hybrid_mode_default_block">Varsayılan Engel</string>
+    <string name="hybrid_mode_smart_foreground">Akıllı Ön Plan</string>
+    <string name="hybrid_mode_screen_lock">Ekran Kilidi</string>
     <string name="floating_button">Yüzen Güvenlik Duvarı Butonu</string>
     <string name="floating_button_description">Güvenlik duvarını her yerden değiştirmek için sürüklenebilir bir yer paylaşımı butonu gösterin</string>
     <string name="floating_button_notification_channel_name">Yüzen Buton (Servis)</string>

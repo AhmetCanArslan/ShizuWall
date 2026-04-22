@@ -321,9 +321,9 @@
     <string name="firewall_mode_change_disabled">ファイアウォールが有効になっている間はモードを変更できません。まずファイアウォールを無効にしてください。</string>
     <string name="firewall_mode_hybrid">ハイブリッドモード</string>
     <string name="firewall_mode_hybrid_description">アプリごとにモードを個別に設定</string>
-    <string name="hybrid_mode_default_block">🚫 デフォルトブロック</string>
-    <string name="hybrid_mode_smart_foreground">📱 スマートフォアグラウンド</string>
-    <string name="hybrid_mode_screen_lock">🔒 画面ロック</string>
+    <string name="hybrid_mode_default_block">デフォルトブロック</string>
+    <string name="hybrid_mode_smart_foreground">スマートフォアグラウンド</string>
+    <string name="hybrid_mode_screen_lock">画面ロック</string>
     <string name="floating_button">フローティング・ファイアウォール・ボタン</string>
     <string name="floating_button_description">どこからでもファイアウォールを切り替えるためのドラッグ可能なオーバーレイボタンを表示します</string>
     <string name="floating_button_notification_channel_name">フローティングボタン (サービス)</string>

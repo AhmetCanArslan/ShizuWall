@@ -319,9 +319,9 @@
     <string name="firewall_mode_change_disabled">Firewall-Modus kann nicht geändert werden, während die Firewall aktiviert ist. Bitte deaktivieren Sie zuerst die Firewall.</string>
     <string name="firewall_mode_hybrid">Hybrid-Modus</string>
     <string name="firewall_mode_hybrid_description">Modus für jede App einzeln konfigurieren</string>
-    <string name="hybrid_mode_default_block">🚫 Standard-Blockierung</string>
-    <string name="hybrid_mode_smart_foreground">📱 Smart Vordergrund</string>
-    <string name="hybrid_mode_screen_lock">🔒 Bildschirmsperre</string>
+    <string name="hybrid_mode_default_block">Standard-Blockierung</string>
+    <string name="hybrid_mode_smart_foreground">Smart Vordergrund</string>
+    <string name="hybrid_mode_screen_lock">Bildschirmsperre</string>
     <string name="floating_button">Schwebende Firewall-Schaltfläche</string>
     <string name="floating_button_description">Zeigt eine schwebende Schaltfläche an, um die Firewall von überall aus zu schalten</string>
     <string name="floating_button_notification_channel_name">Schwebende Schaltfläche (Dienst)</string>

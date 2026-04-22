@@ -321,9 +321,9 @@
     <string name="firewall_mode_change_disabled">No se puede cambiar el modo de firewall mientras está activado. Por favor, desactiva el firewall primero.</string>
     <string name="firewall_mode_hybrid">Modo Híbrido</string>
     <string name="firewall_mode_hybrid_description">Configurar modo individualmente por aplicación</string>
-    <string name="hybrid_mode_default_block">🚫 Bloqueo Predeterminado</string>
-    <string name="hybrid_mode_smart_foreground">📱 Primer Plano Inteligente</string>
-    <string name="hybrid_mode_screen_lock">🔒 Bloqueo de Pantalla</string>
+    <string name="hybrid_mode_default_block">Bloqueo Predeterminado</string>
+    <string name="hybrid_mode_smart_foreground">Primer Plano Inteligente</string>
+    <string name="hybrid_mode_screen_lock">Bloqueo de Pantalla</string>
     <string name="floating_button">Botón flotante de firewall</string>
     <string name="floating_button_description">Mostrar un botón superpuesto arrastrable para activar el firewall desde cualquier lugar</string>
     <string name="floating_button_notification_channel_name">Botón flotante (Servicio)</string>

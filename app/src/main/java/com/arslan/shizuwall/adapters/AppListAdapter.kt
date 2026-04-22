@@ -113,12 +113,12 @@ class AppListAdapter(
 
             if (appInfo.isSelected && isHybridMode) {
                 modeDropdownText.visibility = View.VISIBLE
-                val emoji = when (appInfo.appFirewallMode) {
-                    1 -> itemView.context.getString(R.string.hybrid_mode_smart_foreground).take(2).trim()
-                    2 -> itemView.context.getString(R.string.hybrid_mode_screen_lock).take(2).trim()
-                    else -> itemView.context.getString(R.string.hybrid_mode_default_block).take(2).trim()
+                val iconRes = when (appInfo.appFirewallMode) {
+                    1 -> R.drawable.intelligence_24px
+                    2 -> R.drawable.mobile_lock_portrait_24px
+                    else -> R.drawable.wifi_off_24px
                 }
-                modeDropdownText.text = emoji
+                modeDropdownText.icon = itemView.context.getDrawable(iconRes)
             } else {
                 modeDropdownText.visibility = View.GONE
             }
@@ -153,9 +153,27 @@ class AppListAdapter(
                 
                 modeDropdownText.setOnClickListener { view ->
                     val popupMenu = android.widget.PopupMenu(view.context, view)
-                    popupMenu.menu.add(0, 0, 0, view.context.getString(R.string.hybrid_mode_default_block))
-                    popupMenu.menu.add(0, 1, 1, view.context.getString(R.string.hybrid_mode_smart_foreground))
-                    popupMenu.menu.add(0, 2, 2, view.context.getString(R.string.hybrid_mode_screen_lock))
+                    popupMenu.menu.add(0, 0, 0, view.context.getString(R.string.hybrid_mode_default_block)).setIcon(R.drawable.wifi_off_24px)
+                    popupMenu.menu.add(0, 1, 1, view.context.getString(R.string.hybrid_mode_smart_foreground)).setIcon(R.drawable.intelligence_24px)
+                    popupMenu.menu.add(0, 2, 2, view.context.getString(R.string.hybrid_mode_screen_lock)).setIcon(R.drawable.mobile_lock_portrait_24px)
+                    
+                    // Force show icons in PopupMenu
+                    try {
+                        val fields = popupMenu.javaClass.declaredFields
+                        for (field in fields) {
+                            if ("mPopup" == field.name) {
+                                field.isAccessible = true
+                                val menuPopupHelper = field.get(popupMenu)
+                                val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+                                val setForceIcons = classPopupHelper.getMethod("setForceShowIcon", java.lang.Boolean.TYPE)
+                                setForceIcons.invoke(menuPopupHelper, true)
+                                break
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
                     popupMenu.setOnMenuItemClickListener { menuItem ->
                         val newMode = menuItem.itemId
                         if (appInfo.appFirewallMode != newMode) {

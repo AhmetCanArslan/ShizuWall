@@ -319,9 +319,9 @@
     <string name="firewall_mode_change_disabled">启用防火墙时无法更改防火墙模式。请先禁用防火墙。</string>
     <string name="firewall_mode_hybrid">混合模式</string>
     <string name="firewall_mode_hybrid_description">为每个应用单独配置模式</string>
-    <string name="hybrid_mode_default_block">🚫 默认阻止</string>
-    <string name="hybrid_mode_smart_foreground">📱 智能前台</string>
-    <string name="hybrid_mode_screen_lock">🔒 锁屏</string>
+    <string name="hybrid_mode_default_block">默认阻止</string>
+    <string name="hybrid_mode_smart_foreground">智能前台</string>
+    <string name="hybrid_mode_screen_lock">锁屏</string>
     <string name="floating_button">悬浮防火墙按钮</string>
     <string name="floating_button_description">显示一个可拖动的悬浮按钮，随时随地切换防火墙</string>
     <string name="floating_button_notification_channel_name">悬浮按钮 (服务)</string>

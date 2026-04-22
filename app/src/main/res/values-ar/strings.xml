@@ -297,9 +297,9 @@
     <string name="firewall_mode_change_disabled">لا يمكن تغيير وضع الجدار الناري أثناء تفعيله. يرجى تعطيل الجدار الناري أولاً.</string>
     <string name="firewall_mode_hybrid">الوضع الهجين</string>
     <string name="firewall_mode_hybrid_description">تكوين الوضع بشكل فردي لكل تطبيق</string>
-    <string name="hybrid_mode_default_block">🚫 حظر افتراضي</string>
-    <string name="hybrid_mode_smart_foreground">📱 الواجهة الذكية</string>
-    <string name="hybrid_mode_screen_lock">🔒 قفل الشاشة</string>
+    <string name="hybrid_mode_default_block">حظر افتراضي</string>
+    <string name="hybrid_mode_smart_foreground">الواجهة الذكية</string>
+    <string name="hybrid_mode_screen_lock">قفل الشاشة</string>
     <string name="smart_foreground_service_description">يراقب التطبيقات في الواجهة لإدارة قواعد الجدار الناري</string>
     <string name="smart_foreground_notification_channel_name">واجهة ذكية (خدمة)</string>
     <string name="smart_foreground_notification_channel_description">خدمة خلفية لمراقبة التطبيقات في الواجهة</string>

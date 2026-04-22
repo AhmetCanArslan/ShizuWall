@@ -320,9 +320,9 @@
     <string name="firewall_mode_change_disabled">Cannot change firewall mode while firewall is enabled. Please disable the firewall first.</string>
     <string name="firewall_mode_hybrid">Hybrid Mode</string>
     <string name="firewall_mode_hybrid_description">Configure mode individually per app</string>
-    <string name="hybrid_mode_default_block">🚫 Default Block</string>
-    <string name="hybrid_mode_smart_foreground">📱 Smart Foreground</string>
-    <string name="hybrid_mode_screen_lock">🔒 Screen Lock</string>
+    <string name="hybrid_mode_default_block">Default Block</string>
+    <string name="hybrid_mode_smart_foreground">Smart Foreground</string>
+    <string name="hybrid_mode_screen_lock">Screen Lock</string>
     <string name="smart_foreground_service_description">Monitors foreground app to manage firewall rules</string>
     <string name="smart_foreground_notification_channel_name">Smart Foreground (Service)</string>
     <string name="smart_foreground_notification_channel_description">Background service for monitoring foreground app</string>

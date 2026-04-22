@@ -314,9 +314,9 @@
     <string name="firewall_mode_change_disabled">Nelze změnit režim brány firewall, když je brána firewall aktivní. Nejprve ji deaktivujte.</string>
     <string name="firewall_mode_hybrid">Hybridní režim</string>
     <string name="firewall_mode_hybrid_description">Nastavit režim individuálně pro každou aplikaci</string>
-    <string name="hybrid_mode_default_block">🚫 Výchozí blokování</string>
-    <string name="hybrid_mode_smart_foreground">📱 Chytrý popředí</string>
-    <string name="hybrid_mode_screen_lock">🔒 Zámek obrazovky</string>
+    <string name="hybrid_mode_default_block">Výchozí blokování</string>
+    <string name="hybrid_mode_smart_foreground">Chytrý popředí</string>
+    <string name="hybrid_mode_screen_lock">Zámek obrazovky</string>
     <string name="smart_foreground_service_description">Sleduje aplikaci v popředí pro správu pravidel brány firewall</string>
     <string name="smart_foreground_notification_channel_name">Inteligentní popředí (služba)</string>
     <string name="smart_foreground_notification_channel_description">Služba na pozadí pro monitorování aplikace na popředí</string>
