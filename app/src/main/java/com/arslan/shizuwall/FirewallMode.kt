@@ -14,7 +14,7 @@ enum class FirewallMode {
     SCREEN_LOCK_MODE,
     SMART_FOREGROUND,
     WHITELIST,
-    FOCUS_TRACKER;
+    FOCUS_TRACKER,
     HYBRID;
 
     companion object {
