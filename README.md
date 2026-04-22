@@ -13,7 +13,7 @@
   <img alt="License" src="https://img.shields.io/github/license/AhmetCanArslan/ShizuWall?style=flat-square" />
   <img alt="Android" src="https://img.shields.io/badge/Android-11%2B-3DDC84?style=flat-square&logo=android&logoColor=white" />
   <img alt="Downloads" src="https://img.shields.io/github/downloads/AhmetCanArslan/ShizuWall/total?color=ff9500&style=flat-square" />
-  <a href="https://github.com/timschneeb/awesome-shizuku?tab=readme-ov-file#network">
+  <a href="https://github.com/timschneeb/awesome-shizuku">
     <img alt="Awesome" src="https://awesome.re/mentioned-badge-flat.svg" style="display:inline-block;" />
   </a>
 </p>
