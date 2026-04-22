@@ -43,23 +43,7 @@
     <string name="firewall_cleanup_warning">Upozornění: Reset brány firewall se nezdařil. Restartujte zařízení, aby se obnovil přístup k internetu.</string>
     <string name="app_reset_complete">Resetování aplikace je kompletní. Zavírání…</string>
     <string name="reset_app_failed">Reset aplikacei selhal: %s</string>
-    <string name="adb_broadcast_usage_title">Využití vysílání ADB</string>
-    <string name="adb_broadcast_field_action">Akce</string>
-    <string name="adb_broadcast_field_component">Komponenta</string>
-    <string name="adb_broadcast_field_extras">Doplňky</string>
-    <string name="adb_broadcast_examples_title">Běžné příkazy</string>
-    <string name="adb_broadcast_example_enable_selected">Povolit firewall pro vybrané aplikace</string>
-    <string name="adb_broadcast_example_disable_selected">Zakázat firewall pro vybrané aplikace</string>
-    <string name="adb_broadcast_example_enable_csv">Povolit firewall pro konkrétní balíčky (CSV)</string>
-    <string name="adb_broadcast_example_disable_csv">Zakázat firewall pro konkrétní balíčky (CSV)</string>
-    <string name="adb_broadcast_developer_section_title">Pro vývojáře</string>
-    <string name="adb_broadcast_dev_enable_framework">Povolit framework firewallu</string>
-    <string name="adb_broadcast_dev_block_package">Blokovat konkrétní aplikaci</string>
-    <string name="adb_broadcast_dev_unblock_package">Odblokovat konkrétní aplikaci</string>
-    <string name="adb_broadcast_dev_disable_framework">Zakázat framework firewallu</string>
-    <string name="adb_broadcast_extras_summary" formatted="false">%1$s (boolean): true = povolit, false = zakázat
-
-%2$s (string, volitelné): seznam balíčků oddělených čárkami. Pokud je vynecháno, aplikace použije vybrané balíčky uložené v ShizuWall.</string>
+    <string name="adb_broadcast_usage_title">Využití vysílání ADB (kopírovatelné)</string>
     <string name="ok">OK</string>
     <string name="adb_broadcast_usage_text" formatted="false">Akce:\n%1$s\n\Komponenta:\n%2$s\n\nExtras:\n\n%3$s (boolean) — true = enable, false = disable\n\n%4$s (string, volitelné) — seznam balíčků oddělených čárkami, se kterými má aplikace pracovat. Pokud je tento parametr vynechán, aplikace se vrátí k uloženým vybraným aplikacím.\n\n\nPříklady:\n\nPovolit bránu firewall pro vybrané aplikace (vybrané v ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nZakázat bránu firewall pro vybrané aplikace (vybrané v ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nPovolit bránu firewall pro konkrétní balíčky (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\nZakázat bránu firewall pro konkrétní balíčky (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\nPoznámky:\n\n- Přijímač je exportován pro automatizaci adb; upřednostňujte explicitní zacílení přijímače (například: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver) abyste předešli externím broadcastům.\n\n- Aby tyto vysílání fungovaly, musí být spuštěna aplikace Shizuku a musí mít oprávnění Shizuku.\n\n- Přijímač používá stejné příkazy jako uživatelské rozhraní (cmd connectivity ...). Používejte s opatrností.</string>
     <string name="no_apps_selected">Žádné aplikace nevybrány</string>
@@ -118,7 +102,6 @@
     <string name="operation_failed_message">Operace se nezdařila u následujících %d aplikací. Byly odznačeny.</string>
     <string name="details">Detaily</string>
     <string name="copy">Kopírovat</string>
-    <string name="copied">Zkopírováno</string>
     <string name="no_error_details">Další podrobnosti nejsou k dispozici..</string>
     <string name="close">Zavřít</string>
     <string name="settings_title">Nastavení</string>
