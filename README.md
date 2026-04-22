@@ -75,7 +75,7 @@ ShizuWall supports three methods to execute firewall commands:
 |--------|---------|---------|
 | **Shizuku** | Secure API that communicates with system services. Requires Shizuku app. Forks are supported. | Install and setup Shizuku app, grant permissions |
 | **Root** | Direct root access. | Root your device using standard methods |
-| **LibADB** | Local ADB daemon connection via wireless debugging. | Enable wireless debugging and pair daemon in Developer Options (Guide is in app) |
+| **LibADB (LADB)** | Uses the built-in "Wireless Debugging" feature of your phone to act like a computer connected via USB. This allows the app to perform advanced system changes without needing a computer, root or extra apps like Shizuku. | Enable wireless debugging and pair in Developer Options (Guide is in app) |
 
 ## How It Works
 

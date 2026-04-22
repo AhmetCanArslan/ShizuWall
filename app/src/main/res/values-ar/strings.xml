@@ -126,6 +126,8 @@
     <string name="move_selected_top_description">إظهار التطبيقات المحددة في البداية</string>
     <string name="use_dynamic_color">استخدام ألوان ديناميكية</string>
     <string name="use_dynamic_color_description">تطبيق ألوان خلفية الشاشة على مظهر التطبيق</string>
+    <string name="use_amoled_black">استخدام سمة AMOLED</string>
+    <string name="use_amoled_black_description">أسود نقي لشاشات OLED</string>
     <string name="firewall_section">الجدار الناري</string>
     <string name="skip_enable_confirmation_description">لا تسأل عند تفعيل الجدار الناري</string>
     <string name="adaptive_mode">الوضع التكيفي</string>
@@ -293,6 +295,11 @@
     <string name="firewall_mode_smart_foreground_description">السماح فقط للتطبيق الموجود حالياً في الواجهة</string>
     <string name="smart_foreground_requires_accessibility">يتطلب إذن الوصول (Accessibility)</string>
     <string name="firewall_mode_change_disabled">لا يمكن تغيير وضع الجدار الناري أثناء تفعيله. يرجى تعطيل الجدار الناري أولاً.</string>
+    <string name="firewall_mode_hybrid">الوضع الهجين</string>
+    <string name="firewall_mode_hybrid_description">تكوين الوضع بشكل فردي لكل تطبيق</string>
+    <string name="hybrid_mode_default_block">🚫 حظر افتراضي</string>
+    <string name="hybrid_mode_smart_foreground">📱 الواجهة الذكية</string>
+    <string name="hybrid_mode_screen_lock">🔒 قفل الشاشة</string>
     <string name="smart_foreground_service_description">يراقب التطبيقات في الواجهة لإدارة قواعد الجدار الناري</string>
     <string name="smart_foreground_notification_channel_name">واجهة ذكية (خدمة)</string>
     <string name="smart_foreground_notification_channel_description">خدمة خلفية لمراقبة التطبيقات في الواجهة</string>
@@ -347,4 +354,34 @@
     <string name="accessibility_auto_granting">جارٍ تفعيل خدمة إمكانية الوصول...</string>
     <string name="accessibility_auto_grant_failed">فشل تفعيل خدمة إمكانية الوصول تلقائياً. يرجى تفعيلها يدوياً من الإعدادات.</string>
     <string name="open_settings">فتح الإعدادات</string>
+    <string name="notification_permission_background_request">يرجى منح الإذن للتشغيل في الخلفية.</string>
+
+    <!-- Auto-added missing translations (English fallback) -->
+    <string name="firewall_indicator_content_description">مؤشر جدار الحماية</string>
+    <string name="firewall_indicator_size">حجم المؤشر</string>
+    <string name="screen_lock_mode_notification_channel_name">وضع قفل الشاشة (خدمة)</string>
+    <string name="adb_broadcast_quick_reference">مرجع سريع مع أوامر جاهزة للنسخ.</string>
+    <string name="firewall_indicator">مؤشر جدار الحماية</string>
+    <string name="screen_lock_delay_title">تأخير القفل</string>
+    <string name="screen_lock_mode_notification_text">مراقبة القفل لتطبيق قواعد جدار الحماية</string>
+    <string name="firewall_mode_screen_lock_description">حظر التطبيقات المحددة عند قفل الشاشة</string>
+    <string name="firewall_indicator_settings">إعدادات المؤشر</string>
+    <string name="screen_lock_delay_value">تفعيل بعد %1$d ثانية من القفل</string>
+    <string name="firewall_indicator_description">يوضح ما إذا كان التطبيق الحالي محظورًا</string>
+    <string name="firewall_mode_screen_lock">وضع قفل الشاشة</string>
+    <string name="screen_lock_mode_notification_title">وضع قفل الشاشة</string>
+    <string name="firewall_indicator_settings_description">تعديل موقع وحجم المؤشر.</string>
+    <string name="increase">زيادة</string>
+    <string name="firewall_indicator_y">إحداثي Y</string>
+    <string name="screen_lock_mode_operation_failed">فشلت عملية وضع قفل الشاشة</string>
+    <string name="firewall_indicator_notification_title">مؤشر جدار الحماية</string>
+    <string name="screen_lock_mode_notification_channel_description">خدمة خلفية لأتمتة قفل الشاشة</string>
+    <string name="firewall_indicator_overlay_permission_required">مطلوب إذن الظهور فوق التطبيقات</string>
+    <string name="decrease">تقليل</string>
+    <string name="firewall_indicator_notification_channel_description">خدمة خلفية لمؤشر الجدار</string>
+    <string name="firewall_indicator_settings_title">إعدادات المؤشر</string>
+    <string name="firewall_indicator_notification_text">مراقبة حالة جدار الحماية للتطبيق</string>
+    <string name="firewall_indicator_notification_channel_name">مؤشر جدار الحماية (خدمة)</string>
+    <string name="screen_lock_delay_dialog_title">تأخير قفل الشاشة</string>
+    <string name="firewall_indicator_x">إحداثي X</string>
 </resources>

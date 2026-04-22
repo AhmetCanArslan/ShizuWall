@@ -124,6 +124,8 @@
     <string name="move_selected_top_description">Ausgewählte Apps am Anfang anzeigen</string>
     <string name="use_dynamic_color">Dynamische Farbe verwenden</string>
     <string name="use_dynamic_color_description">Hintergrundfarben auf das App-Theme anwenden</string>
+    <string name="use_amoled_black">AMOLED-Design verwenden</string>
+    <string name="use_amoled_black_description">Reines Schwarz für OLED-Displays</string>
     <string name="firewall_section">Firewall</string>
     <string name="skip_enable_confirmation_description">Nicht fragen, wenn Firewall aktiviert wird</string>
     <string name="adaptive_mode">Adaptiver Modus</string>
@@ -311,10 +313,15 @@
     <string name="accessibility_permission_message">Diese App benötigt die AccessibilityService-API, um Vordergrund-App-Änderungen für den Smart-Vordergrund-Modus zu überwachen. Die API wird verwendet, um zu erkennen, wann Sie zwischen Apps wechseln, und die Firewall-Regeln automatisch zu aktualisieren. Es werden keine persönlichen Daten gesammelt oder übertragen.</string>
     <string name="accept">Akzeptieren</string>
     <string name="decline">Ablehnen</string>
-    <string name="firewall_mode_whitelist">Whitelist</string>
+    <string name="firewall_mode_whitelist">Ausnahmeliste</string>
     <string name="firewall_mode_whitelist_description">Alle Apps standardmäßig blockieren, ausgewählte Apps erlauben</string>
     <string name="whitelist_info_system_apps_warning">Wenn "System-Apps anzeigen" deaktiviert ist, werden System-Apps im Whitelist-Modus nicht durch die Firewall geschützt.\n\nWenn Sie "System-Apps anzeigen" aktiviert haben und den Whitelist-Modus verwenden, wurde diese Kombination nicht vollständig getestet. Verwenden Sie sie mit Vorsicht.</string>
     <string name="firewall_mode_change_disabled">Firewall-Modus kann nicht geändert werden, während die Firewall aktiviert ist. Bitte deaktivieren Sie zuerst die Firewall.</string>
+    <string name="firewall_mode_hybrid">Hybrid-Modus</string>
+    <string name="firewall_mode_hybrid_description">Modus für jede App einzeln konfigurieren</string>
+    <string name="hybrid_mode_default_block">🚫 Standard-Blockierung</string>
+    <string name="hybrid_mode_smart_foreground">📱 Smart Vordergrund</string>
+    <string name="hybrid_mode_screen_lock">🔒 Bildschirmsperre</string>
     <string name="floating_button">Schwebende Firewall-Schaltfläche</string>
     <string name="floating_button_description">Zeigt eine schwebende Schaltfläche an, um die Firewall von überall aus zu schalten</string>
     <string name="floating_button_notification_channel_name">Schwebende Schaltfläche (Dienst)</string>
@@ -344,4 +351,34 @@
     <string name="accessibility_auto_granting">Bedienungshilfedienst wird aktiviert...</string>
     <string name="accessibility_auto_grant_failed">Der Bedienungshilfedienst konnte nicht automatisch aktiviert werden. Bitte aktivieren Sie ihn manuell in den Einstellungen.</string>
     <string name="open_settings">Einstellungen öffnen</string>
+    <string name="notification_permission_background_request">Bitte erteilen Sie die Berechtigung, weiterhin im Hintergrund ausgeführt zu werden.</string>
+
+    <!-- Auto-added missing translations (English fallback) -->
+    <string name="firewall_indicator_content_description">Vordergrund-Firewall-Indikator</string>
+    <string name="firewall_indicator_size">Indikatorgröße</string>
+    <string name="screen_lock_mode_notification_channel_name">Bildschirmsperre-Modus (Dienst)</string>
+    <string name="adb_broadcast_quick_reference">Kurzübersicht mit kopierfertigen Werten und Befehlen.</string>
+    <string name="firewall_indicator">Vordergrund-Firewall-Indikator</string>
+    <string name="screen_lock_delay_title">Sperrverzögerung</string>
+    <string name="screen_lock_mode_notification_text">Überwachung von Sperren/Entsperren zur Anwendung von Firewall-Regeln</string>
+    <string name="firewall_mode_screen_lock_description">Ausgewählte Apps bei Sperrung blockieren, bei Entsperrung freigeben</string>
+    <string name="firewall_indicator_settings">Indikatoreinstellungen</string>
+    <string name="screen_lock_delay_value">Nach %1$d Sekunden Sperre aktivieren</string>
+    <string name="firewall_indicator_description">Zeigt an, ob die aktuelle Vordergrund-App durch die Firewall blockiert wird</string>
+    <string name="firewall_mode_screen_lock">Bildschirmsperre-Modus</string>
+    <string name="screen_lock_mode_notification_title">Bildschirmsperre-Modus</string>
+    <string name="firewall_indicator_settings_description">Position und Größe des Vordergrund-Indikators anpassen.</string>
+    <string name="increase">Vergrößern</string>
+    <string name="firewall_indicator_y">Y-Koordinate</string>
+    <string name="screen_lock_mode_operation_failed">Bildschirmsperre-Modus-Vorgang fehlgeschlagen</string>
+    <string name="firewall_indicator_notification_title">Vordergrund-Firewall-Indikator</string>
+    <string name="screen_lock_mode_notification_channel_description">Hintergrunddienst für Bildschirmsperren-Automatisierung</string>
+    <string name="firewall_indicator_overlay_permission_required">Für den Firewall-Indikator ist die Berechtigung zum Einblenden über anderen Apps erforderlich</string>
+    <string name="decrease">Verkleinern</string>
+    <string name="firewall_indicator_notification_channel_description">Hintergrunddienst für Vordergrund-Firewall-Indikator</string>
+    <string name="firewall_indicator_settings_title">Indikatoreinstellungen</string>
+    <string name="firewall_indicator_notification_text">Überwachung des Firewall-Status der Vordergrund-App</string>
+    <string name="firewall_indicator_notification_channel_name">Firewall-Indikator (Dienst)</string>
+    <string name="screen_lock_delay_dialog_title">Bildschirmsperren-Verzögerung</string>
+    <string name="firewall_indicator_x">X-Koordinate</string>
 </resources>

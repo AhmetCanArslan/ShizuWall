@@ -11,7 +11,7 @@
     <string name="cat_selected">Seleccionadas</string>
     <string name="cat_unselected">No seleccionadas</string>
     <string name="cat_user">Usuario</string>
-    <string name="enable_firewall">Firewall</string>
+    <string name="enable_firewall">Cortafuegos</string>
     <string name="font_default">Predeterminado</string>
     <string name="font_ndot">Ndot</string>
     <string name="select_all">Seleccionar todo</string>
@@ -61,7 +61,7 @@
     <string name="no_apps_selected">No hay aplicaciones seleccionadas</string>
     <string name="shizuku_not_running">Shizuku no se está ejecutando</string>
     <string name="shizuku_permission_required">Se requiere permiso de Shizuku</string>
-    <string name="firewall">Firewall</string>
+    <string name="firewall">Cortafuegos</string>
     <string name="welcome_title">Bienvenido a ShizuWall</string>
     <string name="welcome_message">Bloquea conexiones de red no deseadas sin root ni vpn</string>
     <string name="next">Siguiente</string>
@@ -123,7 +123,9 @@
     <string name="move_selected_top_description">Mostrar apps seleccionadas al principio</string>
     <string name="use_dynamic_color">Usar color dinámico</string>
     <string name="use_dynamic_color_description">Aplicar colores de fondo de pantalla al tema de la app</string>
-    <string name="firewall_section">Firewall</string>
+    <string name="use_amoled_black">Usar tema AMOLED</string>
+    <string name="use_amoled_black_description">Negro puro para pantallas OLED</string>
+    <string name="firewall_section">Cortafuegos</string>
     <string name="skip_enable_confirmation_description">No preguntar al activar el firewall</string>
     <string name="adaptive_mode">Modo Adaptativo</string>
     <string name="adaptive_mode_description">Aplicar reglas al instante. El firewall se mantiene activo.</string>
@@ -317,6 +319,11 @@
     <string name="firewall_mode_whitelist_description">Bloquear todas las apps por defecto, permitir apps seleccionadas</string>
     <string name="whitelist_info_system_apps_warning">Cuando "Mostrar apps del sistema" está desactivado, las apps del sistema no serán bloqueadas por el firewall en modo Lista blanca.\n\nSi has activado "Mostrar apps del sistema" y estás usando el modo Lista blanca, esta combinación no ha sido completamente probada. Úsala con precaución.</string>
     <string name="firewall_mode_change_disabled">No se puede cambiar el modo de firewall mientras está activado. Por favor, desactiva el firewall primero.</string>
+    <string name="firewall_mode_hybrid">Modo Híbrido</string>
+    <string name="firewall_mode_hybrid_description">Configurar modo individualmente por aplicación</string>
+    <string name="hybrid_mode_default_block">🚫 Bloqueo Predeterminado</string>
+    <string name="hybrid_mode_smart_foreground">📱 Primer Plano Inteligente</string>
+    <string name="hybrid_mode_screen_lock">🔒 Bloqueo de Pantalla</string>
     <string name="floating_button">Botón flotante de firewall</string>
     <string name="floating_button_description">Mostrar un botón superpuesto arrastrable para activar el firewall desde cualquier lugar</string>
     <string name="floating_button_notification_channel_name">Botón flotante (Servicio)</string>
@@ -346,4 +353,34 @@
     <string name="accessibility_auto_granting">Activando el servicio de accesibilidad...</string>
     <string name="accessibility_auto_grant_failed">No se pudo activar automáticamente el servicio de accesibilidad. Actívalo manualmente en Ajustes.</string>
     <string name="open_settings">Abrir Ajustes</string>
+    <string name="notification_permission_background_request">Por favor, conceda permiso para seguir ejecutándose en segundo plano.</string>
+
+    <!-- Auto-added missing translations (English fallback) -->
+    <string name="firewall_indicator_content_description">Indicador de firewall en primer plano</string>
+    <string name="firewall_indicator_size">Tamaño del indicador</string>
+    <string name="screen_lock_mode_notification_channel_name">Modo de bloqueo de pantalla (Servicio)</string>
+    <string name="adb_broadcast_quick_reference">Referencia rápida con valores y comandos listos para copiar.</string>
+    <string name="firewall_indicator">Indicador de firewall en primer plano</string>
+    <string name="screen_lock_delay_title">Retraso de bloqueo</string>
+    <string name="screen_lock_mode_notification_text">Supervisando bloqueo/desbloqueo para aplicar reglas de firewall</string>
+    <string name="firewall_mode_screen_lock_description">Bloquear aplicaciones seleccionadas al bloquear, desbloquear al desbloquear</string>
+    <string name="firewall_indicator_settings">Ajustes del indicador</string>
+    <string name="screen_lock_delay_value">Habilitar después de %1$d segundos de bloqueo</string>
+    <string name="firewall_indicator_description">Muestra si la aplicación actual en primer plano está bloqueada</string>
+    <string name="firewall_mode_screen_lock">Modo de bloqueo de pantalla</string>
+    <string name="screen_lock_mode_notification_title">Modo de bloqueo de pantalla</string>
+    <string name="firewall_indicator_settings_description">Ajustar posición y tamaño del indicador en primer plano.</string>
+    <string name="increase">Aumentar</string>
+    <string name="firewall_indicator_y">Coordenada Y</string>
+    <string name="screen_lock_mode_operation_failed">Error en la operación del modo de bloqueo</string>
+    <string name="firewall_indicator_notification_title">Indicador de firewall</string>
+    <string name="screen_lock_mode_notification_channel_description">Servicio en segundo plano para automatización del bloqueo</string>
+    <string name="firewall_indicator_overlay_permission_required">Se requiere permiso de superposición para el indicador</string>
+    <string name="decrease">Disminuir</string>
+    <string name="firewall_indicator_notification_channel_description">Servicio para indicador de firewall</string>
+    <string name="firewall_indicator_settings_title">Ajustes del indicador</string>
+    <string name="firewall_indicator_notification_text">Supervisando estado del firewall de la app en primer plano</string>
+    <string name="firewall_indicator_notification_channel_name">Indicador de firewall (Servicio)</string>
+    <string name="screen_lock_delay_dialog_title">Retraso de bloqueo</string>
+    <string name="firewall_indicator_x">Coordenada X</string>
 </resources>

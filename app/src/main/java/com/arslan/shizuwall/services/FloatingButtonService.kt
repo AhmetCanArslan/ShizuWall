@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.shell.ShellExecutorBlocking
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.ui.MainActivity
@@ -145,9 +146,36 @@ class FloatingButtonService : Service() {
         var initialTouchY = 0f
         var moved = false
 
+        var inactivityJob: Job? = null
+        val inactivityTimeout = 3000L
+
+        fun resetInactivityTimer() {
+            inactivityJob?.cancel()
+            floatingView?.background?.alpha = 255
+            fabIcon?.animate()?.cancel()
+            fabIcon?.alpha = 1.0f
+            inactivityJob = scope.launch {
+                delay(inactivityTimeout)
+                val animator = android.animation.ValueAnimator.ofInt(255, 0)
+                animator.duration = 300
+                animator.addUpdateListener { animation ->
+                    floatingView?.background?.alpha = animation.animatedValue as Int
+                }
+                animator.start()
+                fabIcon?.animate()?.alpha(0.3f)?.setDuration(300)?.start()
+            }
+        }
+
+        resetInactivityTimer()
+
         floatingView?.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    inactivityJob?.cancel()
+                    v.background?.alpha = 255
+                    fabIcon?.animate()?.cancel()
+                    fabIcon?.alpha = 1.0f
+                    
                     initialX = params.x
                     initialY = params.y
                     initialTouchX = event.rawX
@@ -175,6 +203,7 @@ class FloatingButtonService : Service() {
                     if (!moved && event.action == MotionEvent.ACTION_UP) {
                         onFabClicked()
                     }
+                    resetInactivityTimer()
                     true
                 }
                 else -> false
@@ -340,6 +369,15 @@ class FloatingButtonService : Service() {
             if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                 saveFirewallEnabled(true)
                 saveActivePackages(successful.toSet())
+                
+                withContext(Dispatchers.Main) {
+                    if (sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)) {
+                        ForegroundFirewallIndicatorService.start(this@FloatingButtonService)
+                    }
+                    if (sharedPreferences.getBoolean(KEY_FLOATING_BUTTON_ENABLED, false)) {
+                        start(this@FloatingButtonService)
+                    }
+                }
             } else {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@FloatingButtonService, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()
@@ -376,6 +414,10 @@ class FloatingButtonService : Service() {
             return successful
         }
 
+        if (firewallMode == FirewallMode.SCREEN_LOCK_MODE && !ScreenLockModeReceiver.isDeviceLocked(this)) {
+            return successful
+        }
+
         val selfPkg = packageName
         for (pkg in packageNames) {
             if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
@@ -387,7 +429,7 @@ class FloatingButtonService : Service() {
     }
 
     private fun disableFirewall(packageNames: List<String>): Boolean {
-        var all = true
+        var chainDisabled = false
         val selfPkg = packageName
         val toUnblock = packageNames.toMutableList()
 
@@ -404,9 +446,10 @@ class FloatingButtonService : Service() {
 
         for (pkg in toUnblock) {
             if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
-            if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")) all = false
+            // Ignore per-package unblock failures here; global chain disable is the source of truth.
+            ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")
         }
-        if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled false")) all = false
+        chainDisabled = ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled false")
 
         if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
             sharedPreferences.edit()
@@ -415,7 +458,7 @@ class FloatingButtonService : Service() {
                 .apply()
         }
 
-        return all
+        return chainDisabled
     }
 
     private fun saveFirewallEnabled(enabled: Boolean) {
@@ -427,6 +470,8 @@ class FloatingButtonService : Service() {
         val intent = Intent(this, FirewallWidgetProvider::class.java)
         intent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
         sendBroadcast(intent)
+
+        ScreenLockMonitorService.sync(this)
     }
 
     private fun saveActivePackages(packages: Set<String>) {

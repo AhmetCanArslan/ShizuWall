@@ -7,7 +7,26 @@
 
     <style name="Theme.ShizuWall" parent="Base.Theme.ShizuWall" />
 
+    <style name="Theme.ShizuWall.Amoled" parent="Theme.ShizuWall">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="colorSurface">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="colorSurfaceDim">@android:color/black</item>
+        <item name="colorSurfaceBright">@android:color/black</item>
+        <item name="colorSurfaceContainerLowest">#FF050505</item>
+        <item name="colorSurfaceContainerLow">#FF0A0A0A</item>
+        <item name="colorSurfaceContainer">#FF111111</item>
+        <item name="colorSurfaceContainerHigh">#FF171717</item>
+        <item name="colorSurfaceContainerHighest">#FF1F1F1F</item>
+    </style>
+
     <style name="Theme.ShizuWall.Ndot" parent="Theme.ShizuWall">
+        <item name="android:fontFamily">@font/ndot</item>
+        <item name="fontFamily">@font/ndot</item>
+        <item name="chipStyle">@style/Widget.ShizuWall.Chip.Ndot</item>
+    </style>
+
+    <style name="Theme.ShizuWall.Amoled.Ndot" parent="Theme.ShizuWall.Amoled">
         <item name="android:fontFamily">@font/ndot</item>
         <item name="fontFamily">@font/ndot</item>
         <item name="chipStyle">@style/Widget.ShizuWall.Chip.Ndot</item>

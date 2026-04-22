@@ -124,6 +124,8 @@
     <string name="move_selected_top_description">在开头显示选定的应用</string>
     <string name="use_dynamic_color">使用动态颜色</string>
     <string name="use_dynamic_color_description">将壁纸颜色应用到应用主题</string>
+    <string name="use_amoled_black">使用 AMOLED 主题</string>
+    <string name="use_amoled_black_description">为 OLED 屏幕使用纯黑</string>
     <string name="firewall_section">防火墙</string>
     <string name="skip_enable_confirmation_description">启用防火墙时不询问</string>
     <string name="adaptive_mode">自适应模式</string>
@@ -315,6 +317,11 @@
     <string name="firewall_mode_whitelist_description">默认阻止所有应用，允许选定的应用</string>
     <string name="whitelist_info_system_apps_warning">当"显示系统应用"被禁用时，系统应用将不会在白名单模式下被防火墙阻止。\n\n如果您已启用"显示系统应用"并使用白名单模式，此组合尚未完全测试。请谨慎使用。</string>
     <string name="firewall_mode_change_disabled">启用防火墙时无法更改防火墙模式。请先禁用防火墙。</string>
+    <string name="firewall_mode_hybrid">混合模式</string>
+    <string name="firewall_mode_hybrid_description">为每个应用单独配置模式</string>
+    <string name="hybrid_mode_default_block">🚫 默认阻止</string>
+    <string name="hybrid_mode_smart_foreground">📱 智能前台</string>
+    <string name="hybrid_mode_screen_lock">🔒 锁屏</string>
     <string name="floating_button">悬浮防火墙按钮</string>
     <string name="floating_button_description">显示一个可拖动的悬浮按钮，随时随地切换防火墙</string>
     <string name="floating_button_notification_channel_name">悬浮按钮 (服务)</string>
@@ -344,4 +351,34 @@
     <string name="accessibility_auto_granting">正在启用无障碍服务...</string>
     <string name="accessibility_auto_grant_failed">无法自动启用无障碍服务。请在设置中手动启用。</string>
     <string name="open_settings">打开设置</string>
+    <string name="notification_permission_background_request">请授予权限以继续在后台运行。</string>
+
+    <!-- Auto-added missing translations (English fallback) -->
+    <string name="firewall_indicator_content_description">前台防火墙指示器</string>
+    <string name="firewall_indicator_size">指示器大小</string>
+    <string name="screen_lock_mode_notification_channel_name">锁屏模式 (服务)</string>
+    <string name="adb_broadcast_quick_reference">带有可复制值和命令的快速参考。</string>
+    <string name="firewall_indicator">前台防火墙指示器</string>
+    <string name="screen_lock_delay_title">锁定延迟</string>
+    <string name="screen_lock_mode_notification_text">监控锁定以应用防火墙规则</string>
+    <string name="firewall_mode_screen_lock_description">锁定屏幕时阻止选定的应用</string>
+    <string name="firewall_indicator_settings">指示器设置</string>
+    <string name="screen_lock_delay_value">锁定 %1$d 秒后启用</string>
+    <string name="firewall_indicator_description">显示当前应用是否被阻止</string>
+    <string name="firewall_mode_screen_lock">锁屏模式</string>
+    <string name="screen_lock_mode_notification_title">锁屏模式</string>
+    <string name="firewall_indicator_settings_description">调整指示器的位置和大小。</string>
+    <string name="increase">增加</string>
+    <string name="firewall_indicator_y">Y 坐标</string>
+    <string name="screen_lock_mode_operation_failed">锁屏模式操作失败</string>
+    <string name="firewall_indicator_notification_title">防火墙指示器</string>
+    <string name="screen_lock_mode_notification_channel_description">锁屏自动化的后台服务</string>
+    <string name="firewall_indicator_overlay_permission_required">需要悬浮窗权限</string>
+    <string name="decrease">减少</string>
+    <string name="firewall_indicator_notification_channel_description">防火墙指示器的后台服务</string>
+    <string name="firewall_indicator_settings_title">指示器设置</string>
+    <string name="firewall_indicator_notification_text">监控前台应用防火墙状态</string>
+    <string name="firewall_indicator_notification_channel_name">防火墙指示器 (服务)</string>
+    <string name="screen_lock_delay_dialog_title">锁屏延迟</string>
+    <string name="firewall_indicator_x">X 坐标</string>
 </resources>

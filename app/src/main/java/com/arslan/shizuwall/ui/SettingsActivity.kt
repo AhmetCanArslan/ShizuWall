@@ -19,6 +19,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.NumberPicker
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -36,6 +37,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.graphics.Typeface
+import android.graphics.Color
 import android.os.Build
 import java.io.File
 import androidx.appcompat.widget.SwitchCompat
@@ -48,6 +50,7 @@ import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.ForegroundDetectionService
 import com.arslan.shizuwall.services.FloatingButtonService
+import com.arslan.shizuwall.services.ForegroundFirewallIndicatorService
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONArray
@@ -79,12 +82,16 @@ class SettingsActivity : BaseActivity() {
     private lateinit var btnGithub: LinearLayout
     private lateinit var tvVersion: TextView
     private lateinit var switchUseDynamicColor: SwitchCompat
+    private lateinit var switchUseAmoledBlack: SwitchCompat
     private lateinit var switchAutoEnableOnShizukuStart: SwitchCompat
     private lateinit var cardAutoEnableOnShizukuStart: com.google.android.material.card.MaterialCardView
     private lateinit var switchApplyRootRulesAfterReboot: SwitchCompat
     private lateinit var cardApplyRootRulesAfterReboot: com.google.android.material.card.MaterialCardView
     private lateinit var switchAppMonitor: SwitchCompat
     private lateinit var switchFloatingButton: SwitchCompat
+    private lateinit var switchFirewallIndicator: SwitchCompat
+    private lateinit var btnFirewallIndicatorSettings: android.widget.ImageButton
+    private var suppressFirewallIndicatorToggle = false
 
     private lateinit var cardAdbBroadcastUsage: com.google.android.material.card.MaterialCardView
     private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
@@ -103,9 +110,14 @@ class SettingsActivity : BaseActivity() {
     private lateinit var radioGroupFirewallMode: RadioGroup
     private lateinit var radioModeDefault: RadioButton
     private lateinit var radioModeAdaptive: RadioButton
+    private lateinit var radioModeScreenLock: RadioButton
     private lateinit var radioModeSmartForeground: RadioButton
     private lateinit var radioModeFocusTracker: RadioButton
     private lateinit var radioModeWhitelist: RadioButton
+    private lateinit var radioModeHybrid: RadioButton
+    private lateinit var cardScreenLockDelay: com.google.android.material.card.MaterialCardView
+    private lateinit var layoutScreenLockDelay: LinearLayout
+    private lateinit var tvScreenLockDelayValue: TextView
     private lateinit var tvSmartForegroundWarning: TextView
     private lateinit var tvFirewallModeDisabledWarning: TextView
     private lateinit var warningContainer: LinearLayout
@@ -132,6 +144,10 @@ class SettingsActivity : BaseActivity() {
 
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
+
+        if (sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)) {
+            findViewById<View>(R.id.settingsRoot).setBackgroundColor(Color.BLACK)
+        }
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationOnClickListener { finish() }
@@ -197,6 +213,24 @@ class SettingsActivity : BaseActivity() {
                 switchFloatingButton.isChecked = prefEnabled
             }
         }
+
+        if (::switchFirewallIndicator.isInitialized) {
+            val wantEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)
+            if (wantEnabled && !Settings.canDrawOverlays(this)) {
+                suppressFirewallIndicatorToggle = true
+                switchFirewallIndicator.isChecked = false
+                suppressFirewallIndicatorToggle = false
+                sharedPreferences.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
+                ForegroundFirewallIndicatorService.stop(this)
+            } else {
+                suppressFirewallIndicatorToggle = true
+                switchFirewallIndicator.isChecked = wantEnabled
+                suppressFirewallIndicatorToggle = false
+                if (wantEnabled) {
+                    ForegroundFirewallIndicatorService.start(this)
+                }
+            }
+        }
     }
 
     private fun initializeViews() {
@@ -217,6 +251,7 @@ class SettingsActivity : BaseActivity() {
         btnGithub = findViewById(R.id.btnGithub)
         tvVersion = findViewById(R.id.tvVersion)
         switchUseDynamicColor = findViewById(R.id.switchUseDynamicColor)
+        switchUseAmoledBlack = findViewById(R.id.switchUseAmoledBlack)
 
         // new: bind XML item
         cardAdbBroadcastUsage = findViewById(R.id.cardAdbBroadcastUsage)
@@ -230,6 +265,8 @@ class SettingsActivity : BaseActivity() {
         layoutSetLadb = findViewById(R.id.layoutSetLadb)
         switchAppMonitor = findViewById(R.id.switchAppMonitor)
         switchFloatingButton = findViewById(R.id.switchFloatingButton)
+        switchFirewallIndicator = findViewById(R.id.switchFirewallIndicator)
+        btnFirewallIndicatorSettings = findViewById(R.id.btnFirewallIndicatorSettings)
         // Auto-enable switch (new)
         switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
         cardAutoEnableOnShizukuStart = findViewById(R.id.cardAutoEnableOnShizukuStart)
@@ -240,9 +277,14 @@ class SettingsActivity : BaseActivity() {
         radioGroupFirewallMode = findViewById(R.id.radioGroupFirewallMode)
         radioModeDefault = findViewById(R.id.radioModeDefault)
         radioModeAdaptive = findViewById(R.id.radioModeAdaptive)
+        radioModeScreenLock = findViewById(R.id.radioModeScreenLock)
         radioModeSmartForeground = findViewById(R.id.radioModeSmartForeground)
         radioModeFocusTracker = findViewById(R.id.radioModeFocusTracker)
         radioModeWhitelist = findViewById(R.id.radioModeWhitelist)
+        radioModeHybrid = findViewById(R.id.radioModeHybrid)
+        cardScreenLockDelay = findViewById(R.id.cardScreenLockDelay)
+        layoutScreenLockDelay = findViewById(R.id.layoutScreenLockDelay)
+        tvScreenLockDelayValue = findViewById(R.id.tvScreenLockDelayValue)
         tvSmartForegroundWarning = findViewById(R.id.tvSmartForegroundWarning)
         tvFirewallModeDisabledWarning = findViewById(R.id.tvFirewallModeDisabledWarning)
         warningContainer = findViewById(R.id.warningContainer)
@@ -275,11 +317,14 @@ class SettingsActivity : BaseActivity() {
         // Set the radio button based on mode
         when (firewallMode) {
             FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
+            FirewallMode.SCREEN_LOCK_MODE -> radioGroupFirewallMode.check(R.id.radioModeScreenLock)
             FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
             FirewallMode.FOCUS_TRACKER -> radioGroupFirewallMode.check(R.id.radioModeFocusTracker)
             FirewallMode.WHITELIST -> radioGroupFirewallMode.check(R.id.radioModeWhitelist)
+            FirewallMode.HYBRID -> radioGroupFirewallMode.check(R.id.radioModeHybrid)
             else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
         }
+        updateScreenLockDelaySummary()
         
         // Update UI based on mode
         updateFirewallModeUI(firewallMode)
@@ -292,12 +337,14 @@ class SettingsActivity : BaseActivity() {
         tvCurrentFont.text = if (currentFont == "ndot") getString(R.string.font_ndot) else getString(R.string.font_default)
         updateCurrentLanguageDisplay()
         switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
+        switchUseAmoledBlack.isChecked = prefs.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
         switchAutoEnableOnShizukuStart.isChecked = prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
         switchApplyRootRulesAfterReboot.isChecked = prefs.getBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, false)
         switchAppMonitor.isChecked = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
         switchFloatingButton.isChecked = prefs.getBoolean(
             com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false
         )
+        switchFirewallIndicator.isChecked = prefs.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)
 
         // Load working mode
         val workingModeName = prefs.getString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name)
@@ -346,6 +393,11 @@ class SettingsActivity : BaseActivity() {
         // Show/hide skip confirm card based on mode
         val showSkipConfirm = mode == FirewallMode.DEFAULT
         cardSkipConfirm.visibility = if (showSkipConfirm) View.VISIBLE else View.GONE
+
+        cardScreenLockDelay.visibility = if (mode == FirewallMode.SCREEN_LOCK_MODE || mode == FirewallMode.HYBRID) View.VISIBLE else View.GONE
+        if (mode == FirewallMode.SCREEN_LOCK_MODE || mode == FirewallMode.HYBRID) {
+            updateScreenLockDelaySummary()
+        }
         
         // If adaptive or smart foreground, force skip confirm to ON
         if (mode != FirewallMode.DEFAULT && !switchSkipConfirm.isChecked) {
@@ -353,8 +405,8 @@ class SettingsActivity : BaseActivity() {
             sharedPreferences.edit().putBoolean("skip_enable_confirm", true).apply()
         }
         
-        // Show warning for tracking modes if accessibility not enabled
-        if (mode == FirewallMode.SMART_FOREGROUND || mode == FirewallMode.FOCUS_TRACKER) {
+        // Show warning for Smart Foreground / Hybrid if accessibility not enabled
+        if (mode == FirewallMode.SMART_FOREGROUND || mode == FirewallMode.HYBRID || mode == FirewallMode.FOCUS_TRACKER) {
             val accessibilityEnabled = ForegroundDetectionService.isServiceEnabled(this)
             warningContainer.visibility = if (!accessibilityEnabled) View.VISIBLE else View.GONE
             // Reset retry loading state
@@ -374,9 +426,11 @@ class SettingsActivity : BaseActivity() {
         radioGroupFirewallMode.isEnabled = !isFirewallEnabled
         radioModeDefault.isEnabled = !isFirewallEnabled
         radioModeAdaptive.isEnabled = !isFirewallEnabled
+        radioModeScreenLock.isEnabled = !isFirewallEnabled
         radioModeSmartForeground.isEnabled = !isFirewallEnabled
         radioModeFocusTracker.isEnabled = !isFirewallEnabled
         radioModeWhitelist.isEnabled = !isFirewallEnabled
+        radioModeHybrid.isEnabled = !isFirewallEnabled
         
         // Update alpha for visual feedback
         val targetAlpha = if (isFirewallEnabled) 0.5f else 1f
@@ -405,9 +459,11 @@ class SettingsActivity : BaseActivity() {
                 val currentMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
                 when (currentMode) {
                     FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
+                    FirewallMode.SCREEN_LOCK_MODE -> radioGroupFirewallMode.check(R.id.radioModeScreenLock)
                     FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
                     FirewallMode.FOCUS_TRACKER -> radioGroupFirewallMode.check(R.id.radioModeFocusTracker)
                     FirewallMode.WHITELIST -> radioGroupFirewallMode.check(R.id.radioModeWhitelist)
+                    FirewallMode.HYBRID -> radioGroupFirewallMode.check(R.id.radioModeHybrid)
                     else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
                 }
                 return@setOnCheckedChangeListener
@@ -415,9 +471,11 @@ class SettingsActivity : BaseActivity() {
             
             val newMode = when (checkedId) {
                 R.id.radioModeAdaptive -> FirewallMode.ADAPTIVE
+                R.id.radioModeScreenLock -> FirewallMode.SCREEN_LOCK_MODE
                 R.id.radioModeSmartForeground -> FirewallMode.SMART_FOREGROUND
                 R.id.radioModeFocusTracker -> FirewallMode.FOCUS_TRACKER
                 R.id.radioModeWhitelist -> FirewallMode.WHITELIST
+                R.id.radioModeHybrid -> FirewallMode.HYBRID
                 else -> FirewallMode.DEFAULT
             }
             
@@ -427,8 +485,8 @@ class SettingsActivity : BaseActivity() {
             TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
             updateFirewallModeUI(newMode)
             
-            // Handle accessibility for tracking modes
-            if (newMode == FirewallMode.SMART_FOREGROUND || newMode == FirewallMode.FOCUS_TRACKER) {
+            // Handle accessibility for Smart Foreground / Hybrid mode
+            if (newMode == FirewallMode.SMART_FOREGROUND || newMode == FirewallMode.HYBRID || newMode == FirewallMode.FOCUS_TRACKER) {
                 if (!ForegroundDetectionService.isServiceEnabled(this)) {
                     // Check dialog status
                     val dialogShown = sharedPreferences.getBoolean("accessibility_dialog_shown", false)
@@ -480,6 +538,10 @@ class SettingsActivity : BaseActivity() {
             showLanguageSelectorDialog()
         }
 
+        layoutScreenLockDelay.setOnClickListener {
+            showScreenLockDelayDialog()
+        }
+
         btnExport.setOnClickListener {
             createDocumentLauncher.launch("shizuwall_settings")
         }
@@ -503,6 +565,13 @@ class SettingsActivity : BaseActivity() {
         switchUseDynamicColor.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit()
                 .putBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, isChecked)
+                .apply()
+            recreateWithAnimation()
+        }
+
+        switchUseAmoledBlack.setOnCheckedChangeListener { _, isChecked ->
+            sharedPreferences.edit()
+                .putBoolean(MainActivity.KEY_USE_AMOLED_BLACK, isChecked)
                 .apply()
             recreateWithAnimation()
         }
@@ -580,6 +649,24 @@ class SettingsActivity : BaseActivity() {
             }
         }
 
+        fun checkAndRequestNotificationPermission() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    val hasAsked = prefs.getBoolean("has_asked_notif", false)
+                    if (!hasAsked || androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.POST_NOTIFICATIONS)) {
+                        prefs.edit().putBoolean("has_asked_notif", true).apply()
+                        androidx.core.app.ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1002)
+                    } else {
+                        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+                        }
+                        startActivity(intent)
+                        Toast.makeText(this, getString(R.string.notification_permission_background_request), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
         switchFloatingButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 // Check overlay permission
@@ -594,6 +681,7 @@ class SettingsActivity : BaseActivity() {
                     startActivity(intent)
                     return@setOnCheckedChangeListener
                 }
+                checkAndRequestNotificationPermission()
                 prefs.edit().putBoolean(
                     com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, true
                 ).apply()
@@ -606,11 +694,80 @@ class SettingsActivity : BaseActivity() {
             }
         }
 
+        btnFirewallIndicatorSettings.setOnClickListener {
+            startActivity(Intent(this, FirewallIndicatorSettingsActivity::class.java))
+        }
+
+        switchFirewallIndicator.setOnCheckedChangeListener { _, isChecked ->
+            if (suppressFirewallIndicatorToggle) return@setOnCheckedChangeListener
+
+            if (isChecked) {
+                if (!Settings.canDrawOverlays(this)) {
+                    suppressFirewallIndicatorToggle = true
+                    switchFirewallIndicator.isChecked = false
+                    suppressFirewallIndicatorToggle = false
+                    prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
+                    Toast.makeText(this, R.string.firewall_indicator_overlay_permission_required, Toast.LENGTH_LONG).show()
+                    startActivity(
+                        Intent(
+                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            android.net.Uri.parse("package:$packageName")
+                        )
+                    )
+                    return@setOnCheckedChangeListener
+                }
+
+                if (ForegroundDetectionService.isServiceEnabled(this)) {
+                    checkAndRequestNotificationPermission()
+                    prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, true).apply()
+                    ForegroundFirewallIndicatorService.start(this)
+                    return@setOnCheckedChangeListener
+                }
+
+                val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
+                val messageText: TextView = dialogView.findViewById(R.id.loading_message)
+                val progressBar: android.widget.ProgressBar = dialogView.findViewById(R.id.loading_progress)
+                messageText.text = getString(R.string.accessibility_auto_granting)
+                progressBar.visibility = View.VISIBLE
+
+                val dialog = MaterialAlertDialogBuilder(this)
+                    .setView(dialogView)
+                    .setCancelable(false)
+                    .show()
+
+                lifecycleScope.launch {
+                    val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
+                    withContext(Dispatchers.Main) {
+                        dialog.dismiss()
+                        if (success && ForegroundDetectionService.isServiceEnabled(this@SettingsActivity)) {
+                            checkAndRequestNotificationPermission()
+                            prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, true).apply()
+                            ForegroundFirewallIndicatorService.start(this@SettingsActivity)
+                        } else {
+                            prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
+                            suppressFirewallIndicatorToggle = true
+                            switchFirewallIndicator.isChecked = false
+                            suppressFirewallIndicatorToggle = false
+                            Toast.makeText(
+                                this@SettingsActivity,
+                                getString(R.string.accessibility_auto_grant_failed),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            } else {
+                prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
+                ForegroundFirewallIndicatorService.stop(this)
+            }
+        }
+
         layoutAdbBroadcastUsage.setOnClickListener { showAdbBroadcastDialog() }
 
         // Make the whole card area toggle the corresponding switches when tapped
         makeCardClickableForSwitch(switchMoveSelectedTop)
         makeCardClickableForSwitch(switchUseDynamicColor)
+        makeCardClickableForSwitch(switchUseAmoledBlack)
         makeCardClickableForSwitch(switchSkipConfirm)
         makeCardClickableForSwitch(switchSkipErrorDialog)
         makeCardClickableForSwitch(switchKeepErrorAppsSelected)
@@ -618,6 +775,45 @@ class SettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchApplyRootRulesAfterReboot)
         makeCardClickableForSwitch(switchAppMonitor)
         makeCardClickableForSwitch(switchFloatingButton)
+        makeCardClickableForSwitch(switchFirewallIndicator)
+    }
+
+    private fun updateScreenLockDelaySummary() {
+        val delay = sharedPreferences
+            .getInt(
+                MainActivity.KEY_SCREEN_LOCK_DELAY_SECONDS,
+                MainActivity.DEFAULT_SCREEN_LOCK_DELAY_SECONDS
+            )
+            .coerceIn(2, 10)
+        tvScreenLockDelayValue.text = getString(R.string.screen_lock_delay_value, delay)
+    }
+
+    private fun showScreenLockDelayDialog() {
+        val picker = NumberPicker(this).apply {
+            minValue = 2
+            maxValue = 10
+            value = sharedPreferences
+                .getInt(
+                    MainActivity.KEY_SCREEN_LOCK_DELAY_SECONDS,
+                    MainActivity.DEFAULT_SCREEN_LOCK_DELAY_SECONDS
+                )
+                .coerceIn(2, 10)
+            wrapSelectorWheel = false
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.screen_lock_delay_dialog_title)
+            .setView(picker)
+            .setPositiveButton(R.string.apply) { _, _ ->
+                val selectedDelay = picker.value.coerceIn(2, 10)
+                sharedPreferences.edit()
+                    .putInt(MainActivity.KEY_SCREEN_LOCK_DELAY_SECONDS, selectedDelay)
+                    .apply()
+                updateScreenLockDelaySummary()
+                setResult(RESULT_OK)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
     
 

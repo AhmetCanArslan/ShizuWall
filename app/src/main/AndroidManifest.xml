@@ -41,6 +41,15 @@
             android:name=".ui.SettingsActivity"
             android:label="Settings"
             android:parentActivityName=".ui.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.FirewallIndicatorSettingsActivity"
+            android:label="Indicator Settings"
+            android:parentActivityName=".ui.SettingsActivity"
             android:exported="false" />
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
@@ -70,6 +79,12 @@
                 <action android:name="shizuwall.CONTROL" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".services.ScreenLockMonitorService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
 
         <receiver
             android:name=".receivers.LadbPairingCodeReceiver"
@@ -114,6 +129,12 @@
 
         <service
             android:name=".services.FloatingButtonService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
+        <service
+            android:name=".services.ForegroundFirewallIndicatorService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse" />

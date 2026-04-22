@@ -32,6 +32,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.ForegroundDetectionService
+import com.arslan.shizuwall.services.ScreenLockMonitorService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -63,6 +64,7 @@ import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
+import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.radiobutton.MaterialRadioButton
@@ -89,9 +91,17 @@ class MainActivity : BaseActivity() {
         const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
         const val KEY_SELECTED_FONT = "selected_font"
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
+        const val KEY_USE_AMOLED_BLACK = "use_amoled_black"
         const val KEY_ADAPTIVE_MODE = "adaptive_mode" 
         const val KEY_FIREWALL_MODE = "firewall_mode" 
+        const val KEY_SCREEN_LOCK_DELAY_SECONDS = "screen_lock_delay_seconds"
+        const val DEFAULT_SCREEN_LOCK_DELAY_SECONDS = 2
         const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"  // Current foreground app in smart mode
+        const val KEY_LAST_FOREGROUND_APP = "last_foreground_app"
+        const val KEY_FIREWALL_INDICATOR_ENABLED = "firewall_indicator_enabled"
+        const val KEY_FIREWALL_INDICATOR_X = "firewall_indicator_x"
+        const val KEY_FIREWALL_INDICATOR_Y = "firewall_indicator_y"
+        const val KEY_FIREWALL_INDICATOR_SIZE = "firewall_indicator_size"
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
         const val KEY_APPLY_ROOT_RULES_AFTER_REBOOT = "apply_root_rules_after_reboot"
         const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"
@@ -103,10 +113,11 @@ class MainActivity : BaseActivity() {
         const val EXTRA_ACTIVE_PACKAGES = "com.arslan.shizuwall.EXTRA_ACTIVE_PACKAGES"
 
         const val ACTION_FIREWALL_CONTROL = "shizuwall.CONTROL" 
-        const val EXTRA_PACKAGES_CSV = "apps" 
+        const val EXTRA_PACKAGES_CSV = "apps"
 
         const val KEY_FIREWALL_UPDATE_TS = "firewall_update_ts"
         const val KEY_APP_MONITOR_ENABLED = "app_monitor_enabled"
+        const val KEY_APP_MODES = "app_modes_json"
         private const val KEY_APPS_CACHE_JSON = "apps_cache_json_v1"
 
 
@@ -281,6 +292,7 @@ class MainActivity : BaseActivity() {
                 appListAdapter.setSelectionEnabled(firewallMode.allowsDynamicSelection() || !isFirewallEnabled)
                 updateInteractiveViews()
             }
+            appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
         }
     }
 
@@ -312,6 +324,16 @@ class MainActivity : BaseActivity() {
             } else {
                 startService(monitorIntent)
             }
+        }
+
+        // Start Foreground Firewall Indicator if enabled
+        if (sharedPreferences.getBoolean(KEY_FIREWALL_INDICATOR_ENABLED, false)) {
+            com.arslan.shizuwall.services.ForegroundFirewallIndicatorService.start(this)
+        }
+
+        // Start Floating Button Service if enabled
+        if (sharedPreferences.getBoolean(com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
+            com.arslan.shizuwall.services.FloatingButtonService.start(this)
         }
 
 
@@ -562,10 +584,12 @@ class MainActivity : BaseActivity() {
             firewallToggle.isChecked = isEnablingProcess
             suppressToggleListener = false
         }
+        appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
         loadInstalledApps()
         
         // Auto-enable accessibility service if revoked (e.g. after debug APK reinstall)
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
+        val isIndicatorEnabled = sharedPreferences.getBoolean(KEY_FIREWALL_INDICATOR_ENABLED, false)
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || isIndicatorEnabled || firewallMode == FirewallMode.FOCUS_TRACKER) {
             if (!ForegroundDetectionService.isServiceEnabled(this)) {
                 // Try to auto-enable via Shizuku/LADB shell
                 lifecycleScope.launch {
@@ -1012,7 +1036,7 @@ class MainActivity : BaseActivity() {
 
                 val idx = appList.indexOfFirst { it.packageName == appInfo.packageName }
                 if (idx != -1) {
-                    appList[idx] = appList[idx].copy(isSelected = appInfo.isSelected)
+                    appList[idx] = appInfo
                 }
                 updateSelectedCount()
                 saveSelectedApps()
@@ -1078,6 +1102,7 @@ class MainActivity : BaseActivity() {
                 toggleFavorite(appInfo)
             }
         )
+        appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
         recyclerView.adapter = appListAdapter
         defaultItemAnimator = recyclerView.itemAnimator
 
@@ -1662,6 +1687,8 @@ class MainActivity : BaseActivity() {
                 }
 
                 val favoritePackages = loadFavoriteApps()
+                val modesStr = sharedPreferences.getString(KEY_APP_MODES, "{}")
+                val modesJson = try { JSONObject(modesStr!!) } catch (e: Exception) { JSONObject() }
                 
                 // Process packages in parallel chunks for better performance
                 val chunkSize = 50
@@ -1690,8 +1717,9 @@ class MainActivity : BaseActivity() {
                             val isSelected = savedSelected.contains(packageName)
                             val isFavorite = favoritePackages.contains(packageName)
                             val installTime = packageInfo.firstInstallTime
+                            val appMode = modesJson.optInt(packageName, 0)
 
-                            chunkResult.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite, installTime))
+                            chunkResult.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite, installTime, appMode))
                         }
                         chunkResult
                     }
@@ -1747,6 +1775,8 @@ class MainActivity : BaseActivity() {
         val json = sharedPreferences.getString(KEY_APPS_CACHE_JSON, null) ?: return false
         val selectedPackages = loadSelectedApps()
         val favoritePackages = loadFavoriteApps()
+        val modesStr = sharedPreferences.getString(KEY_APP_MODES, "{}")
+        val modesJson = try { JSONObject(modesStr!!) } catch (e: Exception) { JSONObject() }
 
         val cachedList = try {
             val arr = JSONArray(json)
@@ -1763,7 +1793,8 @@ class MainActivity : BaseActivity() {
                         isSelected = selectedPackages.contains(packageName),
                         isSystem = obj.optBoolean("isSystem", false),
                         isFavorite = favoritePackages.contains(packageName),
-                        installTime = obj.optLong("installTime", 0L)
+                        installTime = obj.optLong("installTime", 0L),
+                        appFirewallMode = modesJson.optInt(packageName, 0)
                     )
                 )
             }
@@ -1789,6 +1820,7 @@ class MainActivity : BaseActivity() {
                     put("packageName", app.packageName)
                     put("isSystem", app.isSystem)
                     put("installTime", app.installTime)
+                    put("appFirewallMode", app.appFirewallMode)
                 }
             )
         }
@@ -1808,9 +1840,16 @@ class MainActivity : BaseActivity() {
             .filter { it.isSelected && !ShizukuPackageResolver.isShizukuPackage(this, it.packageName) }
             .map { it.packageName }
             .toSet()
+            
+        val modesJson = JSONObject()
+        appList.filter { it.appFirewallMode != 0 }.forEach {
+            modesJson.put(it.packageName, it.appFirewallMode)
+        }
+            
         sharedPreferences.edit()
             .putStringSet(KEY_SELECTED_APPS, selectedPackages)
             .putInt(KEY_SELECTED_COUNT, selectedPackages.size)
+            .putString(KEY_APP_MODES, modesJson.toString())
             .apply()
     }
 
@@ -1850,6 +1889,8 @@ class MainActivity : BaseActivity() {
         val intent = Intent(this, FirewallWidgetProvider::class.java)
         intent.action = ACTION_FIREWALL_STATE_CHANGED
         sendBroadcast(intent)
+
+        ScreenLockMonitorService.sync(this)
     }
 
     private fun loadFirewallEnabled(): Boolean {
@@ -1885,6 +1926,31 @@ class MainActivity : BaseActivity() {
 
     private fun applyFirewallState(enable: Boolean, packageNames: List<String>) {
         if (enable && packageNames.isEmpty() && !firewallMode.allowsDynamicSelection()) return
+
+        val effectivePackageNames = if (enable) {
+            if (firewallMode == FirewallMode.SCREEN_LOCK_MODE && !ScreenLockModeReceiver.isDeviceLocked(this)) {
+                emptyList()
+            } else if (firewallMode == FirewallMode.HYBRID) {
+                val appModesStr = sharedPreferences.getString(KEY_APP_MODES, "{}")
+                val appModes = try { JSONObject(appModesStr!!) } catch (e: Exception) { JSONObject() }
+                val isLocked = ScreenLockModeReceiver.isDeviceLocked(this)
+                packageNames.filter {
+                    val mode = appModes.optInt(it, 0)
+                    when (mode) {
+                        1 -> false // SMART_FOREGROUND app -> handled dynamically by accessibility service
+                        2 -> isLocked // SCREEN_LOCK app -> block if screen locked
+                        else -> true // DEFAULT app -> block immediately
+                    }
+                }
+            } else if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+                emptyList()
+            } else {
+                packageNames
+            }
+        } else {
+            packageNames
+        }
+
         firewallToggle.isEnabled = false
         isFirewallProcessRunning = true
         isEnablingProcess = enable
@@ -1894,7 +1960,7 @@ class MainActivity : BaseActivity() {
             updateInteractiveViews()
             showDimOverlay(force = true)
             
-            if (enable && (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER)) {
+            if (enable && (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || firewallMode == FirewallMode.FOCUS_TRACKER)) {
                 if (!ForegroundDetectionService.isServiceEnabled(this@MainActivity)) {
                     val granted = ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
                     if (granted) {
@@ -1906,7 +1972,7 @@ class MainActivity : BaseActivity() {
             try {
                 // perform package existence checks and run enable/disable on IO thread
                 val (installed, missing) = withContext(Dispatchers.IO) {
-                    filterInstalledPackages(packageNames)
+                    filterInstalledPackages(effectivePackageNames)
                 }
 
                 // If enabling and none of the chosen packages remain installed -> abort
@@ -1946,6 +2012,13 @@ class MainActivity : BaseActivity() {
                         suppressToggleListener = true
                         firewallToggle.isChecked = true
                         suppressToggleListener = false
+                        
+                        if (sharedPreferences.getBoolean(KEY_FIREWALL_INDICATOR_ENABLED, false)) {
+                            com.arslan.shizuwall.services.ForegroundFirewallIndicatorService.start(this@MainActivity)
+                        }
+                        if (sharedPreferences.getBoolean(com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
+                            com.arslan.shizuwall.services.FloatingButtonService.start(this@MainActivity)
+                        }
                         
                         if (firewallMode.allowsDynamicSelection()) {
                             appListAdapter.setSelectionEnabled(true)
@@ -2106,7 +2179,7 @@ class MainActivity : BaseActivity() {
         lastOperationErrorDetails.clear()
 
         val toUnblock = packageNames.toMutableList()
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || firewallMode == FirewallMode.FOCUS_TRACKER) {
             val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
             if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
                 toUnblock.add(currentFgApp)
@@ -2127,7 +2200,7 @@ class MainActivity : BaseActivity() {
         }
         runCommandDetailed("cmd connectivity set-chain3-enabled false")
 
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || firewallMode == FirewallMode.FOCUS_TRACKER) {
             sharedPreferences.edit()
                 .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                 .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())

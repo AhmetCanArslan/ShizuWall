@@ -6,5 +6,6 @@ data class AppInfo(
     val isSelected: Boolean = false,
     val isSystem: Boolean = false,
     val isFavorite: Boolean = false,
-    val installTime: Long = 0
+    val installTime: Long = 0,
+    val appFirewallMode: Int = 0 // 0: Default, 1: Smart Foreground, 2: Screen Lock
 )

@@ -11,6 +11,7 @@ import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorBlocking
+import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.*
 import com.arslan.shizuwall.widgets.FirewallWidgetProvider
@@ -183,6 +184,15 @@ class FirewallTileService : TileService() {
             if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                 saveFirewallEnabled(true)
                 saveActivePackages(successful.toSet())
+                
+                withContext(Dispatchers.Main) {
+                    if (sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)) {
+                        ForegroundFirewallIndicatorService.start(this@FirewallTileService)
+                    }
+                    if (sharedPreferences.getBoolean(FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
+                        FloatingButtonService.start(this@FirewallTileService)
+                    }
+                }
             } else {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@FirewallTileService, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()
@@ -217,6 +227,10 @@ class FirewallTileService : TileService() {
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
         if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
+            return successful
+        }
+
+        if (firewallMode == FirewallMode.SCREEN_LOCK_MODE && !ScreenLockModeReceiver.isDeviceLocked(this)) {
             return successful
         }
 
@@ -279,6 +293,8 @@ class FirewallTileService : TileService() {
         val intent = Intent(this, FirewallWidgetProvider::class.java)
         intent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
         sendBroadcast(intent)
+
+        ScreenLockMonitorService.sync(this)
     }
 
     private fun saveActivePackages(packages: Set<String>) {

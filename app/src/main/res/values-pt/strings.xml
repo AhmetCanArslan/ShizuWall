@@ -124,6 +124,8 @@
     <string name="move_selected_top_description">Mostrar apps selecionados no início</string>
     <string name="use_dynamic_color">Usar cor dinâmica</string>
     <string name="use_dynamic_color_description">Aplicar cores do papel de parede ao tema do app</string>
+    <string name="use_amoled_black">Usar tema AMOLED</string>
+    <string name="use_amoled_black_description">Preto puro para telas OLED</string>
     <string name="firewall_section">Firewall</string>
     <string name="skip_enable_confirmation_description">Não perguntar ao ativar firewall</string>
     <string name="adaptive_mode">Modo Adaptativo</string>
@@ -209,7 +211,7 @@
     <string name="ladb_notification_permission_required">A permissão de notificação é necessária para mostrar o prompt do código de pareamento.</string>
     <string name="set_ladb_title">Configuração LADB e Daemon</string>
     <string name="set_ladb_summary">Pareie o LADB e instale o daemon de segundo plano persistente</string>
-    <string name="ladb_logs_title">Logs</string>
+    <string name="ladb_logs_title">Registros</string>
     <string name="ladb_logs_empty">Ainda não há logs. Realize operações LADB para ver os logs aqui.</string>
     <string name="ladb_clear_logs">Limpar Logs</string>
     <string name="ladb_copy_logs">Copiar Logs</string>
@@ -315,6 +317,11 @@
     <string name="firewall_mode_whitelist_description">Bloquear todos os apps por padrão, permitir apps selecionados</string>
     <string name="whitelist_info_system_apps_warning">Quando "Mostrar apps do sistema" está desativado, os apps do sistema não serão bloqueados pelo firewall no modo Lista branca.\n\nSe você ativou "Mostrar apps do sistema" e está usando o modo Lista branca, esta combinação não foi totalmente testada. Use com cuidado.</string>
     <string name="firewall_mode_change_disabled">Não é possível alterar o modo de firewall enquanto está ativado. Por favor, desative o firewall primeiro.</string>
+    <string name="firewall_mode_hybrid">Modo Híbrido</string>
+    <string name="firewall_mode_hybrid_description">Configurar modo individualmente por aplicativo</string>
+    <string name="hybrid_mode_default_block">🚫 Bloqueio Padrão</string>
+    <string name="hybrid_mode_smart_foreground">📱 Primeiro Plano Inteligente</string>
+    <string name="hybrid_mode_screen_lock">🔒 Bloqueio de Tela</string>
     <string name="floating_button">Botão Flutuante de Firewall</string>
     <string name="floating_button_description">Mostrar um botão de sobreposição arrastável para alternar o firewall de qualquer lugar</string>
     <string name="floating_button_notification_channel_name">Botão Flutuante (Serviço)</string>
@@ -344,4 +351,34 @@
     <string name="accessibility_auto_granting">Ativando o serviço de acessibilidade...</string>
     <string name="accessibility_auto_grant_failed">Não foi possível ativar automaticamente o serviço de acessibilidade. Ative-o manualmente em Configurações.</string>
     <string name="open_settings">Abrir Configurações</string>
+    <string name="notification_permission_background_request">Por favor, conceda permissão para continuar executando em segundo plano.</string>
+
+    <!-- Auto-added missing translations (English fallback) -->
+    <string name="firewall_indicator_content_description">Indicador de firewall em primeiro plano</string>
+    <string name="firewall_indicator_size">Tamanho do indicador</string>
+    <string name="screen_lock_mode_notification_channel_name">Modo de bloqueio de tela (Serviço)</string>
+    <string name="adb_broadcast_quick_reference">Referência rápida com comandos prontos para copiar.</string>
+    <string name="firewall_indicator">Indicador de firewall</string>
+    <string name="screen_lock_delay_title">Atraso de bloqueio</string>
+    <string name="screen_lock_mode_notification_text">Monitorando bloqueio/desbloqueio para regras</string>
+    <string name="firewall_mode_screen_lock_description">Bloquear apps selecionados no bloqueio de tela</string>
+    <string name="firewall_indicator_settings">Configurações do indicador</string>
+    <string name="screen_lock_delay_value">Ativar após %1$d segundos de bloqueio</string>
+    <string name="firewall_indicator_description">Mostra se o app em primeiro plano está bloqueado</string>
+    <string name="firewall_mode_screen_lock">Modo de bloqueio de tela</string>
+    <string name="screen_lock_mode_notification_title">Modo de bloqueio de tela</string>
+    <string name="firewall_indicator_settings_description">Ajustar posição e tamanho do indicador.</string>
+    <string name="increase">Aumentar</string>
+    <string name="firewall_indicator_y">Coordenada Y</string>
+    <string name="screen_lock_mode_operation_failed">Falha na operação de bloqueio</string>
+    <string name="firewall_indicator_notification_title">Indicador de firewall</string>
+    <string name="screen_lock_mode_notification_channel_description">Serviço para automação de bloqueio</string>
+    <string name="firewall_indicator_overlay_permission_required">Permissão de sobreposição necessária</string>
+    <string name="decrease">Diminuir</string>
+    <string name="firewall_indicator_notification_channel_description">Serviço em segundo plano para o indicador</string>
+    <string name="firewall_indicator_settings_title">Configurações do indicador</string>
+    <string name="firewall_indicator_notification_text">Monitorando o estado do firewall do app</string>
+    <string name="firewall_indicator_notification_channel_name">Indicador de firewall (Serviço)</string>
+    <string name="screen_lock_delay_dialog_title">Atraso de bloqueio de tela</string>
+    <string name="firewall_indicator_x">Coordenada X</string>
 </resources>

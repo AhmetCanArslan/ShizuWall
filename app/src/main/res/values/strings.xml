@@ -72,6 +72,7 @@
     <string name="welcome_message">Block unwanted network connections without root or vpn</string>
     <string name="next">Next</string>
     <string name="notification_permission_title">Notification Permission</string>
+    <string name="notification_permission_background_request">Please grant permission to keep running in the background.</string>
     <string name="notification_permission_message">We need notification permission to keep you informed about firewall status if you reboot while firewall is active.</string>
     <string name="grant_permission">Grant Permission</string>
     <string name="favorites_title">Favorites</string>
@@ -117,6 +118,7 @@
     <string name="firewall_enabled_adaptive">Firewall activated (Adaptive Mode)</string>
     <string name="failed_to_enable_firewall">Failed to enable firewall for any apps</string>
     <string name="failed_to_disable_firewall">Failed to disable firewall for any apps</string>
+    <string name="screen_lock_mode_operation_failed">Screen Lock Mode operation failed</string>
     <string name="operation_failed_for_apps">Operation failed for %d apps</string>
     <string name="operation_failed_message">Operation failed for the following %d apps. They have been unselected.</string>
     <string name="details">Details</string>
@@ -131,6 +133,8 @@
     <string name="move_selected_top_description">Show selected apps at the beginning</string>
     <string name="use_dynamic_color">Use dynamic color</string>
     <string name="use_dynamic_color_description">Apply wallpaper colors to app theme</string>
+    <string name="use_amoled_black">Use AMOLED theme</string>
+    <string name="use_amoled_black_description">Pure black for OLED screens</string>
     <string name="firewall_section">Firewall</string>
     <string name="skip_enable_confirmation_description">Don\'t ask when enabling firewall</string>
     <string name="adaptive_mode">Adaptive Mode</string>
@@ -307,6 +311,8 @@
     <string name="firewall_mode_adaptive_description">Apply rules instantly. Firewall stays on.</string>
     <string name="firewall_mode_whitelist">Whitelist</string>
     <string name="firewall_mode_whitelist_description">Block all apps by default, allow selected apps</string>
+    <string name="firewall_mode_screen_lock">Screen Lock Mode</string>
+    <string name="firewall_mode_screen_lock_description">Block selected apps on lock, unblock on unlock</string>
     <string name="whitelist_info_system_apps_warning">When "Show system apps" is disabled, system apps will not be firewalled in Whitelist mode.\n\nIf you have enabled "Show system apps" and are using Whitelist mode, this combination has not been fully tested. Use with caution.</string>
     <string name="firewall_mode_smart_foreground">Smart Foreground</string>
     <string name="firewall_mode_smart_foreground_description">Only allow the app currently in foreground</string>
@@ -316,6 +322,11 @@
     
     <string name="smart_foreground_requires_accessibility">Requires Accessibility permission</string>
     <string name="firewall_mode_change_disabled">Cannot change firewall mode while firewall is enabled. Please disable the firewall first.</string>
+    <string name="firewall_mode_hybrid">Hybrid Mode</string>
+    <string name="firewall_mode_hybrid_description">Configure mode individually per app</string>
+    <string name="hybrid_mode_default_block">🚫 Default Block</string>
+    <string name="hybrid_mode_smart_foreground">📱 Smart Foreground</string>
+    <string name="hybrid_mode_screen_lock">🔒 Screen Lock</string>
     <string name="smart_foreground_service_description">Monitors foreground app to manage firewall rules</string>
     <string name="smart_foreground_notification_channel_name">Smart Foreground (Service)</string>
     <string name="smart_foreground_notification_channel_description">Background service for monitoring foreground app</string>
@@ -343,6 +354,13 @@
     <string name="accessibility_permission_message">This app requires AccessibilityService API to monitor foreground app changes for Smart Foreground mode. The API will be used to detect when you switch between apps and automatically update firewall rules accordingly. No personal data is collected or transmitted.</string>
     <string name="accessibility_auto_granting">Enabling Accessibility service...</string>
     <string name="accessibility_auto_grant_failed">Failed to enable Accessibility service automatically. Please enable it manually in Settings.</string>
+    <string name="screen_lock_delay_title">Lock Delay</string>
+    <string name="screen_lock_delay_value">Enable after %1$d seconds of lock</string>
+    <string name="screen_lock_delay_dialog_title">Screen Lock Delay</string>
+    <string name="screen_lock_mode_notification_channel_name">Screen Lock Mode (Service)</string>
+    <string name="screen_lock_mode_notification_channel_description">Background service for screen lock automation</string>
+    <string name="screen_lock_mode_notification_title">Screen Lock Mode</string>
+    <string name="screen_lock_mode_notification_text">Monitoring lock/unlock to apply firewall rules</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
     <string name="open_settings">Open Settings</string>
@@ -356,4 +374,22 @@
     <string name="floating_button_notification_text">Tap the floating button to toggle firewall</string>
     <string name="floating_button_content_description">Toggle firewall</string>
     <string name="overlay_permission_required">Overlay permission is required for the floating button</string>
+
+    <!-- Foreground Firewall Indicator -->
+    <string name="firewall_indicator">Foreground Firewall Indicator</string>
+    <string name="firewall_indicator_description">Shows if the current foreground app is firewalled</string>
+    <string name="firewall_indicator_settings">Indicator settings</string>
+    <string name="firewall_indicator_settings_title">Indicator Settings</string>
+    <string name="firewall_indicator_settings_description">Adjust foreground indicator position and size.</string>
+    <string name="firewall_indicator_x">X Coordinate</string>
+    <string name="firewall_indicator_y">Y Coordinate</string>
+    <string name="firewall_indicator_size">Indicator Size</string>
+    <string name="firewall_indicator_content_description">Foreground firewall indicator</string>
+    <string name="firewall_indicator_notification_channel_name">Firewall Indicator (Service)</string>
+    <string name="firewall_indicator_notification_channel_description">Background service for foreground firewall indicator</string>
+    <string name="firewall_indicator_notification_title">Foreground Firewall Indicator</string>
+    <string name="firewall_indicator_notification_text">Monitoring foreground app firewall state</string>
+    <string name="firewall_indicator_overlay_permission_required">Overlay permission is required for the firewall indicator</string>
+    <string name="decrease">Decrease</string>
+    <string name="increase">Increase</string>
 </resources>

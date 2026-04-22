@@ -123,6 +123,8 @@
     <string name="move_selected_top_description">選択したアプリをリストの最初に表示する</string>
     <string name="use_dynamic_color">ダイナミックカラーを使用</string>
     <string name="use_dynamic_color_description">壁紙の色をアプリのテーマに適用する</string>
+    <string name="use_amoled_black">AMOLEDテーマを使用</string>
+    <string name="use_amoled_black_description">OLED画面向けの純粋な黒</string>
     <string name="firewall_section">ファイアウォール</string>
     <string name="skip_enable_confirmation_description">ファイアウォール有効化時に確認しない</string>
     <string name="adaptive_mode">アダプティブモード</string>
@@ -317,6 +319,11 @@
     <string name="firewall_mode_whitelist_description">デフォルトですべてのアプリをブロックし、選択されたアプリを許可</string>
     <string name="whitelist_info_system_apps_warning">"システムアプリを表示"が無効の場合、ホワイトリストモードでシステムアプリはファイアウォールの対象になりません。\n\n"システムアプリを表示"を有効にしてホワイトリストモードを使用している場合、この組み合わせは十分にテストされていません。注意して使用してください。</string>
     <string name="firewall_mode_change_disabled">ファイアウォールが有効になっている間はモードを変更できません。まずファイアウォールを無効にしてください。</string>
+    <string name="firewall_mode_hybrid">ハイブリッドモード</string>
+    <string name="firewall_mode_hybrid_description">アプリごとにモードを個別に設定</string>
+    <string name="hybrid_mode_default_block">🚫 デフォルトブロック</string>
+    <string name="hybrid_mode_smart_foreground">📱 スマートフォアグラウンド</string>
+    <string name="hybrid_mode_screen_lock">🔒 画面ロック</string>
     <string name="floating_button">フローティング・ファイアウォール・ボタン</string>
     <string name="floating_button_description">どこからでもファイアウォールを切り替えるためのドラッグ可能なオーバーレイボタンを表示します</string>
     <string name="floating_button_notification_channel_name">フローティングボタン (サービス)</string>
@@ -346,4 +353,34 @@
     <string name="accessibility_auto_granting">ユーザー補助サービスを有効化しています...</string>
     <string name="accessibility_auto_grant_failed">ユーザー補助サービスを自動で有効化できませんでした。設定で手動で有効にしてください。</string>
     <string name="open_settings">設定を開く</string>
+    <string name="notification_permission_background_request">バックグラウンドで実行し続けるには権限を付与してください。</string>
+
+    <!-- Auto-added missing translations (English fallback) -->
+    <string name="firewall_indicator_content_description">フォアグラウンドファイアウォールインジケーター</string>
+    <string name="firewall_indicator_size">インジケーターのサイズ</string>
+    <string name="screen_lock_mode_notification_channel_name">画面ロックモード (サービス)</string>
+    <string name="adb_broadcast_quick_reference">コピー可能な値とコマンドのクイックリファレンス。</string>
+    <string name="firewall_indicator">ファイアウォールインジケーター</string>
+    <string name="screen_lock_delay_title">ロックの遅延</string>
+    <string name="screen_lock_mode_notification_text">ファイアウォールルールを適用するためのロック監視</string>
+    <string name="firewall_mode_screen_lock_description">ロック時に選択されたアプリをブロック</string>
+    <string name="firewall_indicator_settings">インジケーター設定</string>
+    <string name="screen_lock_delay_value">ロックの %1$d 秒後に有効化</string>
+    <string name="firewall_indicator_description">現在のアプリがブロックされているかを表示します</string>
+    <string name="firewall_mode_screen_lock">画面ロックモード</string>
+    <string name="screen_lock_mode_notification_title">画面ロックモード</string>
+    <string name="firewall_indicator_settings_description">インジケーターのサイズと位置を調整します。</string>
+    <string name="increase">増加</string>
+    <string name="firewall_indicator_y">Y座標</string>
+    <string name="screen_lock_mode_operation_failed">操作に失敗しました</string>
+    <string name="firewall_indicator_notification_title">ファイアウォールインジケーター</string>
+    <string name="screen_lock_mode_notification_channel_description">画面ロック自動化のためのバックグラウンドサービス</string>
+    <string name="firewall_indicator_overlay_permission_required">オーバーレイ表示の権限が必要です</string>
+    <string name="decrease">減少</string>
+    <string name="firewall_indicator_notification_channel_description">インジケーター用のバックグラウンドサービス</string>
+    <string name="firewall_indicator_settings_title">インジケーター設定</string>
+    <string name="firewall_indicator_notification_text">ファイアウォールの状態を監視中</string>
+    <string name="firewall_indicator_notification_channel_name">インジケーター (サービス)</string>
+    <string name="screen_lock_delay_dialog_title">画面ロックの遅延</string>
+    <string name="firewall_indicator_x">X座標</string>
 </resources>
