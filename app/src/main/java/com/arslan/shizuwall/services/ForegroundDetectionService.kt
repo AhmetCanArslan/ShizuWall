@@ -58,6 +58,8 @@ class ForegroundDetectionService : AccessibilityService() {
         private const val RETRY_DELAY_MS = 300L
         private const val UNMANAGED_ALLOW_THROTTLE_MS = 2000L
 
+        private var isShizuWallFocused: Boolean? = null
+
         // System packages that should never be managed by Smart Foreground
         private val SYSTEM_PACKAGES = setOf(
             "com.android.systemui",
@@ -271,7 +273,7 @@ class ForegroundDetectionService : AccessibilityService() {
                 val modeName = prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
                 cachedFirewallMode = FirewallMode.fromName(modeName)
 
-                if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && cachedFirewallMode != FirewallMode.HYBRID) {
+                if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && cachedFirewallMode != FirewallMode.HYBRID && cachedFirewallMode != FirewallMode.FOCUS_TRACKER) {) {
                     try {
                         stopForeground(true)
                     } catch (e: Exception) {
@@ -416,11 +418,9 @@ class ForegroundDetectionService : AccessibilityService() {
         publishObservedForegroundApp(packageName)
 
         // Gate on cached state — zero SharedPrefs reads on the hot path.
-        if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && cachedFirewallMode != FirewallMode.HYBRID) return
-        if (cachedFirewallMode != FirewallMode.FOCUS_TRACKER) {
-            if (packageName == this.packageName) return
-            return
-        }
+        if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && 
+            cachedFirewallMode != FirewallMode.HYBRID &&
+            cachedFirewallMode != FirewallMode.FOCUS_TRACKER) return  // ADD FOCUS_TRACKER check
         if (!cachedFirewallEnabled) return
 
         if (cachedFirewallMode == FirewallMode.FOCUS_TRACKER) {
