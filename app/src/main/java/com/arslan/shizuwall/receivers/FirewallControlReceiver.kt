@@ -294,10 +294,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                             putInt(MainActivity.KEY_SELECTED_COUNT, currentSelected.size)
                         }
                         
-                        // Start indicator and floating button if they are enabled
-                        if (prefs.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)) {
-                            com.arslan.shizuwall.services.ForegroundFirewallIndicatorService.start(context)
-                        }
+                        // Start floating button if enabled
                         if (prefs.getBoolean(com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
                             com.arslan.shizuwall.services.FloatingButtonService.start(context)
                         }

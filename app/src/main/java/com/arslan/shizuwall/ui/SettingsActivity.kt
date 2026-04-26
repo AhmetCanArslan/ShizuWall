@@ -50,7 +50,6 @@ import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.ForegroundDetectionService
 import com.arslan.shizuwall.services.FloatingButtonService
-import com.arslan.shizuwall.services.ForegroundFirewallIndicatorService
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONArray
@@ -89,9 +88,6 @@ class SettingsActivity : BaseActivity() {
     private lateinit var cardApplyRootRulesAfterReboot: com.google.android.material.card.MaterialCardView
     private lateinit var switchAppMonitor: SwitchCompat
     private lateinit var switchFloatingButton: SwitchCompat
-    private lateinit var switchFirewallIndicator: SwitchCompat
-    private lateinit var btnFirewallIndicatorSettings: android.widget.ImageButton
-    private var suppressFirewallIndicatorToggle = false
 
     private lateinit var cardAdbBroadcastUsage: com.google.android.material.card.MaterialCardView
     private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
@@ -212,24 +208,6 @@ class SettingsActivity : BaseActivity() {
                 switchFloatingButton.isChecked = prefEnabled
             }
         }
-
-        if (::switchFirewallIndicator.isInitialized) {
-            val wantEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)
-            if (wantEnabled && !Settings.canDrawOverlays(this)) {
-                suppressFirewallIndicatorToggle = true
-                switchFirewallIndicator.isChecked = false
-                suppressFirewallIndicatorToggle = false
-                sharedPreferences.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
-                ForegroundFirewallIndicatorService.stop(this)
-            } else {
-                suppressFirewallIndicatorToggle = true
-                switchFirewallIndicator.isChecked = wantEnabled
-                suppressFirewallIndicatorToggle = false
-                if (wantEnabled) {
-                    ForegroundFirewallIndicatorService.start(this)
-                }
-            }
-        }
     }
 
     private fun initializeViews() {
@@ -264,8 +242,6 @@ class SettingsActivity : BaseActivity() {
         layoutSetLadb = findViewById(R.id.layoutSetLadb)
         switchAppMonitor = findViewById(R.id.switchAppMonitor)
         switchFloatingButton = findViewById(R.id.switchFloatingButton)
-        switchFirewallIndicator = findViewById(R.id.switchFirewallIndicator)
-        btnFirewallIndicatorSettings = findViewById(R.id.btnFirewallIndicatorSettings)
         // Auto-enable switch (new)
         switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
         cardAutoEnableOnShizukuStart = findViewById(R.id.cardAutoEnableOnShizukuStart)
@@ -341,7 +317,6 @@ class SettingsActivity : BaseActivity() {
         switchFloatingButton.isChecked = prefs.getBoolean(
             com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false
         )
-        switchFirewallIndicator.isChecked = prefs.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)
 
         // Load working mode
         val workingModeName = prefs.getString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name)
@@ -688,74 +663,6 @@ class SettingsActivity : BaseActivity() {
             }
         }
 
-        btnFirewallIndicatorSettings.setOnClickListener {
-            startActivity(Intent(this, FirewallIndicatorSettingsActivity::class.java))
-        }
-
-        switchFirewallIndicator.setOnCheckedChangeListener { _, isChecked ->
-            if (suppressFirewallIndicatorToggle) return@setOnCheckedChangeListener
-
-            if (isChecked) {
-                if (!Settings.canDrawOverlays(this)) {
-                    suppressFirewallIndicatorToggle = true
-                    switchFirewallIndicator.isChecked = false
-                    suppressFirewallIndicatorToggle = false
-                    prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
-                    Toast.makeText(this, R.string.firewall_indicator_overlay_permission_required, Toast.LENGTH_LONG).show()
-                    startActivity(
-                        Intent(
-                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            android.net.Uri.parse("package:$packageName")
-                        )
-                    )
-                    return@setOnCheckedChangeListener
-                }
-
-                if (ForegroundDetectionService.isServiceEnabled(this)) {
-                    checkAndRequestNotificationPermission()
-                    prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, true).apply()
-                    ForegroundFirewallIndicatorService.start(this)
-                    return@setOnCheckedChangeListener
-                }
-
-                val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
-                val messageText: TextView = dialogView.findViewById(R.id.loading_message)
-                val progressBar: android.widget.ProgressBar = dialogView.findViewById(R.id.loading_progress)
-                messageText.text = getString(R.string.accessibility_auto_granting)
-                progressBar.visibility = View.VISIBLE
-
-                val dialog = MaterialAlertDialogBuilder(this)
-                    .setView(dialogView)
-                    .setCancelable(false)
-                    .show()
-
-                lifecycleScope.launch {
-                    val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
-                    withContext(Dispatchers.Main) {
-                        dialog.dismiss()
-                        if (success && ForegroundDetectionService.isServiceEnabled(this@SettingsActivity)) {
-                            checkAndRequestNotificationPermission()
-                            prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, true).apply()
-                            ForegroundFirewallIndicatorService.start(this@SettingsActivity)
-                        } else {
-                            prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
-                            suppressFirewallIndicatorToggle = true
-                            switchFirewallIndicator.isChecked = false
-                            suppressFirewallIndicatorToggle = false
-                            Toast.makeText(
-                                this@SettingsActivity,
-                                getString(R.string.accessibility_auto_grant_failed),
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                }
-            } else {
-                prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
-                ForegroundFirewallIndicatorService.stop(this)
-            }
-        }
-
         layoutAdbBroadcastUsage.setOnClickListener { showAdbBroadcastDialog() }
 
         // Make the whole card area toggle the corresponding switches when tapped
@@ -769,7 +676,6 @@ class SettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchApplyRootRulesAfterReboot)
         makeCardClickableForSwitch(switchAppMonitor)
         makeCardClickableForSwitch(switchFloatingButton)
-        makeCardClickableForSwitch(switchFirewallIndicator)
     }
 
     private fun updateScreenLockDelaySummary() {

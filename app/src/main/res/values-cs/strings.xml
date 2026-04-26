@@ -369,21 +369,7 @@
     <string name="notification_permission_background_request">Udělte prosím oprávnění k běhu na pozadí.</string>
 
     <!-- Auto-added missing translations (English fallback) -->
-    <string name="firewall_indicator_content_description">Indikátor brány firewall v popředí</string>
-    <string name="firewall_indicator_x">Souřadnice X</string>
-    <string name="firewall_indicator_settings_title">Nastavení indikátoru</string>
-    <string name="firewall_indicator_description">Zobrazuje, zda je aktuální aplikace blokována</string>
-    <string name="firewall_indicator_overlay_permission_required">Vyžadováno oprávnění pro zobrazení přes jiné aplikace</string>
-    <string name="firewall_indicator_size">Velikost indikátoru</string>
     <string name="decrease">Zmenšit</string>
     <string name="adb_broadcast_quick_reference">Stručná referenční příručka s připravenými příkazy.</string>
-    <string name="firewall_indicator_settings_description">Úprava polohy a velikosti indikátoru.</string>
-    <string name="firewall_indicator_notification_text">Sledování stavu brány firewall</string>
-    <string name="firewall_indicator_notification_channel_description">Služba na pozadí pro indikátor</string>
     <string name="increase">Zvětšit</string>
-    <string name="firewall_indicator_notification_channel_name">Indikátor brány firewall (Služba)</string>
-    <string name="firewall_indicator">Indikátor brány firewall</string>
-    <string name="firewall_indicator_y">Souřadnice Y</string>
-    <string name="firewall_indicator_settings">Nastavení indikátoru</string>
-    <string name="firewall_indicator_notification_title">Indikátor brány firewall</string>
 </resources>

@@ -356,31 +356,17 @@
     <string name="notification_permission_background_request">Bitte erteilen Sie die Berechtigung, weiterhin im Hintergrund ausgeführt zu werden.</string>
 
     <!-- Auto-added missing translations (English fallback) -->
-    <string name="firewall_indicator_content_description">Vordergrund-Firewall-Indikator</string>
-    <string name="firewall_indicator_size">Indikatorgröße</string>
     <string name="screen_lock_mode_notification_channel_name">Bildschirmsperre-Modus (Dienst)</string>
     <string name="adb_broadcast_quick_reference">Kurzübersicht mit kopierfertigen Werten und Befehlen.</string>
-    <string name="firewall_indicator">Vordergrund-Firewall-Indikator</string>
     <string name="screen_lock_delay_title">Sperrverzögerung</string>
     <string name="screen_lock_mode_notification_text">Überwachung von Sperren/Entsperren zur Anwendung von Firewall-Regeln</string>
     <string name="firewall_mode_screen_lock_description">Ausgewählte Apps bei Sperrung blockieren, bei Entsperrung freigeben</string>
-    <string name="firewall_indicator_settings">Indikatoreinstellungen</string>
     <string name="screen_lock_delay_value">Nach %1$d Sekunden Sperre aktivieren</string>
-    <string name="firewall_indicator_description">Zeigt an, ob die aktuelle Vordergrund-App durch die Firewall blockiert wird</string>
     <string name="firewall_mode_screen_lock">Bildschirmsperre-Modus</string>
     <string name="screen_lock_mode_notification_title">Bildschirmsperre-Modus</string>
-    <string name="firewall_indicator_settings_description">Position und Größe des Vordergrund-Indikators anpassen.</string>
     <string name="increase">Vergrößern</string>
-    <string name="firewall_indicator_y">Y-Koordinate</string>
     <string name="screen_lock_mode_operation_failed">Bildschirmsperre-Modus-Vorgang fehlgeschlagen</string>
-    <string name="firewall_indicator_notification_title">Vordergrund-Firewall-Indikator</string>
     <string name="screen_lock_mode_notification_channel_description">Hintergrunddienst für Bildschirmsperren-Automatisierung</string>
-    <string name="firewall_indicator_overlay_permission_required">Für den Firewall-Indikator ist die Berechtigung zum Einblenden über anderen Apps erforderlich</string>
     <string name="decrease">Verkleinern</string>
-    <string name="firewall_indicator_notification_channel_description">Hintergrunddienst für Vordergrund-Firewall-Indikator</string>
-    <string name="firewall_indicator_settings_title">Indikatoreinstellungen</string>
-    <string name="firewall_indicator_notification_text">Überwachung des Firewall-Status der Vordergrund-App</string>
-    <string name="firewall_indicator_notification_channel_name">Firewall-Indikator (Dienst)</string>
     <string name="screen_lock_delay_dialog_title">Bildschirmsperren-Verzögerung</string>
-    <string name="firewall_indicator_x">X-Koordinate</string>
 </resources>

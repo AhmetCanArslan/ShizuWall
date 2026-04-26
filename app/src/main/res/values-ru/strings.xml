@@ -358,31 +358,17 @@
     <string name="notification_permission_background_request">Пожалуйста, предоставьте разрешение для продолжения работы в фоновом режиме.</string>
 
     <!-- Auto-added missing translations (English fallback) -->
-    <string name="firewall_indicator_content_description">Индикатор брандмауэра на переднем плане</string>
-    <string name="firewall_indicator_size">Размер индикатора</string>
     <string name="screen_lock_mode_notification_channel_name">Режим блокировки экрана (Сервис)</string>
     <string name="adb_broadcast_quick_reference">Краткий справочник с командами для копирования.</string>
-    <string name="firewall_indicator">Индикатор брандмауэра</string>
     <string name="screen_lock_delay_title">Задержка блокировки</string>
     <string name="screen_lock_mode_notification_text">Мониторинг блокировки/разблокировки для применения правил брандмауэра</string>
     <string name="firewall_mode_screen_lock_description">Блокировать выбранные приложения при блокировке экрана</string>
-    <string name="firewall_indicator_settings">Настройки индикатора</string>
     <string name="screen_lock_delay_value">Включить через %1$d секунд после блокировки</string>
-    <string name="firewall_indicator_description">Показывает, заблокировано ли текущее приложение</string>
     <string name="firewall_mode_screen_lock">Режим блокировки экрана</string>
     <string name="screen_lock_mode_notification_title">Режим блокировки экрана</string>
-    <string name="firewall_indicator_settings_description">Настройка позиции и размера индикатора.</string>
     <string name="increase">Увеличить</string>
-    <string name="firewall_indicator_y">Координата Y</string>
     <string name="screen_lock_mode_operation_failed">Ошибка режима блокировки экрана</string>
-    <string name="firewall_indicator_notification_title">Индикатор брандмауэра</string>
     <string name="screen_lock_mode_notification_channel_description">Фоновый сервис автоматизации блокировки</string>
-    <string name="firewall_indicator_overlay_permission_required">Требуется разрешение на наложение поверх других окон</string>
     <string name="decrease">Уменьшить</string>
-    <string name="firewall_indicator_notification_channel_description">Фоновый сервис для индикатора</string>
-    <string name="firewall_indicator_settings_title">Настройки индикатора</string>
-    <string name="firewall_indicator_notification_text">Мониторинг состояния брандмауэра приложения</string>
-    <string name="firewall_indicator_notification_channel_name">Индикатор брандмауэра (Сервис)</string>
     <string name="screen_lock_delay_dialog_title">Задержка блокировки экрана</string>
-    <string name="firewall_indicator_x">Координата X</string>
 </resources>

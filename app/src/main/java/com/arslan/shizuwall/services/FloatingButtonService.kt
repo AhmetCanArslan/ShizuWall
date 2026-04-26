@@ -376,9 +376,6 @@ class FloatingButtonService : Service() {
                 saveActivePackages(successful.toSet())
                 
                 withContext(Dispatchers.Main) {
-                    if (sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)) {
-                        ForegroundFirewallIndicatorService.start(this@FloatingButtonService)
-                    }
                     if (sharedPreferences.getBoolean(KEY_FLOATING_BUTTON_ENABLED, false)) {
                         start(this@FloatingButtonService)
                     }

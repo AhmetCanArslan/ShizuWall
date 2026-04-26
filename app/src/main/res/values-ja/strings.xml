@@ -358,31 +358,17 @@
     <string name="notification_permission_background_request">バックグラウンドで実行し続けるには権限を付与してください。</string>
 
     <!-- Auto-added missing translations (English fallback) -->
-    <string name="firewall_indicator_content_description">フォアグラウンドファイアウォールインジケーター</string>
-    <string name="firewall_indicator_size">インジケーターのサイズ</string>
     <string name="screen_lock_mode_notification_channel_name">画面ロックモード (サービス)</string>
     <string name="adb_broadcast_quick_reference">コピー可能な値とコマンドのクイックリファレンス。</string>
-    <string name="firewall_indicator">ファイアウォールインジケーター</string>
     <string name="screen_lock_delay_title">ロックの遅延</string>
     <string name="screen_lock_mode_notification_text">ファイアウォールルールを適用するためのロック監視</string>
     <string name="firewall_mode_screen_lock_description">ロック時に選択されたアプリをブロック</string>
-    <string name="firewall_indicator_settings">インジケーター設定</string>
     <string name="screen_lock_delay_value">ロックの %1$d 秒後に有効化</string>
-    <string name="firewall_indicator_description">現在のアプリがブロックされているかを表示します</string>
     <string name="firewall_mode_screen_lock">画面ロックモード</string>
     <string name="screen_lock_mode_notification_title">画面ロックモード</string>
-    <string name="firewall_indicator_settings_description">インジケーターのサイズと位置を調整します。</string>
     <string name="increase">増加</string>
-    <string name="firewall_indicator_y">Y座標</string>
     <string name="screen_lock_mode_operation_failed">操作に失敗しました</string>
-    <string name="firewall_indicator_notification_title">ファイアウォールインジケーター</string>
     <string name="screen_lock_mode_notification_channel_description">画面ロック自動化のためのバックグラウンドサービス</string>
-    <string name="firewall_indicator_overlay_permission_required">オーバーレイ表示の権限が必要です</string>
     <string name="decrease">減少</string>
-    <string name="firewall_indicator_notification_channel_description">インジケーター用のバックグラウンドサービス</string>
-    <string name="firewall_indicator_settings_title">インジケーター設定</string>
-    <string name="firewall_indicator_notification_text">ファイアウォールの状態を監視中</string>
-    <string name="firewall_indicator_notification_channel_name">インジケーター (サービス)</string>
     <string name="screen_lock_delay_dialog_title">画面ロックの遅延</string>
-    <string name="firewall_indicator_x">X座標</string>
 </resources>

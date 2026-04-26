@@ -354,20 +354,6 @@
     <string name="accessibility_auto_grant_failed">Erişilebilirlik servisi otomatik olarak etkinleştirilemedi. Lütfen Ayarlar\'dan manuel olarak etkinleştirin.</string>
     <string name="open_settings">Ayarları Aç</string>
 
-    <string name="firewall_indicator">Ön Plan Firewall Göstergesi</string>
-    <string name="firewall_indicator_description">Ön plandaki uygulamanın firewall durumunu gösterir</string>
-    <string name="firewall_indicator_settings">Gösterge ayarları</string>
-    <string name="firewall_indicator_settings_title">Gösterge Ayarları</string>
-    <string name="firewall_indicator_settings_description">Ön plan göstergesinin konumunu ve boyutunu ayarlayın.</string>
-    <string name="firewall_indicator_x">X Koordinatı</string>
-    <string name="firewall_indicator_y">Y Koordinatı</string>
-    <string name="firewall_indicator_size">Gösterge Boyutu</string>
-    <string name="firewall_indicator_content_description">Ön plan firewall göstergesi</string>
-    <string name="firewall_indicator_notification_channel_name">Firewall Göstergesi (Servis)</string>
-    <string name="firewall_indicator_notification_channel_description">Ön plan firewall göstergesi için arka plan servisi</string>
-    <string name="firewall_indicator_notification_title">Ön Plan Firewall Göstergesi</string>
-    <string name="firewall_indicator_notification_text">Ön plan uygulamanın firewall durumu izleniyor</string>
-    <string name="firewall_indicator_overlay_permission_required">Firewall göstergesi için üzerine yazma izni gereklidir</string>
     <string name="decrease">Azalt</string>
     <string name="increase">Artır</string>
     <string name="notification_permission_background_request">Arka planda aktif kalması için izin verin.</string>

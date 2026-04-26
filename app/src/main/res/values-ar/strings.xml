@@ -359,31 +359,17 @@
     <string name="notification_permission_background_request">يرجى منح الإذن للتشغيل في الخلفية.</string>
 
     <!-- Auto-added missing translations (English fallback) -->
-    <string name="firewall_indicator_content_description">مؤشر جدار الحماية</string>
-    <string name="firewall_indicator_size">حجم المؤشر</string>
     <string name="screen_lock_mode_notification_channel_name">وضع قفل الشاشة (خدمة)</string>
     <string name="adb_broadcast_quick_reference">مرجع سريع مع أوامر جاهزة للنسخ.</string>
-    <string name="firewall_indicator">مؤشر جدار الحماية</string>
     <string name="screen_lock_delay_title">تأخير القفل</string>
     <string name="screen_lock_mode_notification_text">مراقبة القفل لتطبيق قواعد جدار الحماية</string>
     <string name="firewall_mode_screen_lock_description">حظر التطبيقات المحددة عند قفل الشاشة</string>
-    <string name="firewall_indicator_settings">إعدادات المؤشر</string>
     <string name="screen_lock_delay_value">تفعيل بعد %1$d ثانية من القفل</string>
-    <string name="firewall_indicator_description">يوضح ما إذا كان التطبيق الحالي محظورًا</string>
     <string name="firewall_mode_screen_lock">وضع قفل الشاشة</string>
     <string name="screen_lock_mode_notification_title">وضع قفل الشاشة</string>
-    <string name="firewall_indicator_settings_description">تعديل موقع وحجم المؤشر.</string>
     <string name="increase">زيادة</string>
-    <string name="firewall_indicator_y">إحداثي Y</string>
     <string name="screen_lock_mode_operation_failed">فشلت عملية وضع قفل الشاشة</string>
-    <string name="firewall_indicator_notification_title">مؤشر جدار الحماية</string>
     <string name="screen_lock_mode_notification_channel_description">خدمة خلفية لأتمتة قفل الشاشة</string>
-    <string name="firewall_indicator_overlay_permission_required">مطلوب إذن الظهور فوق التطبيقات</string>
     <string name="decrease">تقليل</string>
-    <string name="firewall_indicator_notification_channel_description">خدمة خلفية لمؤشر الجدار</string>
-    <string name="firewall_indicator_settings_title">إعدادات المؤشر</string>
-    <string name="firewall_indicator_notification_text">مراقبة حالة جدار الحماية للتطبيق</string>
-    <string name="firewall_indicator_notification_channel_name">مؤشر جدار الحماية (خدمة)</string>
     <string name="screen_lock_delay_dialog_title">تأخير قفل الشاشة</string>
-    <string name="firewall_indicator_x">إحداثي X</string>
 </resources>
