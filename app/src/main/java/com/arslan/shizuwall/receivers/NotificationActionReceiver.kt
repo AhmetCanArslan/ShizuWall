@@ -13,6 +13,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
     companion object {
         const val ACTION_FIREWALL_APP = "com.arslan.shizuwall.ACTION_FIREWALL_APP"
         const val ACTION_ADD_TO_LIST = "com.arslan.shizuwall.ACTION_ADD_TO_LIST"
+        const val ACTION_WHITELIST_APP = "com.arslan.shizuwall.ACTION_WHITELIST_APP"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
     }
 
@@ -26,6 +27,9 @@ class NotificationActionReceiver : BroadcastReceiver() {
             }
             ACTION_ADD_TO_LIST -> {
                 addToList(context, packageName)
+            }
+            ACTION_WHITELIST_APP -> {
+                whitelistApp(context, packageName)
             }
         }
 
@@ -52,6 +56,20 @@ class NotificationActionReceiver : BroadcastReceiver() {
         }
         context.sendBroadcast(controlIntent)
         Toast.makeText(context, context.getString(R.string.firewalling_app, packageName), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun whitelistApp(context: Context, packageName: String) {
+        // Add to selected (whitelist) list first
+        addToList(context, packageName, showToast = false)
+
+        // Unblock (allow) this specific app via FirewallControlReceiver
+        val controlIntent = Intent(context, FirewallControlReceiver::class.java).apply {
+            action = MainActivity.ACTION_FIREWALL_CONTROL
+            putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, false)
+            putExtra(MainActivity.EXTRA_PACKAGES_CSV, packageName)
+        }
+        context.sendBroadcast(controlIntent)
+        Toast.makeText(context, context.getString(R.string.allowing_app, packageName), Toast.LENGTH_SHORT).show()
     }
 
     private fun addToList(context: Context, packageName: String, showToast: Boolean = true) {

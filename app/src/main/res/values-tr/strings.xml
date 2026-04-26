@@ -139,6 +139,8 @@
     <string name="app_monitor_service_description">Yeni yüklenen uygulamaları algıla ve bir bildirim göster</string>
     <string name="new_app_installed">Yeni uygulama yüklendi: %s</string>
     <string name="firewall_app">Uygulamayı Engelle</string>
+    <string name="allow_app">İzin Ver</string>
+    <string name="allowing_app">%s izin veriliyor</string>
     <string name="add_to_selected_list">Seçili listeye ekle</string>
     <string name="app_monitor_notification_channel_name">Uygulama İzleyici (Servis)</string>
     <string name="app_monitor_notification_channel_description">Yeni uygulamaları izlemek için arka plan servisi</string>

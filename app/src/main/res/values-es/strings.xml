@@ -144,6 +144,8 @@
     <string name="app_monitor_service_description">Detectar nuevas apps instaladas y mostrar una notificación</string>
     <string name="new_app_installed">Nueva app instalada: %s</string>
     <string name="firewall_app">App de firewall</string>
+    <string name="allow_app">Permitir</string>
+    <string name="allowing_app">Permitiendo %s</string>
     <string name="add_to_selected_list">Añadir a la lista seleccionada</string>
     <string name="app_monitor_notification_channel_name">Monitor de apps (Servicio)</string>
     <string name="app_monitor_notification_channel_description">Servicio en segundo plano para monitorear nuevas apps</string>

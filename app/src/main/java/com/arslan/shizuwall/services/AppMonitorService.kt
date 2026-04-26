@@ -12,7 +12,9 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.receivers.FirewallControlReceiver
 import com.arslan.shizuwall.receivers.NotificationActionReceiver
 import com.arslan.shizuwall.ui.MainActivity
 
@@ -114,17 +116,33 @@ class AppMonitorService : Service() {
 
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         val isFirewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
+        val firewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
 
-        val actionText = if (isFirewallEnabled) {
-            context.getString(R.string.firewall_app)
+        // In Whitelist mode, newly installed apps should be automatically blocked
+        // since they are not in the whitelist.
+        if (isFirewallEnabled && firewallMode == FirewallMode.WHITELIST) {
+            val blockIntent = Intent(context, FirewallControlReceiver::class.java).apply {
+                action = MainActivity.ACTION_FIREWALL_CONTROL
+                putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)
+                putExtra(MainActivity.EXTRA_PACKAGES_CSV, packageName)
+            }
+            context.sendBroadcast(blockIntent)
+        }
+
+        val (actionText, action) = if (isFirewallEnabled) {
+            if (firewallMode == FirewallMode.WHITELIST) {
+                context.getString(R.string.allow_app) to NotificationActionReceiver.ACTION_WHITELIST_APP
+            } else {
+                context.getString(R.string.firewall_app) to NotificationActionReceiver.ACTION_FIREWALL_APP
+            }
         } else {
-            context.getString(R.string.add_to_selected_list)
+            context.getString(R.string.add_to_selected_list) to NotificationActionReceiver.ACTION_ADD_TO_LIST
         }
 
         val notificationId = APP_INSTALL_NOTIFICATION_ID_BASE + packageName.hashCode()
 
         val actionIntent = Intent(context, NotificationActionReceiver::class.java).apply {
-            action = if (isFirewallEnabled) NotificationActionReceiver.ACTION_FIREWALL_APP else NotificationActionReceiver.ACTION_ADD_TO_LIST
+            this.action = action
             putExtra(NotificationActionReceiver.EXTRA_PACKAGE_NAME, packageName)
             putExtra("notification_id", notificationId)
         }

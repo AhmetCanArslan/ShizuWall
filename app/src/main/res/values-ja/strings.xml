@@ -144,6 +144,8 @@
     <string name="app_monitor_service_description">新しくインストールされたアプリを検出し、通知を表示する</string>
     <string name="new_app_installed">新しいアプリがインストールされました: %s</string>
     <string name="firewall_app">ファイアウォールアプリ</string>
+    <string name="allow_app">許可</string>
+    <string name="allowing_app">%s を許可中</string>
     <string name="add_to_selected_list">選択リストに追加</string>
     <string name="app_monitor_notification_channel_name">アプリ監視 (サービス)</string>
     <string name="app_monitor_notification_channel_description">新しいアプリを監視するためのバックグラウンドサービス</string>

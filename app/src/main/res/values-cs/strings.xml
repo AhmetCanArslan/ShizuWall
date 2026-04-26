@@ -153,6 +153,8 @@
     <string name="app_monitor_service_description">Detekovat nově nainstalované aplikace a zobrazit oznámení</string>
     <string name="new_app_installed">Nová aplikace nainstalována: %s</string>
     <string name="firewall_app">Firewall aplikace</string>
+    <string name="allow_app">Povolit</string>
+    <string name="allowing_app">Povolování %s</string>
     <string name="add_to_selected_list">Přidat do seznamu zvolených</string>
     <string name="app_monitor_notification_channel_name">Monitorování aplikací (služba)</string>
     <string name="app_monitor_notification_channel_description">Služba na pozadí pro monitorování nových aplikací</string>

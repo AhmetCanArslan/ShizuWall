@@ -147,6 +147,8 @@
     <string name="app_monitor_service_description">اكتشاف التطبيقات الجديدة المثبتة وإظهار إشعار</string>
     <string name="new_app_installed">تم تثبيت تطبيق جديد: %s</string>
     <string name="firewall_app">تطبيق الجدار الناري</string>
+    <string name="allow_app">سماح</string>
+    <string name="allowing_app">السماح بـ %s</string>
     <string name="add_to_selected_list">إضافة إلى القائمة المحددة</string>
     <string name="app_monitor_notification_channel_name">مراقب التطبيقات (الخدمة)</string>
     <string name="app_monitor_notification_channel_description">خدمة خلفية لمراقبة التطبيقات الجديدة</string>

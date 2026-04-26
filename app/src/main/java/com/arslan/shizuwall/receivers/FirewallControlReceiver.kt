@@ -256,8 +256,9 @@ class FirewallControlReceiver : BroadcastReceiver() {
                         putLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, SystemClock.elapsedRealtime())
                         putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, successful.toSet())
                         
-                        // In Adaptive Mode, sync the selected apps list with what was just enabled
-                        if (firewallMode.allowsDynamicSelection() && successful.isNotEmpty()) {
+                        // In Adaptive Mode, sync the selected apps list with what was just enabled.
+                        // In Whitelist Mode, blocked apps should NOT be added to the selected (whitelist) list.
+                        if (firewallMode.allowsDynamicSelection() && successful.isNotEmpty() && firewallMode != FirewallMode.WHITELIST) {
                             val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
                             currentSelected.addAll(successful)
                             putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)
@@ -295,8 +296,15 @@ class FirewallControlReceiver : BroadcastReceiver() {
                             currentActive.removeAll(successful)
                             putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, currentActive)
 
-                            // For Screen Lock Mode and Hybrid Mode, selected apps stay intact across unlock events.
-                            if (firewallMode != FirewallMode.SCREEN_LOCK_MODE && firewallMode != FirewallMode.HYBRID) {
+                            // In Whitelist Mode, unblocking an app means adding it to the whitelist (selected list).
+                            // In other dynamic modes, unblocking means removing from the selected list.
+                            // Screen Lock Mode and Hybrid Mode preserve selected apps across unlock events.
+                            if (firewallMode == FirewallMode.WHITELIST) {
+                                val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
+                                currentSelected.addAll(successful)
+                                putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)
+                                putInt(MainActivity.KEY_SELECTED_COUNT, currentSelected.size)
+                            } else if (firewallMode != FirewallMode.SCREEN_LOCK_MODE && firewallMode != FirewallMode.HYBRID) {
                                 val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
                                 currentSelected.removeAll(successful)
                                 putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)

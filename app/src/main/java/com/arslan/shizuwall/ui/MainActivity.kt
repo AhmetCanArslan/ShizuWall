@@ -2320,6 +2320,18 @@ class MainActivity : BaseActivity() {
                 appList.add(appInfo)
                 sortAndFilterApps(preserveScrollPosition = false)
                 updateSelectedCount()
+
+                // In Whitelist mode, newly installed apps should be blocked immediately
+                // since they are not in the whitelist.
+                if (isFirewallEnabled && firewallMode == FirewallMode.WHITELIST && !appInfo.isSelected) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val res = runCommandDetailed("cmd connectivity set-package-networking-enabled false ${appInfo.packageName}")
+                        if (res.success) {
+                            activeFirewallPackages.add(appInfo.packageName)
+                            saveActivePackages(activeFirewallPackages)
+                        }
+                    }
+                }
             }
         }
     }

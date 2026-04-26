@@ -144,6 +144,8 @@
     <string name="app_monitor_service_description">Обнаруживать новые установленные приложения и показывать уведомление</string>
     <string name="new_app_installed">Установлено новое приложение: %s</string>
     <string name="firewall_app">Приложение Firewall</string>
+    <string name="allow_app">Разрешить</string>
+    <string name="allowing_app">Разрешение %s</string>
     <string name="add_to_selected_list">Добавить в список выбранных</string>
     <string name="app_monitor_notification_channel_name">Мониторинг приложений (Сервис)</string>
     <string name="app_monitor_notification_channel_description">Фоновый сервис для мониторинга новых приложений</string>

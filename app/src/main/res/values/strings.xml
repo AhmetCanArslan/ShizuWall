@@ -158,6 +158,8 @@
     <string name="app_monitor_service_description">Detect new installed apps and show a notification</string>
     <string name="new_app_installed">New app installed: %s</string>
     <string name="firewall_app">Firewall App</string>
+    <string name="allow_app">Allow</string>
+    <string name="allowing_app">Allowing %s</string>
     <string name="add_to_selected_list">Add to selected list</string>
     <string name="app_monitor_notification_channel_name">App Monitor (Service)</string>
     <string name="app_monitor_notification_channel_description">Background service for monitoring new apps</string>
