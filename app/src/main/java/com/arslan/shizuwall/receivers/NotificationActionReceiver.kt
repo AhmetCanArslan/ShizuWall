@@ -6,7 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NotificationActionReceiver : BroadcastReceiver() {
 
@@ -29,7 +34,8 @@ class NotificationActionReceiver : BroadcastReceiver() {
                 addToList(context, packageName)
             }
             ACTION_WHITELIST_APP -> {
-                whitelistApp(context, packageName)
+                val pending = goAsync()
+                whitelistApp(context, packageName, pending)
             }
         }
 
@@ -58,17 +64,22 @@ class NotificationActionReceiver : BroadcastReceiver() {
         Toast.makeText(context, context.getString(R.string.firewalling_app, packageName), Toast.LENGTH_SHORT).show()
     }
 
-    private fun whitelistApp(context: Context, packageName: String) {
-        // Add to selected (whitelist) list first
+    private fun whitelistApp(context: Context, packageName: String, pending: PendingResult) {
         addToList(context, packageName, showToast = false)
 
-        // Unblock (allow) this specific app via FirewallControlReceiver
-        val controlIntent = Intent(context, FirewallControlReceiver::class.java).apply {
-            action = MainActivity.ACTION_FIREWALL_CONTROL
-            putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, false)
-            putExtra(MainActivity.EXTRA_PACKAGES_CSV, packageName)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val result = ShellExecutorProvider.forContext(context).exec("cmd connectivity set-package-networking-enabled true $packageName")
+                if (result.success) {
+                    val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                    val activePkgs = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
+                    activePkgs.remove(packageName)
+                    prefs.edit().putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, activePkgs).apply()
+                }
+            } finally {
+                pending.finish()
+            }
         }
-        context.sendBroadcast(controlIntent)
         Toast.makeText(context, context.getString(R.string.allowing_app, packageName), Toast.LENGTH_SHORT).show()
     }
 

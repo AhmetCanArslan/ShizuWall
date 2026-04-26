@@ -104,10 +104,23 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     val saved = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList()
                     if (firewallMode == FirewallMode.WHITELIST) {
                         val showSys = prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
-                        com.arslan.shizuwall.utils.WhitelistFilter.getPackagesToBlock(context, saved, showSys)
+                        com.arslan.shizuwall.utils.WhitelistFilter.compute(context, saved, showSys).toBlock
                     } else {
                         saved
                     }
+                }
+
+                // In Whitelist mode, also resolve the apps that should be explicitly allowed (whitelisted)
+                val whitelistAllowApps = if (enabled && !csv.isNullOrBlank() && firewallMode == FirewallMode.WHITELIST) {
+                    // Single-package operation in Whitelist mode: this is an unblock action
+                    // handled by the enabled=false path; no need to allow any apps here.
+                    emptyList()
+                } else if (enabled && csv.isNullOrBlank() && firewallMode == FirewallMode.WHITELIST) {
+                    val saved = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList()
+                    val showSys = prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
+                    com.arslan.shizuwall.utils.WhitelistFilter.compute(context, saved, showSys).toAllow
+                } else {
+                    emptyList()
                 }
 
                 // filter out any Shizuku packages and this app itself from incoming list
@@ -222,6 +235,10 @@ class FirewallControlReceiver : BroadcastReceiver() {
                                 hadCommandFailure = true
                             }
                         }
+                        // In Whitelist mode, explicitly allow whitelisted apps to ensure they have internet access
+                        for (pkg in whitelistAllowApps) {
+                            execShell("cmd connectivity set-package-networking-enabled true $pkg")
+                        }
                     }
                 } else {
                     for (pkg in packages) {
@@ -254,7 +271,16 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     if (enabled && globalCommandSuccess && (successful.isNotEmpty() || firewallMode.allowsDynamicSelection())) {
                         putBoolean(MainActivity.KEY_FIREWALL_ENABLED, true)
                         putLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, SystemClock.elapsedRealtime())
-                        putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, successful.toSet())
+                        
+                        // When blocking individual apps (CSV provided), merge with existing active packages.
+                        // When bulk-enabling firewall (no CSV), replace the entire set.
+                        if (!csv.isNullOrBlank()) {
+                            val currentActive = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
+                            currentActive.addAll(successful)
+                            putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, currentActive)
+                        } else {
+                            putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, successful.toSet())
+                        }
                         
                         // In Adaptive Mode, sync the selected apps list with what was just enabled.
                         // In Whitelist Mode, blocked apps should NOT be added to the selected (whitelist) list.

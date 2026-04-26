@@ -484,12 +484,13 @@ class MainActivity : BaseActivity() {
                             val pkgs = loadSelectedApps().toList()
                             if (pkgs.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                                 val targetPkgs = getTargetPackagesToBlock(pkgs)
+                                val allowPkgs = getWhitelistAllowPackages(pkgs)
                                 if (sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
-                                    applyFirewallState(true, targetPkgs)
+                                    applyFirewallState(true, targetPkgs, allowPkgs)
                                 } else if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
                                     val selectedAppsList = appList.filter { targetPkgs.contains(it.packageName) }
                                     runOnUiThread {
-                                        showFirewallConfirmDialog(if (selectedAppsList.isNotEmpty()) selectedAppsList else emptyList())
+                                        showFirewallConfirmDialog(if (selectedAppsList.isNotEmpty()) selectedAppsList else emptyList(), targetPkgs, allowPkgs)
                                     }
                                 } else {
                                     pendingAutoEnable = true
@@ -715,7 +716,8 @@ class MainActivity : BaseActivity() {
                             suppressToggleListener = true
                             firewallToggle.isChecked = true
                             suppressToggleListener = false
-                            showFirewallConfirmDialog(selectedApps)
+                            val allowPkgs = getWhitelistAllowPackages(selectedAppPkgs)
+                            showFirewallConfirmDialog(selectedApps, selectedAppPkgs, allowPkgs)
                         } else {
                             suppressToggleListener = true
                             firewallToggle.isChecked = false
@@ -736,13 +738,14 @@ class MainActivity : BaseActivity() {
                         pendingAutoEnableSelectedApps = null
                         if (pkgs.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                             val targetPkgs = getTargetPackagesToBlock(pkgs)
+                            val allowPkgs = getWhitelistAllowPackages(pkgs)
                             val selectedApps = appList.filter { targetPkgs.contains(it.packageName) }
                             if (sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
-                                applyFirewallState(true, targetPkgs)
+                                applyFirewallState(true, targetPkgs, allowPkgs)
                             } else if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
                                 // Show confirmation dialog in foreground
                                 if (selectedApps.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
-                                    showFirewallConfirmDialog(selectedApps)
+                                    showFirewallConfirmDialog(selectedApps, targetPkgs, allowPkgs)
                                 }
                             } else {
                                 // Not in the foreground; keep pending and rely on onResume to show dialog
@@ -1412,14 +1415,17 @@ class MainActivity : BaseActivity() {
             if (suppressToggleListener) return@setOnCheckedChangeListener
             if (isChecked) {
                 val selectedApps = appList.filter { it.isSelected }
-                val targetApps = if (firewallMode == FirewallMode.WHITELIST) {
-                    val showSys = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
-                    appList.filter { !it.isSelected && (showSys || !it.isSystem) }
+                val whitelistAllowPkgs = mutableListOf<String>()
+                val targetAppPkgs = if (firewallMode == FirewallMode.WHITELIST) {
+                    val selectedPkgs = selectedApps.map { it.packageName }
+                    val result = com.arslan.shizuwall.utils.WhitelistFilter.compute(this, selectedPkgs, showSystemApps)
+                    whitelistAllowPkgs.addAll(result.toAllow)
+                    result.toBlock
                 } else {
-                    selectedApps
+                    selectedApps.map { it.packageName }
                 }
                 
-                if (targetApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
+                if (targetAppPkgs.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                     Toast.makeText(this, getString(R.string.select_at_least_one_app), Toast.LENGTH_SHORT).show()
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
@@ -1433,7 +1439,7 @@ class MainActivity : BaseActivity() {
 
                     // If daemon is running, proceed
                     if (daemonManager.isDaemonRunning()) {
-                        showFirewallConfirmDialog(targetApps)
+                        showFirewallConfirmDialog(selectedApps, targetAppPkgs, whitelistAllowPkgs)
                         return@setOnCheckedChangeListener
                     }
 
@@ -1461,7 +1467,7 @@ class MainActivity : BaseActivity() {
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
                     // Permission not granted, mark that we're waiting for it
                     pendingToggleEnable = true
-                    pendingEnableSelectedApps = targetApps.map { it.packageName }
+                    pendingEnableSelectedApps = targetAppPkgs
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
@@ -1469,7 +1475,7 @@ class MainActivity : BaseActivity() {
                 }
                 // Permission already granted, proceed
                 pendingToggleEnable = false
-                showFirewallConfirmDialog(targetApps)
+                showFirewallConfirmDialog(selectedApps, targetAppPkgs, whitelistAllowPkgs)
             } else {
                 if (!isFirewallEnabled) {
                     return@setOnCheckedChangeListener
@@ -1533,11 +1539,11 @@ class MainActivity : BaseActivity() {
         firewallToggle.setThumbIconResource(iconRes)
     }
 
-    private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>) {
+    private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>, blockPkgs: List<String> = selectedApps.map { it.packageName }, whitelistAllowApps: List<String> = emptyList()) {
         // If user opted to skip the confirmation, directly apply the firewall
         val prefsLocal = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         if (prefsLocal.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
-            applyFirewallState(true, selectedApps.map { it.packageName })
+            applyFirewallState(true, selectedApps.map { it.packageName }, whitelistAllowApps)
             return
         }
 
@@ -1546,7 +1552,7 @@ class MainActivity : BaseActivity() {
             .setView(dialogView)
             .setCancelable(false)
             .setPositiveButton(getString(R.string.enable)) { _, _ ->
-                applyFirewallState(true, selectedApps.map { it.packageName })
+                applyFirewallState(true, selectedApps.map { it.packageName }, whitelistAllowApps)
             }
             .setNegativeButton(getString(R.string.cancel)) { _, _ ->
                 suppressToggleListener = true
@@ -1924,7 +1930,7 @@ class MainActivity : BaseActivity() {
         return sharedPreferences.getStringSet(KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
     }
 
-    private fun applyFirewallState(enable: Boolean, packageNames: List<String>) {
+    private fun applyFirewallState(enable: Boolean, packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()) {
         if (enable && packageNames.isEmpty() && !firewallMode.allowsDynamicSelection()) return
 
         val effectivePackageNames = if (enable) {
@@ -1994,7 +2000,7 @@ class MainActivity : BaseActivity() {
 
                 val (successful, failed) = withContext(Dispatchers.IO) {
                     if (enable) {
-                        enableFirewall(installed)
+                        enableFirewall(installed, whitelistAllowApps)
                     } else {
                         disableFirewall(installed)
                     }
@@ -2130,7 +2136,7 @@ class MainActivity : BaseActivity() {
         return Pair(installed, missing)
     }
 
-    private suspend fun enableFirewall(packageNames: List<String>): Pair<List<String>, List<String>> {
+    private suspend fun enableFirewall(packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()): Pair<List<String>, List<String>> {
         val successful = mutableListOf<String>()
         val failed = mutableListOf<String>()
         lastOperationErrorDetails.clear()
@@ -2138,8 +2144,7 @@ class MainActivity : BaseActivity() {
         val chain3Result = runCommandDetailed("cmd connectivity set-chain3-enabled true")
         if (!chain3Result.success) {
             val msg = chain3Result.stderr.ifEmpty { chain3Result.stdout }
-            // In Smart Foreground mode the list is empty — record a top-level chain3 error.
-            if (packageNames.isEmpty()) {
+            if (packageNames.isEmpty() && whitelistAllowApps.isEmpty()) {
                 lastOperationErrorDetails["_chain3"] = msg
                 return Pair(successful, failed)
             }
@@ -2150,16 +2155,11 @@ class MainActivity : BaseActivity() {
             return Pair(successful, failed)
         }
 
-        if (packageNames.isEmpty()) {
-            return Pair(successful, failed)
-        }
-
         if (firewallMode == FirewallMode.SMART_FOREGROUND) {
             return Pair(successful, failed)
         }
 
         for (packageName in packageNames) {
-            // In Whitelist mode, the target apps passed to enableFirewall are ALWAYS the apps that SHOULD be blocked (the ones the user didn't select).
             val cmd = "cmd connectivity set-package-networking-enabled false $packageName"
             val res = runCommandDetailed(cmd)
             if (res.success) {
@@ -2169,7 +2169,11 @@ class MainActivity : BaseActivity() {
                 lastOperationErrorDetails[packageName] = res.stderr.ifEmpty { res.stdout }
             }
         }
-        // No rollback; allow partial success
+
+        for (packageName in whitelistAllowApps) {
+            runCommandDetailed("cmd connectivity set-package-networking-enabled true $packageName")
+        }
+
         return Pair(successful, failed)
     }
 
@@ -2320,18 +2324,6 @@ class MainActivity : BaseActivity() {
                 appList.add(appInfo)
                 sortAndFilterApps(preserveScrollPosition = false)
                 updateSelectedCount()
-
-                // In Whitelist mode, newly installed apps should be blocked immediately
-                // since they are not in the whitelist.
-                if (isFirewallEnabled && firewallMode == FirewallMode.WHITELIST && !appInfo.isSelected) {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        val res = runCommandDetailed("cmd connectivity set-package-networking-enabled false ${appInfo.packageName}")
-                        if (res.success) {
-                            activeFirewallPackages.add(appInfo.packageName)
-                            saveActivePackages(activeFirewallPackages)
-                        }
-                    }
-                }
             }
         }
     }
@@ -2598,10 +2590,18 @@ class MainActivity : BaseActivity() {
     private fun getTargetPackagesToBlock(selectedPkgs: List<String>): List<String> {
         val mode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
         return if (mode == FirewallMode.WHITELIST) {
-            val showSys = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
-            com.arslan.shizuwall.utils.WhitelistFilter.getPackagesToBlock(this, selectedPkgs, showSys)
+            com.arslan.shizuwall.utils.WhitelistFilter.compute(this, selectedPkgs, showSystemApps).toBlock
         } else {
             selectedPkgs
+        }
+    }
+
+    private fun getWhitelistAllowPackages(selectedPkgs: List<String>): List<String> {
+        val mode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+        return if (mode == FirewallMode.WHITELIST) {
+            com.arslan.shizuwall.utils.WhitelistFilter.compute(this, selectedPkgs, showSystemApps).toAllow
+        } else {
+            emptyList()
         }
     }
 }

@@ -77,12 +77,16 @@ class FirewallTileService : TileService() {
             val selectedApps = loadSelectedApps()
             val firewallMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
             
-            val targetApps = if (firewallMode == FirewallMode.WHITELIST) {
-                // In whitelist mode, get all apps minus selected ones
+            val targetApps: List<String>
+            val whitelistAllowApps: List<String>
+            if (firewallMode == FirewallMode.WHITELIST) {
                 val showSystemApps = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
-                com.arslan.shizuwall.utils.WhitelistFilter.getPackagesToBlock(this, selectedApps, showSystemApps)
+                val result = com.arslan.shizuwall.utils.WhitelistFilter.compute(this, selectedApps, showSystemApps)
+                targetApps = result.toBlock
+                whitelistAllowApps = result.toAllow
             } else {
-                selectedApps
+                targetApps = selectedApps
+                whitelistAllowApps = emptyList()
             }
 
             if (targetApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
@@ -91,7 +95,7 @@ class FirewallTileService : TileService() {
             }
             if (!checkBackendReady()) return
             scope.launch {
-                applyEnableFirewall(targetApps)
+                applyEnableFirewall(targetApps, whitelistAllowApps)
             }
         }
     }
@@ -165,12 +169,12 @@ class FirewallTileService : TileService() {
         }
     }
 
-    private suspend fun applyEnableFirewall(packageNames: List<String>) {
+    private suspend fun applyEnableFirewall(packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()) {
         val firewallMode = FirewallMode.fromName(
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
         withContext(Dispatchers.IO) {
-            val successful = enableFirewall(packageNames)
+            val successful = enableFirewall(packageNames, whitelistAllowApps)
             if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                 saveFirewallEnabled(true)
                 saveActivePackages(successful.toSet())
@@ -209,7 +213,7 @@ class FirewallTileService : TileService() {
         updateTile()
     }
 
-    private fun enableFirewall(packageNames: List<String>): List<String> {
+    private fun enableFirewall(packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()): List<String> {
         val successful = mutableListOf<String>()
         if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled true")) return successful
 
@@ -226,12 +230,17 @@ class FirewallTileService : TileService() {
 
         val selfPkg = packageName
         for (pkg in packageNames) {
-            // never target the app itself or Shizuku
             if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
             if (ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled false $pkg")) {
                 successful.add(pkg)
             }
         }
+
+        for (pkg in whitelistAllowApps) {
+            if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
+            ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")
+        }
+
         return successful
     }
 

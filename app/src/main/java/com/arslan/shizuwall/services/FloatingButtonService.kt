@@ -262,11 +262,16 @@ class FloatingButtonService : Service() {
                 val firewallMode = FirewallMode.fromName(
                     sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
                 )
-                val targetApps = if (firewallMode == FirewallMode.WHITELIST) {
+                val targetApps: List<String>
+                val whitelistAllowApps: List<String>
+                if (firewallMode == FirewallMode.WHITELIST) {
                     val showSystem = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
-                    com.arslan.shizuwall.utils.WhitelistFilter.getPackagesToBlock(this, selectedApps, showSystem)
+                    val result = com.arslan.shizuwall.utils.WhitelistFilter.compute(this, selectedApps, showSystem)
+                    targetApps = result.toBlock
+                    whitelistAllowApps = result.toAllow
                 } else {
-                    selectedApps
+                    targetApps = selectedApps
+                    whitelistAllowApps = emptyList()
                 }
                 if (targetApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                     Toast.makeText(this, getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
@@ -275,7 +280,7 @@ class FloatingButtonService : Service() {
                 if (!checkBackendReady()) return
                 scope.launch {
                     try {
-                        applyEnableFirewall(targetApps)
+                        applyEnableFirewall(targetApps, whitelistAllowApps)
                     } catch (e: Exception) {
                         Toast.makeText(this@FloatingButtonService, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()
                     }
@@ -347,7 +352,7 @@ class FloatingButtonService : Service() {
         }
     }
 
-    private suspend fun applyEnableFirewall(packageNames: List<String>) {
+    private suspend fun applyEnableFirewall(packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()) {
         val firewallMode = FirewallMode.fromName(
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
@@ -362,7 +367,7 @@ class FloatingButtonService : Service() {
         }
 
         withContext(Dispatchers.IO) {
-            val successful = enableFirewall(packageNames)
+            val successful = enableFirewall(packageNames, whitelistAllowApps)
             // In dynamic-selection modes (Adaptive, Smart Foreground, Whitelist),
             // the firewall is valid even if no individual apps were blocked yet —
             // chain3 was turned on and that's enough.
@@ -403,7 +408,7 @@ class FloatingButtonService : Service() {
         updateFabAppearance()
     }
 
-    private fun enableFirewall(packageNames: List<String>): List<String> {
+    private fun enableFirewall(packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()): List<String> {
         val successful = mutableListOf<String>()
         if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled true")) return successful
 
@@ -425,6 +430,12 @@ class FloatingButtonService : Service() {
                 successful.add(pkg)
             }
         }
+
+        for (pkg in whitelistAllowApps) {
+            if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
+            ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")
+        }
+
         return successful
     }
 
