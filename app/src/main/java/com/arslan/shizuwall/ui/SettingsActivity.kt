@@ -454,17 +454,9 @@ class SettingsActivity : BaseActivity() {
             // Handle accessibility for Smart Foreground / Hybrid mode
             if (newMode == FirewallMode.SMART_FOREGROUND || newMode == FirewallMode.HYBRID) {
                 if (!ForegroundDetectionService.isServiceEnabled(this)) {
-                    // Check dialog status
-                    val dialogShown = sharedPreferences.getBoolean("accessibility_dialog_shown", false)
-                    val dialogAccepted = sharedPreferences.getBoolean("accessibility_dialog_accepted", false)
-                    
-                    if (!dialogShown || !dialogAccepted) {
-                        // Show permission dialog
-                        showAccessibilityPermissionDialog()
-                    } else {
-                        // Previously accepted, try to auto-enable with loading dialog
-                        showAccessibilityAutoGrantDialog(newMode)
-                    }
+                    tryAutoEnableAccessibility(newMode)
+                } else {
+                    showSmartForegroundInfoDialog(true)
                 }
             }
             
@@ -785,40 +777,66 @@ class SettingsActivity : BaseActivity() {
         }
     }
 
-    private fun showAccessibilityPermissionDialog() {
+    private fun tryAutoEnableAccessibility(firewallMode: FirewallMode) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
+        val messageText: TextView = dialogView.findViewById(R.id.loading_message)
+        val progressBar: android.widget.ProgressBar = dialogView.findViewById(R.id.loading_progress)
+
+        messageText.text = getString(R.string.accessibility_auto_granting)
+        progressBar.visibility = View.VISIBLE
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .show()
+
+        lifecycleScope.launch {
+            val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
+
+            withContext(Dispatchers.Main) {
+                dialog.dismiss()
+
+                if (success) {
+                    sharedPreferences.edit()
+                        .putBoolean("accessibility_dialog_shown", true)
+                        .putBoolean("accessibility_dialog_accepted", true)
+                        .apply()
+
+                    updateFirewallModeUI(firewallMode)
+                    showSmartForegroundInfoDialog(true)
+                } else {
+                    showAccessibilityFallbackDialog(firewallMode)
+                }
+            }
+        }
+    }
+
+    private fun showAccessibilityFallbackDialog(firewallMode: FirewallMode) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.accessibility_permission_title)
-            .setMessage(R.string.accessibility_permission_message)
-            .setCancelable(true)
-            .setPositiveButton(R.string.accept) { _, _ ->
-                // Mark as shown and accepted
+            .setMessage(R.string.accessibility_manual_enable_needed)
+            .setCancelable(false)
+            .setPositiveButton(R.string.open_settings) { _, _ ->
                 sharedPreferences.edit()
                     .putBoolean("accessibility_dialog_shown", true)
                     .putBoolean("accessibility_dialog_accepted", true)
                     .apply()
-                // Open accessibility settings
-                val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                startActivity(intent)
+                openAccessibilitySettingsForShizuWall()
             }
-            .setNegativeButton(R.string.decline) { _, _ ->
-                // Mark as shown and declined
+            .setNegativeButton(R.string.cancel) { _, _ ->
                 sharedPreferences.edit()
                     .putBoolean("accessibility_dialog_shown", true)
                     .putBoolean("accessibility_dialog_accepted", false)
                     .apply()
-                // Revert to default mode
-                revertToDefaultMode()
-            }
-            .setOnCancelListener {
-                // Mark as shown and declined if dismissed
-                sharedPreferences.edit()
-                    .putBoolean("accessibility_dialog_shown", true)
-                    .putBoolean("accessibility_dialog_accepted", false)
-                    .apply()
-                // Revert to default mode if dialog is dismissed
                 revertToDefaultMode()
             }
             .show()
+    }
+
+    private fun openAccessibilitySettingsForShizuWall() {
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
     }
 
     private fun revertToDefaultMode() {
@@ -1600,114 +1618,9 @@ class SettingsActivity : BaseActivity() {
         return file.delete() || !file.exists()
     }
 
-    private fun showAccessibilityAutoGrantDialog(firewallMode: FirewallMode) {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
-        val messageText: TextView = dialogView.findViewById(R.id.loading_message)
-        val progressBar: android.widget.ProgressBar = dialogView.findViewById(R.id.loading_progress)
-        
-        messageText.text = getString(R.string.accessibility_auto_granting)
-        progressBar.visibility = View.VISIBLE
-        
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setView(dialogView)
-            .setCancelable(false)
-            .show()
-        
-        // Background task to enable accessibility service
-        lifecycleScope.launch {
-            val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
-            
-            withContext(Dispatchers.Main) {
-                dialog.dismiss()
-                
-                if (success) {
-                    // Mark as shown and accepted
-                    sharedPreferences.edit()
-                        .putBoolean("accessibility_dialog_shown", true)
-                        .putBoolean("accessibility_dialog_accepted", true)
-                        .apply()
-                    
-                    // Update UI
-                    updateFirewallModeUI(firewallMode)
-                    Toast.makeText(
-                        this@SettingsActivity,
-                        getString(R.string.accessibility_auto_enabled),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    // Failed to auto-grant - show error dialog
-                    MaterialAlertDialogBuilder(this@SettingsActivity)
-                        .setTitle(R.string.accessibility_permission_title)
-                        .setMessage(R.string.accessibility_auto_grant_failed)
-                        .setPositiveButton(R.string.open_settings) { _, _ ->
-                            // Open accessibility settings for manual enable
-                            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                            startActivity(intent)
-                        }
-                        .setNegativeButton(R.string.cancel) { _, _ ->
-                            // Revert to default mode
-                            revertToDefaultMode()
-                        }
-                        .show()
-                }
-            }
-        }
-    }
-
     private fun retryAccessibilityGrant() {
-        // Show full loading dialog, same as initial attempt
-        val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
-        val messageText: TextView = dialogView.findViewById(R.id.loading_message)
-        val progressBar: android.widget.ProgressBar = dialogView.findViewById(R.id.loading_progress)
-        
-        messageText.text = getString(R.string.accessibility_auto_granting)
-        progressBar.visibility = View.VISIBLE
-        
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setView(dialogView)
-            .setCancelable(false)
-            .show()
-        
-        lifecycleScope.launch {
-            val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
-            
-            withContext(Dispatchers.Main) {
-                dialog.dismiss()
-                
-                if (success) {
-                    // Mark as shown and accepted
-                    sharedPreferences.edit()
-                        .putBoolean("accessibility_dialog_shown", true)
-                        .putBoolean("accessibility_dialog_accepted", true)
-                        .apply()
-                    
-                    // Update UI - hide warning
-                    val mode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
-                    updateFirewallModeUI(mode)
-                    
-                    Toast.makeText(
-                        this@SettingsActivity,
-                        getString(R.string.accessibility_auto_enabled),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    // Failed - show error dialog
-                    MaterialAlertDialogBuilder(this@SettingsActivity)
-                        .setTitle(R.string.accessibility_permission_title)
-                        .setMessage(R.string.accessibility_auto_grant_failed)
-                        .setPositiveButton(R.string.open_settings) { _, _ ->
-                            // Open accessibility settings for manual enable
-                            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                            startActivity(intent)
-                        }
-                        .setNegativeButton(R.string.cancel) { _, _ ->
-                            // Revert to default mode
-                            revertToDefaultMode()
-                        }
-                        .show()
-                }
-            }
-        }
+        val mode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+        tryAutoEnableAccessibility(mode)
     }
 
 }
