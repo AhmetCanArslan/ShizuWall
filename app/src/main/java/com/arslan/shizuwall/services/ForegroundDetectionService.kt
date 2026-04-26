@@ -227,6 +227,24 @@ class ForegroundDetectionService : AccessibilityService() {
     @Volatile private var lastUnmanagedAllowedPackage: String? = null
     @Volatile private var lastUnmanagedAllowedAtMs: Long = 0L
 
+    private fun startForegroundService() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    buildNotification(null),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                )
+            } else {
+                startForeground(NOTIFICATION_ID, buildNotification(null))
+            }
+        } catch (e: IllegalStateException) {
+            Log.w(TAG, "Failed to start foreground - already in foreground state", e)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to start foreground", e)
+        }
+    }
+
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
         when (key) {
             MainActivity.KEY_FIREWALL_ENABLED -> {
@@ -247,21 +265,7 @@ class ForegroundDetectionService : AccessibilityService() {
                         .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
                         .apply()
                 } else if (cachedFirewallMode == FirewallMode.SMART_FOREGROUND || cachedFirewallMode == FirewallMode.HYBRID) {
-                    try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                            startForeground(
-                                NOTIFICATION_ID,
-                                buildNotification(null),
-                                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-                            )
-                        } else {
-                            startForeground(NOTIFICATION_ID, buildNotification(null))
-                        }
-                    } catch (e: IllegalStateException) {
-                        Log.w(TAG, "Failed to start foreground - already in foreground state", e)
-                    } catch (e: Exception) {
-                        Log.w(TAG, "Failed to start foreground", e)
-                    }
+                    startForegroundService()
                 }
             }
             MainActivity.KEY_FIREWALL_MODE -> {
@@ -282,21 +286,7 @@ class ForegroundDetectionService : AccessibilityService() {
                         .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
                         .apply()
                 } else if (cachedFirewallEnabled) {
-                    try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                            startForeground(
-                                NOTIFICATION_ID,
-                                buildNotification(null),
-                                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-                            )
-                        } else {
-                            startForeground(NOTIFICATION_ID, buildNotification(null))
-                        }
-                    } catch (e: IllegalStateException) {
-                        Log.w(TAG, "Failed to start foreground - already in foreground state", e)
-                    } catch (e: Exception) {
-                        Log.w(TAG, "Failed to start foreground", e)
-                    }
+                    startForegroundService()
                 }
             }
             MainActivity.KEY_WORKING_MODE -> {
@@ -369,11 +359,7 @@ class ForegroundDetectionService : AccessibilityService() {
         createNotificationChannel()
 
         if (cachedFirewallEnabled && (cachedFirewallMode == FirewallMode.SMART_FOREGROUND || cachedFirewallMode == FirewallMode.HYBRID)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                startForeground(NOTIFICATION_ID, buildNotification(null), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
-            } else {
-                startForeground(NOTIFICATION_ID, buildNotification(null))
-            }
+            startForegroundService()
         }
 
         Log.d(TAG, "Service created (restored=$restoredApp, dynamicSkip=${dynamicSkipPackages.size} pkgs)")
@@ -505,7 +491,6 @@ class ForegroundDetectionService : AccessibilityService() {
 
     private fun shouldSkipPackage(packageName: String): Boolean {
         if (shouldAlwaysSkipPackage(packageName)) return true
-
         if (!selectedPackages.contains(packageName)) return true
         return false
     }

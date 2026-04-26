@@ -1,14 +1,10 @@
 package com.arslan.shizuwall.adapters
 
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.util.LruCache
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.android.material.button.MaterialButton
@@ -21,11 +17,11 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.core.graphics.createBitmap
 import com.arslan.shizuwall.R
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import androidx.core.graphics.ColorUtils
+import com.arslan.shizuwall.utils.UiUtils
 
 class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
     override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
@@ -89,11 +85,11 @@ class AppListAdapter(
             if (cached != null) {
                 appIcon.setImageBitmap(cached)
             } else {
-                getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
+                UiUtils.getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
                     try {
                         val pm = itemView.context.packageManager
                         val drawable = pm.getApplicationIcon(pkg)
-                        val bitmap = drawableToBitmap(drawable)
+                        val bitmap = UiUtils.drawableToBitmap(drawable)
                         iconCache.put(pkg, bitmap)
                         withContext(Dispatchers.Main) {
                             if (appIcon.tag == pkg) {
@@ -193,28 +189,6 @@ class AppListAdapter(
                 modeDropdownText.setOnClickListener(null)
             }
         }
-    }
-
-    private fun drawableToBitmap(drawable: Drawable): Bitmap {
-        if (drawable is BitmapDrawable) {
-            drawable.bitmap?.let { return it }
-        }
-        val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else 48
-        val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else 48
-        val bitmap = createBitmap(width, height)
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return bitmap
-    }
-
-    private fun getLifecycleOwner(context: android.content.Context): LifecycleOwner? {
-        var ctx = context
-        while (ctx is android.content.ContextWrapper) {
-            if (ctx is LifecycleOwner) return ctx
-            ctx = ctx.baseContext
-        }
-        return null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {

@@ -11,11 +11,9 @@ import android.widget.RemoteViews
 import android.widget.Toast
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
-import rikka.shizuku.Shizuku
 import com.arslan.shizuwall.receivers.FirewallControlReceiver
-import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.ui.MainActivity
-import com.arslan.shizuwall.utils.ShizukuPackageResolver
+import com.arslan.shizuwall.utils.FirewallUtils
 
 class FirewallWidgetProvider : AppWidgetProvider() {
 
@@ -98,69 +96,10 @@ class FirewallWidgetProvider : AppWidgetProvider() {
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
 
-        private fun loadFirewallEnabled(sharedPreferences: SharedPreferences): Boolean {
-            val enabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
-            if (!enabled) return false
-            val savedElapsed = sharedPreferences.getLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, -1L)
-            if (savedElapsed == -1L) return false
-            val currentElapsed = android.os.SystemClock.elapsedRealtime()
-            return currentElapsed >= savedElapsed
-        }
+        private fun loadFirewallEnabled(sharedPreferences: SharedPreferences): Boolean = FirewallUtils.loadFirewallEnabled(sharedPreferences)
 
-        private fun loadSelectedApps(context: Context, sharedPreferences: SharedPreferences): List<String> {
-            val selfPkg = context.packageName
-            return sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())
-                ?.filterNot { ShizukuPackageResolver.isShizukuPackage(context, it) || it == selfPkg }
-                ?.toList() ?: emptyList()
-        }
+        private fun loadSelectedApps(context: Context, sharedPreferences: SharedPreferences): List<String> = FirewallUtils.loadSelectedApps(context, sharedPreferences)
 
-        private fun checkShizukuPermission(context: Context): Boolean {
-            // Respect the configured working mode. If LADB is selected, ensure the daemon is running.
-            val sharedPreferences = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-            val workingMode = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
-            if (workingMode == "ROOT") {
-                if (RootShellExecutor.hasRootAccess()) {
-                    return true
-                }
-                Toast.makeText(context, context.getString(R.string.root_not_found_message), Toast.LENGTH_SHORT).show()
-                return false
-            }
-
-            if (workingMode == "LADB") {
-                val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(context)
-                return try {
-                    if (daemonManager.isDaemonRunning()) {
-                        true
-                    } else {
-                        Toast.makeText(context, context.getString(R.string.daemon_not_running), Toast.LENGTH_SHORT).show()
-                        // Try to open setup activity so user can start/prepare the daemon
-                        try {
-                            val intent = Intent(context, com.arslan.shizuwall.LadbSetupActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            context.startActivity(intent)
-                        } catch (_: Exception) {
-                        }
-                        false
-                    }
-                } catch (e: Throwable) {
-                    false
-                }
-            }
-
-            // Fallback to normal Shizuku binder + permission checks for SHIZUKU mode
-            try {
-                if (!Shizuku.pingBinder()) {
-                    Toast.makeText(context, context.getString(R.string.shizuku_not_running), Toast.LENGTH_SHORT).show()
-                    return false
-                }
-                if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(context, context.getString(R.string.shizuku_permission_required), Toast.LENGTH_SHORT).show()
-                    return false
-                }
-            } catch (e: Throwable) {
-                return false
-            }
-            return true
-        }
+        private fun checkShizukuPermission(context: Context): Boolean = FirewallUtils.checkBackendReady(context)
     }
 }

@@ -2,11 +2,9 @@ package com.arslan.shizuwall.services
 
 import android.app.*
 import android.content.*
-import android.content.pm.PackageManager
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
-import android.os.SystemClock
 import android.view.*
 import android.widget.ImageView
 import android.widget.Toast
@@ -15,12 +13,12 @@ import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.shell.ShellExecutorBlocking
-import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.ui.MainActivity
+import com.arslan.shizuwall.utils.FirewallUtils
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
+import com.arslan.shizuwall.utils.WhitelistFilter
 import com.arslan.shizuwall.widgets.FirewallWidgetProvider
 import kotlinx.coroutines.*
-import rikka.shizuku.Shizuku
 
 class FloatingButtonService : Service() {
 
@@ -265,8 +263,8 @@ class FloatingButtonService : Service() {
                 val targetApps: List<String>
                 val whitelistAllowApps: List<String>
                 if (firewallMode == FirewallMode.WHITELIST) {
-                    val showSystem = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
-                    val result = com.arslan.shizuwall.utils.WhitelistFilter.compute(this, selectedApps, showSystem)
+                val showSystem = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
+                val result = WhitelistFilter.compute(this, selectedApps, showSystem)
                     targetApps = result.toBlock
                     whitelistAllowApps = result.toAllow
                 } else {
@@ -291,66 +289,15 @@ class FloatingButtonService : Service() {
         }
     }
 
-    // ──────────────── helpers (mirrored from FirewallTileService) ────────────────
+    // ──────────────── helpers ────────────────
 
-    private fun loadFirewallEnabled(): Boolean {
-        val enabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
-        if (!enabled) return false
-        val savedElapsed = sharedPreferences.getLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, -1L)
-        if (savedElapsed == -1L) return false
-        return SystemClock.elapsedRealtime() >= savedElapsed
-    }
+    private fun loadFirewallEnabled(): Boolean = FirewallUtils.loadFirewallEnabled(sharedPreferences)
 
-    private fun loadSelectedApps(): List<String> {
-        val selfPkg = packageName
-        return sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())
-            ?.filterNot { ShizukuPackageResolver.isShizukuPackage(this, it) || it == selfPkg }
-            ?.toList() ?: emptyList()
-    }
+    private fun loadSelectedApps(): List<String> = FirewallUtils.loadSelectedApps(this, sharedPreferences)
 
-    private fun loadActivePackages(): Set<String> {
-        return sharedPreferences.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
-    }
+    private fun loadActivePackages(): Set<String> = FirewallUtils.loadActivePackages(sharedPreferences)
 
-    private fun checkBackendReady(): Boolean {
-        val mode = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
-        return if (mode == "ROOT") {
-            if (RootShellExecutor.hasRootAccess()) {
-                true
-            } else {
-                Toast.makeText(this, getString(R.string.root_not_found_message), Toast.LENGTH_SHORT).show()
-                false
-            }
-        } else if (mode == "LADB") {
-            val dm = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
-            if (dm.isDaemonRunning()) {
-                true
-            } else {
-                Toast.makeText(this, getString(R.string.daemon_not_running), Toast.LENGTH_SHORT).show()
-                false
-            }
-        } else {
-            val binderAlive = try {
-                Shizuku.pingBinder()
-            } catch (_: Throwable) {
-                false
-            }
-            if (!binderAlive) {
-                Toast.makeText(this, getString(R.string.shizuku_not_running), Toast.LENGTH_SHORT).show()
-                return false
-            }
-            val granted = try {
-                Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
-            } catch (_: Throwable) {
-                false
-            }
-            if (!granted) {
-                Toast.makeText(this, getString(R.string.shizuku_permission_required), Toast.LENGTH_SHORT).show()
-                return false
-            }
-            true
-        }
-    }
+    private fun checkBackendReady(): Boolean = FirewallUtils.checkBackendReady(this)
 
     private suspend fun applyEnableFirewall(packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()) {
         val firewallMode = FirewallMode.fromName(
@@ -470,21 +417,10 @@ class FloatingButtonService : Service() {
     }
 
     private fun saveFirewallEnabled(enabled: Boolean) {
-        val elapsed = if (enabled) SystemClock.elapsedRealtime() else -1L
-        sharedPreferences.edit()
-            .putBoolean(MainActivity.KEY_FIREWALL_ENABLED, enabled)
-            .putLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, elapsed)
-            .apply()
-        val intent = Intent(this, FirewallWidgetProvider::class.java)
-        intent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
-        sendBroadcast(intent)
-
-        ScreenLockMonitorService.sync(this)
+        FirewallUtils.saveFirewallEnabled(this, sharedPreferences, enabled)
     }
 
     private fun saveActivePackages(packages: Set<String>) {
-        sharedPreferences.edit()
-            .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, packages)
-            .apply()
+        FirewallUtils.saveActivePackages(sharedPreferences, packages)
     }
 }
