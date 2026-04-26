@@ -64,7 +64,7 @@
     <string name="shizuku_not_running">Shizuku çalışmıyor</string>
     <string name="shizuku_permission_required">Shizuku izni gerekli</string>
     <string name="firewall">Güvenlik Duvarı</string>
-    <string name="welcome_title">ShizuWalla Hoş Geldiniz</string>
+    <string name="welcome_title">ShizuWall\'a Hoş Geldiniz</string>
     <string name="welcome_message">Root veya vpn olmadan istenmeyen ağ bağlantılarını engelleyin</string>
     <string name="next">İleri</string>
     <string name="notification_permission_title">Bildirim İzni</string>
@@ -291,7 +291,7 @@
     <string name="firewall_mode_smart_foreground_description">Yalnızca şu anda ön plandaki uygulamaya izin ver</string>
     
     <string name="firewall_mode_focus_tracker">Odak Takipçisi</string>
-    <string name="firewall_mode_focus_tracker_description">ShizuWall'un odak dışı olduğu durumlarda güvenlik duvarını devre dışı bırak, odaklandığında ise etkinleştir.</string>
+    <string name="firewall_mode_focus_tracker_description">ShizuWall\'un odak dışı olduğu durumlarda güvenlik duvarını devre dışı bırak, odaklandığında ise etkinleştir.</string>
     
     <string name="smart_foreground_requires_accessibility">Erişilebilirlik izni gereklidir</string>
     <string name="smart_foreground_service_description">Güvenlik duvarı kurallarını yönetmek için ön plan uygulamasını izler</string>
