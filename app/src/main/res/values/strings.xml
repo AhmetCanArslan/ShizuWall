@@ -333,6 +333,7 @@
     <string name="accessibility_service_label">ShizuWall Foreground Monitor</string>
     <string name="accessibility_auto_enabled">Accessibility service enabled automatically</string>
     <string name="smart_foreground_info_enabled">Smart Foreground mode will only allow network access for the app you are currently using. All other apps will be blocked.\n\nThe required Accessibility permission is granted automatically when you select this mode.</string>
+    <string name="hybrid_mode_info_enabled">Hybrid mode combines three sub-modes per app: Default Block, Smart Foreground, and Screen Lock. You can configure each app individually.\n\nThe required Accessibility permission is granted automatically when you enable the firewall.</string>
     <string name="smart_foreground_info_deferred">Smart Foreground mode will only allow network access for the app you are currently using. All other apps will be blocked.\n\nThe Accessibility permission will be granted automatically when Shizuku/Daemon is running or when you enable the firewall.</string>
     <string name="firewall_enabled_smart_foreground">Firewall activated (Smart Foreground Mode)</string>
     <string name="accessibility_manual_enable_needed">Failed to auto-enable accessibility service. Please enable it manually in your device settings.</string>

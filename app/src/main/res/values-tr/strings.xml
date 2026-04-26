@@ -300,6 +300,7 @@
     <string name="accessibility_service_label">ShizuWall Ön Plan İzleyici</string>
     <string name="accessibility_auto_enabled">Erişilebilirlik servisi otomatik olarak etkinleştirildi</string>
     <string name="smart_foreground_info_enabled">Akıllı Ön Plan modu, yalnızca şu anda kullandığınız uygulama için ağ erişimine izin verecektir. Diğer tüm uygulamalar engellenecektir.\n\nBu modu seçtiğinizde gerekli Erişilebilirlik izni otomatik olarak verilir.</string>
+    <string name="hybrid_mode_info_enabled">Hibrit mod, uygulama başına üç alt modu birleştirir: Varsayılan Engelleme, Akıllı Ön Plan ve Ekran Kilidi. Her uygulamayı ayrı ayrı yapılandırabilirsiniz.\n\nGüvenlik duvarını etkinleştirdiğinizde gerekli Erişilebilirlik izni otomatik olarak verilir.</string>
     <string name="smart_foreground_info_deferred">Akıllı Ön Plan modu, yalnızca şu anda kullandığınız uygulama için ağ erişimine izin verecektir. Diğer tüm uygulamalar engellenecektir.\n\nShizuku/Daemon çalışırken veya güvenlik duvarını etkinleştirdiğinizde Erişilebilirlik izni otomatik olarak verilecektir.</string>
     <string name="firewall_enabled_smart_foreground">Güvenlik duvarı etkinleştirildi (Akıllı Ön Plan Modu)</string>
     <string name="accessibility_manual_enable_needed">Erişilebilirlik servisi otomatik olarak etkinleştirilemedi. Lütfen cihaz ayarlarınızdan manuel olarak etkinleştirin.</string>

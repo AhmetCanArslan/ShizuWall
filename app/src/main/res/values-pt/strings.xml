@@ -300,6 +300,7 @@
     <string name="accessibility_service_label">ShizuWall Monitor de Primeiro Plano</string>
     <string name="accessibility_auto_enabled">Serviço de acessibilidade habilitado automaticamente</string>
     <string name="smart_foreground_info_enabled">O modo Primeiro Plano Inteligente permitirá acesso à rede apenas para o app que você está usando. Todos os outros apps serão bloqueados.\n\nA permissão de Acessibilidade é concedida automaticamente ao selecionar este modo.</string>
+    <string name="hybrid_mode_info_enabled">O modo Híbrido combina três submodos por app: Bloqueio Padrão, Primeiro Plano Inteligente e Bloqueio de Tela. Você pode configurar cada app individualmente.\n\nA permissão de Acessibilidade necessária é concedida automaticamente ao ativar o firewall.</string>
     <string name="smart_foreground_info_deferred">O modo Primeiro Plano Inteligente permitirá acesso à rede apenas para o app que você está usando. Todos os outros apps serão bloqueados.\n\nA permissão de Acessibilidade será concedida automaticamente quando o Shizuku/Daemon estiver em execução ou quando você ativar o firewall.</string>
     <string name="firewall_enabled_smart_foreground">Firewall ativado (Modo Primeiro Plano Inteligente)</string>
     <string name="accessibility_manual_enable_needed">Não foi possível habilitar automaticamente o serviço de acessibilidade. Por favor, habilite-o manualmente nas configurações do seu dispositivo.</string>

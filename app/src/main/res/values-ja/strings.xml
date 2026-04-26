@@ -302,6 +302,7 @@
     <string name="accessibility_service_label">ShizuWall フォアグラウンドモニター</string>
     <string name="accessibility_auto_enabled">ユーザー補助サービスが自動的に有効になりました</string>
     <string name="smart_foreground_info_enabled">スマートフォアグラウンドモードでは、現在使用しているアプリのみにネットワークアクセスを許可します。他のすべてのアプリはブロックされます。\n\nこのモードを選択すると、必要なユーザー補助の権限が自動的に付与されます。</string>
+    <string name="hybrid_mode_info_enabled">ハイブリッドモードは、アプリごとに3つのサブモード（デフォルトブロック、スマートフォアグラウンド、画面ロック）を組み合わせています。各アプリを個別に設定できます。\n\nファイアウォールを有効にすると、必要なユーザー補助の権限が自動的に付与されます。</string>
     <string name="smart_foreground_info_deferred">スマートフォアグラウンドモードでは、現在使用しているアプリのみにネットワークアクセスを許可します。他のすべてのアプリはブロックされます。\n\nShizuku/デーモンが実行中、またはファイアウォールを有効にしたときに、ユーザー補助の権限が自動的に付与されます。</string>
     <string name="firewall_enabled_smart_foreground">ファイアウォールが有効になりました (スマートフォアグラウンドモード)</string>
     <string name="accessibility_manual_enable_needed">ユーザー補助サービスを自動的に有効にできませんでした。デバイスの設定から手動で有効にしてください。</string>

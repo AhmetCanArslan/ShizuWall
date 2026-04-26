@@ -327,6 +327,7 @@
     <string name="accessibility_service_label">ShizuWall monitorování popřed</string>
     <string name="accessibility_auto_enabled">Služba přístupnosti je automaticky zapnutá</string>
     <string name="smart_foreground_info_enabled">Režim Inligentního popředí povolí přístup k síti pouze pro aplikaci, kterou právě používáte. Všechny ostatní aplikace budou blokovány. Po výběru tohoto režimu se automaticky udělí požadované oprávnění pro přístupnost..</string>
+    <string name="hybrid_mode_info_enabled">Hybridní režim kombinuje tři podrežimy pro každou aplikaci: Výchozí blokování, Inteligentní popředí a Zámek obrazovky. Každou aplikaci můžete nakonfigurovat samostatně.\n\nPožadované oprávnění pro přístupnost je uděleno automaticky při povolení firewallu.</string>
     <string name="smart_foreground_info_deferred">Režim Inligentního popředí povolí přístup k síti pouze pro aplikaci, kterou právě používáte. Všechny ostatní aplikace budou blokovány. \n\nOprávnění pro přístupnost bude uděleno automaticky, když je spuštěna aplikace Shizuku/Daemon nebo když povolíte firewall..</string>
     <string name="firewall_enabled_smart_foreground">Firewall aktivován (režim Inteligentního popředí)</string>
     <string name="accessibility_manual_enable_needed">Nepodařilo se automaticky povolit službu usnadnění přístupu. Povolte ji ručně v nastavení zařízení.</string>

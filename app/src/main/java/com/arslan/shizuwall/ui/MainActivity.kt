@@ -580,20 +580,18 @@ class MainActivity : BaseActivity() {
         appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
         loadInstalledApps()
         
-        // Auto-enable accessibility service if revoked (e.g. after debug APK reinstall)
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID) {
+        // If firewall is ON and mode requires accessibility, ensure it's enabled
+        if (isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID)) {
             if (!ForegroundDetectionService.isServiceEnabled(this)) {
-                // Try to auto-enable via Shizuku/LADB shell
                 lifecycleScope.launch {
                     val success = ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
-                    if (success) {
-                        Toast.makeText(this@MainActivity, getString(R.string.accessibility_auto_enabled), Toast.LENGTH_SHORT).show()
-                    } else {
+                    if (!success) {
                         Toast.makeText(this@MainActivity, getString(R.string.accessibility_manual_enable_needed), Toast.LENGTH_LONG).show()
                     }
                 }
             }
-        } else {
+        } else if (!isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID)) {
+            // Firewall off but accessibility enabled — disable it
             if (ForegroundDetectionService.isServiceEnabled(this)) {
                 lifecycleScope.launch {
                     ForegroundDetectionService.disableServiceViaShell(this@MainActivity)
@@ -1966,6 +1964,16 @@ class MainActivity : BaseActivity() {
                         activeFirewallPackages.addAll(successful)
                         saveActivePackages(activeFirewallPackages)
                         saveFirewallEnabled(true)
+                        
+                        // Auto-enable accessibility for modes that require it
+                        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID) {
+                            if (!ForegroundDetectionService.isServiceEnabled(this@MainActivity)) {
+                                lifecycleScope.launch {
+                                    ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
+                                }
+                            }
+                        }
+                        
                         // Ensure toggle stays ON
                         suppressToggleListener = true
                         firewallToggle.isChecked = true

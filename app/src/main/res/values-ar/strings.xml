@@ -310,6 +310,7 @@
     <string name="accessibility_service_label">مراقب واجهة ShizuWall</string>
     <string name="accessibility_auto_enabled">تم تفعيل خدمة الوصول تلقائياً</string>
     <string name="smart_foreground_info_enabled">سيسمح وضع الواجهة الذكية بالوصول إلى الشبكة فقط للتطبيق الذي تستخدمه حالياً. سيتم حظر جميع التطبيقات الأخرى.\n\nيتم منح إذن الوصول المطلوب تلقائياً عند اختيار هذا الوضع.</string>
+    <string name="hybrid_mode_info_enabled">يجمع الوضع الهجين بين ثلاثة أوضاع فرعية لكل تطبيق: الحظر الافتراضي، والواجهة الذكية، وقفل الشاشة. يمكنك تكوين كل تطبيق بشكل فردي.\n\nيتم منح إذن الوصول المطلوب تلقائياً عند تفعيل الجدار الناري.</string>
     <string name="smart_foreground_info_deferred">سيسمح وضع الواجهة الذكية بالوصول إلى الشبكة فقط للتطبيق الذي تستخدمه حالياً. سيتم حظر جميع التطبيقات الأخرى.\n\nسيتم منح إذن الوصول تلقائياً عندما يكون Shizuku/الخدمة قيد التشغيل أو عند تفعيل الجدار الناري.</string>
     <string name="firewall_enabled_smart_foreground">تم تفعيل الجدار الناري (وضع الواجهة الذكية)</string>
     <string name="accessibility_manual_enable_needed">فشل تفعيل خدمة الوصول تلقائياً. يرجى تفعيلها يدوياً من إعدادات جهازك.</string>
