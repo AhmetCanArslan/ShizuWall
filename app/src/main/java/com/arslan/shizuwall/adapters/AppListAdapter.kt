@@ -148,36 +148,7 @@ class AppListAdapter(
                 }
                 
                 modeDropdownText.setOnClickListener { view ->
-                    val popupMenu = android.widget.PopupMenu(view.context, view)
-                    popupMenu.menu.add(0, 0, 0, view.context.getString(R.string.hybrid_mode_default_block)).setIcon(R.drawable.wifi_off_24px)
-                    popupMenu.menu.add(0, 1, 1, view.context.getString(R.string.hybrid_mode_smart_foreground)).setIcon(R.drawable.intelligence_24px)
-                    popupMenu.menu.add(0, 2, 2, view.context.getString(R.string.hybrid_mode_screen_lock)).setIcon(R.drawable.mobile_lock_portrait_24px)
-                    
-                    // Force show icons in PopupMenu
-                    try {
-                        val fields = popupMenu.javaClass.declaredFields
-                        for (field in fields) {
-                            if ("mPopup" == field.name) {
-                                field.isAccessible = true
-                                val menuPopupHelper = field.get(popupMenu)
-                                val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
-                                val setForceIcons = classPopupHelper.getMethod("setForceShowIcon", java.lang.Boolean.TYPE)
-                                setForceIcons.invoke(menuPopupHelper, true)
-                                break
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-
-                    popupMenu.setOnMenuItemClickListener { menuItem ->
-                        val newMode = menuItem.itemId
-                        if (appInfo.appFirewallMode != newMode) {
-                            onAppClick(appInfo.copy(appFirewallMode = newMode))
-                        }
-                        true
-                    }
-                    popupMenu.show()
+                    showModePopupMenu(view, appInfo)
                 }
             } else {
                 // disable interactions while firewall active
@@ -195,6 +166,35 @@ class AppListAdapter(
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_app, parent, false)
         return AppViewHolder(view)
+    }
+
+    private fun showModePopupMenu(anchor: android.view.View, appInfo: AppInfo) {
+        val popupMenu = android.widget.PopupMenu(anchor.context, anchor)
+        popupMenu.menu.add(0, 0, 0, anchor.context.getString(R.string.hybrid_mode_default_block)).setIcon(R.drawable.wifi_off_24px)
+        popupMenu.menu.add(0, 1, 1, anchor.context.getString(R.string.hybrid_mode_smart_foreground)).setIcon(R.drawable.intelligence_24px)
+        popupMenu.menu.add(0, 2, 2, anchor.context.getString(R.string.hybrid_mode_screen_lock)).setIcon(R.drawable.mobile_lock_portrait_24px)
+        forcePopupMenuIcons(popupMenu)
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            if (appInfo.appFirewallMode != menuItem.itemId) {
+                onAppClick(appInfo.copy(appFirewallMode = menuItem.itemId))
+            }
+            true
+        }
+        popupMenu.show()
+    }
+
+    private fun forcePopupMenuIcons(popupMenu: android.widget.PopupMenu) {
+        try {
+            for (field in popupMenu.javaClass.declaredFields) {
+                if ("mPopup" == field.name) {
+                    field.isAccessible = true
+                    val menuPopupHelper = field.get(popupMenu)
+                    val clazz = Class.forName(menuPopupHelper.javaClass.name)
+                    clazz.getMethod("setForceShowIcon", java.lang.Boolean.TYPE).invoke(menuPopupHelper, true)
+                    break
+                }
+            }
+        } catch (_: Exception) {}
     }
 
     override fun onBindViewHolder(holder: AppViewHolder, position: Int) {

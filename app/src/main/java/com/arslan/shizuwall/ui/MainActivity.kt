@@ -48,6 +48,8 @@ import com.arslan.shizuwall.adapters.ErrorDetailsAdapter
 import com.arslan.shizuwall.model.AppInfo
 import com.arslan.shizuwall.widgets.FirewallWidgetProvider
 import com.arslan.shizuwall.repo.FirewallStateRepository
+import com.arslan.shizuwall.daemon.PersistentDaemonManager
+import com.arslan.shizuwall.utils.WhitelistFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -55,7 +57,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
-import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
 import kotlin.comparisons.*
 import com.arslan.shizuwall.adapters.ErrorEntry
@@ -67,7 +68,6 @@ import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.radiobutton.MaterialRadioButton
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -791,76 +791,24 @@ class MainActivity : BaseActivity() {
         }
 
         if (workingMode == "LADB") {
-            val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
+            val daemonManager = PersistentDaemonManager(this)
             if (daemonManager.isDaemonRunning()) return true
 
-            val d = MaterialAlertDialogBuilder(this)
+            MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.working_mode_ladb))
                 .setMessage(getString(R.string.daemon_not_running))
                 .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
-                    try {
-                        startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java))
-                    } catch (_: Exception) {
-                    }
+                    try { startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java)) } catch (_: Exception) {}
                 }
                 .setNegativeButton(getString(R.string.cancel), null)
-                .create()
-            d.show()
+                .show()
             return false
         }
 
         // First ensure Shizuku binder is reachable. If it's not running, show a friendly dialog prompting the user to start/install Shizuku.
         try {
             if (!Shizuku.pingBinder()) {
-                val d = MaterialAlertDialogBuilder(this)
-                     .setTitle(getString(R.string.shizuku_not_running_title))
-                     .setMessage(getString(R.string.shizuku_not_running_message))
-                      .setPositiveButton(getString(R.string.open_shizuku)) { _, _ ->
-                         // Try to open the Shizuku app if present, otherwise open Play Store, otherwise fallback to GitHub.
-                         val pm = packageManager
-                         val candidates = ShizukuPackageResolver.getLaunchCandidates(this@MainActivity)
-                         var launched = false
-                         for (pkg in candidates) {
-                            val launch = pm.getLaunchIntentForPackage(pkg)
-                            if (launch != null) {
-                                startActivity(launch)
-                                launched = true
-                                break
-                            }
-                        }
-                        if (!launched) {
-                            var openedPlay = false
-                            for (pkgId in candidates) {
-                                try {
-                                    val playIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$pkgId"))
-                                    startActivity(playIntent)
-                                    openedPlay = true
-                                    break
-                                } catch (e: ActivityNotFoundException) {
-                                    // Play Store app not available on device, will fallback to web below
-                                } catch (e: Exception) {
-                                    // details page not found or other error, try next candidate
-                                }
-                            }
-                            if (!openedPlay) {
-                                try {
-                                    // Open Play Store search for "Shizuku" to avoid "not found" detail pages
-                                    val searchIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=Shizuku"))
-                                    startActivity(searchIntent)
-                                } catch (e: Exception) {
-                                    try {
-                                        val web = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/RikkaApps/Shizuku"))
-                                        startActivity(web)
-                                    } catch (_: Exception) {
-                                        // ignore
-                                    }
-                                }
-                            }
-                        }
-                    }
-                     .setNegativeButton(getString(R.string.cancel), null)
-                     .create()
-                d.show()
+                showShizukuNotRunningDialog()
                 return false
             }
         } catch (e: Exception) {
@@ -1420,7 +1368,7 @@ class MainActivity : BaseActivity() {
                 val whitelistAllowPkgs = mutableListOf<String>()
                 val targetAppPkgs = if (firewallMode == FirewallMode.WHITELIST) {
                     val selectedPkgs = selectedApps.map { it.packageName }
-                    val result = com.arslan.shizuwall.utils.WhitelistFilter.compute(this, selectedPkgs, showSystemApps)
+                    val result = WhitelistFilter.compute(this, selectedPkgs, showSystemApps)
                     whitelistAllowPkgs.addAll(result.toAllow)
                     result.toBlock
                 } else {
@@ -1437,31 +1385,11 @@ class MainActivity : BaseActivity() {
 
                 val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
                 if (workingMode == "LADB") {
-                    val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
-
-                    // If daemon is running, proceed
-                    if (daemonManager.isDaemonRunning()) {
-                        showFirewallConfirmDialog(selectedApps, targetAppPkgs, whitelistAllowPkgs)
-                        return@setOnCheckedChangeListener
+                    if (!showLadbDaemonDialog { showFirewallConfirmDialog(selectedApps, targetAppPkgs, whitelistAllowPkgs) }) {
+                        suppressToggleListener = true
+                        firewallToggle.isChecked = false
+                        suppressToggleListener = false
                     }
-
-                    // Daemon not running — prompt to open Daemon setup
-                    val d = MaterialAlertDialogBuilder(this)
-                        .setTitle(getString(R.string.working_mode_ladb))
-                        .setMessage(getString(R.string.daemon_not_running))
-                        .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
-                            try {
-                                startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java))
-                            } catch (_: Exception) {
-                            }
-                        }
-                        .setNegativeButton(getString(R.string.cancel), null)
-                        .create()
-                    d.show()
-
-                    suppressToggleListener = true
-                    firewallToggle.isChecked = false
-                    suppressToggleListener = false
                     return@setOnCheckedChangeListener
                 }
 
@@ -1485,29 +1413,11 @@ class MainActivity : BaseActivity() {
 
                 val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
                 if (workingMode == "LADB") {
-                    val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
-                    if (!daemonManager.isDaemonRunning()) {
-                        val d = MaterialAlertDialogBuilder(this)
-                            .setTitle(getString(R.string.working_mode_ladb))
-                            .setMessage(getString(R.string.daemon_not_running))
-                            .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
-                                try {
-                                    startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java))
-                                } catch (_: Exception) {
-                                }
-                            }
-                            .setNegativeButton(getString(R.string.cancel), null)
-                            .create()
-                        d.show()
-
+                    if (!showLadbDaemonDialog { applyFirewallState(false, activeFirewallPackages.toList()) }) {
                         suppressToggleListener = true
                         firewallToggle.isChecked = true
                         suppressToggleListener = false
-                        return@setOnCheckedChangeListener
                     }
-
-                    // Daemon is running — proceed with disable
-                    applyFirewallState(false, activeFirewallPackages.toList())
                     return@setOnCheckedChangeListener
                 }
 
@@ -1539,6 +1449,46 @@ class MainActivity : BaseActivity() {
             WorkingMode.ROOT -> R.drawable.hashtag_24px
         }
         firewallToggle.setThumbIconResource(iconRes)
+    }
+
+    private fun showLadbDaemonDialog(onProceed: () -> Unit): Boolean {
+        val daemonManager = PersistentDaemonManager(this)
+        if (daemonManager.isDaemonRunning()) {
+            onProceed()
+            return true
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.working_mode_ladb))
+            .setMessage(getString(R.string.daemon_not_running))
+            .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
+                try { startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java)) } catch (_: Exception) {}
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+        return false
+    }
+
+    private fun showShizukuNotRunningDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.shizuku_not_running_title))
+            .setMessage(getString(R.string.shizuku_not_running_message))
+            .setPositiveButton(getString(R.string.open_shizuku)) { _, _ ->
+                launchShizukuApp()
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun launchShizukuApp() {
+        val pm = packageManager
+        val candidates = ShizukuPackageResolver.getLaunchCandidates(this)
+        for (pkg in candidates) {
+            val launch = pm.getLaunchIntentForPackage(pkg)
+            if (launch != null) { startActivity(launch); return }
+        }
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thedjchi/Shizuku/releases")))
+        } catch (_: Exception) {}
     }
 
     private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>, blockPkgs: List<String> = selectedApps.map { it.packageName }, whitelistAllowApps: List<String> = emptyList()) {
@@ -2213,13 +2163,8 @@ class MainActivity : BaseActivity() {
         return Pair(successful, failed)
     }
 
-
     private suspend fun runCommandDetailed(command: String): com.arslan.shizuwall.shell.ShellResult {
         return ShellExecutorProvider.forContext(this).exec(command)
-    }
-
-    private suspend fun runCommand(command: String): Boolean {
-        return runCommandDetailed(command).success
     }
 
     // dim only the RecyclerView and disable its interactions
