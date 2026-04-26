@@ -675,7 +675,7 @@ class ForegroundDetectionService : AccessibilityService() {
     // Version 1
     private suspend fun applyFocusTrackerRules(executor: ShellExecutor, isFocused: Boolean) {
         val pkgs = selectedPackages.toList()
-        val shouldEnableNetworking = !isFocused
+        val shouldEnableNetworking = isFocused
 
         // Run commands in parallel for faster execution
         coroutineScope {
@@ -688,13 +688,13 @@ class ForegroundDetectionService : AccessibilityService() {
             }
         }
 
-        val activePkgs = if (isFocused) selectedPackages else emptySet()
+        val activePkgs = if (isFocused) emptySet() else selectedPackages
         sharedPreferences.edit()
             .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, activePkgs)
             .apply()
 
         withContext(Dispatchers.Main) {
-            val title = if (isFocused) getString(R.string.focus_tracker_active) else getString(R.string.focus_tracker_paused)
+            val title = if (isFocused) getString(R.string.focus_tracker_paused) else getString(R.string.focus_tracker_active)
             val notification = NotificationCompat.Builder(this@ForegroundDetectionService, CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(getString(R.string.firewall_mode_focus_tracker_description))
