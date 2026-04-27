@@ -115,6 +115,11 @@ class SettingsActivity : BaseActivity() {
     private lateinit var tvScreenLockDelayValue: TextView
     private lateinit var tvFirewallModeDisabledWarning: TextView
 
+    private lateinit var warningContainer: LinearLayout
+    private lateinit var retryLoadingProgress: android.widget.ProgressBar
+    private lateinit var retryButton: android.widget.ImageButton
+    private var isRetryLoading = false
+
     private val createDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri: Uri? ->
@@ -254,6 +259,11 @@ class SettingsActivity : BaseActivity() {
         layoutScreenLockDelay = findViewById(R.id.layoutScreenLockDelay)
         tvScreenLockDelayValue = findViewById(R.id.tvScreenLockDelayValue)
         tvFirewallModeDisabledWarning = findViewById(R.id.tvFirewallModeDisabledWarning)
+
+        // Initialize the accessibility warning views
+        warningContainer = findViewById(R.id.warningContainer)
+        retryLoadingProgress = findViewById(R.id.retryLoadingProgress)
+        retryButton = findViewById(R.id.retryButton)
     }
 
     private fun loadSettings() {
@@ -1582,5 +1592,35 @@ class SettingsActivity : BaseActivity() {
         }
         return file.delete() || !file.exists()
     }
+    
+    private fun showAccessibilityPermissionDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.accessibility_permission_title)
+            .setMessage(R.string.accessibility_permission_message)
+            .setPositiveButton(R.string.open_settings) { _, _ ->
+                sharedPreferences.edit().putBoolean("accessibility_dialog_shown", true).apply()
+                val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                startActivity(intent)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
 
+    private fun showAccessibilityAutoGrantDialog(mode: FirewallMode) {
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.accessibility_auto_enable_title)
+            .setMessage(R.string.accessibility_auto_enable_message)
+            .setView(R.layout.dialog_loading)
+            .setCancelable(false)
+            .show()
+
+        lifecycleScope.launch {
+            val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
+            dialog.dismiss()
+            if (!success) {
+                Toast.makeText(this@SettingsActivity, R.string.accessibility_manual_enable_needed, Toast.LENGTH_LONG).show()
+            }
+            updateFirewallModeUI(mode)
+        }
+    }
 }
