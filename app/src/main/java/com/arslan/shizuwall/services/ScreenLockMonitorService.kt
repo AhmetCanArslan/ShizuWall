@@ -71,6 +71,11 @@ class ScreenLockMonitorService : Service() {
             if (!isModeActive()) {
                 stopSelf()
             }
+        } else if (key == MainActivity.KEY_APP_MODES) {
+            // Reconcile when app modes change in Hybrid mode
+            if (isModeActive()) {
+                reconcileCurrentState()
+            }
         }
     }
 

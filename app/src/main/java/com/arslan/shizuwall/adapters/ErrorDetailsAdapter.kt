@@ -1,9 +1,5 @@
 package com.arslan.shizuwall.adapters
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +12,7 @@ import com.arslan.shizuwall.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.arslan.shizuwall.utils.UiUtils
 
 data class ErrorEntry(
     val appName: String,
@@ -39,11 +36,11 @@ class ErrorDetailsAdapter(
             appName.text = entry.appName
             errorText.text = entry.errorText
 
-            getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
+            UiUtils.getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
                 try {
                     val pm = itemView.context.packageManager
                     val drawable = pm.getApplicationIcon(pkg)
-                    val bitmap = drawableToBitmap(drawable)
+                    val bitmap = UiUtils.drawableToBitmap(drawable)
                     withContext(Dispatchers.Main) {
                         if (appIcon.tag == pkg) appIcon.setImageBitmap(bitmap)
                     }
@@ -52,28 +49,6 @@ class ErrorDetailsAdapter(
                 }
             }
         }
-    }
-
-    private fun getLifecycleOwner(context: android.content.Context): LifecycleOwner? {
-        var ctx = context
-        while (ctx is android.content.ContextWrapper) {
-            if (ctx is LifecycleOwner) return ctx
-            ctx = ctx.baseContext
-        }
-        return null
-    }
-
-    private fun drawableToBitmap(drawable: Drawable): Bitmap {
-        if (drawable is BitmapDrawable) {
-            drawable.bitmap?.let { return it }
-        }
-        val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else 48
-        val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else 48
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return bitmap
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

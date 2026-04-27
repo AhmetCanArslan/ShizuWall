@@ -158,6 +158,8 @@
     <string name="app_monitor_service_description">Detect new installed apps and show a notification</string>
     <string name="new_app_installed">New app installed: %s</string>
     <string name="firewall_app">Firewall App</string>
+    <string name="allow_app">Allow</string>
+    <string name="allowing_app">Allowing %s</string>
     <string name="add_to_selected_list">Add to selected list</string>
     <string name="app_monitor_notification_channel_name">App Monitor (Service)</string>
     <string name="app_monitor_notification_channel_description">Background service for monitoring new apps</string>
@@ -339,6 +341,7 @@
     <string name="accessibility_service_label">ShizuWall Foreground Monitor</string>
     <string name="accessibility_auto_enabled">Accessibility service enabled automatically</string>
     <string name="smart_foreground_info_enabled">Smart Foreground mode will only allow network access for the app you are currently using. All other apps will be blocked.\n\nThe required Accessibility permission is granted automatically when you select this mode.</string>
+    <string name="hybrid_mode_info_enabled">Hybrid mode combines three sub-modes per app: Default Block, Smart Foreground, and Screen Lock. You can configure each app individually.\n\nThe required Accessibility permission is granted automatically when you enable the firewall.</string>
     <string name="smart_foreground_info_deferred">Smart Foreground mode will only allow network access for the app you are currently using. All other apps will be blocked.\n\nThe Accessibility permission will be granted automatically when Shizuku/Daemon is running or when you enable the firewall.</string>
     <string name="firewall_enabled_smart_foreground">Firewall activated (Smart Foreground Mode)</string>
     <string name="accessibility_manual_enable_needed">Failed to auto-enable accessibility service. Please enable it manually in your device settings.</string>
@@ -375,21 +378,6 @@
     <string name="floating_button_content_description">Toggle firewall</string>
     <string name="overlay_permission_required">Overlay permission is required for the floating button</string>
 
-    <!-- Foreground Firewall Indicator -->
-    <string name="firewall_indicator">Foreground Firewall Indicator</string>
-    <string name="firewall_indicator_description">Shows if the current foreground app is firewalled</string>
-    <string name="firewall_indicator_settings">Indicator settings</string>
-    <string name="firewall_indicator_settings_title">Indicator Settings</string>
-    <string name="firewall_indicator_settings_description">Adjust foreground indicator position and size.</string>
-    <string name="firewall_indicator_x">X Coordinate</string>
-    <string name="firewall_indicator_y">Y Coordinate</string>
-    <string name="firewall_indicator_size">Indicator Size</string>
-    <string name="firewall_indicator_content_description">Foreground firewall indicator</string>
-    <string name="firewall_indicator_notification_channel_name">Firewall Indicator (Service)</string>
-    <string name="firewall_indicator_notification_channel_description">Background service for foreground firewall indicator</string>
-    <string name="firewall_indicator_notification_title">Foreground Firewall Indicator</string>
-    <string name="firewall_indicator_notification_text">Monitoring foreground app firewall state</string>
-    <string name="firewall_indicator_overlay_permission_required">Overlay permission is required for the firewall indicator</string>
     <string name="decrease">Decrease</string>
     <string name="increase">Increase</string>
 </resources>

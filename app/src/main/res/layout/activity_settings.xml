@@ -174,7 +174,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/android_24px"
+                        android:src="@drawable/light_off_24dp"
                         app:tint="?attr/colorPrimary"
                         android:layout_marginEnd="16dp"
                         android:contentDescription="@null" />
@@ -1245,74 +1245,6 @@
 
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchFloatingButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:thumbIcon="@drawable/check_24px"
-                        app:thumbIconTint="@color/switch_thumb_icon_tint" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Foreground Firewall Indicator -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="20dp"
-                app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="72dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_firewall_indicator"
-                        app:tint="?attr/colorPrimary" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/firewall_indicator"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="?android:attr/textColorPrimary" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/firewall_indicator_description"
-                            android:textSize="12sp"
-                            android:textColor="?android:attr/textColorSecondary" />
-                    </LinearLayout>
-
-                    <ImageButton
-                        android:id="@+id/btnFirewallIndicatorSettings"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="4dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="@string/firewall_indicator_settings"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_settings"
-                        app:tint="?attr/colorPrimary" />
-
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/switchFirewallIndicator"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:thumbIcon="@drawable/check_24px"

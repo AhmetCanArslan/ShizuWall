@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<View xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/firewallIndicatorDot"
-    android:layout_width="42dp"
-    android:layout_height="42dp"
-    android:background="@drawable/firewall_indicator_bg"
-    android:contentDescription="@string/firewall_indicator_content_description"
-    android:elevation="6dp" />

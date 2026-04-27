@@ -229,6 +229,24 @@ class ForegroundDetectionService : AccessibilityService() {
     @Volatile private var lastUnmanagedAllowedPackage: String? = null
     @Volatile private var lastUnmanagedAllowedAtMs: Long = 0L
 
+    private fun startForegroundService() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    buildNotification(null),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                )
+            } else {
+                startForeground(NOTIFICATION_ID, buildNotification(null))
+            }
+        } catch (e: IllegalStateException) {
+            Log.w(TAG, "Failed to start foreground - already in foreground state", e)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to start foreground", e)
+        }
+    }
+
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
         when (key) {
             MainActivity.KEY_FIREWALL_ENABLED -> {
@@ -250,21 +268,7 @@ class ForegroundDetectionService : AccessibilityService() {
                         .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
                         .apply()
                 } else if (cachedFirewallMode == FirewallMode.SMART_FOREGROUND || cachedFirewallMode == FirewallMode.HYBRID) {
-                    try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                            startForeground(
-                                NOTIFICATION_ID,
-                                buildNotification(null),
-                                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-                            )
-                        } else {
-                            startForeground(NOTIFICATION_ID, buildNotification(null))
-                        }
-                    } catch (e: IllegalStateException) {
-                        Log.w(TAG, "Failed to start foreground - already in foreground state", e)
-                    } catch (e: Exception) {
-                        Log.w(TAG, "Failed to start foreground", e)
-                    }
+                    startForegroundService()
                 }
             }
             MainActivity.KEY_FIREWALL_MODE -> {
@@ -523,6 +527,7 @@ class ForegroundDetectionService : AccessibilityService() {
 
     private fun publishObservedForegroundApp(packageName: String) {
         if (packageName == lastObservedForegroundPackage) return
+        if (shouldAlwaysSkipPackage(packageName)) return
         val previous = lastObservedForegroundPackage
         lastObservedForegroundPackage = packageName
         sharedPreferences.edit().putString(MainActivity.KEY_LAST_FOREGROUND_APP, packageName).apply()
@@ -534,7 +539,6 @@ class ForegroundDetectionService : AccessibilityService() {
 
     private fun shouldSkipPackage(packageName: String): Boolean {
         if (shouldAlwaysSkipPackage(packageName)) return true
-
         if (!selectedPackages.contains(packageName)) return true
         return false
     }
@@ -655,7 +659,7 @@ class ForegroundDetectionService : AccessibilityService() {
 
                 val executor = getShellExecutor()
                 val result = execWithRetry(executor, "cmd connectivity set-package-networking-enabled true $packageName")
-                if (result.success || isUidOwnerMapMissingEntry(result)) {
+                if (result.isEffectivelySuccess) {
                     lastUnmanagedAllowedPackage = packageName
                     lastUnmanagedAllowedAtMs = now
                     Log.d(TAG, "$packageName -> [unmanaged] allowed")
@@ -725,11 +729,6 @@ class ForegroundDetectionService : AccessibilityService() {
         return executor.exec(command)
     }
 
-    private fun isUidOwnerMapMissingEntry(result: com.arslan.shizuwall.shell.ShellResult): Boolean {
-        val details = (result.stderr + "\n" + result.stdout).lowercase()
-        return details.contains("suidownermap does not have entry for uid")
-    }
-
     private suspend fun cleanupStaleBlockedPackages() {
         val blocked = sharedPreferences.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
         if (blocked.isEmpty()) return
@@ -742,7 +741,7 @@ class ForegroundDetectionService : AccessibilityService() {
             val remaining = blocked.toMutableSet()
             for (pkg in stale) {
                 val result = execWithRetry(executor, "cmd connectivity set-package-networking-enabled true $pkg")
-                if (result.success || isUidOwnerMapMissingEntry(result)) {
+                if (result.isEffectivelySuccess) {
                     remaining.remove(pkg)
                     Log.d(TAG, "Cleared stale blocked package: $pkg")
                 } else {
@@ -790,12 +789,12 @@ class ForegroundDetectionService : AccessibilityService() {
 
                 ensureChain3Enabled(executor)
                 val allowResult = execWithRetry(executor, "cmd connectivity set-package-networking-enabled true $newPackage")
-                val allowOk = allowResult.success || isUidOwnerMapMissingEntry(allowResult)
+                val allowOk = allowResult.isEffectivelySuccess
                 if (!allowOk) {
                     val allowErr = allowResult.stderr.ifEmpty { allowResult.stdout }
                     Log.w(TAG, "Failed to allow $newPackage: $allowErr")
                     return@withContext false
-                } else if (!allowResult.success && isUidOwnerMapMissingEntry(allowResult)) {
+                } else if (allowResult.isUidOwnerMapMissing) {
                     Log.d(TAG, "Allow for $newPackage already effective (uid not present in owner map)")
                 }
 

@@ -139,6 +139,8 @@
     <string name="app_monitor_service_description">Yeni yüklenen uygulamaları algıla ve bir bildirim göster</string>
     <string name="new_app_installed">Yeni uygulama yüklendi: %s</string>
     <string name="firewall_app">Uygulamayı Engelle</string>
+    <string name="allow_app">İzin Ver</string>
+    <string name="allowing_app">%s izin veriliyor</string>
     <string name="add_to_selected_list">Seçili listeye ekle</string>
     <string name="app_monitor_notification_channel_name">Uygulama İzleyici (Servis)</string>
     <string name="app_monitor_notification_channel_description">Yeni uygulamaları izlemek için arka plan servisi</string>
@@ -306,6 +308,7 @@
     <string name="accessibility_service_label">ShizuWall Ön Plan İzleyici</string>
     <string name="accessibility_auto_enabled">Erişilebilirlik servisi otomatik olarak etkinleştirildi</string>
     <string name="smart_foreground_info_enabled">Akıllı Ön Plan modu, yalnızca şu anda kullandığınız uygulama için ağ erişimine izin verecektir. Diğer tüm uygulamalar engellenecektir.\n\nBu modu seçtiğinizde gerekli Erişilebilirlik izni otomatik olarak verilir.</string>
+    <string name="hybrid_mode_info_enabled">Hibrit mod, uygulama başına üç alt modu birleştirir: Varsayılan Engelleme, Akıllı Ön Plan ve Ekran Kilidi. Her uygulamayı ayrı ayrı yapılandırabilirsiniz.\n\nGüvenlik duvarını etkinleştirdiğinizde gerekli Erişilebilirlik izni otomatik olarak verilir.</string>
     <string name="smart_foreground_info_deferred">Akıllı Ön Plan modu, yalnızca şu anda kullandığınız uygulama için ağ erişimine izin verecektir. Diğer tüm uygulamalar engellenecektir.\n\nShizuku/Daemon çalışırken veya güvenlik duvarını etkinleştirdiğinizde Erişilebilirlik izni otomatik olarak verilecektir.</string>
     <string name="firewall_enabled_smart_foreground">Güvenlik duvarı etkinleştirildi (Akıllı Ön Plan Modu)</string>
     <string name="accessibility_manual_enable_needed">Erişilebilirlik servisi otomatik olarak etkinleştirilemedi. Lütfen cihaz ayarlarınızdan manuel olarak etkinleştirin.</string>
@@ -360,20 +363,6 @@
     <string name="accessibility_auto_grant_failed">Erişilebilirlik servisi otomatik olarak etkinleştirilemedi. Lütfen Ayarlar\'dan manuel olarak etkinleştirin.</string>
     <string name="open_settings">Ayarları Aç</string>
 
-    <string name="firewall_indicator">Ön Plan Firewall Göstergesi</string>
-    <string name="firewall_indicator_description">Ön plandaki uygulamanın firewall durumunu gösterir</string>
-    <string name="firewall_indicator_settings">Gösterge ayarları</string>
-    <string name="firewall_indicator_settings_title">Gösterge Ayarları</string>
-    <string name="firewall_indicator_settings_description">Ön plan göstergesinin konumunu ve boyutunu ayarlayın.</string>
-    <string name="firewall_indicator_x">X Koordinatı</string>
-    <string name="firewall_indicator_y">Y Koordinatı</string>
-    <string name="firewall_indicator_size">Gösterge Boyutu</string>
-    <string name="firewall_indicator_content_description">Ön plan firewall göstergesi</string>
-    <string name="firewall_indicator_notification_channel_name">Firewall Göstergesi (Servis)</string>
-    <string name="firewall_indicator_notification_channel_description">Ön plan firewall göstergesi için arka plan servisi</string>
-    <string name="firewall_indicator_notification_title">Ön Plan Firewall Göstergesi</string>
-    <string name="firewall_indicator_notification_text">Ön plan uygulamanın firewall durumu izleniyor</string>
-    <string name="firewall_indicator_overlay_permission_required">Firewall göstergesi için üzerine yazma izni gereklidir</string>
     <string name="decrease">Azalt</string>
     <string name="increase">Artır</string>
     <string name="notification_permission_background_request">Arka planda aktif kalması için izin verin.</string>

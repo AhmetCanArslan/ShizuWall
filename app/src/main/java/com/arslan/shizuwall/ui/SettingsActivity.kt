@@ -50,7 +50,6 @@ import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.ForegroundDetectionService
 import com.arslan.shizuwall.services.FloatingButtonService
-import com.arslan.shizuwall.services.ForegroundFirewallIndicatorService
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONArray
@@ -65,7 +64,6 @@ class SettingsActivity : BaseActivity() {
     }
 
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var prefs: SharedPreferences
     private lateinit var switchMoveSelectedTop: SwitchCompat
     private lateinit var switchSkipConfirm: SwitchCompat
     private lateinit var switchSkipErrorDialog: SwitchCompat
@@ -89,9 +87,6 @@ class SettingsActivity : BaseActivity() {
     private lateinit var cardApplyRootRulesAfterReboot: com.google.android.material.card.MaterialCardView
     private lateinit var switchAppMonitor: SwitchCompat
     private lateinit var switchFloatingButton: SwitchCompat
-    private lateinit var switchFirewallIndicator: SwitchCompat
-    private lateinit var btnFirewallIndicatorSettings: android.widget.ImageButton
-    private var suppressFirewallIndicatorToggle = false
 
     private lateinit var cardAdbBroadcastUsage: com.google.android.material.card.MaterialCardView
     private lateinit var layoutAdbBroadcastUsage: LinearLayout // new
@@ -118,12 +113,7 @@ class SettingsActivity : BaseActivity() {
     private lateinit var cardScreenLockDelay: com.google.android.material.card.MaterialCardView
     private lateinit var layoutScreenLockDelay: LinearLayout
     private lateinit var tvScreenLockDelayValue: TextView
-    private lateinit var tvSmartForegroundWarning: TextView
     private lateinit var tvFirewallModeDisabledWarning: TextView
-    private lateinit var warningContainer: LinearLayout
-    private lateinit var retryButton: android.widget.ImageButton
-    private lateinit var retryLoadingProgress: android.widget.ProgressBar
-    private var isRetryLoading = false
 
     private val createDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -184,11 +174,9 @@ class SettingsActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Re-check accessibility state when returning from system settings
         val mode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
-        if (::tvSmartForegroundWarning.isInitialized) {
+        if (::radioGroupFirewallMode.isInitialized) {
             updateFirewallModeUI(mode)
-            // Also update firewall mode selector state based on firewall enabled status
             val isFirewallEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
             updateFirewallModeSelectorState(isFirewallEnabled)
         }
@@ -211,24 +199,6 @@ class SettingsActivity : BaseActivity() {
                     com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false
                 )
                 switchFloatingButton.isChecked = prefEnabled
-            }
-        }
-
-        if (::switchFirewallIndicator.isInitialized) {
-            val wantEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)
-            if (wantEnabled && !Settings.canDrawOverlays(this)) {
-                suppressFirewallIndicatorToggle = true
-                switchFirewallIndicator.isChecked = false
-                suppressFirewallIndicatorToggle = false
-                sharedPreferences.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
-                ForegroundFirewallIndicatorService.stop(this)
-            } else {
-                suppressFirewallIndicatorToggle = true
-                switchFirewallIndicator.isChecked = wantEnabled
-                suppressFirewallIndicatorToggle = false
-                if (wantEnabled) {
-                    ForegroundFirewallIndicatorService.start(this)
-                }
             }
         }
     }
@@ -265,8 +235,6 @@ class SettingsActivity : BaseActivity() {
         layoutSetLadb = findViewById(R.id.layoutSetLadb)
         switchAppMonitor = findViewById(R.id.switchAppMonitor)
         switchFloatingButton = findViewById(R.id.switchFloatingButton)
-        switchFirewallIndicator = findViewById(R.id.switchFirewallIndicator)
-        btnFirewallIndicatorSettings = findViewById(R.id.btnFirewallIndicatorSettings)
         // Auto-enable switch (new)
         switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
         cardAutoEnableOnShizukuStart = findViewById(R.id.cardAutoEnableOnShizukuStart)
@@ -285,34 +253,21 @@ class SettingsActivity : BaseActivity() {
         cardScreenLockDelay = findViewById(R.id.cardScreenLockDelay)
         layoutScreenLockDelay = findViewById(R.id.layoutScreenLockDelay)
         tvScreenLockDelayValue = findViewById(R.id.tvScreenLockDelayValue)
-        tvSmartForegroundWarning = findViewById(R.id.tvSmartForegroundWarning)
         tvFirewallModeDisabledWarning = findViewById(R.id.tvFirewallModeDisabledWarning)
-        warningContainer = findViewById(R.id.warningContainer)
-        retryButton = findViewById(R.id.retryButton)
-        retryLoadingProgress = findViewById(R.id.retryLoadingProgress)
-        
-        // Set up retry button click listener
-        retryButton.setOnClickListener {
-            if (!isRetryLoading) {
-                retryAccessibilityGrant()
-            }
-        }
     }
 
     private fun loadSettings() {
-        prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-
-        switchMoveSelectedTop.isChecked = prefs.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, true)
-        switchSkipConfirm.isChecked = prefs.getBoolean("skip_enable_confirm", false)
-        switchSkipErrorDialog.isChecked = prefs.getBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, false)
-        switchKeepErrorAppsSelected.isChecked = prefs.getBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false)
+        switchMoveSelectedTop.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, true)
+        switchSkipConfirm.isChecked = sharedPreferences.getBoolean("skip_enable_confirm", false)
+        switchSkipErrorDialog.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, false)
+        switchKeepErrorAppsSelected.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false)
         
         // Show/hide keep error apps option based on skip error dialog state
         cardKeepErrorApps.visibility = if (switchSkipErrorDialog.isChecked) View.VISIBLE else View.GONE
 
         // Load firewall mode (migrate from old adaptive mode if needed)
-        migrateAdaptiveModeToFirewallMode(prefs)
-        val firewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+        migrateAdaptiveModeToFirewallMode(sharedPreferences)
+        val firewallMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
         
         // Set the radio button based on mode
         when (firewallMode) {
@@ -330,24 +285,23 @@ class SettingsActivity : BaseActivity() {
         updateFirewallModeUI(firewallMode)
         
         // Update firewall mode selector state based on whether firewall is enabled
-        val isFirewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
+        val isFirewallEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
         updateFirewallModeSelectorState(isFirewallEnabled)
 
-        val currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
+        val currentFont = sharedPreferences.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         tvCurrentFont.text = if (currentFont == "ndot") getString(R.string.font_ndot) else getString(R.string.font_default)
         updateCurrentLanguageDisplay()
-        switchUseDynamicColor.isChecked = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
-        switchUseAmoledBlack.isChecked = prefs.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
-        switchAutoEnableOnShizukuStart.isChecked = prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
-        switchApplyRootRulesAfterReboot.isChecked = prefs.getBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, false)
-        switchAppMonitor.isChecked = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
-        switchFloatingButton.isChecked = prefs.getBoolean(
+        switchUseDynamicColor.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
+        switchUseAmoledBlack.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
+        switchAutoEnableOnShizukuStart.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
+        switchApplyRootRulesAfterReboot.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, false)
+        switchAppMonitor.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
+        switchFloatingButton.isChecked = sharedPreferences.getBoolean(
             com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false
         )
-        switchFirewallIndicator.isChecked = prefs.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)
 
         // Load working mode
-        val workingModeName = prefs.getString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name)
+        val workingModeName = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name)
         val workingMode = WorkingMode.fromName(workingModeName)
         when (workingMode) {
             WorkingMode.LADB -> radioGroupWorkingMode.check(R.id.radioLadbMode)
@@ -364,7 +318,7 @@ class SettingsActivity : BaseActivity() {
             }
             if (radioLadbMode.isChecked) {
                 radioGroupWorkingMode.check(R.id.radioShizukuMode)
-                prefs.edit().putString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name).apply()
+                sharedPreferences.edit().putString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name).apply()
             }
         }
 
@@ -374,12 +328,12 @@ class SettingsActivity : BaseActivity() {
     /**
      * Migrate from old adaptive mode boolean to new firewall mode enum
      */
-    private fun migrateAdaptiveModeToFirewallMode(prefs: SharedPreferences) {
+    private fun migrateAdaptiveModeToFirewallMode(sharedPreferences: SharedPreferences) {
         // Check if we have the old adaptive mode key but not the new firewall mode key
-        if (prefs.contains(MainActivity.KEY_ADAPTIVE_MODE) && !prefs.contains(MainActivity.KEY_FIREWALL_MODE)) {
-            val adaptiveMode = prefs.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
+        if (sharedPreferences.contains(MainActivity.KEY_ADAPTIVE_MODE) && !sharedPreferences.contains(MainActivity.KEY_FIREWALL_MODE)) {
+            val adaptiveMode = sharedPreferences.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
             val newMode = if (adaptiveMode) FirewallMode.ADAPTIVE else FirewallMode.DEFAULT
-            prefs.edit()
+            sharedPreferences.edit()
                 .putString(MainActivity.KEY_FIREWALL_MODE, newMode.name)
                 .remove(MainActivity.KEY_ADAPTIVE_MODE)
                 .apply()
@@ -443,7 +397,7 @@ class SettingsActivity : BaseActivity() {
     private fun setupListeners() {
 
         switchMoveSelectedTop.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, isChecked).apply()
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, isChecked).apply()
             setResult(RESULT_OK)
         }
 
@@ -479,41 +433,38 @@ class SettingsActivity : BaseActivity() {
                 else -> FirewallMode.DEFAULT
             }
             
-            prefs.edit().putString(MainActivity.KEY_FIREWALL_MODE, newMode.name).apply()
+            sharedPreferences.edit().putString(MainActivity.KEY_FIREWALL_MODE, newMode.name).apply()
             setResult(RESULT_OK)
             
             TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
             updateFirewallModeUI(newMode)
             
-            // Handle accessibility for Smart Foreground / Hybrid mode
             if (newMode == FirewallMode.SMART_FOREGROUND || newMode == FirewallMode.HYBRID || newMode == FirewallMode.FOCUS_TRACKER) {
                 if (!ForegroundDetectionService.isServiceEnabled(this)) {
-                    // Check dialog status
                     val dialogShown = sharedPreferences.getBoolean("accessibility_dialog_shown", false)
                     val dialogAccepted = sharedPreferences.getBoolean("accessibility_dialog_accepted", false)
                     
                     if (!dialogShown || !dialogAccepted) {
-                        // Show permission dialog
                         showAccessibilityPermissionDialog()
                     } else {
-                        // Previously accepted, try to auto-enable with loading dialog
                         showAccessibilityAutoGrantDialog(newMode)
                     }
                 }
             }
-            
-            // Show info dialog for Whitelist mode
-            if (newMode == FirewallMode.WHITELIST) {
-                showWhitelistInfoDialog()
+            when (newMode) {
+                FirewallMode.SMART_FOREGROUND -> showSmartForegroundInfoDialog()
+                FirewallMode.HYBRID -> showHybridModeInfoDialog()
+                FirewallMode.WHITELIST -> showWhitelistInfoDialog()
+                else -> {}
             }
         }
 
         switchSkipConfirm.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("skip_enable_confirm", isChecked).apply()
+            sharedPreferences.edit().putBoolean("skip_enable_confirm", isChecked).apply()
         }
 
         switchSkipErrorDialog.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, isChecked).apply()
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, isChecked).apply()
             
             TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
             // Show/hide the keep error apps option
@@ -522,12 +473,12 @@ class SettingsActivity : BaseActivity() {
             // If disabling skip error dialog, also disable keep error apps selected
             if (!isChecked) {
                 switchKeepErrorAppsSelected.isChecked = false
-                prefs.edit().putBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false).apply()
+                sharedPreferences.edit().putBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false).apply()
             }
         }
 
         switchKeepErrorAppsSelected.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, isChecked).apply()
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, isChecked).apply()
         }
 
         layoutChangeFont.setOnClickListener {
@@ -577,12 +528,12 @@ class SettingsActivity : BaseActivity() {
         }
 
         switchAutoEnableOnShizukuStart.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, isChecked).apply()
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, isChecked).apply()
             setResult(RESULT_OK)
         }
 
         switchApplyRootRulesAfterReboot.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, isChecked).apply()
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, isChecked).apply()
             setResult(RESULT_OK)
         }
 
@@ -592,7 +543,7 @@ class SettingsActivity : BaseActivity() {
                     androidx.core.app.ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1002)
                 }
             }
-            prefs.edit().putBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, isChecked).apply()
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, isChecked).apply()
             val intent = Intent(this, AppMonitorService::class.java)
             if (isChecked) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -608,7 +559,7 @@ class SettingsActivity : BaseActivity() {
         radioGroupWorkingMode.setOnCheckedChangeListener { _, checkedId ->
             if (suppressWorkingModeListener) return@setOnCheckedChangeListener
 
-            val currentMode = WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name))
+            val currentMode = WorkingMode.fromName(sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name))
             val mode = when (checkedId) {
                 R.id.radioLadbMode -> WorkingMode.LADB
                 R.id.radioRootMode -> WorkingMode.ROOT
@@ -628,7 +579,7 @@ class SettingsActivity : BaseActivity() {
                 return@setOnCheckedChangeListener
             }
 
-            prefs.edit().putString(MainActivity.KEY_WORKING_MODE, mode.name).apply()
+            sharedPreferences.edit().putString(MainActivity.KEY_WORKING_MODE, mode.name).apply()
             setResult(RESULT_OK)
             
             TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
@@ -652,9 +603,9 @@ class SettingsActivity : BaseActivity() {
         fun checkAndRequestNotificationPermission() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                    val hasAsked = prefs.getBoolean("has_asked_notif", false)
+                    val hasAsked = sharedPreferences.getBoolean("has_asked_notif", false)
                     if (!hasAsked || androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.POST_NOTIFICATIONS)) {
-                        prefs.edit().putBoolean("has_asked_notif", true).apply()
+                        sharedPreferences.edit().putBoolean("has_asked_notif", true).apply()
                         androidx.core.app.ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1002)
                     } else {
                         val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
@@ -682,83 +633,15 @@ class SettingsActivity : BaseActivity() {
                     return@setOnCheckedChangeListener
                 }
                 checkAndRequestNotificationPermission()
-                prefs.edit().putBoolean(
+                sharedPreferences.edit().putBoolean(
                     com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, true
                 ).apply()
                 com.arslan.shizuwall.services.FloatingButtonService.start(this)
             } else {
-                prefs.edit().putBoolean(
+                sharedPreferences.edit().putBoolean(
                     com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false
                 ).apply()
                 com.arslan.shizuwall.services.FloatingButtonService.stop(this)
-            }
-        }
-
-        btnFirewallIndicatorSettings.setOnClickListener {
-            startActivity(Intent(this, FirewallIndicatorSettingsActivity::class.java))
-        }
-
-        switchFirewallIndicator.setOnCheckedChangeListener { _, isChecked ->
-            if (suppressFirewallIndicatorToggle) return@setOnCheckedChangeListener
-
-            if (isChecked) {
-                if (!Settings.canDrawOverlays(this)) {
-                    suppressFirewallIndicatorToggle = true
-                    switchFirewallIndicator.isChecked = false
-                    suppressFirewallIndicatorToggle = false
-                    prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
-                    Toast.makeText(this, R.string.firewall_indicator_overlay_permission_required, Toast.LENGTH_LONG).show()
-                    startActivity(
-                        Intent(
-                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            android.net.Uri.parse("package:$packageName")
-                        )
-                    )
-                    return@setOnCheckedChangeListener
-                }
-
-                if (ForegroundDetectionService.isServiceEnabled(this)) {
-                    checkAndRequestNotificationPermission()
-                    prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, true).apply()
-                    ForegroundFirewallIndicatorService.start(this)
-                    return@setOnCheckedChangeListener
-                }
-
-                val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
-                val messageText: TextView = dialogView.findViewById(R.id.loading_message)
-                val progressBar: android.widget.ProgressBar = dialogView.findViewById(R.id.loading_progress)
-                messageText.text = getString(R.string.accessibility_auto_granting)
-                progressBar.visibility = View.VISIBLE
-
-                val dialog = MaterialAlertDialogBuilder(this)
-                    .setView(dialogView)
-                    .setCancelable(false)
-                    .show()
-
-                lifecycleScope.launch {
-                    val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
-                    withContext(Dispatchers.Main) {
-                        dialog.dismiss()
-                        if (success && ForegroundDetectionService.isServiceEnabled(this@SettingsActivity)) {
-                            checkAndRequestNotificationPermission()
-                            prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, true).apply()
-                            ForegroundFirewallIndicatorService.start(this@SettingsActivity)
-                        } else {
-                            prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
-                            suppressFirewallIndicatorToggle = true
-                            switchFirewallIndicator.isChecked = false
-                            suppressFirewallIndicatorToggle = false
-                            Toast.makeText(
-                                this@SettingsActivity,
-                                getString(R.string.accessibility_auto_grant_failed),
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                }
-            } else {
-                prefs.edit().putBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false).apply()
-                ForegroundFirewallIndicatorService.stop(this)
             }
         }
 
@@ -775,7 +658,6 @@ class SettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchApplyRootRulesAfterReboot)
         makeCardClickableForSwitch(switchAppMonitor)
         makeCardClickableForSwitch(switchFloatingButton)
-        makeCardClickableForSwitch(switchFirewallIndicator)
     }
 
     private fun updateScreenLockDelaySummary() {
@@ -869,71 +751,25 @@ class SettingsActivity : BaseActivity() {
             autoEnablePreviousState = switchAutoEnableOnShizukuStart.isChecked
             if (switchAutoEnableOnShizukuStart.isChecked) {
                 switchAutoEnableOnShizukuStart.isChecked = false
-                prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false).apply()
+                sharedPreferences.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false).apply()
             }
         } else if (restoreAutoEnable && autoEnablePreviousState) {
             switchAutoEnableOnShizukuStart.isChecked = true
-            prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, true).apply()
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, true).apply()
         }
 
         if (!isRoot) {
             rootReapplyPreviousState = switchApplyRootRulesAfterReboot.isChecked
             if (switchApplyRootRulesAfterReboot.isChecked) {
                 switchApplyRootRulesAfterReboot.isChecked = false
-                prefs.edit().putBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, false).apply()
+                sharedPreferences.edit().putBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, false).apply()
             }
         } else if (restoreAutoEnable && rootReapplyPreviousState) {
             switchApplyRootRulesAfterReboot.isChecked = true
-            prefs.edit().putBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, true).apply()
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, true).apply()
         }
     }
 
-    private fun showAccessibilityPermissionDialog() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.accessibility_permission_title)
-            .setMessage(R.string.accessibility_permission_message)
-            .setCancelable(true)
-            .setPositiveButton(R.string.accept) { _, _ ->
-                // Mark as shown and accepted
-                sharedPreferences.edit()
-                    .putBoolean("accessibility_dialog_shown", true)
-                    .putBoolean("accessibility_dialog_accepted", true)
-                    .apply()
-                // Open accessibility settings
-                val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                startActivity(intent)
-            }
-            .setNegativeButton(R.string.decline) { _, _ ->
-                // Mark as shown and declined
-                sharedPreferences.edit()
-                    .putBoolean("accessibility_dialog_shown", true)
-                    .putBoolean("accessibility_dialog_accepted", false)
-                    .apply()
-                // Revert to default mode
-                revertToDefaultMode()
-            }
-            .setOnCancelListener {
-                // Mark as shown and declined if dismissed
-                sharedPreferences.edit()
-                    .putBoolean("accessibility_dialog_shown", true)
-                    .putBoolean("accessibility_dialog_accepted", false)
-                    .apply()
-                // Revert to default mode if dialog is dismissed
-                revertToDefaultMode()
-            }
-            .show()
-    }
-
-    private fun revertToDefaultMode() {
-        prefs.edit().putString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name).apply()
-        radioGroupFirewallMode.check(R.id.radioModeDefault)
-        updateFirewallModeUI(FirewallMode.DEFAULT)
-    }
-
-    /**
-     * Show info dialog about Whitelist mode and system apps behavior.
-     * Uses the same dialog_shizuku_prompt layout with a "don't show again" checkbox.
-     */
     private fun showWhitelistInfoDialog() {
         val showPrompt = sharedPreferences.getBoolean("show_whitelist_prompt", true)
         if (!showPrompt) return
@@ -951,6 +787,50 @@ class SettingsActivity : BaseActivity() {
             .setPositiveButton(R.string.ok) { _, _ ->
                 if (checkbox.isChecked) {
                     sharedPreferences.edit().putBoolean("show_whitelist_prompt", false).apply()
+                }
+            }
+            .show()
+    }
+
+    private fun showSmartForegroundInfoDialog() {
+        val showPrompt = sharedPreferences.getBoolean("show_smart_foreground_prompt", true)
+        if (!showPrompt) return
+
+        val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
+        val messageText: TextView = promptView.findViewById(R.id.shizuku_prompt_message_text)
+        val checkbox: android.widget.CheckBox = promptView.findViewById(R.id.shizuku_prompt_do_not_show)
+
+        messageText.text = getString(R.string.smart_foreground_info_enabled)
+        checkbox.text = getString(R.string.dont_show_again)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.firewall_mode_smart_foreground)
+            .setView(promptView)
+            .setPositiveButton(R.string.ok) { _, _ ->
+                if (checkbox.isChecked) {
+                    sharedPreferences.edit().putBoolean("show_smart_foreground_prompt", false).apply()
+                }
+            }
+            .show()
+    }
+
+    private fun showHybridModeInfoDialog() {
+        val showPrompt = sharedPreferences.getBoolean("show_hybrid_mode_prompt", true)
+        if (!showPrompt) return
+
+        val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
+        val messageText: TextView = promptView.findViewById(R.id.shizuku_prompt_message_text)
+        val checkbox: android.widget.CheckBox = promptView.findViewById(R.id.shizuku_prompt_do_not_show)
+
+        messageText.text = getString(R.string.hybrid_mode_info_enabled)
+        checkbox.text = getString(R.string.dont_show_again)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.firewall_mode_hybrid)
+            .setView(promptView)
+            .setPositiveButton(R.string.ok) { _, _ ->
+                if (checkbox.isChecked) {
+                    sharedPreferences.edit().putBoolean("show_hybrid_mode_prompt", false).apply()
                 }
             }
             .show()
@@ -1070,8 +950,8 @@ class SettingsActivity : BaseActivity() {
         val btnApply = dialogView.findViewById<MaterialButton>(R.id.btnApplyFont)
         val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancelFont)
 
-        val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        val currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
+        val sharedPreferences = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        val currentFont = sharedPreferences.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         when (currentFont) {
             "ndot" -> radioGroup.check(R.id.radio_ndot)
             else -> radioGroup.check(R.id.radio_default)
@@ -1084,7 +964,7 @@ class SettingsActivity : BaseActivity() {
                 else -> "default"
             }
 
-            prefs.edit().putString(MainActivity.KEY_SELECTED_FONT, fontKey).apply()
+            sharedPreferences.edit().putString(MainActivity.KEY_SELECTED_FONT, fontKey).apply()
             tvCurrentFont.text = if (fontKey == "ndot") getString(R.string.font_ndot) else getString(R.string.font_default)
 
             dialog.dismiss()
@@ -1115,9 +995,9 @@ class SettingsActivity : BaseActivity() {
                             )
                         )
                     )
-                    put("app_prefs", exportSharedPreferences("app_prefs"))
+                    put("app_sharedPreferences", exportSharedPreferences("app_sharedPreferences"))
                     put(LadbManager.PREFS_NAME, exportSharedPreferences(LadbManager.PREFS_NAME))
-                    put("daemon_prefs", exportSharedPreferences("daemon_prefs"))
+                    put("daemon_sharedPreferences", exportSharedPreferences("daemon_sharedPreferences"))
                 }
 
                 val exportJson = JSONObject().apply {
@@ -1165,11 +1045,11 @@ class SettingsActivity : BaseActivity() {
                     importLegacyBackup(obj)
                 }
 
-                val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-                sanitizeSelectedApps(prefs)
+                val sharedPreferences = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                sanitizeSelectedApps(sharedPreferences)
 
                 // 5. Update Runtime State (App Monitor Service)
-                val isMonitorEnabled = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
+                val isMonitorEnabled = sharedPreferences.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
                 val monitorIntent = Intent(this@SettingsActivity, AppMonitorService::class.java)
                 try {
                     if (isMonitorEnabled) {
@@ -1186,7 +1066,7 @@ class SettingsActivity : BaseActivity() {
                 }
 
                 // 6. Mark onboarding as complete
-                getSharedPreferences("app_prefs", Context.MODE_PRIVATE).edit()
+                getSharedPreferences("app_sharedPreferences", Context.MODE_PRIVATE).edit()
                     .putBoolean("onboarding_complete", true)
                     .apply()
 
@@ -1205,15 +1085,15 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun exportSharedPreferences(
-        prefsName: String,
+        sharedPreferencesName: String,
         excludedKeys: Set<String> = emptySet()
     ): JSONObject {
-        val prefsMap = getSharedPreferences(prefsName, Context.MODE_PRIVATE).all
+        val sharedPreferencesMap = getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE).all
         val entries = JSONArray()
 
-        for (key in prefsMap.keys.sorted()) {
+        for (key in sharedPreferencesMap.keys.sorted()) {
             if (key in excludedKeys) continue
-            val value = prefsMap[key] ?: continue
+            val value = sharedPreferencesMap[key] ?: continue
             val entry = JSONObject().put("key", key)
 
             when (value) {
@@ -1263,19 +1143,19 @@ class SettingsActivity : BaseActivity() {
 
         var success = false
         while (fileNames.hasNext()) {
-            val prefsName = fileNames.next()
-            val fileObj = files.optJSONObject(prefsName)
+            val sharedPreferencesName = fileNames.next()
+            val fileObj = files.optJSONObject(sharedPreferencesName)
             if (fileObj == null) {
-                android.util.Log.w("SettingsActivity", "Import warning: missing object for $prefsName")
+                android.util.Log.w("SettingsActivity", "Import warning: missing object for $sharedPreferencesName")
                 continue
             }
             val entries = fileObj.optJSONArray("entries")
             if (entries == null) {
-                android.util.Log.w("SettingsActivity", "Import warning: missing entries for $prefsName")
+                android.util.Log.w("SettingsActivity", "Import warning: missing entries for $sharedPreferencesName")
                 continue
             }
 
-            val editor = getSharedPreferences(prefsName, Context.MODE_PRIVATE).edit()
+            val editor = getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE).edit()
             for (i in 0 until entries.length()) {
                 val entry = entries.optJSONObject(i) ?: continue
                 applyPreferenceEntry(editor, entry)
@@ -1287,8 +1167,8 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun importLegacyBackup(obj: JSONObject) {
-        val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        val editor = prefs.edit()
+        val sharedPreferences = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
 
         // Legacy selected/favorites arrays.
         val selectedKey = if (obj.has("selected")) "selected" else MainActivity.KEY_SELECTED_APPS
@@ -1380,10 +1260,10 @@ class SettingsActivity : BaseActivity() {
         return result
     }
 
-    private fun sanitizeSelectedApps(prefs: SharedPreferences) {
-        val selected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+    private fun sanitizeSelectedApps(sharedPreferences: SharedPreferences) {
+        val selected = sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
         val filtered = selected.filterNot { isShizukuPackage(it) }.toSet()
-        prefs.edit()
+        sharedPreferences.edit()
             .putStringSet(MainActivity.KEY_SELECTED_APPS, filtered)
             .putInt(MainActivity.KEY_SELECTED_COUNT, filtered.size)
             .apply()
@@ -1527,7 +1407,7 @@ class SettingsActivity : BaseActivity() {
                     Toast.makeText(this@SettingsActivity, getString(R.string.firewall_cleanup_warning), Toast.LENGTH_LONG).show()
                 }
 
-                // Prefer system-level data clear because it remains correct as new prefs/files are added.
+                // Prefer system-level data clear because it remains correct as new sharedPreferences/files are added.
                 val clearRequested = requestSystemDataClear()
                 if (clearRequested) {
                     Toast.makeText(this@SettingsActivity, getString(R.string.app_reset_complete), Toast.LENGTH_SHORT).show()
@@ -1562,15 +1442,15 @@ class SettingsActivity : BaseActivity() {
 
     private suspend fun performBestEffortFirewallCleanup(): Boolean {
         return try {
-            val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-            if (!prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)) return true
+            val sharedPreferences = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+            if (!sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)) return true
 
-            val activePackages = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
-            val selectedApps = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+            val activePackages = sharedPreferences.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
+            val selectedApps = sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
             val allPackages = (activePackages + selectedApps)
                 .filterNot { it == packageName || ShizukuPackageResolver.isShizukuPackage(this, it) }
 
-            val mode = prefs.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+            val mode = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
             val canPerformCleanup = when (mode) {
                 "SHIZUKU" -> {
                     try {
@@ -1655,7 +1535,7 @@ class SettingsActivity : BaseActivity() {
 
     private fun clearAllSharedPrefs(context: Context): Boolean {
         var ok = true
-        val sharedPrefsDir = File(context.filesDir.parentFile, "shared_prefs")
+        val sharedPrefsDir = File(context.filesDir.parentFile, "shared_sharedPreferences")
         val prefNames = sharedPrefsDir.listFiles()
             ?.mapNotNull { file ->
                 val name = file.name
@@ -1701,116 +1581,6 @@ class SettingsActivity : BaseActivity() {
             }
         }
         return file.delete() || !file.exists()
-    }
-
-    private fun showAccessibilityAutoGrantDialog(firewallMode: FirewallMode) {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
-        val messageText: TextView = dialogView.findViewById(R.id.loading_message)
-        val progressBar: android.widget.ProgressBar = dialogView.findViewById(R.id.loading_progress)
-        
-        messageText.text = getString(R.string.accessibility_auto_granting)
-        progressBar.visibility = View.VISIBLE
-        
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setView(dialogView)
-            .setCancelable(false)
-            .show()
-        
-        // Background task to enable accessibility service
-        lifecycleScope.launch {
-            val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
-            
-            withContext(Dispatchers.Main) {
-                dialog.dismiss()
-                
-                if (success) {
-                    // Mark as shown and accepted
-                    sharedPreferences.edit()
-                        .putBoolean("accessibility_dialog_shown", true)
-                        .putBoolean("accessibility_dialog_accepted", true)
-                        .apply()
-                    
-                    // Update UI
-                    updateFirewallModeUI(firewallMode)
-                    Toast.makeText(
-                        this@SettingsActivity,
-                        getString(R.string.accessibility_auto_enabled),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    // Failed to auto-grant - show error dialog
-                    MaterialAlertDialogBuilder(this@SettingsActivity)
-                        .setTitle(R.string.accessibility_permission_title)
-                        .setMessage(R.string.accessibility_auto_grant_failed)
-                        .setPositiveButton(R.string.open_settings) { _, _ ->
-                            // Open accessibility settings for manual enable
-                            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                            startActivity(intent)
-                        }
-                        .setNegativeButton(R.string.cancel) { _, _ ->
-                            // Revert to default mode
-                            revertToDefaultMode()
-                        }
-                        .show()
-                }
-            }
-        }
-    }
-
-    private fun retryAccessibilityGrant() {
-        // Show full loading dialog, same as initial attempt
-        val dialogView = layoutInflater.inflate(R.layout.dialog_loading, null)
-        val messageText: TextView = dialogView.findViewById(R.id.loading_message)
-        val progressBar: android.widget.ProgressBar = dialogView.findViewById(R.id.loading_progress)
-        
-        messageText.text = getString(R.string.accessibility_auto_granting)
-        progressBar.visibility = View.VISIBLE
-        
-        val dialog = MaterialAlertDialogBuilder(this)
-            .setView(dialogView)
-            .setCancelable(false)
-            .show()
-        
-        lifecycleScope.launch {
-            val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
-            
-            withContext(Dispatchers.Main) {
-                dialog.dismiss()
-                
-                if (success) {
-                    // Mark as shown and accepted
-                    sharedPreferences.edit()
-                        .putBoolean("accessibility_dialog_shown", true)
-                        .putBoolean("accessibility_dialog_accepted", true)
-                        .apply()
-                    
-                    // Update UI - hide warning
-                    val mode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
-                    updateFirewallModeUI(mode)
-                    
-                    Toast.makeText(
-                        this@SettingsActivity,
-                        getString(R.string.accessibility_auto_enabled),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    // Failed - show error dialog
-                    MaterialAlertDialogBuilder(this@SettingsActivity)
-                        .setTitle(R.string.accessibility_permission_title)
-                        .setMessage(R.string.accessibility_auto_grant_failed)
-                        .setPositiveButton(R.string.open_settings) { _, _ ->
-                            // Open accessibility settings for manual enable
-                            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                            startActivity(intent)
-                        }
-                        .setNegativeButton(R.string.cancel) { _, _ ->
-                            // Revert to default mode
-                            revertToDefaultMode()
-                        }
-                        .show()
-                }
-            }
-        }
     }
 
 }

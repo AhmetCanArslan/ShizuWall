@@ -16,6 +16,6 @@ object ShellExecutorBlocking {
     }
 
     fun runBlockingSuccess(context: Context, command: String): Boolean {
-        return execBlocking(context, command).success
+        return execBlocking(context, command).isEffectivelySuccess
     }
 }

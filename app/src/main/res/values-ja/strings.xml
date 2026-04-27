@@ -144,6 +144,8 @@
     <string name="app_monitor_service_description">新しくインストールされたアプリを検出し、通知を表示する</string>
     <string name="new_app_installed">新しいアプリがインストールされました: %s</string>
     <string name="firewall_app">ファイアウォールアプリ</string>
+    <string name="allow_app">許可</string>
+    <string name="allowing_app">%s を許可中</string>
     <string name="add_to_selected_list">選択リストに追加</string>
     <string name="app_monitor_notification_channel_name">アプリ監視 (サービス)</string>
     <string name="app_monitor_notification_channel_description">新しいアプリを監視するためのバックグラウンドサービス</string>
@@ -308,6 +310,7 @@
     <string name="accessibility_service_label">ShizuWall フォアグラウンドモニター</string>
     <string name="accessibility_auto_enabled">ユーザー補助サービスが自動的に有効になりました</string>
     <string name="smart_foreground_info_enabled">スマートフォアグラウンドモードでは、現在使用しているアプリのみにネットワークアクセスを許可します。他のすべてのアプリはブロックされます。\n\nこのモードを選択すると、必要なユーザー補助の権限が自動的に付与されます。</string>
+    <string name="hybrid_mode_info_enabled">ハイブリッドモードは、アプリごとに3つのサブモード（デフォルトブロック、スマートフォアグラウンド、画面ロック）を組み合わせています。各アプリを個別に設定できます。\n\nファイアウォールを有効にすると、必要なユーザー補助の権限が自動的に付与されます。</string>
     <string name="smart_foreground_info_deferred">スマートフォアグラウンドモードでは、現在使用しているアプリのみにネットワークアクセスを許可します。他のすべてのアプリはブロックされます。\n\nShizuku/デーモンが実行中、またはファイアウォールを有効にしたときに、ユーザー補助の権限が自動的に付与されます。</string>
     <string name="firewall_enabled_smart_foreground">ファイアウォールが有効になりました (スマートフォアグラウンドモード)</string>
     <string name="accessibility_manual_enable_needed">ユーザー補助サービスを自動的に有効にできませんでした。デバイスの設定から手動で有効にしてください。</string>
@@ -364,31 +367,17 @@
     <string name="notification_permission_background_request">バックグラウンドで実行し続けるには権限を付与してください。</string>
 
     <!-- Auto-added missing translations (English fallback) -->
-    <string name="firewall_indicator_content_description">フォアグラウンドファイアウォールインジケーター</string>
-    <string name="firewall_indicator_size">インジケーターのサイズ</string>
     <string name="screen_lock_mode_notification_channel_name">画面ロックモード (サービス)</string>
     <string name="adb_broadcast_quick_reference">コピー可能な値とコマンドのクイックリファレンス。</string>
-    <string name="firewall_indicator">ファイアウォールインジケーター</string>
     <string name="screen_lock_delay_title">ロックの遅延</string>
     <string name="screen_lock_mode_notification_text">ファイアウォールルールを適用するためのロック監視</string>
     <string name="firewall_mode_screen_lock_description">ロック時に選択されたアプリをブロック</string>
-    <string name="firewall_indicator_settings">インジケーター設定</string>
     <string name="screen_lock_delay_value">ロックの %1$d 秒後に有効化</string>
-    <string name="firewall_indicator_description">現在のアプリがブロックされているかを表示します</string>
     <string name="firewall_mode_screen_lock">画面ロックモード</string>
     <string name="screen_lock_mode_notification_title">画面ロックモード</string>
-    <string name="firewall_indicator_settings_description">インジケーターのサイズと位置を調整します。</string>
     <string name="increase">増加</string>
-    <string name="firewall_indicator_y">Y座標</string>
     <string name="screen_lock_mode_operation_failed">操作に失敗しました</string>
-    <string name="firewall_indicator_notification_title">ファイアウォールインジケーター</string>
     <string name="screen_lock_mode_notification_channel_description">画面ロック自動化のためのバックグラウンドサービス</string>
-    <string name="firewall_indicator_overlay_permission_required">オーバーレイ表示の権限が必要です</string>
     <string name="decrease">減少</string>
-    <string name="firewall_indicator_notification_channel_description">インジケーター用のバックグラウンドサービス</string>
-    <string name="firewall_indicator_settings_title">インジケーター設定</string>
-    <string name="firewall_indicator_notification_text">ファイアウォールの状態を監視中</string>
-    <string name="firewall_indicator_notification_channel_name">インジケーター (サービス)</string>
     <string name="screen_lock_delay_dialog_title">画面ロックの遅延</string>
-    <string name="firewall_indicator_x">X座標</string>
 </resources>

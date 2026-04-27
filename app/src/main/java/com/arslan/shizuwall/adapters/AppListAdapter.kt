@@ -1,14 +1,10 @@
 package com.arslan.shizuwall.adapters
 
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.util.LruCache
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.android.material.button.MaterialButton
@@ -21,11 +17,11 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.core.graphics.createBitmap
 import com.arslan.shizuwall.R
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import androidx.core.graphics.ColorUtils
+import com.arslan.shizuwall.utils.UiUtils
 
 class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
     override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
@@ -89,11 +85,11 @@ class AppListAdapter(
             if (cached != null) {
                 appIcon.setImageBitmap(cached)
             } else {
-                getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
+                UiUtils.getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
                     try {
                         val pm = itemView.context.packageManager
                         val drawable = pm.getApplicationIcon(pkg)
-                        val bitmap = drawableToBitmap(drawable)
+                        val bitmap = UiUtils.drawableToBitmap(drawable)
                         iconCache.put(pkg, bitmap)
                         withContext(Dispatchers.Main) {
                             if (appIcon.tag == pkg) {
@@ -152,36 +148,7 @@ class AppListAdapter(
                 }
                 
                 modeDropdownText.setOnClickListener { view ->
-                    val popupMenu = android.widget.PopupMenu(view.context, view)
-                    popupMenu.menu.add(0, 0, 0, view.context.getString(R.string.hybrid_mode_default_block)).setIcon(R.drawable.wifi_off_24px)
-                    popupMenu.menu.add(0, 1, 1, view.context.getString(R.string.hybrid_mode_smart_foreground)).setIcon(R.drawable.intelligence_24px)
-                    popupMenu.menu.add(0, 2, 2, view.context.getString(R.string.hybrid_mode_screen_lock)).setIcon(R.drawable.mobile_lock_portrait_24px)
-                    
-                    // Force show icons in PopupMenu
-                    try {
-                        val fields = popupMenu.javaClass.declaredFields
-                        for (field in fields) {
-                            if ("mPopup" == field.name) {
-                                field.isAccessible = true
-                                val menuPopupHelper = field.get(popupMenu)
-                                val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
-                                val setForceIcons = classPopupHelper.getMethod("setForceShowIcon", java.lang.Boolean.TYPE)
-                                setForceIcons.invoke(menuPopupHelper, true)
-                                break
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-
-                    popupMenu.setOnMenuItemClickListener { menuItem ->
-                        val newMode = menuItem.itemId
-                        if (appInfo.appFirewallMode != newMode) {
-                            onAppClick(appInfo.copy(appFirewallMode = newMode))
-                        }
-                        true
-                    }
-                    popupMenu.show()
+                    showModePopupMenu(view, appInfo)
                 }
             } else {
                 // disable interactions while firewall active
@@ -195,32 +162,39 @@ class AppListAdapter(
         }
     }
 
-    private fun drawableToBitmap(drawable: Drawable): Bitmap {
-        if (drawable is BitmapDrawable) {
-            drawable.bitmap?.let { return it }
-        }
-        val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else 48
-        val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else 48
-        val bitmap = createBitmap(width, height)
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return bitmap
-    }
-
-    private fun getLifecycleOwner(context: android.content.Context): LifecycleOwner? {
-        var ctx = context
-        while (ctx is android.content.ContextWrapper) {
-            if (ctx is LifecycleOwner) return ctx
-            ctx = ctx.baseContext
-        }
-        return null
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_app, parent, false)
         return AppViewHolder(view)
+    }
+
+    private fun showModePopupMenu(anchor: android.view.View, appInfo: AppInfo) {
+        val popupMenu = android.widget.PopupMenu(anchor.context, anchor)
+        popupMenu.menu.add(0, 0, 0, anchor.context.getString(R.string.hybrid_mode_default_block)).setIcon(R.drawable.wifi_off_24px)
+        popupMenu.menu.add(0, 1, 1, anchor.context.getString(R.string.hybrid_mode_smart_foreground)).setIcon(R.drawable.intelligence_24px)
+        popupMenu.menu.add(0, 2, 2, anchor.context.getString(R.string.hybrid_mode_screen_lock)).setIcon(R.drawable.mobile_lock_portrait_24px)
+        forcePopupMenuIcons(popupMenu)
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            if (appInfo.appFirewallMode != menuItem.itemId) {
+                onAppClick(appInfo.copy(appFirewallMode = menuItem.itemId))
+            }
+            true
+        }
+        popupMenu.show()
+    }
+
+    private fun forcePopupMenuIcons(popupMenu: android.widget.PopupMenu) {
+        try {
+            for (field in popupMenu.javaClass.declaredFields) {
+                if ("mPopup" == field.name) {
+                    field.isAccessible = true
+                    val menuPopupHelper = field.get(popupMenu)
+                    val clazz = Class.forName(menuPopupHelper.javaClass.name)
+                    clazz.getMethod("setForceShowIcon", java.lang.Boolean.TYPE).invoke(menuPopupHelper, true)
+                    break
+                }
+            }
+        } catch (_: Exception) {}
     }
 
     override fun onBindViewHolder(holder: AppViewHolder, position: Int) {

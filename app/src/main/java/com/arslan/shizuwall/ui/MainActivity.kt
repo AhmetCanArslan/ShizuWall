@@ -48,6 +48,8 @@ import com.arslan.shizuwall.adapters.ErrorDetailsAdapter
 import com.arslan.shizuwall.model.AppInfo
 import com.arslan.shizuwall.widgets.FirewallWidgetProvider
 import com.arslan.shizuwall.repo.FirewallStateRepository
+import com.arslan.shizuwall.daemon.PersistentDaemonManager
+import com.arslan.shizuwall.utils.WhitelistFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -55,7 +57,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
-import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
 import kotlin.comparisons.*
 import com.arslan.shizuwall.adapters.ErrorEntry
@@ -67,7 +68,6 @@ import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.radiobutton.MaterialRadioButton
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -98,10 +98,6 @@ class MainActivity : BaseActivity() {
         const val DEFAULT_SCREEN_LOCK_DELAY_SECONDS = 2
         const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"  // Current foreground app in smart mode
         const val KEY_LAST_FOREGROUND_APP = "last_foreground_app"
-        const val KEY_FIREWALL_INDICATOR_ENABLED = "firewall_indicator_enabled"
-        const val KEY_FIREWALL_INDICATOR_X = "firewall_indicator_x"
-        const val KEY_FIREWALL_INDICATOR_Y = "firewall_indicator_y"
-        const val KEY_FIREWALL_INDICATOR_SIZE = "firewall_indicator_size"
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
         const val KEY_APPLY_ROOT_RULES_AFTER_REBOOT = "apply_root_rules_after_reboot"
         const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"
@@ -220,7 +216,8 @@ class MainActivity : BaseActivity() {
 
                 val selectedAppsList = appList.filter { targetPkgs.contains(it.packageName) }
                 if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                    showFirewallConfirmDialog(if (selectedAppsList.isNotEmpty()) selectedAppsList else emptyList())
+                    val allowPkgs = getWhitelistAllowPackages(selectedPkgs)
+                    showFirewallConfirmDialog(if (selectedAppsList.isNotEmpty()) selectedAppsList else emptyList(), targetPkgs, allowPkgs)
                 } else {
                     pendingAutoEnable = true
                     pendingAutoEnableSelectedApps = selectedPkgs
@@ -324,11 +321,6 @@ class MainActivity : BaseActivity() {
             } else {
                 startService(monitorIntent)
             }
-        }
-
-        // Start Foreground Firewall Indicator if enabled
-        if (sharedPreferences.getBoolean(KEY_FIREWALL_INDICATOR_ENABLED, false)) {
-            com.arslan.shizuwall.services.ForegroundFirewallIndicatorService.start(this)
         }
 
         // Start Floating Button Service if enabled
@@ -484,12 +476,13 @@ class MainActivity : BaseActivity() {
                             val pkgs = loadSelectedApps().toList()
                             if (pkgs.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                                 val targetPkgs = getTargetPackagesToBlock(pkgs)
+                                val allowPkgs = getWhitelistAllowPackages(pkgs)
                                 if (sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
-                                    applyFirewallState(true, targetPkgs)
+                                    applyFirewallState(true, targetPkgs, allowPkgs)
                                 } else if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
                                     val selectedAppsList = appList.filter { targetPkgs.contains(it.packageName) }
                                     runOnUiThread {
-                                        showFirewallConfirmDialog(if (selectedAppsList.isNotEmpty()) selectedAppsList else emptyList())
+                                        showFirewallConfirmDialog(if (selectedAppsList.isNotEmpty()) selectedAppsList else emptyList(), targetPkgs, allowPkgs)
                                     }
                                 } else {
                                     pendingAutoEnable = true
@@ -587,21 +580,25 @@ class MainActivity : BaseActivity() {
         appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
         loadInstalledApps()
         
-        // Auto-enable accessibility service if revoked (e.g. after debug APK reinstall)
-        val isIndicatorEnabled = sharedPreferences.getBoolean(KEY_FIREWALL_INDICATOR_ENABLED, false)
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || isIndicatorEnabled || firewallMode == FirewallMode.FOCUS_TRACKER) {
+        // If firewall is ON and mode requires accessibility, ensure it's enabled
+        if (isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND || 
+            firewallMode == FirewallMode.HYBRID || 
+            firewallMode == FirewallMode.FOCUS_TRACKER || 
+            sharedPreferences.getBoolean(KEY_FIREWALL_INDICATOR_ENABLED, false))) {
+            
             if (!ForegroundDetectionService.isServiceEnabled(this)) {
-                // Try to auto-enable via Shizuku/LADB shell
                 lifecycleScope.launch {
                     val success = ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
-                    if (success) {
-                        Toast.makeText(this@MainActivity, getString(R.string.accessibility_auto_enabled), Toast.LENGTH_SHORT).show()
-                    } else {
+                    if (!success) {
                         Toast.makeText(this@MainActivity, getString(R.string.accessibility_manual_enable_needed), Toast.LENGTH_LONG).show()
                     }
                 }
             }
-        } else {
+        } else if (!isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND || 
+                   firewallMode == FirewallMode.HYBRID || 
+                   firewallMode == FirewallMode.FOCUS_TRACKER)) {
+            
+            // Firewall off but accessibility enabled — clean up and disable it
             if (ForegroundDetectionService.isServiceEnabled(this)) {
                 lifecycleScope.launch {
                     ForegroundDetectionService.disableServiceViaShell(this@MainActivity)
@@ -715,7 +712,8 @@ class MainActivity : BaseActivity() {
                             suppressToggleListener = true
                             firewallToggle.isChecked = true
                             suppressToggleListener = false
-                            showFirewallConfirmDialog(selectedApps)
+                            val allowPkgs = getWhitelistAllowPackages(selectedAppPkgs)
+                            showFirewallConfirmDialog(selectedApps, selectedAppPkgs, allowPkgs)
                         } else {
                             suppressToggleListener = true
                             firewallToggle.isChecked = false
@@ -736,13 +734,14 @@ class MainActivity : BaseActivity() {
                         pendingAutoEnableSelectedApps = null
                         if (pkgs.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                             val targetPkgs = getTargetPackagesToBlock(pkgs)
+                            val allowPkgs = getWhitelistAllowPackages(pkgs)
                             val selectedApps = appList.filter { targetPkgs.contains(it.packageName) }
                             if (sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
-                                applyFirewallState(true, targetPkgs)
+                                applyFirewallState(true, targetPkgs, allowPkgs)
                             } else if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
                                 // Show confirmation dialog in foreground
                                 if (selectedApps.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
-                                    showFirewallConfirmDialog(selectedApps)
+                                    showFirewallConfirmDialog(selectedApps, targetPkgs, allowPkgs)
                                 }
                             } else {
                                 // Not in the foreground; keep pending and rely on onResume to show dialog
@@ -797,76 +796,24 @@ class MainActivity : BaseActivity() {
         }
 
         if (workingMode == "LADB") {
-            val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
+            val daemonManager = PersistentDaemonManager(this)
             if (daemonManager.isDaemonRunning()) return true
 
-            val d = MaterialAlertDialogBuilder(this)
+            MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.working_mode_ladb))
                 .setMessage(getString(R.string.daemon_not_running))
                 .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
-                    try {
-                        startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java))
-                    } catch (_: Exception) {
-                    }
+                    try { startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java)) } catch (_: Exception) {}
                 }
                 .setNegativeButton(getString(R.string.cancel), null)
-                .create()
-            d.show()
+                .show()
             return false
         }
 
         // First ensure Shizuku binder is reachable. If it's not running, show a friendly dialog prompting the user to start/install Shizuku.
         try {
             if (!Shizuku.pingBinder()) {
-                val d = MaterialAlertDialogBuilder(this)
-                     .setTitle(getString(R.string.shizuku_not_running_title))
-                     .setMessage(getString(R.string.shizuku_not_running_message))
-                      .setPositiveButton(getString(R.string.open_shizuku)) { _, _ ->
-                         // Try to open the Shizuku app if present, otherwise open Play Store, otherwise fallback to GitHub.
-                         val pm = packageManager
-                         val candidates = ShizukuPackageResolver.getLaunchCandidates(this@MainActivity)
-                         var launched = false
-                         for (pkg in candidates) {
-                            val launch = pm.getLaunchIntentForPackage(pkg)
-                            if (launch != null) {
-                                startActivity(launch)
-                                launched = true
-                                break
-                            }
-                        }
-                        if (!launched) {
-                            var openedPlay = false
-                            for (pkgId in candidates) {
-                                try {
-                                    val playIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$pkgId"))
-                                    startActivity(playIntent)
-                                    openedPlay = true
-                                    break
-                                } catch (e: ActivityNotFoundException) {
-                                    // Play Store app not available on device, will fallback to web below
-                                } catch (e: Exception) {
-                                    // details page not found or other error, try next candidate
-                                }
-                            }
-                            if (!openedPlay) {
-                                try {
-                                    // Open Play Store search for "Shizuku" to avoid "not found" detail pages
-                                    val searchIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=Shizuku"))
-                                    startActivity(searchIntent)
-                                } catch (e: Exception) {
-                                    try {
-                                        val web = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/RikkaApps/Shizuku"))
-                                        startActivity(web)
-                                    } catch (_: Exception) {
-                                        // ignore
-                                    }
-                                }
-                            }
-                        }
-                    }
-                     .setNegativeButton(getString(R.string.cancel), null)
-                     .create()
-                d.show()
+                showShizukuNotRunningDialog()
                 return false
             }
         } catch (e: Exception) {
@@ -987,7 +934,7 @@ class MainActivity : BaseActivity() {
                                         val cmd = if (shouldBlock) "cmd connectivity set-package-networking-enabled false $pkg"
                                                   else "cmd connectivity set-package-networking-enabled true $pkg"
                                         val res = runCommandDetailed(cmd)
-                                        if (res.success) successful.add(pkg)
+                                        if (res.isEffectivelySuccess) successful.add(pkg)
                                         else {
                                             failed.add(pkg)
                                             lastOperationErrorDetails[pkg] = res.stderr.ifEmpty { res.stdout }
@@ -1043,18 +990,29 @@ class MainActivity : BaseActivity() {
                 sortAndFilterApps(preserveScrollPosition = true)
 
                 // Apply rule immediately if firewall is enabled
-                if (isFirewallEnabled && firewallMode.allowsDynamicSelection()) {
+                // Skip for HYBRID mode - Smart Foreground and Screen Lock handled dynamically
+                if (isFirewallEnabled && firewallMode == FirewallMode.HYBRID && appInfo.appFirewallMode != 0) {
+                    // HYBRID mode with per-app mode - reconcile services immediately
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        // Reconcile screen lock state if switching to/from Screen Lock mode
+                        if (appInfo.appFirewallMode == 2) {
+                            ScreenLockMonitorService.sync(this@MainActivity)
+                        }
+                    }
+                } else if (isFirewallEnabled && firewallMode.allowsDynamicSelection()) {
                     val pkg = appInfo.packageName
                     val isSelected = appInfo.isSelected
+                    
                     lifecycleScope.launch(Dispatchers.IO) {
                         lastOperationErrorDetails.clear()
+                        
                         val shouldBlock = if (firewallMode == FirewallMode.WHITELIST) !isSelected else isSelected
                         val res = if (shouldBlock) {
-                                runCommandDetailed("cmd connectivity set-package-networking-enabled false $pkg")
-                            } else {
-                                runCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
-                            }
-                        val success = res.success
+                            runCommandDetailed("cmd connectivity set-package-networking-enabled false $pkg")
+                        } else {
+                            runCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
+                        }
+                        val success = res.isEffectivelySuccess
                         
                         withContext(Dispatchers.Main) {
                             if (success) {
@@ -1142,7 +1100,7 @@ class MainActivity : BaseActivity() {
                                     "cmd connectivity set-package-networking-enabled true $pkg"
                                 }
                                 val res = runCommandDetailed(cmd)
-                                if (res.success) successful.add(pkg)
+                                if (res.isEffectivelySuccess) successful.add(pkg)
                                 else {
                                     failed.add(pkg)
                                     lastOperationErrorDetails[pkg] = res.stderr.ifEmpty { res.stdout }
@@ -1412,14 +1370,17 @@ class MainActivity : BaseActivity() {
             if (suppressToggleListener) return@setOnCheckedChangeListener
             if (isChecked) {
                 val selectedApps = appList.filter { it.isSelected }
-                val targetApps = if (firewallMode == FirewallMode.WHITELIST) {
-                    val showSys = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
-                    appList.filter { !it.isSelected && (showSys || !it.isSystem) }
+                val whitelistAllowPkgs = mutableListOf<String>()
+                val targetAppPkgs = if (firewallMode == FirewallMode.WHITELIST) {
+                    val selectedPkgs = selectedApps.map { it.packageName }
+                    val result = WhitelistFilter.compute(this, selectedPkgs, showSystemApps)
+                    whitelistAllowPkgs.addAll(result.toAllow)
+                    result.toBlock
                 } else {
-                    selectedApps
+                    selectedApps.map { it.packageName }
                 }
                 
-                if (targetApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
+                if (targetAppPkgs.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                     Toast.makeText(this, getString(R.string.select_at_least_one_app), Toast.LENGTH_SHORT).show()
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
@@ -1429,31 +1390,11 @@ class MainActivity : BaseActivity() {
 
                 val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
                 if (workingMode == "LADB") {
-                    val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
-
-                    // If daemon is running, proceed
-                    if (daemonManager.isDaemonRunning()) {
-                        showFirewallConfirmDialog(targetApps)
-                        return@setOnCheckedChangeListener
+                    if (!showLadbDaemonDialog { showFirewallConfirmDialog(selectedApps, targetAppPkgs, whitelistAllowPkgs) }) {
+                        suppressToggleListener = true
+                        firewallToggle.isChecked = false
+                        suppressToggleListener = false
                     }
-
-                    // Daemon not running — prompt to open Daemon setup
-                    val d = MaterialAlertDialogBuilder(this)
-                        .setTitle(getString(R.string.working_mode_ladb))
-                        .setMessage(getString(R.string.daemon_not_running))
-                        .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
-                            try {
-                                startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java))
-                            } catch (_: Exception) {
-                            }
-                        }
-                        .setNegativeButton(getString(R.string.cancel), null)
-                        .create()
-                    d.show()
-
-                    suppressToggleListener = true
-                    firewallToggle.isChecked = false
-                    suppressToggleListener = false
                     return@setOnCheckedChangeListener
                 }
 
@@ -1461,7 +1402,7 @@ class MainActivity : BaseActivity() {
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
                     // Permission not granted, mark that we're waiting for it
                     pendingToggleEnable = true
-                    pendingEnableSelectedApps = targetApps.map { it.packageName }
+                    pendingEnableSelectedApps = targetAppPkgs
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
@@ -1469,7 +1410,7 @@ class MainActivity : BaseActivity() {
                 }
                 // Permission already granted, proceed
                 pendingToggleEnable = false
-                showFirewallConfirmDialog(targetApps)
+                showFirewallConfirmDialog(selectedApps, targetAppPkgs, whitelistAllowPkgs)
             } else {
                 if (!isFirewallEnabled) {
                     return@setOnCheckedChangeListener
@@ -1477,29 +1418,11 @@ class MainActivity : BaseActivity() {
 
                 val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
                 if (workingMode == "LADB") {
-                    val daemonManager = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
-                    if (!daemonManager.isDaemonRunning()) {
-                        val d = MaterialAlertDialogBuilder(this)
-                            .setTitle(getString(R.string.working_mode_ladb))
-                            .setMessage(getString(R.string.daemon_not_running))
-                            .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
-                                try {
-                                    startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java))
-                                } catch (_: Exception) {
-                                }
-                            }
-                            .setNegativeButton(getString(R.string.cancel), null)
-                            .create()
-                        d.show()
-
+                    if (!showLadbDaemonDialog { applyFirewallState(false, activeFirewallPackages.toList()) }) {
                         suppressToggleListener = true
                         firewallToggle.isChecked = true
                         suppressToggleListener = false
-                        return@setOnCheckedChangeListener
                     }
-
-                    // Daemon is running — proceed with disable
-                    applyFirewallState(false, activeFirewallPackages.toList())
                     return@setOnCheckedChangeListener
                 }
 
@@ -1533,11 +1456,51 @@ class MainActivity : BaseActivity() {
         firewallToggle.setThumbIconResource(iconRes)
     }
 
-    private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>) {
+    private fun showLadbDaemonDialog(onProceed: () -> Unit): Boolean {
+        val daemonManager = PersistentDaemonManager(this)
+        if (daemonManager.isDaemonRunning()) {
+            onProceed()
+            return true
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.working_mode_ladb))
+            .setMessage(getString(R.string.daemon_not_running))
+            .setPositiveButton(getString(R.string.open_daemon_setup)) { _, _ ->
+                try { startActivity(Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java)) } catch (_: Exception) {}
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+        return false
+    }
+
+    private fun showShizukuNotRunningDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.shizuku_not_running_title))
+            .setMessage(getString(R.string.shizuku_not_running_message))
+            .setPositiveButton(getString(R.string.open_shizuku)) { _, _ ->
+                launchShizukuApp()
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun launchShizukuApp() {
+        val pm = packageManager
+        val candidates = ShizukuPackageResolver.getLaunchCandidates(this)
+        for (pkg in candidates) {
+            val launch = pm.getLaunchIntentForPackage(pkg)
+            if (launch != null) { startActivity(launch); return }
+        }
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thedjchi/Shizuku/releases")))
+        } catch (_: Exception) {}
+    }
+
+    private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>, blockPkgs: List<String> = selectedApps.map { it.packageName }, whitelistAllowApps: List<String> = emptyList()) {
         // If user opted to skip the confirmation, directly apply the firewall
         val prefsLocal = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         if (prefsLocal.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
-            applyFirewallState(true, selectedApps.map { it.packageName })
+            applyFirewallState(true, blockPkgs, whitelistAllowApps)
             return
         }
 
@@ -1546,7 +1509,7 @@ class MainActivity : BaseActivity() {
             .setView(dialogView)
             .setCancelable(false)
             .setPositiveButton(getString(R.string.enable)) { _, _ ->
-                applyFirewallState(true, selectedApps.map { it.packageName })
+                applyFirewallState(true, blockPkgs, whitelistAllowApps)
             }
             .setNegativeButton(getString(R.string.cancel)) { _, _ ->
                 suppressToggleListener = true
@@ -1924,7 +1887,7 @@ class MainActivity : BaseActivity() {
         return sharedPreferences.getStringSet(KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
     }
 
-    private fun applyFirewallState(enable: Boolean, packageNames: List<String>) {
+    private fun applyFirewallState(enable: Boolean, packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()) {
         if (enable && packageNames.isEmpty() && !firewallMode.allowsDynamicSelection()) return
 
         val effectivePackageNames = if (enable) {
@@ -1994,7 +1957,7 @@ class MainActivity : BaseActivity() {
 
                 val (successful, failed) = withContext(Dispatchers.IO) {
                     if (enable) {
-                        enableFirewall(installed)
+                        enableFirewall(installed, whitelistAllowApps)
                     } else {
                         disableFirewall(installed)
                     }
@@ -2008,14 +1971,21 @@ class MainActivity : BaseActivity() {
                         activeFirewallPackages.addAll(successful)
                         saveActivePackages(activeFirewallPackages)
                         saveFirewallEnabled(true)
+                        
+                        // Auto-enable accessibility for modes that require it
+                        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID) {
+                            if (!ForegroundDetectionService.isServiceEnabled(this@MainActivity)) {
+                                lifecycleScope.launch {
+                                    ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
+                                }
+                            }
+                        }
+                        
                         // Ensure toggle stays ON
                         suppressToggleListener = true
                         firewallToggle.isChecked = true
                         suppressToggleListener = false
                         
-                        if (sharedPreferences.getBoolean(KEY_FIREWALL_INDICATOR_ENABLED, false)) {
-                            com.arslan.shizuwall.services.ForegroundFirewallIndicatorService.start(this@MainActivity)
-                        }
                         if (sharedPreferences.getBoolean(com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
                             com.arslan.shizuwall.services.FloatingButtonService.start(this@MainActivity)
                         }
@@ -2130,7 +2100,7 @@ class MainActivity : BaseActivity() {
         return Pair(installed, missing)
     }
 
-    private suspend fun enableFirewall(packageNames: List<String>): Pair<List<String>, List<String>> {
+    private suspend fun enableFirewall(packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()): Pair<List<String>, List<String>> {
         val successful = mutableListOf<String>()
         val failed = mutableListOf<String>()
         lastOperationErrorDetails.clear()
@@ -2138,8 +2108,7 @@ class MainActivity : BaseActivity() {
         val chain3Result = runCommandDetailed("cmd connectivity set-chain3-enabled true")
         if (!chain3Result.success) {
             val msg = chain3Result.stderr.ifEmpty { chain3Result.stdout }
-            // In Smart Foreground mode the list is empty — record a top-level chain3 error.
-            if (packageNames.isEmpty()) {
+            if (packageNames.isEmpty() && whitelistAllowApps.isEmpty()) {
                 lastOperationErrorDetails["_chain3"] = msg
                 return Pair(successful, failed)
             }
@@ -2159,17 +2128,20 @@ class MainActivity : BaseActivity() {
         }
 
         for (packageName in packageNames) {
-            // In Whitelist mode, the target apps passed to enableFirewall are ALWAYS the apps that SHOULD be blocked (the ones the user didn't select).
             val cmd = "cmd connectivity set-package-networking-enabled false $packageName"
             val res = runCommandDetailed(cmd)
-            if (res.success) {
+            if (res.isEffectivelySuccess) {
                 successful.add(packageName)
             } else {
                 failed.add(packageName)
                 lastOperationErrorDetails[packageName] = res.stderr.ifEmpty { res.stdout }
             }
         }
-        // No rollback; allow partial success
+
+        for (packageName in whitelistAllowApps) {
+            runCommandDetailed("cmd connectivity set-package-networking-enabled true $packageName")
+        }
+
         return Pair(successful, failed)
     }
 
@@ -2191,7 +2163,7 @@ class MainActivity : BaseActivity() {
             // In any mode, these are apps that were explicitly BLOCKED by us. 
             // When disabling the firewall, we must restore them to TRUE (unblocked).
             val res = runCommandDetailed("cmd connectivity set-package-networking-enabled true $packageName")
-            if (res.success) {
+            if (res.isEffectivelySuccess) {
                 successful.add(packageName)
             } else {
                 failed.add(packageName)
@@ -2210,13 +2182,8 @@ class MainActivity : BaseActivity() {
         return Pair(successful, failed)
     }
 
-
     private suspend fun runCommandDetailed(command: String): com.arslan.shizuwall.shell.ShellResult {
         return ShellExecutorProvider.forContext(this).exec(command)
-    }
-
-    private suspend fun runCommand(command: String): Boolean {
-        return runCommandDetailed(command).success
     }
 
     // dim only the RecyclerView and disable its interactions
@@ -2586,10 +2553,18 @@ class MainActivity : BaseActivity() {
     private fun getTargetPackagesToBlock(selectedPkgs: List<String>): List<String> {
         val mode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
         return if (mode == FirewallMode.WHITELIST) {
-            val showSys = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
-            com.arslan.shizuwall.utils.WhitelistFilter.getPackagesToBlock(this, selectedPkgs, showSys)
+            com.arslan.shizuwall.utils.WhitelistFilter.compute(this, selectedPkgs, showSystemApps).toBlock
         } else {
             selectedPkgs
+        }
+    }
+
+    private fun getWhitelistAllowPackages(selectedPkgs: List<String>): List<String> {
+        val mode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+        return if (mode == FirewallMode.WHITELIST) {
+            com.arslan.shizuwall.utils.WhitelistFilter.compute(this, selectedPkgs, showSystemApps).toAllow
+        } else {
+            emptyList()
         }
     }
 }

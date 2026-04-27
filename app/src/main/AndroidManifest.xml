@@ -46,11 +46,6 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.FirewallIndicatorSettingsActivity"
-            android:label="Indicator Settings"
-            android:parentActivityName=".ui.SettingsActivity"
-            android:exported="false" />
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
@@ -133,8 +128,8 @@
             android:exported="false"
             android:foregroundServiceType="specialUse" />
 
-        <service
-            android:name=".services.ForegroundFirewallIndicatorService"
+<service
+            android:name=".services.FloatingButtonService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse" />

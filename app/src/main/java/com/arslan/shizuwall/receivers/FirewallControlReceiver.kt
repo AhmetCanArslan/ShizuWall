@@ -104,10 +104,23 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     val saved = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList()
                     if (firewallMode == FirewallMode.WHITELIST) {
                         val showSys = prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
-                        com.arslan.shizuwall.utils.WhitelistFilter.getPackagesToBlock(context, saved, showSys)
+                        com.arslan.shizuwall.utils.WhitelistFilter.compute(context, saved, showSys).toBlock
                     } else {
                         saved
                     }
+                }
+
+                // In Whitelist mode, also resolve the apps that should be explicitly allowed (whitelisted)
+                val whitelistAllowApps = if (enabled && !csv.isNullOrBlank() && firewallMode == FirewallMode.WHITELIST) {
+                    // Single-package operation in Whitelist mode: this is an unblock action
+                    // handled by the enabled=false path; no need to allow any apps here.
+                    emptyList()
+                } else if (enabled && csv.isNullOrBlank() && firewallMode == FirewallMode.WHITELIST) {
+                    val saved = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList()
+                    val showSys = prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
+                    com.arslan.shizuwall.utils.WhitelistFilter.compute(context, saved, showSys).toAllow
+                } else {
+                    emptyList()
                 }
 
                 // filter out any Shizuku packages and this app itself from incoming list
@@ -213,7 +226,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     if (globalCommandSuccess) {
                         for (pkg in packages) {
                             val blockResult = execShell("cmd connectivity set-package-networking-enabled false $pkg")
-                            if (blockResult.success) {
+                            if (blockResult.isEffectivelySuccess) {
                                 successful.add(pkg)
                             } else if (mode == "LADB") {
                                 appendLadbFailureLog(context, "Failed to block package $pkg", blockResult)
@@ -222,11 +235,18 @@ class FirewallControlReceiver : BroadcastReceiver() {
                                 hadCommandFailure = true
                             }
                         }
+                        // In Whitelist mode, explicitly allow whitelisted apps to ensure they have internet access
+                        for (pkg in whitelistAllowApps) {
+                            val allowResult = execShell("cmd connectivity set-package-networking-enabled true $pkg")
+                            if (!allowResult.isEffectivelySuccess && mode == "LADB") {
+                                appendLadbFailureLog(context, "Failed to allow package $pkg", allowResult)
+                            }
+                        }
                     }
                 } else {
                     for (pkg in packages) {
                         val allowResult = execShell("cmd connectivity set-package-networking-enabled true $pkg")
-                        if (allowResult.success) {
+                        if (allowResult.isEffectivelySuccess) {
                             successful.add(pkg)
                         } else if (mode == "LADB") {
                             appendLadbFailureLog(context, "Failed to unblock package $pkg", allowResult)
@@ -254,20 +274,27 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     if (enabled && globalCommandSuccess && (successful.isNotEmpty() || firewallMode.allowsDynamicSelection())) {
                         putBoolean(MainActivity.KEY_FIREWALL_ENABLED, true)
                         putLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, SystemClock.elapsedRealtime())
-                        putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, successful.toSet())
                         
-                        // In Adaptive Mode, sync the selected apps list with what was just enabled
-                        if (firewallMode.allowsDynamicSelection() && successful.isNotEmpty()) {
+                        // When blocking individual apps (CSV provided), merge with existing active packages.
+                        // When bulk-enabling firewall (no CSV), replace the entire set.
+                        if (!csv.isNullOrBlank()) {
+                            val currentActive = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
+                            currentActive.addAll(successful)
+                            putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, currentActive)
+                        } else {
+                            putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, successful.toSet())
+                        }
+                        
+                        // In Adaptive Mode, sync the selected apps list with what was just enabled.
+                        // In Whitelist Mode, blocked apps should NOT be added to the selected (whitelist) list.
+                        if (firewallMode.allowsDynamicSelection() && successful.isNotEmpty() && firewallMode != FirewallMode.WHITELIST) {
                             val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
                             currentSelected.addAll(successful)
                             putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)
                             putInt(MainActivity.KEY_SELECTED_COUNT, currentSelected.size)
                         }
                         
-                        // Start indicator and floating button if they are enabled
-                        if (prefs.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)) {
-                            com.arslan.shizuwall.services.ForegroundFirewallIndicatorService.start(context)
-                        }
+                        // Start floating button if enabled
                         if (prefs.getBoolean(com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
                             com.arslan.shizuwall.services.FloatingButtonService.start(context)
                         }
@@ -295,8 +322,15 @@ class FirewallControlReceiver : BroadcastReceiver() {
                             currentActive.removeAll(successful)
                             putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, currentActive)
 
-                            // For Screen Lock Mode and Hybrid Mode, selected apps stay intact across unlock events.
-                            if (firewallMode != FirewallMode.SCREEN_LOCK_MODE && firewallMode != FirewallMode.HYBRID) {
+                            // In Whitelist Mode, unblocking an app means adding it to the whitelist (selected list).
+                            // In other dynamic modes, unblocking means removing from the selected list.
+                            // Screen Lock Mode and Hybrid Mode preserve selected apps across unlock events.
+                            if (firewallMode == FirewallMode.WHITELIST) {
+                                val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
+                                currentSelected.addAll(successful)
+                                putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)
+                                putInt(MainActivity.KEY_SELECTED_COUNT, currentSelected.size)
+                            } else if (firewallMode != FirewallMode.SCREEN_LOCK_MODE && firewallMode != FirewallMode.HYBRID) {
                                 val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
                                 currentSelected.removeAll(successful)
                                 putStringSet(MainActivity.KEY_SELECTED_APPS, currentSelected)

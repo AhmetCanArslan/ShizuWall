@@ -144,6 +144,8 @@
     <string name="app_monitor_service_description">Detectar nuevas apps instaladas y mostrar una notificación</string>
     <string name="new_app_installed">Nueva app instalada: %s</string>
     <string name="firewall_app">App de firewall</string>
+    <string name="allow_app">Permitir</string>
+    <string name="allowing_app">Permitiendo %s</string>
     <string name="add_to_selected_list">Añadir a la lista seleccionada</string>
     <string name="app_monitor_notification_channel_name">Monitor de apps (Servicio)</string>
     <string name="app_monitor_notification_channel_description">Servicio en segundo plano para monitorear nuevas apps</string>
@@ -308,6 +310,7 @@
     <string name="accessibility_service_label">ShizuWall Monitor de Primer Plano</string>
     <string name="accessibility_auto_enabled">Servicio de accesibilidad habilitado automáticamente</string>
     <string name="smart_foreground_info_enabled">El modo Primer Plano Inteligente solo permitirá acceso a la red para la app que estés usando. Todas las demás apps serán bloqueadas.\n\nEl permiso de Accesibilidad se otorga automáticamente al seleccionar este modo.</string>
+    <string name="hybrid_mode_info_enabled">El modo Híbrido combina tres submodos por app: Bloqueo Predeterminado, Primer Plano Inteligente y Bloqueo de Pantalla. Puedes configurar cada app individualmente.\n\nEl permiso de Accesibilidad requerido se otorga automáticamente al activar el firewall.</string>
     <string name="smart_foreground_info_deferred">El modo Primer Plano Inteligente solo permitirá acceso a la red para la app que estés usando. Todas las demás apps serán bloqueadas.\n\nEl permiso de Accesibilidad se otorgará automáticamente cuando Shizuku/Daemon esté en ejecución o cuando actives el firewall.</string>
     <string name="firewall_enabled_smart_foreground">Firewall activado (Modo Primer Plano Inteligente)</string>
     <string name="accessibility_manual_enable_needed">No se pudo habilitar automáticamente el servicio de accesibilidad. Por favor, habilítalo manualmente en los ajustes de tu dispositivo.</string>
@@ -364,31 +367,17 @@
     <string name="notification_permission_background_request">Por favor, conceda permiso para seguir ejecutándose en segundo plano.</string>
 
     <!-- Auto-added missing translations (English fallback) -->
-    <string name="firewall_indicator_content_description">Indicador de firewall en primer plano</string>
-    <string name="firewall_indicator_size">Tamaño del indicador</string>
     <string name="screen_lock_mode_notification_channel_name">Modo de bloqueo de pantalla (Servicio)</string>
     <string name="adb_broadcast_quick_reference">Referencia rápida con valores y comandos listos para copiar.</string>
-    <string name="firewall_indicator">Indicador de firewall en primer plano</string>
     <string name="screen_lock_delay_title">Retraso de bloqueo</string>
     <string name="screen_lock_mode_notification_text">Supervisando bloqueo/desbloqueo para aplicar reglas de firewall</string>
     <string name="firewall_mode_screen_lock_description">Bloquear aplicaciones seleccionadas al bloquear, desbloquear al desbloquear</string>
-    <string name="firewall_indicator_settings">Ajustes del indicador</string>
     <string name="screen_lock_delay_value">Habilitar después de %1$d segundos de bloqueo</string>
-    <string name="firewall_indicator_description">Muestra si la aplicación actual en primer plano está bloqueada</string>
     <string name="firewall_mode_screen_lock">Modo de bloqueo de pantalla</string>
     <string name="screen_lock_mode_notification_title">Modo de bloqueo de pantalla</string>
-    <string name="firewall_indicator_settings_description">Ajustar posición y tamaño del indicador en primer plano.</string>
     <string name="increase">Aumentar</string>
-    <string name="firewall_indicator_y">Coordenada Y</string>
     <string name="screen_lock_mode_operation_failed">Error en la operación del modo de bloqueo</string>
-    <string name="firewall_indicator_notification_title">Indicador de firewall</string>
     <string name="screen_lock_mode_notification_channel_description">Servicio en segundo plano para automatización del bloqueo</string>
-    <string name="firewall_indicator_overlay_permission_required">Se requiere permiso de superposición para el indicador</string>
     <string name="decrease">Disminuir</string>
-    <string name="firewall_indicator_notification_channel_description">Servicio para indicador de firewall</string>
-    <string name="firewall_indicator_settings_title">Ajustes del indicador</string>
-    <string name="firewall_indicator_notification_text">Supervisando estado del firewall de la app en primer plano</string>
-    <string name="firewall_indicator_notification_channel_name">Indicador de firewall (Servicio)</string>
     <string name="screen_lock_delay_dialog_title">Retraso de bloqueo</string>
-    <string name="firewall_indicator_x">Coordenada X</string>
 </resources>

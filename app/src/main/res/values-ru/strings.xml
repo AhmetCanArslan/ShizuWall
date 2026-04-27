@@ -144,6 +144,8 @@
     <string name="app_monitor_service_description">Обнаруживать новые установленные приложения и показывать уведомление</string>
     <string name="new_app_installed">Установлено новое приложение: %s</string>
     <string name="firewall_app">Приложение Firewall</string>
+    <string name="allow_app">Разрешить</string>
+    <string name="allowing_app">Разрешение %s</string>
     <string name="add_to_selected_list">Добавить в список выбранных</string>
     <string name="app_monitor_notification_channel_name">Мониторинг приложений (Сервис)</string>
     <string name="app_monitor_notification_channel_description">Фоновый сервис для мониторинга новых приложений</string>
@@ -308,6 +310,7 @@
     <string name="accessibility_service_label">ShizuWall Монитор переднего плана</string>
     <string name="accessibility_auto_enabled">Служба специальных возможностей включена автоматически</string>
     <string name="smart_foreground_info_enabled">Режим умного переднего плана разрешит доступ к сети только для используемого приложения. Все остальные приложения будут заблокированы.\n\nНеобходимое разрешение на специальные возможности предоставляется автоматически при выборе этого режима.</string>
+    <string name="hybrid_mode_info_enabled">Гибридный режим сочетает три подрежима для каждого приложения: Блокировка по умолчанию, Умный передний план и Блокировка экрана. Вы можете настроить каждое приложение отдельно.\n\nНеобходимое разрешение на специальные возможности предоставляется автоматически при включении брандмауэра.</string>
     <string name="smart_foreground_info_deferred">Режим умного переднего плана разрешит доступ к сети только для используемого приложения. Все остальные приложения будут заблокированы.\n\nРазрешение на специальные возможности будет предоставлено автоматически, когда Shizuku/Daemon работает или когда вы включите брандмауэр.</string>
     <string name="firewall_enabled_smart_foreground">Брандмауэр активирован (Режим умного переднего плана)</string>
     <string name="accessibility_manual_enable_needed">Не удалось автоматически включить службу специальных возможностей. Пожалуйста, включите её вручную в настройках устройства.</string>
@@ -364,31 +367,17 @@
     <string name="notification_permission_background_request">Пожалуйста, предоставьте разрешение для продолжения работы в фоновом режиме.</string>
 
     <!-- Auto-added missing translations (English fallback) -->
-    <string name="firewall_indicator_content_description">Индикатор брандмауэра на переднем плане</string>
-    <string name="firewall_indicator_size">Размер индикатора</string>
     <string name="screen_lock_mode_notification_channel_name">Режим блокировки экрана (Сервис)</string>
     <string name="adb_broadcast_quick_reference">Краткий справочник с командами для копирования.</string>
-    <string name="firewall_indicator">Индикатор брандмауэра</string>
     <string name="screen_lock_delay_title">Задержка блокировки</string>
     <string name="screen_lock_mode_notification_text">Мониторинг блокировки/разблокировки для применения правил брандмауэра</string>
     <string name="firewall_mode_screen_lock_description">Блокировать выбранные приложения при блокировке экрана</string>
-    <string name="firewall_indicator_settings">Настройки индикатора</string>
     <string name="screen_lock_delay_value">Включить через %1$d секунд после блокировки</string>
-    <string name="firewall_indicator_description">Показывает, заблокировано ли текущее приложение</string>
     <string name="firewall_mode_screen_lock">Режим блокировки экрана</string>
     <string name="screen_lock_mode_notification_title">Режим блокировки экрана</string>
-    <string name="firewall_indicator_settings_description">Настройка позиции и размера индикатора.</string>
     <string name="increase">Увеличить</string>
-    <string name="firewall_indicator_y">Координата Y</string>
     <string name="screen_lock_mode_operation_failed">Ошибка режима блокировки экрана</string>
-    <string name="firewall_indicator_notification_title">Индикатор брандмауэра</string>
     <string name="screen_lock_mode_notification_channel_description">Фоновый сервис автоматизации блокировки</string>
-    <string name="firewall_indicator_overlay_permission_required">Требуется разрешение на наложение поверх других окон</string>
     <string name="decrease">Уменьшить</string>
-    <string name="firewall_indicator_notification_channel_description">Фоновый сервис для индикатора</string>
-    <string name="firewall_indicator_settings_title">Настройки индикатора</string>
-    <string name="firewall_indicator_notification_text">Мониторинг состояния брандмауэра приложения</string>
-    <string name="firewall_indicator_notification_channel_name">Индикатор брандмауэра (Сервис)</string>
     <string name="screen_lock_delay_dialog_title">Задержка блокировки экрана</string>
-    <string name="firewall_indicator_x">Координата X</string>
 </resources>

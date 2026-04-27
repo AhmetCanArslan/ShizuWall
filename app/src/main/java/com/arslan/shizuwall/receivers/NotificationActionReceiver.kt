@@ -6,13 +6,19 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NotificationActionReceiver : BroadcastReceiver() {
 
     companion object {
         const val ACTION_FIREWALL_APP = "com.arslan.shizuwall.ACTION_FIREWALL_APP"
         const val ACTION_ADD_TO_LIST = "com.arslan.shizuwall.ACTION_ADD_TO_LIST"
+        const val ACTION_WHITELIST_APP = "com.arslan.shizuwall.ACTION_WHITELIST_APP"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
     }
 
@@ -26,6 +32,10 @@ class NotificationActionReceiver : BroadcastReceiver() {
             }
             ACTION_ADD_TO_LIST -> {
                 addToList(context, packageName)
+            }
+            ACTION_WHITELIST_APP -> {
+                val pending = goAsync()
+                whitelistApp(context, packageName, pending)
             }
         }
 
@@ -52,6 +62,25 @@ class NotificationActionReceiver : BroadcastReceiver() {
         }
         context.sendBroadcast(controlIntent)
         Toast.makeText(context, context.getString(R.string.firewalling_app, packageName), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun whitelistApp(context: Context, packageName: String, pending: PendingResult) {
+        addToList(context, packageName, showToast = false)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val result = ShellExecutorProvider.forContext(context).exec("cmd connectivity set-package-networking-enabled true $packageName")
+                if (result.isEffectivelySuccess) {
+                    val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+                    val activePkgs = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
+                    activePkgs.remove(packageName)
+                    prefs.edit().putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, activePkgs).apply()
+                }
+            } finally {
+                pending.finish()
+            }
+        }
+        Toast.makeText(context, context.getString(R.string.allowing_app, packageName), Toast.LENGTH_SHORT).show()
     }
 
     private fun addToList(context: Context, packageName: String, showToast: Boolean = true) {
