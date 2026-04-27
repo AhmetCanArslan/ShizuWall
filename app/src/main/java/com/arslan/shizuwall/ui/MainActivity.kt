@@ -584,7 +584,7 @@ class MainActivity : BaseActivity() {
         if (isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND || 
             firewallMode == FirewallMode.HYBRID || 
             firewallMode == FirewallMode.FOCUS_TRACKER || 
-            sharedPreferences.getBoolean(KEY_FIREWALL_INDICATOR_ENABLED, false))) {
+            sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false))) {
             
             if (!ForegroundDetectionService.isServiceEnabled(this)) {
                 lifecycleScope.launch {
