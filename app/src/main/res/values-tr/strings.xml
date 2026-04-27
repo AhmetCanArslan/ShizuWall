@@ -64,7 +64,7 @@
     <string name="shizuku_not_running">Shizuku çalışmıyor</string>
     <string name="shizuku_permission_required">Shizuku izni gerekli</string>
     <string name="firewall">Güvenlik Duvarı</string>
-    <string name="welcome_title">ShizuWalla Hoş Geldiniz</string>
+    <string name="welcome_title">ShizuWall\'a Hoş Geldiniz</string>
     <string name="welcome_message">Root veya vpn olmadan istenmeyen ağ bağlantılarını engelleyin</string>
     <string name="next">İleri</string>
     <string name="notification_permission_title">Bildirim İzni</string>
@@ -291,12 +291,20 @@
     <string name="firewall_mode_adaptive_description">Kuralları anında uygula. Güvenlik duvarı açık kalır.</string>
     <string name="firewall_mode_smart_foreground">Akıllı Ön Plan</string>
     <string name="firewall_mode_smart_foreground_description">Yalnızca şu anda ön plandaki uygulamaya izin ver</string>
+    
+    <string name="firewall_mode_focus_tracker">Odak Takipçisi</string>
+    <string name="firewall_mode_focus_tracker_description">ShizuWall odak dışı olduğunda güvenlik duvarını etkinleştir, odaklandığında ise devre dışı bırak.</string>
+    
     <string name="smart_foreground_requires_accessibility">Erişilebilirlik izni gereklidir</string>
     <string name="smart_foreground_service_description">Güvenlik duvarı kurallarını yönetmek için ön plan uygulamasını izler</string>
     <string name="smart_foreground_notification_channel_name">Akıllı Ön Plan (Servis)</string>
     <string name="smart_foreground_notification_channel_description">Ön plan uygulamasını izlemek için arka plan servisi</string>
     <string name="smart_foreground_active">Akıllı Ön Plan Aktif</string>
     <string name="smart_foreground_active_description">Yalnızca ön plandaki uygulamanın ağ erişimi var</string>
+    
+    <string name="focus_tracker_active">Odak Takipçisi: Etkin</string>
+    <string name="focus_tracker_paused">Odak Takipçisi: Etkin değil</string>
+    
     <string name="accessibility_service_label">ShizuWall Ön Plan İzleyici</string>
     <string name="accessibility_auto_enabled">Erişilebilirlik servisi otomatik olarak etkinleştirildi</string>
     <string name="smart_foreground_info_enabled">Akıllı Ön Plan modu, yalnızca şu anda kullandığınız uygulama için ağ erişimine izin verecektir. Diğer tüm uygulamalar engellenecektir.\n\nBu modu seçtiğinizde gerekli Erişilebilirlik izni otomatik olarak verilir.</string>

@@ -30,6 +30,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.coroutineScope
 import android.util.Log
 
 /**
@@ -204,6 +205,7 @@ class ForegroundDetectionService : AccessibilityService() {
 
     private var currentForegroundPackage: String? = null
     private var lastManagedPackage: String? = null
+    private var isShizuWallFocused: Boolean? = null
     private var lastObservedForegroundPackage: String? = null
 
     @Volatile private var pendingBlockPackage: String? = null
@@ -260,6 +262,7 @@ class ForegroundDetectionService : AccessibilityService() {
                     currentForegroundPackage = null
                     lastManagedPackage = null
                     pendingBlockPackage = null
+                    isShizuWallFocused = null
                     sharedPreferences.edit()
                         .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                         .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
@@ -272,7 +275,7 @@ class ForegroundDetectionService : AccessibilityService() {
                 val modeName = prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
                 cachedFirewallMode = FirewallMode.fromName(modeName)
 
-                if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && cachedFirewallMode != FirewallMode.HYBRID) {
+                if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && cachedFirewallMode != FirewallMode.HYBRID && cachedFirewallMode != FirewallMode.FOCUS_TRACKER) {
                     try {
                         stopForeground(true)
                     } catch (e: Exception) {
@@ -281,12 +284,27 @@ class ForegroundDetectionService : AccessibilityService() {
                     currentForegroundPackage = null
                     lastManagedPackage = null
                     pendingBlockPackage = null
+                    isShizuWallFocused = null
                     sharedPreferences.edit()
                         .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                         .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
                         .apply()
-                } else if (cachedFirewallEnabled) {
-                    startForegroundService()
+                } else if (cachedFirewallEnabled && (cachedFirewallMode == FirewallMode.SMART_FOREGROUND || cachedFirewallMode == FirewallMode.HYBRID || cachedFirewallMode == FirewallMode.FOCUS_TRACKER)) {
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            startForeground(
+                                NOTIFICATION_ID,
+                                buildNotification(null),
+                                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                            )
+                        } else {
+                            startForeground(NOTIFICATION_ID, buildNotification(null))
+                        }
+                    } catch (e: IllegalStateException) {
+                        Log.w(TAG, "Failed to start foreground - already in foreground state", e)
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Failed to start foreground", e)
+                    }
                 }
             }
             MainActivity.KEY_WORKING_MODE -> {
@@ -358,8 +376,12 @@ class ForegroundDetectionService : AccessibilityService() {
 
         createNotificationChannel()
 
-        if (cachedFirewallEnabled && (cachedFirewallMode == FirewallMode.SMART_FOREGROUND || cachedFirewallMode == FirewallMode.HYBRID)) {
-            startForegroundService()
+        if (cachedFirewallEnabled && (cachedFirewallMode == FirewallMode.SMART_FOREGROUND || cachedFirewallMode == FirewallMode.HYBRID || cachedFirewallMode == FirewallMode.FOCUS_TRACKER)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(NOTIFICATION_ID, buildNotification(null), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            } else {
+                startForeground(NOTIFICATION_ID, buildNotification(null))
+            }
         }
 
         Log.d(TAG, "Service created (restored=$restoredApp, dynamicSkip=${dynamicSkipPackages.size} pkgs)")
@@ -388,9 +410,6 @@ class ForegroundDetectionService : AccessibilityService() {
 
         val packageName = event.packageName?.toString() ?: return
 
-        // Skip self.
-        if (packageName == this.packageName) return
-
         // Skip same-package events immediately (no debounce needed).
         if (packageName == currentForegroundPackage) return
 
@@ -401,8 +420,15 @@ class ForegroundDetectionService : AccessibilityService() {
         publishObservedForegroundApp(packageName)
 
         // Gate on cached state — zero SharedPrefs reads on the hot path.
-        if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && cachedFirewallMode != FirewallMode.HYBRID) return
+        if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && 
+            cachedFirewallMode != FirewallMode.HYBRID &&
+            cachedFirewallMode != FirewallMode.FOCUS_TRACKER) return  // ADD FOCUS_TRACKER check
         if (!cachedFirewallEnabled) return
+
+        if (cachedFirewallMode == FirewallMode.FOCUS_TRACKER) {
+            processFocusTracker(packageName)
+            return
+        }
 
         // Debounce: cancel any previously queued dispatch and re-schedule.
         debounceJob?.cancel()
@@ -411,6 +437,28 @@ class ForegroundDetectionService : AccessibilityService() {
         debounceJob = serviceScope.launch {
             delay(DEBOUNCE_MS)
             processPackageChange(newPackage)
+        }
+    }
+
+    private fun processFocusTracker(newPackage: String) {
+        // Remove the system ui overlay ignorance feature
+        currentForegroundPackage = newPackage
+        val isNowFocused = (newPackage == this.packageName)
+        
+        // Only execute when focus changes
+        if (isShizuWallFocused == isNowFocused) return
+    
+        isShizuWallFocused = isNowFocused
+    
+        serviceScope.launch(Dispatchers.IO) {
+            try {
+                val executor = getShellExecutor()
+                ensureChain3Enabled(executor)
+                applyFocusTrackerRules(executor, isNowFocused)
+                Log.d(TAG, "ShizuWall Focused: $isNowFocused")
+            } catch (e: Exception) {
+                Log.e(TAG, "Focus Tracker rule update failed", e)
+            }
         }
     }
 
@@ -625,6 +673,41 @@ class ForegroundDetectionService : AccessibilityService() {
             } catch (e: Exception) {
                 Log.w(TAG, "Failed unmanaged allow for $packageName", e)
             }
+        }
+    }
+
+    // Version 1
+    private suspend fun applyFocusTrackerRules(executor: ShellExecutor, isFocused: Boolean) {
+        val pkgs = selectedPackages.toList()
+        val shouldEnableNetworking = isFocused
+
+        // Run commands in parallel for faster execution
+        coroutineScope {
+            pkgs.forEach { pkg ->
+                if (pkg == packageName || pkg.contains("shizuku", ignoreCase = true)) return@forEach
+
+                launch(Dispatchers.IO) {
+                    executor.exec("cmd connectivity set-package-networking-enabled $shouldEnableNetworking $pkg")
+                }
+            }
+        }
+
+        val activePkgs = if (!isFocused) selectedPackages else emptySet()
+        sharedPreferences.edit()
+            .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, activePkgs)
+            .apply()
+
+        withContext(Dispatchers.Main) {
+            val title = if (!isFocused) getString(R.string.focus_tracker_active) else getString(R.string.focus_tracker_paused)
+            val notification = NotificationCompat.Builder(this@ForegroundDetectionService, CHANNEL_ID)
+                .setContentTitle(title)
+                .setContentText(getString(R.string.firewall_mode_focus_tracker_description))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .build()
+            val nm = getSystemService(NotificationManager::class.java)
+            nm.notify(NOTIFICATION_ID, notification)
         }
     }
 

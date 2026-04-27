@@ -291,12 +291,20 @@
     <string name="firewall_mode_adaptive_description">Regeln sofort anwenden. Firewall bleibt an.</string>
     <string name="firewall_mode_smart_foreground">Smart Vordergrund</string>
     <string name="firewall_mode_smart_foreground_description">Nur die aktuell im Vordergrund laufende App zulassen</string>
+    
+    <string name="firewall_mode_focus_tracker">Fokus-Tracker</string>
+    <string name="firewall_mode_focus_tracker_description">Die Firewall aktivieren, wenn ShizuWall nicht im Vordergrund ist, und deaktivieren, wenn es im Vordergrund ist.</string>
+    
     <string name="smart_foreground_requires_accessibility">Erfordert Barrierefreiheits-Berechtigung</string>
     <string name="smart_foreground_service_description">Überwacht die Vordergrund-App zur Verwaltung der Firewall-Regeln</string>
     <string name="smart_foreground_notification_channel_name">Smart Vordergrund (Dienst)</string>
     <string name="smart_foreground_notification_channel_description">Hintergrunddienst zur Überwachung der Vordergrund-App</string>
     <string name="smart_foreground_active">Smart Vordergrund Aktiv</string>
     <string name="smart_foreground_active_description">Nur die Vordergrund-App hat Netzwerkzugriff</string>
+    
+    <string name="focus_tracker_active">Fokus-Tracker: Aktiv</string>
+    <string name="focus_tracker_paused">Focus Tracker: Inaktiv</string>
+    
     <string name="accessibility_service_label">ShizuWall Vordergrund-Monitor</string>
     <string name="accessibility_auto_enabled">Barrierefreiheitsdienst automatisch aktiviert</string>
     <string name="smart_foreground_info_enabled">Der Smart-Vordergrund-Modus erlaubt nur der aktuell verwendeten App den Netzwerkzugriff. Alle anderen Apps werden blockiert.\n\nDie erforderliche Barrierefreiheits-Berechtigung wird automatisch erteilt, wenn Sie diesen Modus auswählen.</string>

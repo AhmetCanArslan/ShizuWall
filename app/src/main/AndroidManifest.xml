@@ -128,12 +128,6 @@
             android:exported="false"
             android:foregroundServiceType="specialUse" />
 
-<service
-            android:name=".services.FloatingButtonService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="specialUse" />
-
         <!-- Accessibility Service for Smart Foreground Mode -->
         <service
             android:name=".services.ForegroundDetectionService"

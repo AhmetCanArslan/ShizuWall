@@ -293,12 +293,20 @@
     <string name="firewall_mode_adaptive_description">Aplicar reglas al instante. El firewall se mantiene activo.</string>
     <string name="firewall_mode_smart_foreground">Primer Plano Inteligente</string>
     <string name="firewall_mode_smart_foreground_description">Solo permitir la app en primer plano</string>
+    
+    <string name="firewall_mode_focus_tracker">Rastreador de enfoque</string>
+    <string name="firewall_mode_focus_tracker_description">Activar el cortafuegos cuando ShizuWall no esté activo, y desactivarlo cuando esté activo.</string>
+    
     <string name="smart_foreground_requires_accessibility">Requiere permiso de Accesibilidad</string>
     <string name="smart_foreground_service_description">Monitorea la app en primer plano para gestionar reglas del firewall</string>
     <string name="smart_foreground_notification_channel_name">Primer Plano Inteligente (Servicio)</string>
     <string name="smart_foreground_notification_channel_description">Servicio en segundo plano para monitorear la app en primer plano</string>
     <string name="smart_foreground_active">Primer Plano Inteligente Activo</string>
     <string name="smart_foreground_active_description">Solo la app en primer plano tiene acceso a la red</string>
+    
+    <string name="focus_tracker_active">Seguimiento de enfoque: Active</string>
+    <string name="focus_tracker_paused">Seguimiento de enfoque: Inactivo</string>
+    
     <string name="accessibility_service_label">ShizuWall Monitor de Primer Plano</string>
     <string name="accessibility_auto_enabled">Servicio de accesibilidad habilitado automáticamente</string>
     <string name="smart_foreground_info_enabled">El modo Primer Plano Inteligente solo permitirá acceso a la red para la app que estés usando. Todas las demás apps serán bloqueadas.\n\nEl permiso de Accesibilidad se otorga automáticamente al seleccionar este modo.</string>

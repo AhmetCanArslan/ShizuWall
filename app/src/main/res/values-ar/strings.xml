@@ -295,6 +295,10 @@
     <string name="whitelist_info_system_apps_warning">عند تعطيل "إظهار تطبيقات النظام"، لن يتم حظر تطبيقات النظام في وضع القائمة البيضاء.\n\nإذا قمت بتفعيل "إظهار تطبيقات النظام" واستخدام وضع القائمة البيضاء، فإن هذا المزيج لم يتم اختباره بالكامل. استخدمه بحذر.</string>
     <string name="firewall_mode_smart_foreground">واجهة ذكية (تجريبي)</string>
     <string name="firewall_mode_smart_foreground_description">السماح فقط للتطبيق الموجود حالياً في الواجهة</string>
+    
+    <string name="firewall_mode_focus_tracker">متتبع التركيز</string>
+    <string name="firewall_mode_focus_tracker_description">.خارج نطاق التركيز، وقم بتعطيله عندما يكون داخل نطاق التركيزShizuWall قم بتفعيل جدار الحماية عندما يكون </string>
+    
     <string name="smart_foreground_requires_accessibility">يتطلب إذن الوصول (Accessibility)</string>
     <string name="firewall_mode_change_disabled">لا يمكن تغيير وضع الجدار الناري أثناء تفعيله. يرجى تعطيل الجدار الناري أولاً.</string>
     <string name="firewall_mode_hybrid">الوضع الهجين</string>
@@ -307,6 +311,10 @@
     <string name="smart_foreground_notification_channel_description">خدمة خلفية لمراقبة التطبيقات في الواجهة</string>
     <string name="smart_foreground_active">الواجهة الذكية نشطة</string>
     <string name="smart_foreground_active_description">التطبيق الموجود في الواجهة فقط يملك وصولاً للشبكة</string>
+    
+    <string name="focus_tracker_active">متتبع التركيز: نشط</string>
+    <string name="focus_tracker_paused">متتبع التركيز: غير نشط</string>
+
     <string name="accessibility_service_label">مراقب واجهة ShizuWall</string>
     <string name="accessibility_auto_enabled">تم تفعيل خدمة الوصول تلقائياً</string>
     <string name="smart_foreground_info_enabled">سيسمح وضع الواجهة الذكية بالوصول إلى الشبكة فقط للتطبيق الذي تستخدمه حالياً. سيتم حظر جميع التطبيقات الأخرى.\n\nيتم منح إذن الوصول المطلوب تلقائياً عند اختيار هذا الوضع.</string>

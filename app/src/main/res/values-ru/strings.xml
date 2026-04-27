@@ -293,12 +293,20 @@
     <string name="firewall_mode_adaptive_description">Применять правила мгновенно. Брандмауэр остается включенным.</string>
     <string name="firewall_mode_smart_foreground">Умный передний план (Бета)</string>
     <string name="firewall_mode_smart_foreground_description">Разрешить только приложение на переднем плане</string>
+
+    <string name="firewall_mode_focus_tracker">Отслеживание фокуса</string>
+    <string name="firewall_mode_focus_tracker_description">Включать брандмауэр, когда ShizuWall не находится в фокусе, и отключать, когда он находится в фокусе.</string>
+    
     <string name="smart_foreground_requires_accessibility">Требуется разрешение на специальные возможности</string>
     <string name="smart_foreground_service_description">Отслеживает приложение на переднем плане для управления правилами брандмауэра</string>
     <string name="smart_foreground_notification_channel_name">Умный передний план (Сервис)</string>
     <string name="smart_foreground_notification_channel_description">Фоновый сервис для мониторинга приложения на переднем плане</string>
     <string name="smart_foreground_active">Умный передний план активен</string>
     <string name="smart_foreground_active_description">Только приложение на переднем плане имеет доступ к сети</string>
+
+    <string name="focus_tracker_active">Отслеживание фокуса: Активно</string>
+    <string name="focus_tracker_paused">Отслеживание фокуса: Неактивно</string>
+    
     <string name="accessibility_service_label">ShizuWall Монитор переднего плана</string>
     <string name="accessibility_auto_enabled">Служба специальных возможностей включена автоматически</string>
     <string name="smart_foreground_info_enabled">Режим умного переднего плана разрешит доступ к сети только для используемого приложения. Все остальные приложения будут заблокированы.\n\nНеобходимое разрешение на специальные возможности предоставляется автоматически при выборе этого режима.</string>

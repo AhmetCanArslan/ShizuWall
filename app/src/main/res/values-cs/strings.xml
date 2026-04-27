@@ -312,6 +312,10 @@
     <string name="whitelist_info_system_apps_warning">Pokud je možnost „Zobrazit systémové aplikace“ deaktivována, systémové aplikace nebudou v režimu Whitelist chráněny firewallem. Pokud jste aktivovali možnost „Zobrazit systémové aplikace“ a používáte režim Whitelist, tato kombinace nebyla plně otestována. Používejte ji s opatrností.</string>
     <string name="firewall_mode_smart_foreground">Inteligentní popředí</string>
     <string name="firewall_mode_smart_foreground_description">Povolí pouze aplikaci, která je aktuálně v popředí</string>
+    
+    <string name="firewall_mode_focus_tracker">Focus Tracker</string>
+    <string name="firewall_mode_focus_tracker_description">Zapnout bránu firewall, když není ShizuWall aktivní, a vypnout ji, když je aktivní.</string>
+    
     <string name="smart_foreground_requires_accessibility">Vyžaduje oprávnění přístupnosti</string>
     <string name="firewall_mode_change_disabled">Nelze změnit režim brány firewall, když je brána firewall aktivní. Nejprve ji deaktivujte.</string>
     <string name="firewall_mode_hybrid">Hybridní režim</string>
@@ -324,6 +328,10 @@
     <string name="smart_foreground_notification_channel_description">Služba na pozadí pro monitorování aplikace na popředí</string>
     <string name="smart_foreground_active">Inteligentní aktivní popředí</string>
     <string name="smart_foreground_active_description">Přístup k síti má pouze aplikace v popředí</string>
+    
+    <string name="focus_tracker_active">Focus Tracker: Aktivní</string>
+    <string name="focus_tracker_paused">Focus Tracker: Neaktivní</string>
+    
     <string name="accessibility_service_label">ShizuWall monitorování popřed</string>
     <string name="accessibility_auto_enabled">Služba přístupnosti je automaticky zapnutá</string>
     <string name="smart_foreground_info_enabled">Režim Inligentního popředí povolí přístup k síti pouze pro aplikaci, kterou právě používáte. Všechny ostatní aplikace budou blokovány. Po výběru tohoto režimu se automaticky udělí požadované oprávnění pro přístupnost..</string>

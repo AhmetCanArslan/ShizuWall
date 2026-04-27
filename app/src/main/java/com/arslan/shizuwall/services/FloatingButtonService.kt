@@ -304,8 +304,8 @@ class FloatingButtonService : Service() {
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
 
-        // For Smart Foreground mode, try to auto-enable accessibility service
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        // For tracking modes, try to auto-enable accessibility service
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
             if (!ForegroundDetectionService.isServiceEnabled(this@FloatingButtonService)) {
                 withContext(Dispatchers.IO) {
                     ForegroundDetectionService.enableServiceViaShell(this@FloatingButtonService)
@@ -359,7 +359,7 @@ class FloatingButtonService : Service() {
         val firewallMode = FirewallMode.fromName(
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
             return successful
         }
 
@@ -392,7 +392,7 @@ class FloatingButtonService : Service() {
         val firewallMode = FirewallMode.fromName(
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
             val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
             if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
                 toUnblock.add(currentFgApp)
@@ -406,7 +406,7 @@ class FloatingButtonService : Service() {
         }
         chainDisabled = ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled false")
 
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
             sharedPreferences.edit()
                 .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                 .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())

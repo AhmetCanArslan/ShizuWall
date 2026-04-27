@@ -291,12 +291,20 @@
     <string name="firewall_mode_adaptive_description">立即应用规则。防火墙保持开启。</string>
     <string name="firewall_mode_smart_foreground">智能前台 (测试版)</string>
     <string name="firewall_mode_smart_foreground_description">仅允许当前前台应用</string>
+    
+    <string name="firewall_mode_focus_tracker">焦点追踪器</string>
+    <string name="firewall_mode_focus_tracker_description">当 ShizuWall 处于非活动状态时启用防火墙，处于活动状态时禁用。</string>
+    
     <string name="smart_foreground_requires_accessibility">需要无障碍权限</string>
     <string name="smart_foreground_service_description">监控前台应用以管理防火墙规则</string>
     <string name="smart_foreground_notification_channel_name">智能前台 (服务)</string>
     <string name="smart_foreground_notification_channel_description">用于监控前台应用的后台服务</string>
     <string name="smart_foreground_active">智能前台已激活</string>
     <string name="smart_foreground_active_description">仅前台应用可访问网络</string>
+    
+    <string name="focus_tracker_active">焦点追踪器：已启用</string>
+    <string name="focus_tracker_paused">焦点追踪器：未激活</string>
+    
     <string name="accessibility_service_label">ShizuWall 前台监控</string>
     <string name="accessibility_auto_enabled">无障碍服务已自动启用</string>
     <string name="smart_foreground_info_enabled">智能前台模式将仅允许您当前使用的应用访问网络。所有其他应用将被阻止。\n\n选择此模式时，所需的无障碍权限会自动授予。</string>

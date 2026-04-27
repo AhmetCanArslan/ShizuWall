@@ -127,6 +127,16 @@ class FirewallTileService : TileService() {
         val firewallMode = FirewallMode.fromName(
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
+
+        // For tracking modes, try to auto-enable accessibility service
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
+            if (!ForegroundDetectionService.isServiceEnabled(this@FirewallTileService)) {
+                withContext(Dispatchers.IO) {
+                    ForegroundDetectionService.enableServiceViaShell(this@FirewallTileService)
+                }
+            }
+        }
+
         withContext(Dispatchers.IO) {
             val successful = enableFirewall(packageNames, whitelistAllowApps)
             if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
@@ -171,7 +181,7 @@ class FirewallTileService : TileService() {
         val firewallMode = FirewallMode.fromName(
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
             return successful
         }
 
@@ -198,7 +208,20 @@ class FirewallTileService : TileService() {
     private fun disableFirewall(packageNames: List<String>): Boolean {
         var allSuccessful = true
         val selfPkg = packageName
-        for (pkg in packageNames) {
+        val toUnblock = packageNames.toMutableList()
+
+        val firewallMode = FirewallMode.fromName(
+            sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
+        )
+
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
+            val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
+            if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
+                toUnblock.add(currentFgApp)
+            }
+        }
+
+        for (pkg in toUnblock) {
             // never target the app itself or Shizuku
             if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
             if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")) {
@@ -208,6 +231,14 @@ class FirewallTileService : TileService() {
         if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled false")) {
             allSuccessful = false
         }
+
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
+            sharedPreferences.edit()
+                .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
+                .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+                .apply()
+        }
+
         return allSuccessful
     }
 

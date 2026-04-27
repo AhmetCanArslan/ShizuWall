@@ -107,12 +107,18 @@ class SettingsActivity : BaseActivity() {
     private lateinit var radioModeAdaptive: RadioButton
     private lateinit var radioModeScreenLock: RadioButton
     private lateinit var radioModeSmartForeground: RadioButton
+    private lateinit var radioModeFocusTracker: RadioButton
     private lateinit var radioModeWhitelist: RadioButton
     private lateinit var radioModeHybrid: RadioButton
     private lateinit var cardScreenLockDelay: com.google.android.material.card.MaterialCardView
     private lateinit var layoutScreenLockDelay: LinearLayout
     private lateinit var tvScreenLockDelayValue: TextView
     private lateinit var tvFirewallModeDisabledWarning: TextView
+
+    private lateinit var warningContainer: LinearLayout
+    private lateinit var retryLoadingProgress: android.widget.ProgressBar
+    private lateinit var retryButton: android.widget.ImageButton
+    private var isRetryLoading = false
 
     private val createDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -246,12 +252,18 @@ class SettingsActivity : BaseActivity() {
         radioModeAdaptive = findViewById(R.id.radioModeAdaptive)
         radioModeScreenLock = findViewById(R.id.radioModeScreenLock)
         radioModeSmartForeground = findViewById(R.id.radioModeSmartForeground)
+        radioModeFocusTracker = findViewById(R.id.radioModeFocusTracker)
         radioModeWhitelist = findViewById(R.id.radioModeWhitelist)
         radioModeHybrid = findViewById(R.id.radioModeHybrid)
         cardScreenLockDelay = findViewById(R.id.cardScreenLockDelay)
         layoutScreenLockDelay = findViewById(R.id.layoutScreenLockDelay)
         tvScreenLockDelayValue = findViewById(R.id.tvScreenLockDelayValue)
         tvFirewallModeDisabledWarning = findViewById(R.id.tvFirewallModeDisabledWarning)
+
+        // Initialize the accessibility warning views
+        warningContainer = findViewById(R.id.warningContainer)
+        retryLoadingProgress = findViewById(R.id.retryLoadingProgress)
+        retryButton = findViewById(R.id.retryButton)
     }
 
     private fun loadSettings() {
@@ -272,6 +284,7 @@ class SettingsActivity : BaseActivity() {
             FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
             FirewallMode.SCREEN_LOCK_MODE -> radioGroupFirewallMode.check(R.id.radioModeScreenLock)
             FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
+            FirewallMode.FOCUS_TRACKER -> radioGroupFirewallMode.check(R.id.radioModeFocusTracker)
             FirewallMode.WHITELIST -> radioGroupFirewallMode.check(R.id.radioModeWhitelist)
             FirewallMode.HYBRID -> radioGroupFirewallMode.check(R.id.radioModeHybrid)
             else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
@@ -355,6 +368,18 @@ class SettingsActivity : BaseActivity() {
             switchSkipConfirm.isChecked = true
             sharedPreferences.edit().putBoolean("skip_enable_confirm", true).apply()
         }
+        
+        // Show warning for Smart Foreground / Hybrid if accessibility not enabled
+        if (mode == FirewallMode.SMART_FOREGROUND || mode == FirewallMode.HYBRID || mode == FirewallMode.FOCUS_TRACKER) {
+            val accessibilityEnabled = ForegroundDetectionService.isServiceEnabled(this)
+            warningContainer.visibility = if (!accessibilityEnabled) View.VISIBLE else View.GONE
+            // Reset retry loading state
+            isRetryLoading = false
+            retryLoadingProgress.visibility = View.GONE
+            retryButton.visibility = View.VISIBLE
+        } else {
+            warningContainer.visibility = View.GONE
+        }
     }
 
     /**
@@ -367,6 +392,7 @@ class SettingsActivity : BaseActivity() {
         radioModeAdaptive.isEnabled = !isFirewallEnabled
         radioModeScreenLock.isEnabled = !isFirewallEnabled
         radioModeSmartForeground.isEnabled = !isFirewallEnabled
+        radioModeFocusTracker.isEnabled = !isFirewallEnabled
         radioModeWhitelist.isEnabled = !isFirewallEnabled
         radioModeHybrid.isEnabled = !isFirewallEnabled
         
@@ -399,6 +425,7 @@ class SettingsActivity : BaseActivity() {
                     FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
                     FirewallMode.SCREEN_LOCK_MODE -> radioGroupFirewallMode.check(R.id.radioModeScreenLock)
                     FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
+                    FirewallMode.FOCUS_TRACKER -> radioGroupFirewallMode.check(R.id.radioModeFocusTracker)
                     FirewallMode.WHITELIST -> radioGroupFirewallMode.check(R.id.radioModeWhitelist)
                     FirewallMode.HYBRID -> radioGroupFirewallMode.check(R.id.radioModeHybrid)
                     else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
@@ -410,6 +437,7 @@ class SettingsActivity : BaseActivity() {
                 R.id.radioModeAdaptive -> FirewallMode.ADAPTIVE
                 R.id.radioModeScreenLock -> FirewallMode.SCREEN_LOCK_MODE
                 R.id.radioModeSmartForeground -> FirewallMode.SMART_FOREGROUND
+                R.id.radioModeFocusTracker -> FirewallMode.FOCUS_TRACKER
                 R.id.radioModeWhitelist -> FirewallMode.WHITELIST
                 R.id.radioModeHybrid -> FirewallMode.HYBRID
                 else -> FirewallMode.DEFAULT
@@ -421,7 +449,18 @@ class SettingsActivity : BaseActivity() {
             TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
             updateFirewallModeUI(newMode)
             
-            // Show info dialog for modes that require it
+            if (newMode == FirewallMode.SMART_FOREGROUND || newMode == FirewallMode.HYBRID || newMode == FirewallMode.FOCUS_TRACKER) {
+                if (!ForegroundDetectionService.isServiceEnabled(this)) {
+                    val dialogShown = sharedPreferences.getBoolean("accessibility_dialog_shown", false)
+                    val dialogAccepted = sharedPreferences.getBoolean("accessibility_dialog_accepted", false)
+                    
+                    if (!dialogShown || !dialogAccepted) {
+                        showAccessibilityPermissionDialog()
+                    } else {
+                        showAccessibilityAutoGrantDialog(newMode)
+                    }
+                }
+            }
             when (newMode) {
                 FirewallMode.SMART_FOREGROUND -> showSmartForegroundInfoDialog()
                 FirewallMode.HYBRID -> showHybridModeInfoDialog()
@@ -1553,5 +1592,35 @@ class SettingsActivity : BaseActivity() {
         }
         return file.delete() || !file.exists()
     }
+    
+    private fun showAccessibilityPermissionDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.accessibility_permission_title)
+            .setMessage(R.string.accessibility_permission_message)
+            .setPositiveButton(R.string.open_settings) { _, _ ->
+                sharedPreferences.edit().putBoolean("accessibility_dialog_shown", true).apply()
+                val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                startActivity(intent)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
 
+    private fun showAccessibilityAutoGrantDialog(mode: FirewallMode) {
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.accessibility_auto_enable_title)
+            .setMessage(R.string.accessibility_auto_enable_message)
+            .setView(R.layout.dialog_loading)
+            .setCancelable(false)
+            .show()
+
+        lifecycleScope.launch {
+            val success = ForegroundDetectionService.enableServiceViaShell(this@SettingsActivity)
+            dialog.dismiss()
+            if (!success) {
+                Toast.makeText(this@SettingsActivity, R.string.accessibility_manual_enable_needed, Toast.LENGTH_LONG).show()
+            }
+            updateFirewallModeUI(mode)
+        }
+    }
 }

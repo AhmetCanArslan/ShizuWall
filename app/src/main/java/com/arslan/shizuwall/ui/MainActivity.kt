@@ -581,7 +581,13 @@ class MainActivity : BaseActivity() {
         loadInstalledApps()
         
         // If firewall is ON and mode requires accessibility, ensure it's enabled
-        if (isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID)) {
+        val isIndicatorEnabled = sharedPreferences.getBoolean("firewall_indicator_enabled", false)
+
+        if (isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND || 
+            firewallMode == FirewallMode.HYBRID || 
+            firewallMode == FirewallMode.FOCUS_TRACKER || 
+            isIndicatorEnabled)) {
+            
             if (!ForegroundDetectionService.isServiceEnabled(this)) {
                 lifecycleScope.launch {
                     val success = ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
@@ -590,9 +596,12 @@ class MainActivity : BaseActivity() {
                     }
                 }
             }
-        } else if (!isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID)) {
-            // Firewall off but accessibility enabled — disable it
-            if (ForegroundDetectionService.isServiceEnabled(this)) {
+        } else if (!isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND || 
+                   firewallMode == FirewallMode.HYBRID || 
+                   firewallMode == FirewallMode.FOCUS_TRACKER)) {
+            
+            // Only disable if the indicator doesn't need it either
+            if (ForegroundDetectionService.isServiceEnabled(this) && !isIndicatorEnabled) {
                 lifecycleScope.launch {
                     ForegroundDetectionService.disableServiceViaShell(this@MainActivity)
                 }
@@ -1916,7 +1925,7 @@ class MainActivity : BaseActivity() {
             updateInteractiveViews()
             showDimOverlay(force = true)
             
-            if (enable && (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID)) {
+            if (enable && (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || firewallMode == FirewallMode.FOCUS_TRACKER)) {
                 if (!ForegroundDetectionService.isServiceEnabled(this@MainActivity)) {
                     val granted = ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
                     if (granted) {
@@ -2112,7 +2121,11 @@ class MainActivity : BaseActivity() {
             return Pair(successful, failed)
         }
 
-        if (firewallMode == FirewallMode.SMART_FOREGROUND) {
+        if (packageNames.isEmpty()) {
+            return Pair(successful, failed)
+        }
+
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
             return Pair(successful, failed)
         }
 
@@ -2140,7 +2153,7 @@ class MainActivity : BaseActivity() {
         lastOperationErrorDetails.clear()
 
         val toUnblock = packageNames.toMutableList()
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || firewallMode == FirewallMode.FOCUS_TRACKER) {
             val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
             if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
                 toUnblock.add(currentFgApp)
@@ -2161,7 +2174,7 @@ class MainActivity : BaseActivity() {
         }
         runCommandDetailed("cmd connectivity set-chain3-enabled false")
 
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID) {
+        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || firewallMode == FirewallMode.FOCUS_TRACKER) {
             sharedPreferences.edit()
                 .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                 .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
