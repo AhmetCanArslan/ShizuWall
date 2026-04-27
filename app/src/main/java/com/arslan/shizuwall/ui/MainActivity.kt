@@ -584,7 +584,7 @@ class MainActivity : BaseActivity() {
         if (isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND || 
             firewallMode == FirewallMode.HYBRID || 
             firewallMode == FirewallMode.FOCUS_TRACKER || 
-            sharedPreferences.getBoolean(com.arslan.shizuwall.ui.MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false))) {
+            sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false))) {
             
             if (!ForegroundDetectionService.isServiceEnabled(this)) {
                 lifecycleScope.launch {
@@ -598,8 +598,9 @@ class MainActivity : BaseActivity() {
                    firewallMode == FirewallMode.HYBRID || 
                    firewallMode == FirewallMode.FOCUS_TRACKER)) {
             
-            // Firewall off but accessibility enabled — clean up and disable it
-            if (ForegroundDetectionService.isServiceEnabled(this)) {
+            // Only disable if the indicator doesn't need it either
+            val indicatorActive = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_INDICATOR_ENABLED, false)
+            if (ForegroundDetectionService.isServiceEnabled(this) && !indicatorActive) {
                 lifecycleScope.launch {
                     ForegroundDetectionService.disableServiceViaShell(this@MainActivity)
                 }
