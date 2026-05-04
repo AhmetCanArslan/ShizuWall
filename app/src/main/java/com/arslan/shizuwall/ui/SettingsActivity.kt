@@ -676,34 +676,6 @@ class SettingsActivity : BaseActivity() {
     }
     
 
-    /**
-     * Show info dialog about Smart Foreground mode.
-     * @param accessibilityGranted true if accessibility was already enabled or just auto-granted
-     */
-    private fun showSmartForegroundInfoDialog(accessibilityGranted: Boolean) {
-        val showPrompt = sharedPreferences.getBoolean("show_smart_foreground_prompt", true)
-        if (!showPrompt) return
-
-        val message = getString(R.string.smart_foreground_info_enabled)
-        
-        val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
-        val messageText: TextView = promptView.findViewById(R.id.shizuku_prompt_message_text)
-        val checkbox: android.widget.CheckBox = promptView.findViewById(R.id.shizuku_prompt_do_not_show)
-        
-        messageText.text = message
-        checkbox.text = getString(R.string.dont_show_again)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.firewall_mode_smart_foreground)
-            .setView(promptView)
-            .setPositiveButton(R.string.ok) { _, _ ->
-                if (checkbox.isChecked) {
-                    sharedPreferences.edit().putBoolean("show_smart_foreground_prompt", false).apply()
-                }
-            }
-            .show()
-    }
-
     private fun showRootNotFoundDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.working_mode_root)
