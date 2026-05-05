@@ -52,14 +52,14 @@
 ## Screenshots
 
 <p align="center">
-  <img src="assets/screenShots/v4.4/1.png" width="30%" />
-  <img src="assets/screenShots/v4.4/2.png" width="30%" />
-  <img src="assets/screenShots/v4.4/3.png" width="30%" />
-  <img src="assets/screenShots/v4.4/4.png" width="30%" />
-  <img src="assets/screenShots/v4.4/5.png" width="30%" />
-  <img src="assets/screenShots/v4.4/6.png" width="30%" />
-  <img src="assets/screenShots/v4.4/7.png" width="30%" />
-  <img src="assets/screenShots/v4.4/8.png" width="30%" />
+  <img src="assets/screenshots/v4.5/1.png" width="30%" />
+  <img src="assets/screenshots/v4.5/2.png" width="30%" />
+  <img src="assets/screenshots/v4.5/3.png" width="30%" />
+  <img src="assets/screenshots/v4.5/4.png" width="30%" />
+  <img src="assets/screenshots/v4.5/5.png" width="30%" />
+  <img src="assets/screenshots/v4.5/6.png" width="30%" />
+  <img src="assets/screenshots/v4.5/7.png" width="30%" />
+  <img src="assets/screenshots/v4.5/8.png" width="30%" />
 </p>
 
 ## Requirements
@@ -169,6 +169,8 @@ chmod +x scripts/compile_daemon.sh
 ShizuWall is provided **"as is"** without warranty of any kind.
 
 By using this app, you acknowledge that it relies on advanced system permissions (Shizuku/ADB/Root), and you accept all related risks. The developer is not responsible for damages such as system instability, data loss, service interruption, or side effects from blocked networking.
+
+**ShizuWall is an open-source application. The developer accepts no financial, moral, or legal responsibility for the use of this application. All responsibility belongs to the user.**
 
 Always verify which apps you block.
 
