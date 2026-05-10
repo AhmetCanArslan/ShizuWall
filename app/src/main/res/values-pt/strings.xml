@@ -8,8 +8,8 @@
     <string name="skip_enable_dialog">Pular confirmação de ativação</string>
     <string name="github_button_desc">Abrir repositório GitHub</string>
     <string name="app_icon_desc">Ícone do app</string>
-    <string name="app_switch_selected">Selecionado</string>
-    <string name="app_switch_unselected">Não selecionado</string>
+    <string name="app_switch_selected">%1$s, selecionado</string>
+    <string name="app_switch_unselected">%1$s, não selecionado</string>
     <string name="cat_system">Sistema</string>
     <string name="cat_selected">Selecionado</string>
     <string name="cat_unselected">Não selecionado</string>
