@@ -7,8 +7,8 @@
     <string name="skip_enable_dialog">Пропустить подтверждение включения</string>
     <string name="github_button_desc">Открыть репозиторий GitHub</string>
     <string name="app_icon_desc">Иконка приложения</string>
-    <string name="app_switch_selected">%1$s, выбрано</string>
-    <string name="app_switch_unselected">%1$s, не выбрано</string>
+    <string name="app_switch_selected">%1$s, выбрано, %2$s</string>
+    <string name="app_switch_unselected">%1$s, не выбрано, %2$s</string>
     <string name="cat_system">Система</string>
     <string name="cat_selected">Выбрано</string>
     <string name="cat_unselected">Не выбрано</string>

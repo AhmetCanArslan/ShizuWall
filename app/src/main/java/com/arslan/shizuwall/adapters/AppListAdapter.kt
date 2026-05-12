@@ -130,7 +130,7 @@ class AppListAdapter(
             appSwitch.imageTintList = android.content.res.ColorStateList.valueOf(tintColor)
             itemView.contentDescription = itemView.context.getString(
                 if (appInfo.isSelected) R.string.app_switch_selected else R.string.app_switch_unselected,
-                appInfo.appName
+                appInfo.appName, appInfo.packageName
             )
 
             val surfaceColor = MaterialColors.getColor(itemView, com.google.android.material.R.attr.colorSurface)

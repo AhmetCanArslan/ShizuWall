@@ -7,8 +7,8 @@
     <string name="skip_enable_dialog">Přeskočit potvrzení povolení</string>
     <string name="github_button_desc">Otevřít GitHub repozitář</string>
     <string name="app_icon_desc">Ikona aplikace</string>
-    <string name="app_switch_selected">%1$s, vybráno</string>
-    <string name="app_switch_unselected">%1$s, nevybráno</string>
+    <string name="app_switch_selected">%1$s, vybráno, %2$s</string>
+    <string name="app_switch_unselected">%1$s, nevybráno, %2$s</string>
     <string name="cat_system">Systém</string>
     <string name="cat_selected">Vybráno</string>
     <string name="cat_unselected">Nevybráno</string>

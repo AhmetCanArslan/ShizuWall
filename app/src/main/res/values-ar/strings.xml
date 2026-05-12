@@ -7,8 +7,8 @@
     <string name="skip_enable_dialog">تخطي تأكيد التفعيل</string>
     <string name="github_button_desc">فتح مستودع GitHub</string>
     <string name="app_icon_desc">أيقونة التطبيق</string>
-    <string name="app_switch_selected">%1$s، محدد</string>
-    <string name="app_switch_unselected">%1$s، غير محدد</string>
+    <string name="app_switch_selected">%1$s، محدد، %2$s</string>
+    <string name="app_switch_unselected">%1$s، غير محدد، %2$s</string>
     <string name="cat_system">النظام</string>
     <string name="cat_selected">المحدد</string>
     <string name="cat_unselected">غير المحدد</string>

@@ -8,8 +8,8 @@
     <string name="skip_enable_dialog">Etkinleştirme onayını atla</string>
     <string name="github_button_desc">GitHub deposunu aç</string>
     <string name="app_icon_desc">Uygulama simgesi</string>
-    <string name="app_switch_selected">%1$s, Seçili</string>
-    <string name="app_switch_unselected">%1$s, Seçili değil</string>
+    <string name="app_switch_selected">%1$s, Seçili, %2$s</string>
+    <string name="app_switch_unselected">%1$s, Seçili değil, %2$s</string>
     <string name="cat_system">Sistem</string>
     <string name="cat_selected">Seçili</string>
     <string name="cat_unselected">Seçili değil</string>

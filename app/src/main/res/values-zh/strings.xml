@@ -8,8 +8,8 @@
     <string name="skip_enable_dialog">跳过启用确认</string>
     <string name="github_button_desc">打开 GitHub 仓库</string>
     <string name="app_icon_desc">应用图标</string>
-    <string name="app_switch_selected">%1$s，已选中</string>
-    <string name="app_switch_unselected">%1$s，未选中</string>
+    <string name="app_switch_selected">%1$s，已选中，%2$s</string>
+    <string name="app_switch_unselected">%1$s，未选中，%2$s</string>
     <string name="cat_system">系统</string>
     <string name="cat_selected">已选中</string>
     <string name="cat_unselected">未选中</string>

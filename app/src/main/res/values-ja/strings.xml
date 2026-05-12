@@ -7,8 +7,8 @@
     <string name="skip_enable_dialog">確認ダイアログをスキップ</string>
     <string name="github_button_desc">GitHubリポジトリを開く</string>
     <string name="app_icon_desc">アプリのアイコン</string>
-    <string name="app_switch_selected">%1$s、選択済み</string>
-    <string name="app_switch_unselected">%1$s、未選択</string>
+    <string name="app_switch_selected">%1$s、選択済み、%2$s</string>
+    <string name="app_switch_unselected">%1$s、未選択、%2$s</string>
     <string name="cat_system">システム</string>
     <string name="cat_selected">選択済み</string>
     <string name="cat_unselected">未選択</string>
