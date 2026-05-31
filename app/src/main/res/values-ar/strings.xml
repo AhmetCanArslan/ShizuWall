@@ -19,7 +19,6 @@
     <string name="select_all">تحديد الكل</string>
     <string name="cat_favorites">المفضلة</string>
     <string name="made_by">صنع بـ ❤️ بواسطة Ahmet Can Arslan</string>
-    <string name="ladb_not_supported_fdroid"> (غير مدعوم لنسخة fdroid)</string>
     <string name="reset_app_menu">إعادة تعيين التطبيق</string>
     <string name="theme_changed_title">تغير المظهر</string>
     <string name="theme_changed_message">تم تحديث المظهر. يرجى إعادة تشغيل التطبيق لتطبيق التغييرات.</string>

@@ -314,19 +314,6 @@ class SettingsActivity : BaseActivity() {
             else -> radioGroupWorkingMode.check(R.id.radioShizukuMode)
         }
 
-        if (com.arslan.shizuwall.BuildConfig.FLAVOR == "fdroid") {
-            radioLadbMode.isEnabled = false
-            radioLadbMode.alpha = 0.5f
-            val notSupportedText = getString(R.string.ladb_not_supported_fdroid)
-            if (!radioLadbMode.text.toString().contains(notSupportedText)) {
-                radioLadbMode.text = "${radioLadbMode.text}$notSupportedText"
-            }
-            if (radioLadbMode.isChecked) {
-                radioGroupWorkingMode.check(R.id.radioShizukuMode)
-                sharedPreferences.edit().putString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name).apply()
-            }
-        }
-
         updateWorkingModeDependentUi(workingMode, restoreAutoEnable = false)
     }
     

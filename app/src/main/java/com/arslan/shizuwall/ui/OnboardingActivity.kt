@@ -14,7 +14,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.viewpager2.widget.ViewPager2
 import android.content.res.Configuration
 import com.arslan.shizuwall.R
-import com.arslan.shizuwall.BuildConfig
 import com.arslan.shizuwall.adapters.OnboardingPageAdapter
 import rikka.shizuku.Shizuku
 
@@ -78,14 +77,13 @@ class OnboardingActivity : BaseActivity() {
                 message = getString(R.string.onboarding_mode_selection_message),
                 buttonText = getString(R.string.use_shizuku),
                 onButtonClick = { setWorkingMode("SHIZUKU") },
-                secondaryButtonText = getString(R.string.use_ladb) + 
-                    if (!BuildConfig.HAS_DAEMON) getString(R.string.ladb_not_supported_fdroid) else "",
+                secondaryButtonText = getString(R.string.use_ladb),
                 onSecondaryButtonClick = { setWorkingMode("LADB") },
                 tertiaryButtonText = getString(R.string.use_root),
                 onTertiaryButtonClick = { setWorkingMode("ROOT") },
                 isModeSelectionPage = true,
                 imageResId = R.drawable.ic_settings,
-                isSecondaryButtonEnabled = BuildConfig.HAS_DAEMON
+                isSecondaryButtonEnabled = true
             )
         )
 

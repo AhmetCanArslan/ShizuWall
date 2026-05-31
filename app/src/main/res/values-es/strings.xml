@@ -282,7 +282,6 @@
     <string name="log_logs_cleared">Registros borrados</string>
     <string name="log_logs_copied">Registros copiados al portapapeles</string>
     <string name="log_status_updated">Estado actualizado: %s</string>
-    <string name="ladb_not_supported_fdroid"> (no compatible con la versión de F-Droid)</string>
 
     <!-- Exit confirmation -->
     <string name="exit_confirm_message">Presiona atrás de nuevo para salir</string>

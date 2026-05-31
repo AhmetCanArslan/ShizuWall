@@ -282,7 +282,6 @@
     <string name="log_logs_cleared">ログが消去されました</string>
     <string name="log_logs_copied">ログがクリップボードにコピーされました</string>
     <string name="log_status_updated">ステータスが更新されました: %s</string>
-    <string name="ladb_not_supported_fdroid"> (F-Droid版ではサポートされていません)</string>
 
     <!-- Exit confirmation -->
     <string name="exit_confirm_message">もう一度押すと終了します</string>

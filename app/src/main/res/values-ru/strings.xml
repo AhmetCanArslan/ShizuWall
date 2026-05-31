@@ -282,7 +282,6 @@
     <string name="log_logs_cleared">Логи очищены</string>
     <string name="log_logs_copied">Логи скопированы в буфер обмена</string>
     <string name="log_status_updated">Статус обновлен: %s</string>
-    <string name="ladb_not_supported_fdroid"> (не поддерживается в версии F-Droid)</string>
 
     <!-- Exit confirmation -->
     <string name="exit_confirm_message">Нажмите назад ещё раз для выхода</string>

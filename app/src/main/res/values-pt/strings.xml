@@ -280,7 +280,6 @@
     <string name="log_logs_cleared">Logs limpos</string>
     <string name="log_logs_copied">Logs copiados para a área de transferência</string>
     <string name="log_status_updated">Status atualizado: %s</string>
-    <string name="ladb_not_supported_fdroid"> (não suportado na versão F-Droid)</string>
 
     <!-- Exit confirmation -->
     <string name="exit_confirm_message">Pressione voltar novamente para sair</string>

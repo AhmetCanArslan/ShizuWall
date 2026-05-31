@@ -145,23 +145,17 @@ adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.F
 
 ### Daemon
 
-The on-device daemon is compiled to `app/src/main/assets/daemon.bin`.
+The on-device daemon (`SystemDaemon.java`) is compiled to a DEX (`daemon.bin`)
+automatically as part of the normal Gradle build by the `compileDaemonDex`
+task. It is compiled from source using `javac` and `d8` from the Android SDK
+build-tools and packaged as an asset — there is no prebuilt binary in the
+repository, so reproducible build servers (e.g. F-Droid) produce it themselves.
 
-**Prerequisites**
-
-- Android SDK
-- Java 11
-- `d8` (Android Build Tools)
-
-**Compile**
-
-1. Open [scripts/compile_daemon.sh](scripts/compile_daemon.sh).
-2. Update `SDK_PATH`, `BUILD_TOOLS_VER`, and `PLATFORM_VER` for your environment.
-3. Run:
+No manual step is required; `./gradlew assembleRelease` builds it. The task can
+also be run on its own:
 
 ```bash
-chmod +x scripts/compile_daemon.sh
-./scripts/compile_daemon.sh
+./gradlew :app:compileDaemonDex
 ```
 
 ## Security and Distribution Disclaimer

@@ -20,7 +20,6 @@
     <string name="scroll_to_top">Přejít nahoru</string>
     <string name="cat_favorites">Oblíbené</string>
     <string name="made_by">Vytvořil s ❤️ Ahmet Can Arslan</string>
-    <string name="ladb_not_supported_fdroid"> (není podporováno ve fdroid verzi)</string>
     <string name="reset_app_menu">Resetovat aplikaci</string>
     <string name="theme_changed_title">Téma změněno</string>
     <string name="theme_changed_message">Téma bylo aktualizováno. Chcete-li změny použít, restartujte aplikaci.</string>
