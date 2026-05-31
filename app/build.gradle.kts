@@ -63,6 +63,10 @@ android {
         // Keep only essential JNI libs
         jniLibs {
             useLegacyPackaging = false
+            // RB don't strip .so — keep the Maven bytes so F-Droid's server
+            // (NDK present) can't re-strip and change ELF .shstrtab, breaking
+            // byte-for-byte reproducibility (libconscrypt_jni.so, libspake2.so)
+            keepDebugSymbols += "**/*.so"
         }
     }
 
