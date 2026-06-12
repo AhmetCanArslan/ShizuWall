@@ -304,13 +304,9 @@ class FloatingButtonService : Service() {
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
 
-        // For tracking modes, try to auto-enable accessibility service
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
-            if (!ForegroundDetectionService.isServiceEnabled(this@FloatingButtonService)) {
-                withContext(Dispatchers.IO) {
-                    ForegroundDetectionService.enableServiceViaShell(this@FloatingButtonService)
-                }
-            }
+        // For tracking modes, start the foreground detection service
+        if (firewallMode.requiresForegroundDetection()) {
+            ForegroundDetectionService.start(this@FloatingButtonService)
         }
 
         withContext(Dispatchers.IO) {

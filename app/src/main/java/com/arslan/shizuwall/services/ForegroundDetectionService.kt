@@ -1,7 +1,7 @@
 package com.arslan.shizuwall.services
 
-import android.accessibilityservice.AccessibilityService
 import android.app.Notification
+import android.app.Service
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -12,9 +12,9 @@ import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.IBinder
 import android.content.pm.ServiceInfo
 import android.view.inputmethod.InputMethodManager
-import android.view.accessibility.AccessibilityEvent
 import androidx.core.app.NotificationCompat
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
@@ -28,32 +28,37 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.util.Log
+import com.arslan.shizuwall.utils.ForegroundAppResolver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 
 /**
- * AccessibilityService that monitors foreground app changes for Smart Foreground mode.
+ * Foreground service that monitors foreground app changes for Smart Foreground mode.
  *
- * When enabled, this service detects when a new app comes to the foreground and:
+ * Detection polls [ForegroundAppResolver] (IActivityTaskManager.getTasks() via Shizuku,
+ * UsageStats fallback) every [POLL_INTERVAL_MS]. When a new app comes to the foreground:
  * 1. Allows the new foreground app (first, to minimize latency)
  * 2. Blocks the previously allowed app
  *
  * Key design decisions:
- * - Events are debounced (150 ms) to avoid thrashing during rapid app switches.
+ * - A settle re-check (350 ms) filters transient packages sampled mid-switch.
  * - chain3 is validated before each rule-change batch; re-enabled if needed.
  * - Failed shell commands are retried once before giving up.
  * - Skip-packages list is refreshed on package-install/uninstall broadcasts.
  * - The notification subtitle reflects the name of the currently-active app.
  */
-class ForegroundDetectionService : AccessibilityService() {
+class ForegroundDetectionService : Service() {
 
     companion object {
         private const val TAG = "ForegroundDetection"
         private const val CHANNEL_ID = "smart_foreground_channel"
         private const val NOTIFICATION_ID = 4001
         private const val DEBOUNCE_MS = 150L
+        private const val POLL_INTERVAL_MS = 1000L
+        private const val SETTLE_RECHECK_MS = 350L
 
         private const val RETRY_DELAY_MS = 300L
         private const val UNMANAGED_ALLOW_THROTTLE_MS = 2000L
@@ -90,130 +95,36 @@ class ForegroundDetectionService : AccessibilityService() {
         const val EXTRA_PACKAGE_NAME = "package_name"
         const val EXTRA_PREVIOUS_PACKAGE = "previous_package"
         
-        fun isServiceEnabled(context: Context): Boolean {
-            val enabledServices = try {
-                android.provider.Settings.Secure.getString(
-                    context.contentResolver,
-                    android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-                ) ?: ""
+        /** Start the foreground-detection polling service. */
+        fun start(context: Context) {
+            try {
+                context.startForegroundService(Intent(context, ForegroundDetectionService::class.java))
             } catch (e: Exception) {
-                return false
-            }
-            
-            val serviceName = "${context.packageName}/${ForegroundDetectionService::class.java.canonicalName}"
-            // Split by ":" and check exact component matches to avoid substring false positives
-            return enabledServices.split(":").any { component ->
-                component == serviceName || component.startsWith("${context.packageName}/")
+                Log.w(TAG, "Failed to start ForegroundDetectionService", e)
             }
         }
 
-        /**
-         * Auto-enable the accessibility service via shell command (Shizuku or LADB daemon).
-         * Returns true if the service was successfully enabled.
-         */
-        suspend fun enableServiceViaShell(context: Context): Boolean {
-            return withContext(Dispatchers.IO) {
-                try {
-                    val executor = ShellExecutorProvider.forContext(context)
-                    val componentName = "${context.packageName}/${ForegroundDetectionService::class.java.canonicalName}"
-
-                    val currentResult = executor.exec("settings get secure enabled_accessibility_services")
-                    val currentServices = currentResult.stdout.trim().ifEmpty { "null" }
-
-                    if (currentServices.split(":").any { it == componentName }) {
-                        Log.d(TAG, "Service already in enabled_accessibility_services")
-                        return@withContext true
-                    }
-
-                    val newValue = if (currentServices.isEmpty() || currentServices == "null") {
-                        componentName
-                    } else {
-                        "$currentServices:$componentName"
-                    }
-
-                    val putResult = executor.exec("settings put secure enabled_accessibility_services '$newValue'")
-                    if (!putResult.success) {
-                        Log.w(TAG, "Failed to set enabled_accessibility_services: ${putResult.stderr}")
-                        return@withContext false
-                    }
-
-                    executor.exec("settings put secure accessibility_enabled 1")
-
-                    // Give the system time to process.
-                    delay(500)
-                    if (!isServiceEnabled(context)) {
-                        Log.w(TAG, "Service not actually enabled after shell command")
-                        return@withContext false
-                    }
-
-                    Log.d(TAG, "Accessibility service auto-enabled via shell")
-                    true
-                } catch (e: Exception) {
-                    Log.e(TAG, "Failed to auto-enable accessibility service", e)
-                    false
-                }
-            }
-        }
-
-        /**
-         * Auto-disable the accessibility service via shell command (Shizuku or LADB daemon).
-         * Returns true if the service was successfully disabled.
-         */
-        suspend fun disableServiceViaShell(context: Context): Boolean {
-            return withContext(Dispatchers.IO) {
-                try {
-                    val executor = ShellExecutorProvider.forContext(context)
-                    val componentName = "${context.packageName}/${ForegroundDetectionService::class.java.canonicalName}"
-
-                    val currentResult = executor.exec("settings get secure enabled_accessibility_services")
-                    val currentServices = currentResult.stdout.trim().ifEmpty { "null" }
-
-                    if (!currentServices.split(":").any { it == componentName }) {
-                        Log.d(TAG, "Service not in enabled_accessibility_services")
-                        return@withContext true
-                    }
-
-                    val newValue = currentServices.split(":").filter { it != componentName }.joinToString(":")
-
-                    // Handle empty case - use "null" to properly clear the setting
-                    val putResult = if (newValue.isEmpty()) {
-                        executor.exec("settings put secure enabled_accessibility_services null")
-                    } else {
-                        executor.exec("settings put secure enabled_accessibility_services '$newValue'")
-                    }
-                    if (!putResult.success) {
-                        Log.w(TAG, "Failed to set enabled_accessibility_services: ${putResult.stderr}")
-                        return@withContext false
-                    }
-
-                    // Give the system time to process and verify the service was actually disabled
-                    delay(500)
-                    if (isServiceEnabled(context)) {
-                        Log.w(TAG, "Service still enabled after shell command")
-                        return@withContext false
-                    }
-
-                    Log.d(TAG, "Accessibility service auto-disabled via shell")
-                    true
-                } catch (e: Exception) {
-                    Log.e(TAG, "Failed to auto-disable accessibility service", e)
-                    false
-                }
+        /** Stop the foreground-detection polling service. */
+        fun stop(context: Context) {
+            try {
+                context.stopService(Intent(context, ForegroundDetectionService::class.java))
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to stop ForegroundDetectionService", e)
             }
         }
     }
 
-    private var currentForegroundPackage: String? = null
-    private var lastManagedPackage: String? = null
-    private var isShizuWallFocused: Boolean? = null
-    private var lastObservedForegroundPackage: String? = null
+    @Volatile private var currentForegroundPackage: String? = null
+    @Volatile private var lastManagedPackage: String? = null
+    @Volatile private var isShizuWallFocused: Boolean? = null
+    @Volatile private var lastObservedForegroundPackage: String? = null
 
     @Volatile private var pendingBlockPackage: String? = null
 
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
 
-    private var debounceJob: Job? = null
+    private var pollJob: Job? = null
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -267,7 +178,8 @@ class ForegroundDetectionService : AccessibilityService() {
                         .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                         .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
                         .apply()
-                } else if (cachedFirewallMode == FirewallMode.SMART_FOREGROUND || cachedFirewallMode == FirewallMode.HYBRID || cachedFirewallMode == FirewallMode.FOCUS_TRACKER) {
+                    stopSelf()
+                } else if (cachedFirewallMode.requiresForegroundDetection()) {
                     startForegroundService()
                 }
             }
@@ -275,7 +187,7 @@ class ForegroundDetectionService : AccessibilityService() {
                 val modeName = prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
                 cachedFirewallMode = FirewallMode.fromName(modeName)
 
-                if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && cachedFirewallMode != FirewallMode.HYBRID && cachedFirewallMode != FirewallMode.FOCUS_TRACKER) {
+                if (!cachedFirewallMode.requiresForegroundDetection()) {
                     try {
                         stopForeground(true)
                     } catch (e: Exception) {
@@ -289,7 +201,8 @@ class ForegroundDetectionService : AccessibilityService() {
                         .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                         .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
                         .apply()
-                } else if (cachedFirewallEnabled && (cachedFirewallMode == FirewallMode.SMART_FOREGROUND || cachedFirewallMode == FirewallMode.HYBRID || cachedFirewallMode == FirewallMode.FOCUS_TRACKER)) {
+                    stopSelf()
+                } else if (cachedFirewallEnabled && cachedFirewallMode.requiresForegroundDetection()) {
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                             startForeground(
@@ -359,9 +272,17 @@ class ForegroundDetectionService : AccessibilityService() {
         selectedPackages = sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
         cachedAppModes = parseAppModes(sharedPreferences.getString(MainActivity.KEY_APP_MODES, "{}"))
 
-        dynamicSkipPackages = resolveDynamicSkipPackages()
-
         serviceScope.launch(Dispatchers.IO) {
+            dynamicSkipPackages = resolveDynamicSkipPackages()
+            // Usage access powers the UsageStats detection fallback (primary path in
+            // LADB/Root modes). Self-grant it through the privileged shell.
+            if (!ForegroundAppResolver.hasUsageAccess(applicationContext)) {
+                try {
+                    getShellExecutor().exec("appops set $packageName GET_USAGE_STATS allow")
+                } catch (e: Exception) {
+                    Log.w(TAG, "Usage-access self-grant failed", e)
+                }
+            }
             cleanupStaleBlockedPackages()
         }
 
@@ -376,16 +297,16 @@ class ForegroundDetectionService : AccessibilityService() {
 
         createNotificationChannel()
 
-        if (cachedFirewallEnabled && (cachedFirewallMode == FirewallMode.SMART_FOREGROUND || cachedFirewallMode == FirewallMode.HYBRID || cachedFirewallMode == FirewallMode.FOCUS_TRACKER)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                startForeground(NOTIFICATION_ID, buildNotification(null), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
-            } else {
-                startForeground(NOTIFICATION_ID, buildNotification(null))
-            }
-        }
-
         Log.d(TAG, "Service created (restored=$restoredApp, dynamicSkip=${dynamicSkipPackages.size} pkgs)")
     }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        startForegroundService()
+        startPolling()
+        return START_STICKY
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(prefListener)
@@ -395,51 +316,68 @@ class ForegroundDetectionService : AccessibilityService() {
         super.onDestroy()
     }
 
-    override fun onInterrupt() {
-        Log.d(TAG, "Service interrupted")
+    private fun startPolling() {
+        if (pollJob?.isActive == true) return
+        pollJob = serviceScope.launch {
+            while (isActive) {
+                try {
+                    if (cachedFirewallEnabled && cachedFirewallMode.requiresForegroundDetection()) {
+                        val pkg = withContext(Dispatchers.IO) {
+                            ForegroundAppResolver.getForegroundPackage(applicationContext)
+                        }
+                        if (pkg != null) onForegroundSample(pkg)
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    Log.w(TAG, "Poll iteration failed", e)
+                }
+                delay(POLL_INTERVAL_MS)
+            }
+        }
     }
 
-    override fun onServiceConnected() {
-        super.onServiceConnected()
-        Log.d(TAG, "Service connected")
-    }
-
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        if (event == null) return
-        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
-
-        val packageName = event.packageName?.toString() ?: return
-
+    private suspend fun onForegroundSample(packageName: String) {
         // Skip self for non-focus-tracker modes to avoid processing our own windows.
         if (packageName == this.packageName && cachedFirewallMode != FirewallMode.FOCUS_TRACKER) return
 
-        // Skip same-package events immediately (no debounce needed).
+        // Skip same-package samples immediately.
         if (packageName == currentForegroundPackage) return
 
-        // Filter non-Activity windows (dialogs, panels, toasts, etc.) but do so carefully.
-        val className = event.className?.toString()
-        if (className != null && isNonActivityWindow(className)) return
-
         publishObservedForegroundApp(packageName)
-
-        // Gate on cached state — zero SharedPrefs reads on the hot path.
-        if (cachedFirewallMode != FirewallMode.SMART_FOREGROUND && 
-            cachedFirewallMode != FirewallMode.HYBRID &&
-            cachedFirewallMode != FirewallMode.FOCUS_TRACKER) return  // ADD FOCUS_TRACKER check
-        if (!cachedFirewallEnabled) return
 
         if (cachedFirewallMode == FirewallMode.FOCUS_TRACKER) {
             processFocusTracker(packageName)
             return
         }
 
-        // Debounce: cancel any previously queued dispatch and re-schedule.
-        debounceJob?.cancel()
-        // Snapshot package name in a local val to avoid closure capture issues.
-        val newPackage = packageName
-        debounceJob = serviceScope.launch {
-            delay(DEBOUNCE_MS)
-            processPackageChange(newPackage)
+        speculativelyAllowIfManaged(packageName)
+
+        delay(SETTLE_RECHECK_MS)
+        val confirm = withContext(Dispatchers.IO) {
+            ForegroundAppResolver.getForegroundPackage(applicationContext)
+        }
+        if (confirm != packageName) return // changed again; next poll handles it
+        processPackageChange(packageName)
+    }
+
+    private fun speculativelyAllowIfManaged(packageName: String) {
+        if (!cachedFirewallEnabled) return
+        val mode = cachedFirewallMode
+        if (mode != FirewallMode.SMART_FOREGROUND && mode != FirewallMode.HYBRID) return
+        val appMode = cachedAppModes[packageName] ?: 0
+        val isSmartForegroundApp = mode == FirewallMode.SMART_FOREGROUND ||
+                (mode == FirewallMode.HYBRID && appMode == 1)
+        if (!isSmartForegroundApp) return
+        if (!selectedPackages.contains(packageName) || shouldAlwaysSkipPackage(packageName)) return
+
+        serviceScope.launch(Dispatchers.IO) {
+            try {
+                getShellExecutor().exec("cmd connectivity set-package-networking-enabled true $packageName")
+                Log.d(TAG, "$packageName → [speculative-allow] pre-settle")
+            } catch (e: Exception) {
+                Log.d(TAG, "Speculative allow failed for $packageName", e)
+            }
         }
     }
 
@@ -511,21 +449,6 @@ class ForegroundDetectionService : AccessibilityService() {
         lastManagedPackage = newPackage
 
         handleForegroundAppChange(previous, newPackage)
-    }
-
-    private fun isNonActivityWindow(className: String): Boolean {
-        val lower = className.lowercase()
-        return lower.endsWith("dialog") ||
-               lower.endsWith("dialogfragment") ||
-               lower.endsWith("popup") ||
-               lower.endsWith("popupwindow") ||
-               lower.endsWith("toast") ||
-               lower.endsWith("panel") ||
-               lower.endsWith("overlay") ||
-               lower.endsWith("bubble") ||
-               lower.endsWith("dropdown") ||
-               lower.contains("${'$'}") || // inner class — usually a sub-window
-               lower == "android.inputmethodservice.softinputwindow"
     }
 
     private fun publishObservedForegroundApp(packageName: String) {

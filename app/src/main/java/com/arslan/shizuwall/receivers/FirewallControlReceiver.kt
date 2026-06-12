@@ -135,9 +135,9 @@ class FirewallControlReceiver : BroadcastReceiver() {
                         requestedPackages.filter {
                             val modeApp = appModes.optInt(it, 0)
                             when (modeApp) {
-                                1 -> false // SMART_FOREGROUND app -> handled dynamically by accessibility service
-                                2 -> isLocked // SCREEN_LOCK app -> block if screen locked
-                                else -> true // DEFAULT app -> block immediately
+                                1 -> false 
+                                2 -> isLocked
+                                else -> true
                             }
                         }
                     } else if (firewallMode == FirewallMode.SMART_FOREGROUND) {

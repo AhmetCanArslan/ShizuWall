@@ -295,10 +295,6 @@
     
     <string name="firewall_mode_focus_tracker">Rastreador de Foco</string>
     <string name="firewall_mode_focus_tracker_description">Ativar a firewall quando o ShizuWall não estiver em foco e desativá-la quando estiver em foco.</string>
-    <string name="focus_tracker_info_enabled">O modo Rastreador de Foco bloqueia os apps selecionados quando você sai do ShizuWall e os permite quando está dentro do ShizuWall.\n\nA permissão de Acessibilidade necessária é concedida automaticamente quando você ativa o firewall.</string>
-    
-    <string name="smart_foreground_requires_accessibility">Requer permissão de Acessibilidade</string>
-    <string name="smart_foreground_service_description">Monitora o app em primeiro plano para gerenciar regras do firewall</string>
     <string name="smart_foreground_notification_channel_name">Primeiro Plano Inteligente (Serviço)</string>
     <string name="smart_foreground_notification_channel_description">Serviço em segundo plano para monitorar o app em primeiro plano</string>
     <string name="smart_foreground_active">Primeiro Plano Inteligente Ativo</string>
@@ -306,14 +302,7 @@
     
     <string name="focus_tracker_active">Monitor de Foco: Ativo</string>
     <string name="focus_tracker_paused">Monitor de Foco: Inativo</string>
-    
-    <string name="accessibility_service_label">ShizuWall Monitor de Primeiro Plano</string>
-    <string name="accessibility_auto_enabled">Serviço de acessibilidade habilitado automaticamente</string>
-    <string name="smart_foreground_info_enabled">O modo Primeiro Plano Inteligente permitirá acesso à rede apenas para o app que você está usando. Todos os outros apps serão bloqueados.\n\nA permissão de Acessibilidade é concedida automaticamente ao selecionar este modo.</string>
-    <string name="hybrid_mode_info_enabled">O modo Híbrido combina três submodos por app: Bloqueio Padrão, Primeiro Plano Inteligente e Bloqueio de Tela. Você pode configurar cada app individualmente.\n\nA permissão de Acessibilidade necessária é concedida automaticamente ao ativar o firewall.</string>
-    <string name="smart_foreground_info_deferred">O modo Primeiro Plano Inteligente permitirá acesso à rede apenas para o app que você está usando. Todos os outros apps serão bloqueados.\n\nA permissão de Acessibilidade será concedida automaticamente quando o Shizuku/Daemon estiver em execução ou quando você ativar o firewall.</string>
     <string name="firewall_enabled_smart_foreground">Firewall ativado (Modo Primeiro Plano Inteligente)</string>
-    <string name="accessibility_manual_enable_needed">Não foi possível habilitar automaticamente o serviço de acessibilidade. Por favor, habilite-o manualmente nas configurações do seu dispositivo.</string>
     <string name="smart_foreground_active_app">Ativo: %s</string>
     <string name="enable_firewall_dialog_title">Ativar Firewall</string>
     <string name="enable_firewall_dialog_message">Você quer ativar o firewall para os %d apps listados abaixo?</string>

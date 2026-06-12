@@ -67,6 +67,7 @@ import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
+import com.arslan.shizuwall.utils.ForegroundAppResolver
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONArray
 import org.json.JSONObject
@@ -93,7 +94,7 @@ class MainActivity : BaseActivity() {
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
         const val KEY_USE_AMOLED_BLACK = "use_amoled_black"
         const val KEY_ADAPTIVE_MODE = "adaptive_mode" 
-        const val KEY_FIREWALL_MODE = "firewall_mode" 
+        const val KEY_FIREWALL_MODE = "firewall_mode"
         const val KEY_SCREEN_LOCK_DELAY_SECONDS = "screen_lock_delay_seconds"
         const val DEFAULT_SCREEN_LOCK_DELAY_SECONDS = 2
         const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"  // Current foreground app in smart mode
@@ -580,28 +581,11 @@ class MainActivity : BaseActivity() {
         appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
         loadInstalledApps()
         
-        // If firewall is ON and mode requires accessibility, ensure it's enabled
-        if (isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND ||
-            firewallMode == FirewallMode.HYBRID ||
-            firewallMode == FirewallMode.FOCUS_TRACKER)) {
-
-            if (!ForegroundDetectionService.isServiceEnabled(this)) {
-                lifecycleScope.launch {
-                    val success = ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
-                    if (!success) {
-                        Toast.makeText(this@MainActivity, getString(R.string.accessibility_manual_enable_needed), Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
-        } else if (!isFirewallEnabled && (firewallMode == FirewallMode.SMART_FOREGROUND ||
-                   firewallMode == FirewallMode.HYBRID ||
-                   firewallMode == FirewallMode.FOCUS_TRACKER)) {
-
-            if (ForegroundDetectionService.isServiceEnabled(this)) {
-                lifecycleScope.launch {
-                    ForegroundDetectionService.disableServiceViaShell(this@MainActivity)
-                }
-            }
+        // If firewall is ON and mode needs foreground detection, ensure the service runs
+        if (isFirewallEnabled && firewallMode.requiresForegroundDetection()) {
+            ForegroundDetectionService.start(this)
+        } else if (!isFirewallEnabled && firewallMode.requiresForegroundDetection()) {
+            ForegroundDetectionService.stop(this)
         }
 
         // Register package change receiver so installs/uninstalls/updates immediately refresh the list.
@@ -1898,9 +1882,9 @@ class MainActivity : BaseActivity() {
                 packageNames.filter {
                     val mode = appModes.optInt(it, 0)
                     when (mode) {
-                        1 -> false // SMART_FOREGROUND app -> handled dynamically by accessibility service
-                        2 -> isLocked // SCREEN_LOCK app -> block if screen locked
-                        else -> true // DEFAULT app -> block immediately
+                        1 -> false
+                        2 -> isLocked
+                        else -> true
                     }
                 }
             } else if (firewallMode == FirewallMode.SMART_FOREGROUND) {
@@ -1921,13 +1905,8 @@ class MainActivity : BaseActivity() {
             updateInteractiveViews()
             showDimOverlay(force = true)
             
-            if (enable && (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || firewallMode == FirewallMode.FOCUS_TRACKER)) {
-                if (!ForegroundDetectionService.isServiceEnabled(this@MainActivity)) {
-                    val granted = ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
-                    if (granted) {
-                        Toast.makeText(this@MainActivity, getString(R.string.accessibility_auto_enabled), Toast.LENGTH_SHORT).show()
-                    }
-                }
+            if (enable && firewallMode.requiresForegroundDetection()) {
+                promptUsageAccessIfNeeded()
             }
             
             try {
@@ -1970,13 +1949,9 @@ class MainActivity : BaseActivity() {
                         saveActivePackages(activeFirewallPackages)
                         saveFirewallEnabled(true)
                         
-                        // Auto-enable accessibility for modes that require it
-                        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID) {
-                            if (!ForegroundDetectionService.isServiceEnabled(this@MainActivity)) {
-                                lifecycleScope.launch {
-                                    ForegroundDetectionService.enableServiceViaShell(this@MainActivity)
-                                }
-                            }
+                        // Start foreground detection for modes that require it
+                        if (firewallMode.requiresForegroundDetection()) {
+                            ForegroundDetectionService.start(this@MainActivity)
                         }
                         
                         // Ensure toggle stays ON
@@ -2073,6 +2048,19 @@ class MainActivity : BaseActivity() {
                 applyListInteractionState()
             }
         }
+    }
+
+    /**
+     * Last-resort prompt for usage access. The detection service self-grants it via the
+     * privileged shell on start; this only fires when neither the Shizuku binder path
+     * nor usage access is available.
+     */
+    private fun promptUsageAccessIfNeeded() {
+        if (ForegroundAppResolver.isShizukuPathAvailable(this)) return
+        if (ForegroundAppResolver.hasUsageAccess(this)) return
+        try {
+            startActivity(Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS))
+        } catch (_: Exception) {}
     }
 
     private fun filterInstalledPackages(packageNames: List<String>): Pair<List<String>, List<String>> {

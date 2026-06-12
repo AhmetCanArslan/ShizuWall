@@ -100,6 +100,7 @@ class SettingsActivity : BaseActivity() {
     private var autoEnablePreviousState: Boolean = false  // Store previous state before disabling
     private var rootReapplyPreviousState: Boolean = false
     private var suppressWorkingModeListener = false
+    private var suppressFirewallModeListener = false
     
     // Firewall Mode Selector
     private lateinit var radioGroupFirewallMode: RadioGroup
@@ -332,6 +333,37 @@ class SettingsActivity : BaseActivity() {
         }
     }
     
+    private fun commitFirewallMode(newMode: FirewallMode) {
+        sharedPreferences.edit().putString(MainActivity.KEY_FIREWALL_MODE, newMode.name).apply()
+        setResult(RESULT_OK)
+
+        TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
+        updateFirewallModeUI(newMode)
+
+        if (newMode == FirewallMode.WHITELIST) {
+            showWhitelistInfoDialog()
+        }
+    }
+
+   
+    private fun revertFirewallModeSelection() {
+        val currentMode = FirewallMode.fromName(
+            sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
+        )
+        val targetId = when (currentMode) {
+            FirewallMode.ADAPTIVE -> R.id.radioModeAdaptive
+            FirewallMode.SCREEN_LOCK_MODE -> R.id.radioModeScreenLock
+            FirewallMode.SMART_FOREGROUND -> R.id.radioModeSmartForeground
+            FirewallMode.FOCUS_TRACKER -> R.id.radioModeFocusTracker
+            FirewallMode.WHITELIST -> R.id.radioModeWhitelist
+            FirewallMode.HYBRID -> R.id.radioModeHybrid
+            else -> R.id.radioModeDefault
+        }
+        suppressFirewallModeListener = true
+        radioGroupFirewallMode.check(targetId)
+        suppressFirewallModeListener = false
+    }
+
     /**
      * Update UI elements based on firewall mode
      */
@@ -383,26 +415,17 @@ class SettingsActivity : BaseActivity() {
 
         // Firewall Mode Selector Listener
         radioGroupFirewallMode.setOnCheckedChangeListener { _, checkedId ->
+            if (suppressFirewallModeListener) return@setOnCheckedChangeListener
+
             // Check if firewall is enabled - if so, prevent mode change
             val isFirewallEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
             if (isFirewallEnabled) {
                 // Show toast message and revert selection
                 Toast.makeText(this, R.string.firewall_mode_change_disabled, Toast.LENGTH_LONG).show()
-                
-                // Revert to current mode
-                val currentMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
-                when (currentMode) {
-                    FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
-                    FirewallMode.SCREEN_LOCK_MODE -> radioGroupFirewallMode.check(R.id.radioModeScreenLock)
-                    FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
-                    FirewallMode.FOCUS_TRACKER -> radioGroupFirewallMode.check(R.id.radioModeFocusTracker)
-                    FirewallMode.WHITELIST -> radioGroupFirewallMode.check(R.id.radioModeWhitelist)
-                    FirewallMode.HYBRID -> radioGroupFirewallMode.check(R.id.radioModeHybrid)
-                    else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
-                }
+                revertFirewallModeSelection()
                 return@setOnCheckedChangeListener
             }
-            
+
             val newMode = when (checkedId) {
                 R.id.radioModeAdaptive -> FirewallMode.ADAPTIVE
                 R.id.radioModeScreenLock -> FirewallMode.SCREEN_LOCK_MODE
@@ -412,20 +435,8 @@ class SettingsActivity : BaseActivity() {
                 R.id.radioModeHybrid -> FirewallMode.HYBRID
                 else -> FirewallMode.DEFAULT
             }
-            
-            sharedPreferences.edit().putString(MainActivity.KEY_FIREWALL_MODE, newMode.name).apply()
-            setResult(RESULT_OK)
-            
-            TransitionManager.beginDelayedTransition(findViewById(R.id.settingsRoot), AutoTransition())
-            updateFirewallModeUI(newMode)
-            
-            when (newMode) {
-                FirewallMode.SMART_FOREGROUND -> showSmartForegroundInfoDialog()
-                FirewallMode.HYBRID -> showHybridModeInfoDialog()
-                FirewallMode.FOCUS_TRACKER -> showFocusTrackerInfoDialog()
-                FirewallMode.WHITELIST -> showWhitelistInfoDialog()
-                else -> {}
-            }
+
+            commitFirewallMode(newMode)
         }
 
         switchSkipConfirm.setOnCheckedChangeListener { _, isChecked ->
@@ -728,50 +739,6 @@ class SettingsActivity : BaseActivity() {
             .setPositiveButton(R.string.ok) { _, _ ->
                 if (checkbox.isChecked) {
                     sharedPreferences.edit().putBoolean("show_whitelist_prompt", false).apply()
-                }
-            }
-            .show()
-    }
-
-    private fun showSmartForegroundInfoDialog() {
-        val showPrompt = sharedPreferences.getBoolean("show_smart_foreground_prompt", true)
-        if (!showPrompt) return
-
-        val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
-        val messageText: TextView = promptView.findViewById(R.id.shizuku_prompt_message_text)
-        val checkbox: android.widget.CheckBox = promptView.findViewById(R.id.shizuku_prompt_do_not_show)
-
-        messageText.text = getString(R.string.smart_foreground_info_enabled)
-        checkbox.text = getString(R.string.dont_show_again)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.firewall_mode_smart_foreground)
-            .setView(promptView)
-            .setPositiveButton(R.string.ok) { _, _ ->
-                if (checkbox.isChecked) {
-                    sharedPreferences.edit().putBoolean("show_smart_foreground_prompt", false).apply()
-                }
-            }
-            .show()
-    }
-
-    private fun showHybridModeInfoDialog() {
-        val showPrompt = sharedPreferences.getBoolean("show_hybrid_mode_prompt", true)
-        if (!showPrompt) return
-
-        val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
-        val messageText: TextView = promptView.findViewById(R.id.shizuku_prompt_message_text)
-        val checkbox: android.widget.CheckBox = promptView.findViewById(R.id.shizuku_prompt_do_not_show)
-
-        messageText.text = getString(R.string.hybrid_mode_info_enabled)
-        checkbox.text = getString(R.string.dont_show_again)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.firewall_mode_hybrid)
-            .setView(promptView)
-            .setPositiveButton(R.string.ok) { _, _ ->
-                if (checkbox.isChecked) {
-                    sharedPreferences.edit().putBoolean("show_hybrid_mode_prompt", false).apply()
                 }
             }
             .show()
@@ -1522,27 +1489,5 @@ class SettingsActivity : BaseActivity() {
             }
         }
         return file.delete() || !file.exists()
-    }
-    
-    private fun showFocusTrackerInfoDialog() {
-        val showPrompt = sharedPreferences.getBoolean("show_focus_tracker_prompt", true)
-        if (!showPrompt) return
-
-        val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
-        val messageText: TextView = promptView.findViewById(R.id.shizuku_prompt_message_text)
-        val checkbox: android.widget.CheckBox = promptView.findViewById(R.id.shizuku_prompt_do_not_show)
-
-        messageText.text = getString(R.string.focus_tracker_info_enabled)
-        checkbox.text = getString(R.string.dont_show_again)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.firewall_mode_focus_tracker)
-            .setView(promptView)
-            .setPositiveButton(R.string.ok) { _, _ ->
-                if (checkbox.isChecked) {
-                    sharedPreferences.edit().putBoolean("show_focus_tracker_prompt", false).apply()
-                }
-            }
-            .show()
     }
 }

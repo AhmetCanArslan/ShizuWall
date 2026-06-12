@@ -128,13 +128,9 @@ class FirewallTileService : TileService() {
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
 
-        // For tracking modes, try to auto-enable accessibility service
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
-            if (!ForegroundDetectionService.isServiceEnabled(this@FirewallTileService)) {
-                withContext(Dispatchers.IO) {
-                    ForegroundDetectionService.enableServiceViaShell(this@FirewallTileService)
-                }
-            }
+        // For tracking modes, start the foreground detection service
+        if (firewallMode.requiresForegroundDetection()) {
+            ForegroundDetectionService.start(this@FirewallTileService)
         }
 
         withContext(Dispatchers.IO) {
