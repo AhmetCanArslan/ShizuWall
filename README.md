@@ -22,7 +22,9 @@
   <a href="https://play.google.com/store/apps/details?id=com.arslan.shizuwall">
     <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="250" />
   </a>
-  
+  <a href="https://f-droid.org/packages/com.arslan.shizuwall/">
+    <img alt="Get it on F-Droid" src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" width="250" />
+  </a>
 </p>
 
 <p align="center">
