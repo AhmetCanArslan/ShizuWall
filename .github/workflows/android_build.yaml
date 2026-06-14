@@ -1,37 +1,23 @@
-# Name of the workflow
-name: Android CI - Nightly Build
+name: Android CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push events but only for the "main" branch.
-  # Doc-only changes (README, license, F-Droid metadata, etc.) are ignored so
-  # they don't kick off an Android build.
   push:
-    branches:
-     - main
-     - root-implement
+    branches: [main]
     paths-ignore:
-     - '**.md'
-     - 'LICENSE'
-     - '.gitignore'
-     - 'fastlane/**'
-     - 'metadata/**'
-
-  # Allows you to run this workflow manually from the Actions tab
+      - '**.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - 'fastlane/**'
+      - 'assets/**'
   workflow_dispatch:
 
 jobs:
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Step: Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - name: Checkout Code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    # 2. Step: Set up Java JDK 17
-    # Required for modern Android builds
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -39,24 +25,14 @@ jobs:
         distribution: 'temurin'
         cache: 'gradle'
 
-    # 3. Step: Grant execute permission to gradlew
-    # (Required in Linux environments to run the script)
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    # 4. Step: Build the 'debug' APK using Gradle
-    - name: Build with Gradle (assembleDebug)
+    - name: Build debug APK
       run: ./gradlew assembleDebug
 
-    # List the APK outputs so we can debug path issues on CI runners
-    - name: List APK outputs
-      run: ls -la app/build/outputs/apk/debug || true
-
-    # 5. Step: Upload the generated APK as an "Artifact"
-    # This makes it downloadable from the Actions summary page
-    - name: Upload APK as Artifact
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: ShizuWall-debug.apk
-        # Upload any APK generated under the debug outputs. This handles universal and split APKs.
+        name: ShizuWall-debug
         path: app/build/outputs/apk/debug/*.apk
