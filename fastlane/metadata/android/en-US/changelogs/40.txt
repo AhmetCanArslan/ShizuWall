@@ -1,0 +1,3 @@
+Updated qs tile icon
+Added "auto enable firewall for new installed apps" option
+Changed accesibility permission with usage stats for foreground app detection. 
