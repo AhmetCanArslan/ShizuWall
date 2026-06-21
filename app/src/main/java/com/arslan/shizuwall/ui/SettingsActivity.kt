@@ -245,6 +245,9 @@ class SettingsActivity : BaseActivity() {
         switchAutoFirewallNewApps = findViewById(R.id.switchAutoFirewallNewApps)
         switchFirewallStatusNotification = findViewById(R.id.switchFirewallStatusNotification)
         switchFloatingButton = findViewById(R.id.switchFloatingButton)
+        findViewById<MaterialButton>(R.id.btnFloatingButtonSettings).setOnClickListener {
+            startActivity(Intent(this, FloatingButtonSettingsActivity::class.java))
+        }
         // Auto-enable switch (new)
         switchAutoEnableOnShizukuStart = findViewById(R.id.switchAutoEnableOnShizukuStart)
         cardAutoEnableOnShizukuStart = findViewById(R.id.cardAutoEnableOnShizukuStart)

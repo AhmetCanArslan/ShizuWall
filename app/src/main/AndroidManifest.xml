@@ -39,6 +39,10 @@
             android:parentActivityName=".ui.MainActivity"
             android:exported="true" />
         <activity
+            android:name=".ui.FloatingButtonSettingsActivity"
+            android:parentActivityName=".ui.SettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>

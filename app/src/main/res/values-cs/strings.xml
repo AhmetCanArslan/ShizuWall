@@ -378,4 +378,19 @@
     <string name="decrease">Zmenšit</string>
     <string name="adb_broadcast_quick_reference">Stručná referenční příručka s připravenými příkazy.</string>
     <string name="increase">Zvětšit</string>
+
+    <!-- Floating Button Personalization -->
+    <string name="floating_settings_title">Floating Button</string>
+    <string name="floating_settings_content_description">Personalize floating button</string>
+    <string name="floating_idle_opacity">Idle transparency</string>
+    <string name="floating_idle_opacity_desc">How visible the button stays when idle</string>
+    <string name="floating_size">Button size</string>
+    <string name="floating_size_desc">Size of the floating button</string>
+    <string name="floating_fade_delay">Fade delay</string>
+    <string name="floating_fade_delay_desc">Time before the button fades when idle</string>
+    <string name="floating_edge_snap">Hide at screen edge</string>
+    <string name="floating_edge_snap_desc">Tuck the button against the nearest edge when idle to prevent accidental taps. Tap once to reveal it.</string>
+    <string name="floating_percent_format">%1$d%%</string>
+    <string name="floating_dp_format">%1$d dp</string>
+    <string name="floating_seconds_format">%1$d s</string>
 </resources>

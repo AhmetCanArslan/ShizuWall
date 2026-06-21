@@ -6,6 +6,7 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
 import android.view.*
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
@@ -27,6 +28,16 @@ class FloatingButtonService : Service() {
         const val NOTIFICATION_ID = 4001
         const val KEY_FLOATING_BUTTON_ENABLED = "floating_button_enabled"
 
+
+        const val KEY_FLOATING_IDLE_OPACITY = "floating_button_idle_opacity" // 0..100 (%)
+        const val KEY_FLOATING_SIZE = "floating_button_size"                 // dp
+        const val KEY_FLOATING_FADE_DELAY = "floating_button_fade_delay"     // seconds
+        const val KEY_FLOATING_EDGE_SNAP = "floating_button_edge_snap"       // boolean
+
+        const val DEFAULT_IDLE_OPACITY = 30
+        const val DEFAULT_SIZE_DP = 56
+        const val DEFAULT_FADE_DELAY = 3
+
         fun start(context: Context) {
             val intent = Intent(context, FloatingButtonService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -44,28 +55,64 @@ class FloatingButtonService : Service() {
     private var windowManager: WindowManager? = null
     private var floatingView: View? = null
     private var fabIcon: ImageView? = null
+    private var layoutParams: WindowManager.LayoutParams? = null
     private lateinit var sharedPreferences: SharedPreferences
+
+    private var idleOpacityFraction = DEFAULT_IDLE_OPACITY / 100f
+    private var sizePx = 0
+    private var iconSizePx = 0
+    private var fadeDelayMs = DEFAULT_FADE_DELAY * 1000L
+    private var edgeSnap = false
+
+    private var snappedRight = true   
+    private var isTucked = false      
+    private var lastX = 0             )
+    private var lastY = 0
+    private var inactivityJob: Job? = null
+    private var xAnimator: android.animation.ValueAnimator? = null
 
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Main + job)
 
     // Track state changes via SharedPreferences listener
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == MainActivity.KEY_FIREWALL_ENABLED ||
-            key == MainActivity.KEY_ACTIVE_PACKAGES ||
-            key == MainActivity.KEY_FIREWALL_SAVED_ELAPSED
-        ) {
-            updateFabAppearance()
+        when (key) {
+            MainActivity.KEY_FIREWALL_ENABLED,
+            MainActivity.KEY_ACTIVE_PACKAGES,
+            MainActivity.KEY_FIREWALL_SAVED_ELAPSED -> updateFabAppearance()
+
+            KEY_FLOATING_IDLE_OPACITY,
+            KEY_FLOATING_SIZE,
+            KEY_FLOATING_FADE_DELAY,
+            KEY_FLOATING_EDGE_SNAP -> {
+
+                loadFloatingSettings()
+                applyFloatingSettingsLive()
+            }
         }
     }
 
     override fun onCreate() {
         super.onCreate()
         sharedPreferences = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        loadFloatingSettings()
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
         sharedPreferences.registerOnSharedPreferenceChangeListener(prefsListener)
         showFloatingButton()
+    }
+
+    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
+
+    private fun loadFloatingSettings() {
+        val opacity = sharedPreferences.getInt(KEY_FLOATING_IDLE_OPACITY, DEFAULT_IDLE_OPACITY).coerceIn(0, 100)
+        idleOpacityFraction = opacity / 100f
+        val sizeDp = sharedPreferences.getInt(KEY_FLOATING_SIZE, DEFAULT_SIZE_DP).coerceIn(40, 96)
+        sizePx = dp(sizeDp)
+        iconSizePx = dp((sizeDp * 0.5f).toInt())
+        val delay = sharedPreferences.getInt(KEY_FLOATING_FADE_DELAY, DEFAULT_FADE_DELAY).coerceIn(1, 30)
+        fadeDelayMs = delay * 1000L
+        edgeSnap = sharedPreferences.getBoolean(KEY_FLOATING_EDGE_SNAP, false)
     }
 
     override fun onDestroy() {
@@ -122,18 +169,26 @@ class FloatingButtonService : Service() {
 
         floatingView = LayoutInflater.from(this).inflate(R.layout.floating_firewall_button, null)
         fabIcon = floatingView?.findViewById(R.id.fabFirewallIcon)
+        fabIcon?.layoutParams = FrameLayout.LayoutParams(iconSizePx, iconSizePx, Gravity.CENTER)
+
+
+        snappedRight = true
+        isTucked = false
 
         val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
+            sizePx,
+            sizePx,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.END or Gravity.CENTER_VERTICAL
-            x = 0
-            y = 0
+            x = lastX
+            y = lastY
         }
+        layoutParams = params
 
         // Use system touch slop for reliable tap vs drag detection
         val touchSlop = ViewConfiguration.get(this).scaledTouchSlop
@@ -143,26 +198,7 @@ class FloatingButtonService : Service() {
         var initialTouchX = 0f
         var initialTouchY = 0f
         var moved = false
-
-        var inactivityJob: Job? = null
-        val inactivityTimeout = 3000L
-
-        fun resetInactivityTimer() {
-            inactivityJob?.cancel()
-            floatingView?.background?.alpha = 255
-            fabIcon?.animate()?.cancel()
-            fabIcon?.alpha = 1.0f
-            inactivityJob = scope.launch {
-                delay(inactivityTimeout)
-                val animator = android.animation.ValueAnimator.ofInt(255, 0)
-                animator.duration = 300
-                animator.addUpdateListener { animation ->
-                    floatingView?.background?.alpha = animation.animatedValue as Int
-                }
-                animator.start()
-                fabIcon?.animate()?.alpha(0.3f)?.setDuration(300)?.start()
-            }
-        }
+        var wasTucked = false
 
         resetInactivityTimer()
 
@@ -173,7 +209,10 @@ class FloatingButtonService : Service() {
                     v.background?.alpha = 255
                     fabIcon?.animate()?.cancel()
                     fabIcon?.alpha = 1.0f
-                    
+                    // If hidden at the edge, the first touch only reveals it (no toggle).
+                    wasTucked = isTucked
+                    if (edgeSnap && isTucked) untuckFromEdge()
+
                     initialX = params.x
                     initialY = params.y
                     initialTouchX = event.rawX
@@ -184,23 +223,35 @@ class FloatingButtonService : Service() {
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    val dx = (initialTouchX - event.rawX).toInt()
-                    val dy = (event.rawY - initialTouchY).toInt()
-                    if (Math.abs(dx) > touchSlop || Math.abs(dy) > touchSlop) {
+                    if (!moved &&
+                        (Math.abs(initialTouchX - event.rawX) > touchSlop ||
+                            Math.abs(event.rawY - initialTouchY) > touchSlop)
+                    ) {
                         moved = true
+
+                        xAnimator?.cancel()
+                        initialX = params.x
+                        initialY = params.y
+                        initialTouchX = event.rawX
+                        initialTouchY = event.rawY
                     }
                     if (moved) {
-                        params.x = initialX + dx
-                        params.y = initialY + dy
+                        params.x = initialX + (initialTouchX - event.rawX).toInt()
+                        params.y = initialY + (event.rawY - initialTouchY).toInt()
                         windowManager?.updateViewLayout(floatingView, params)
                     }
                     true
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     v.alpha = 1.0f
-                    if (!moved && event.action == MotionEvent.ACTION_UP) {
+                    if (moved) {
+                        if (edgeSnap) snapToEdge()
+                    } else if (event.action == MotionEvent.ACTION_UP && !wasTucked) {
+
                         onFabClicked()
                     }
+                    lastX = params.x
+                    lastY = params.y
                     resetInactivityTimer()
                     true
                 }
@@ -218,11 +269,90 @@ class FloatingButtonService : Service() {
     }
 
     private fun removeFloatingButton() {
+        inactivityJob?.cancel()
+        xAnimator?.cancel()
         try {
             floatingView?.let { windowManager?.removeView(it) }
         } catch (_: Exception) {}
         floatingView = null
         fabIcon = null
+        layoutParams = null
+    }
+
+    private fun resetInactivityTimer() {
+        inactivityJob?.cancel()
+        floatingView?.background?.alpha = 255
+        fabIcon?.animate()?.cancel()
+        fabIcon?.alpha = 1.0f
+        inactivityJob = scope.launch {
+            delay(fadeDelayMs)
+            val targetBgAlpha = (idleOpacityFraction * 255).toInt()
+            val animator = android.animation.ValueAnimator.ofInt(255, targetBgAlpha)
+            animator.duration = 300
+            animator.addUpdateListener { animation ->
+                floatingView?.background?.alpha = animation.animatedValue as Int
+            }
+            animator.start()
+            fabIcon?.animate()?.alpha(idleOpacityFraction)?.setDuration(300)?.start()
+            if (edgeSnap) tuckToEdge()
+        }
+    }
+
+
+    private fun applyFloatingSettingsLive() {
+        val params = layoutParams ?: return
+        params.width = sizePx
+        params.height = sizePx
+        fabIcon?.layoutParams = FrameLayout.LayoutParams(iconSizePx, iconSizePx, Gravity.CENTER)
+        if (edgeSnap) {
+            snapToEdge()
+        } else {
+            isTucked = false
+            try { windowManager?.updateViewLayout(floatingView, params) } catch (_: Exception) {}
+        }
+        resetInactivityTimer()
+    }
+
+    private fun animateWindowX(targetX: Int) {
+        val params = layoutParams ?: return
+        xAnimator?.cancel()
+        if (params.x == targetX) return
+        xAnimator = android.animation.ValueAnimator.ofInt(params.x, targetX).apply {
+            duration = 260
+            interpolator = android.view.animation.DecelerateInterpolator(1.5f)
+            addUpdateListener { animation ->
+                val p = layoutParams ?: return@addUpdateListener
+                p.x = animation.animatedValue as Int
+                try { windowManager?.updateViewLayout(floatingView, p) } catch (_: Exception) {}
+            }
+            start()
+        }
+    }
+
+    private fun snapToEdge() {
+        val params = layoutParams ?: return
+        val screenWidth = resources.displayMetrics.widthPixels
+        val bw = params.width
+        snappedRight = params.x <= (screenWidth - bw) / 2
+        isTucked = false
+        animateWindowX(if (snappedRight) 0 else screenWidth - bw)
+    }
+
+    private fun tuckToEdge() {
+        val params = layoutParams ?: return
+        val bw = params.width
+        val screenWidth = resources.displayMetrics.widthPixels
+        snappedRight = params.x <= (screenWidth - bw) / 2
+        val tuck = bw / 2  // 50% of the body off-screen
+        isTucked = true
+        animateWindowX(if (snappedRight) -tuck else (screenWidth - bw + tuck))
+    }
+
+    private fun untuckFromEdge() {
+        val params = layoutParams ?: return
+        val screenWidth = resources.displayMetrics.widthPixels
+        isTucked = false
+        animateWindowX(if (snappedRight) 0 else screenWidth - params.width)
     }
 
     // ──────────────── appearance ────────────────
