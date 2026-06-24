@@ -258,7 +258,7 @@ class ScreenLockMonitorService : Service() {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(R.drawable.ic_quick_tile)
             .setContentTitle(getString(R.string.screen_lock_mode_notification_title))
             .setContentText(getString(R.string.screen_lock_mode_notification_text))
             .setContentIntent(pendingIntent)
