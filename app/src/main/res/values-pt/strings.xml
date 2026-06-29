@@ -122,6 +122,7 @@
     <string name="settings_title">Configurações</string>
     <string name="display_section">Exibição</string>
     <string name="show_system_apps_description">Incluir aplicações do sistema na lista</string>
+    <string name="show_system_apps_uncheck_confirm">Qualquer aplicação do sistema selecionada será desmarcada e reposta no seu estado predefinido. Deseja desmarcá-la?</string>
     <string name="move_selected_top">Mover apps selecionados para o topo</string>
     <string name="move_selected_top_description">Mostrar apps selecionados no início</string>
     <string name="use_dynamic_color">Usar cor dinâmica</string>

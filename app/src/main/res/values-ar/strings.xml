@@ -123,6 +123,7 @@
     <string name="settings_title">الإعدادات</string>
     <string name="display_section">العرض</string>
     <string name="show_system_apps_description">تضمين تطبيقات النظام في القائمة</string>
+    <string name="show_system_apps_uncheck_confirm">سيتم إلغاء تحديد أي تطبيق نظام محدد وإعادته إلى حالته الافتراضية. هل تريد إلغاء التحديد؟</string>
     <string name="move_selected_top">نقل التطبيقات المحددة للأعلى</string>
     <string name="move_selected_top_description">إظهار التطبيقات المحددة في البداية</string>
     <string name="use_dynamic_color">استخدام ألوان ديناميكية</string>

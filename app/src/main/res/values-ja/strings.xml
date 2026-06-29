@@ -121,6 +121,7 @@
     <string name="settings_title">設定</string>
     <string name="display_section">表示</string>
     <string name="show_system_apps_description">リストにシステムアプリケーションを含める</string>
+    <string name="show_system_apps_uncheck_confirm">選択中のシステムアプリはすべて選択解除され、既定の状態に戻ります。チェックを外しますか？</string>
     <string name="move_selected_top">選択したアプリを先頭に移動</string>
     <string name="move_selected_top_description">選択したアプリをリストの最初に表示する</string>
     <string name="use_dynamic_color">ダイナミックカラーを使用</string>

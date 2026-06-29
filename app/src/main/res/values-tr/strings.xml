@@ -122,6 +122,7 @@
     <string name="settings_title">Ayarlar</string>
     <string name="display_section">Görüntü</string>
     <string name="show_system_apps_description">Sistem uygulamalarını listeye dahil et</string>
+    <string name="show_system_apps_uncheck_confirm">Seçili tüm sistem uygulamalarının seçimi kaldırılacak ve varsayılan durumuna sıfırlanacak. İşareti kaldırmak istiyor musunuz?</string>
     <string name="move_selected_top">Seçili uygulamaları üste taşı</string>
     <string name="move_selected_top_description">Seçili uygulamaları başta göster</string>
     <string name="use_dynamic_color">Dinamik renk kullan</string>

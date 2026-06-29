@@ -1225,6 +1225,19 @@ class MainActivity : BaseActivity() {
             checkboxShowSystem.isEnabled = false
         }
 
+        checkboxShowSystem.setOnCheckedChangeListener { _, isChecked ->
+            if (!isChecked && showSystemApps && appList.any { it.isSystem && it.isSelected }) {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.show_system_apps)
+                    .setMessage(R.string.show_system_apps_uncheck_confirm)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setNegativeButton(android.R.string.cancel) { _, _ ->
+                        checkboxShowSystem.isChecked = true
+                    }
+                    .show()
+            }
+        }
+
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.sort)
             .setView(dialogView)

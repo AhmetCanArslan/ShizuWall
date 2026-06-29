@@ -121,6 +121,7 @@
     <string name="settings_title">Настройки</string>
     <string name="display_section">Отображение</string>
     <string name="show_system_apps_description">Включать системные приложения в список</string>
+    <string name="show_system_apps_uncheck_confirm">Любое выбранное системное приложение будет снято с выбора и возвращено в состояние по умолчанию. Снять флажок?</string>
     <string name="move_selected_top">Переместить выбранные вверх</string>
     <string name="move_selected_top_description">Показывать выбранные приложения в начале списка</string>
     <string name="use_dynamic_color">Использовать динамические цвета</string>

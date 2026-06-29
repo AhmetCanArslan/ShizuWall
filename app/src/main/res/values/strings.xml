@@ -130,6 +130,7 @@
     <string name="settings_title">Settings</string>
     <string name="display_section">Display</string>
     <string name="show_system_apps_description">Include system applications in the list</string>
+    <string name="show_system_apps_uncheck_confirm">Any selected system app will be unselected and reset to its default state. Do you want to un-check it?</string>
     <string name="move_selected_top">Move selected apps to top</string>
     <string name="move_selected_top_description">Show selected apps at the beginning</string>
     <string name="use_dynamic_color">Use dynamic color</string>

@@ -122,6 +122,7 @@
     <string name="settings_title">Einstellungen</string>
     <string name="display_section">Anzeige</string>
     <string name="show_system_apps_description">Systemanwendungen in die Liste einschließen</string>
+    <string name="show_system_apps_uncheck_confirm">Jede ausgewählte System-App wird abgewählt und auf ihren Standardzustand zurückgesetzt. Möchten Sie das Häkchen entfernen?</string>
     <string name="move_selected_top">Ausgewählte Apps nach oben verschieben</string>
     <string name="move_selected_top_description">Ausgewählte Apps am Anfang anzeigen</string>
     <string name="use_dynamic_color">Dynamische Farbe verwenden</string>

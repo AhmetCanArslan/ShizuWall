@@ -122,6 +122,7 @@
     <string name="settings_title">设置</string>
     <string name="display_section">显示</string>
     <string name="show_system_apps_description">在列表中包含系统应用程序</string>
+    <string name="show_system_apps_uncheck_confirm">所有已选择的系统应用都将被取消选择并恢复为默认状态。要取消勾选吗？</string>
     <string name="move_selected_top">将选定的应用移至顶部</string>
     <string name="move_selected_top_description">在开头显示选定的应用</string>
     <string name="use_dynamic_color">使用动态颜色</string>
