@@ -345,6 +345,15 @@ class MainActivity : BaseActivity() {
 
         // Prompt user to view Shizuku setup slides at app start
         val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
+        if (workingMode == com.arslan.shizuwall.WorkingMode.LADB.name) {
+            val ladbManager = com.arslan.shizuwall.ladb.LadbManager.getInstance(this)
+            if (ladbManager.isPaired() && !ladbManager.isConnected()) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    ladbManager.connect()
+                }
+            }
+        }
+
         val showSetupPrompt = sharedPreferences.getBoolean(KEY_SHOW_SETUP_PROMPT, true)
         if (showSetupPrompt && workingMode == "SHIZUKU") {
             val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)

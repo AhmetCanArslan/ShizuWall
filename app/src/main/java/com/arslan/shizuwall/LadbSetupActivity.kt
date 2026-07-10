@@ -73,6 +73,13 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     private lateinit var btnStartDaemon: MaterialButton
     private lateinit var btnKillDaemon: MaterialButton
 
+    // Manual host/port UI
+    private lateinit var etManualHost: com.google.android.material.textfield.TextInputEditText
+    private lateinit var etManualPort: com.google.android.material.textfield.TextInputEditText
+    private lateinit var btnCheckAndConnect: MaterialButton
+    private lateinit var checkConnectProgress: android.widget.ProgressBar
+    private lateinit var tvManualConnectStatus: TextView
+
     private lateinit var ladbManager: LadbManager
     private lateinit var daemonManager: PersistentDaemonManager
     private var adbPortFinder: AdbPortFinder? = null
@@ -416,6 +423,13 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         btnStartDaemon = findViewById(R.id.btnStartDaemon)
         btnKillDaemon = findViewById(R.id.btnKillDaemon)
 
+        etManualHost = findViewById(R.id.etManualHost)
+        etManualPort = findViewById(R.id.etManualPort)
+        btnCheckAndConnect = findViewById(R.id.btnCheckAndConnect)
+        checkConnectProgress = findViewById(R.id.checkConnectProgress)
+        tvManualConnectStatus = findViewById(R.id.tvManualConnectStatus)
+        btnCheckAndConnect.setOnClickListener { handleCheckAndConnect() }
+
         setupDaemonCommandsDropdown()
         // Load logging preference
         switchEnableLogs.isChecked = getLoggingEnabled()
@@ -482,6 +496,10 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
         ladbManager = LadbManager.getInstance(this)
         daemonManager = PersistentDaemonManager(this)
+
+        ladbManager.getSavedHost()?.let { etManualHost.setText(it) }
+        ladbManager.getSavedConnectPort().takeIf { it > 0 }?.let { etManualPort.setText(it.toString()) }
+
         // Start daemon status check
         lifecycleScope.launch {
             while (true) {
@@ -715,6 +733,63 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             btnPairSimple.isEnabled = true
             connectProgress.visibility = View.GONE
             connectProgressSimple.visibility = View.GONE
+        }
+    }
+
+    private fun handleCheckAndConnect() {
+        val host = etManualHost.text?.toString()?.trim().takeUnless { it.isNullOrBlank() } ?: "127.0.0.1"
+        val port = etManualPort.text?.toString()?.trim()?.toIntOrNull()
+
+        if (port == null || port !in 1..65535) {
+            tvManualConnectStatus.visibility = View.VISIBLE
+            tvManualConnectStatus.text = getString(R.string.manual_connect_invalid_port)
+            return
+        }
+
+        lifecycleScope.launch {
+            btnCheckAndConnect.isEnabled = false
+            checkConnectProgress.visibility = View.VISIBLE
+            tvManualConnectStatus.visibility = View.VISIBLE
+            tvManualConnectStatus.text = getString(R.string.manual_connect_checking)
+
+            val reachable = withContext(Dispatchers.IO) {
+                try {
+                    Socket().use { it.connect(InetSocketAddress(host, port), 1000) }
+                    true
+                } catch (_: Exception) {
+                    false
+                }
+            }
+
+            if (!reachable) {
+                tvManualConnectStatus.text = getString(R.string.manual_connect_not_available)
+                btnCheckAndConnect.isEnabled = true
+                checkConnectProgress.visibility = View.GONE
+                return@launch
+            }
+
+            withContext(Dispatchers.IO) { ladbManager.saveConnectConfig(host, port) }
+            appendLog(getString(R.string.log_connecting_to, host, port))
+            val ok = withContext(Dispatchers.IO) { ladbManager.connect(host, port) }
+            updateStatus()
+
+            if (ok) {
+                tvManualConnectStatus.text = getString(R.string.manual_connect_success)
+                appendLog(getString(R.string.log_connection_success))
+                if (!isDaemonRunning) {
+                    delay(2000)
+                    performDaemonStart()
+                }
+            } else if (ladbManager.state == LadbManager.State.PAIRED) {
+                // Reachable but our TLS key isn't trusted yet on this device/port.
+                tvManualConnectStatus.text = getString(R.string.manual_connect_needs_pairing)
+            } else {
+                tvManualConnectStatus.text = getString(R.string.manual_connect_not_available)
+                withContext(Dispatchers.IO) { ladbManager.clearConnectPort() }
+            }
+
+            btnCheckAndConnect.isEnabled = true
+            checkConnectProgress.visibility = View.GONE
         }
     }
 
