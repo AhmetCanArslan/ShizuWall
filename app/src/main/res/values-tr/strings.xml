@@ -1,6 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">ShizuWall</string>
+    <string name="settings_category_appearance_title">Görünüm</string>
+    <string name="settings_category_appearance_desc">Tema, renkler, yazı tipi, dil</string>
+    <string name="settings_category_firewall_title">Güvenlik duvarı davranışı</string>
+    <string name="settings_category_firewall_desc">Modlar, onaylar, hata yönetimi</string>
+    <string name="settings_category_backend_title">Arka uç ve çalışma modu</string>
+    <string name="settings_category_backend_desc">Shizuku, LADB, Root</string>
+    <string name="settings_category_notifications_title">Bildirimler ve yüzen buton</string>
+    <string name="settings_category_notifications_desc">İzleme, uyarılar, yüzen buton</string>
+    <string name="settings_category_backup_title">Yedekleme</string>
+    <string name="settings_category_backup_desc">Ayarlarınızı dışa/içe aktarın</string>
+    <string name="settings_category_about_title">Hakkında ve destek</string>
+    <string name="settings_category_about_desc">Sürüm, bağlantılar, uygulamayı sıfırla</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Bağış Yap</string>

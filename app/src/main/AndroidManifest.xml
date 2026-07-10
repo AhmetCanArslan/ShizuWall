@@ -43,6 +43,22 @@
             android:parentActivityName=".ui.SettingsActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.AppearanceSettingsActivity"
+            android:parentActivityName=".ui.SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.FirewallSettingsActivity"
+            android:parentActivityName=".ui.SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.BackendSettingsActivity"
+            android:parentActivityName=".ui.SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.NotificationsSettingsActivity"
+            android:parentActivityName=".ui.SettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>

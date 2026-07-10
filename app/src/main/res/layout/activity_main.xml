@@ -7,19 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- GitHub icon moved to the left of the app title -->
-    <ImageView
-        android:id="@+id/githubIcon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="16dp"
-        android:contentDescription="@string/github_button_desc"
-        android:src="@drawable/ic_github"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/appTitle"
-        app:tint="?attr/colorPrimary" />
-
     <TextView
         android:id="@+id/appTitle"
         android:layout_width="wrap_content"
@@ -30,10 +17,10 @@
         android:textStyle="bold"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:clickable="true"
         android:focusable="true"
-        app:layout_constraintStart_toEndOf="@id/githubIcon"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
@@ -96,25 +83,14 @@
             app:queryBackground="@null" />
 
         <ImageButton
-            android:id="@+id/profilesButton"
+            android:id="@+id/moreButton"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:src="@drawable/ic_profiles_24px"
+            android:src="@drawable/ic_more_vert_24px"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/profiles"
+            android:contentDescription="@string/more_options"
             android:scaleType="center"
             android:padding="12dp"
-            app:tint="?attr/colorPrimary" />
-
-        <ImageButton
-            android:id="@+id/sortButton"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:src="@drawable/ic_sort"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/sort"
-            android:scaleType="center"
-            android:padding="13dp"
             app:tint="?attr/colorPrimary" />
 
         <ImageButton

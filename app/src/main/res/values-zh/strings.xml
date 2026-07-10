@@ -1,6 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">ShizuWall</string>
+    <string name="settings_category_appearance_title">外观</string>
+    <string name="settings_category_appearance_desc">主题、颜色、字体、语言</string>
+    <string name="settings_category_firewall_title">防火墙行为</string>
+    <string name="settings_category_firewall_desc">模式、确认、错误处理</string>
+    <string name="settings_category_backend_title">后端与工作模式</string>
+    <string name="settings_category_backend_desc">Shizuku、LADB、Root</string>
+    <string name="settings_category_notifications_title">通知与悬浮按钮</string>
+    <string name="settings_category_notifications_desc">监控、提醒、悬浮按钮</string>
+    <string name="settings_category_backup_title">备份</string>
+    <string name="settings_category_backup_desc">导出或导入你的设置</string>
+    <string name="settings_category_about_title">关于与支持</string>
+    <string name="settings_category_about_desc">版本、链接、重置应用</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">捐赠</string>

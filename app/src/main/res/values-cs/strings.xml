@@ -1,5 +1,17 @@
 <resources>
     <string name="app_name">ShizuWall</string>
+    <string name="settings_category_appearance_title">Vzhled</string>
+    <string name="settings_category_appearance_desc">Motiv, barvy, písmo, jazyk</string>
+    <string name="settings_category_firewall_title">Chování firewallu</string>
+    <string name="settings_category_firewall_desc">Režimy, potvrzení, zpracování chyb</string>
+    <string name="settings_category_backend_title">Backend a pracovní režim</string>
+    <string name="settings_category_backend_desc">Shizuku, LADB, Root</string>
+    <string name="settings_category_notifications_title">Oznámení a plovoucí tlačítko</string>
+    <string name="settings_category_notifications_desc">Sledování, upozornění, plovoucí tlačítko</string>
+    <string name="settings_category_backup_title">Záloha</string>
+    <string name="settings_category_backup_desc">Exportujte nebo importujte nastavení</string>
+    <string name="settings_category_about_title">O aplikaci a podpora</string>
+    <string name="settings_category_about_desc">Verze, odkazy, reset aplikace</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Podpořit</string>

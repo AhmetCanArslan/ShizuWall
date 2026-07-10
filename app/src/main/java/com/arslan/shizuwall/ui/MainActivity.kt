@@ -24,6 +24,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.TextView
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -379,15 +380,11 @@ class MainActivity : BaseActivity() {
                 .show()
         }
 
-        // GitHub icon
         val openGithub = {
             val url = getString(R.string.github_url)
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
         }
-
-        val githubIcon: ImageView = findViewById(R.id.githubIcon)
-        githubIcon.setOnClickListener { openGithub() }
 
         val appTitle: TextView = findViewById(R.id.appTitle)
         appTitle.setOnClickListener { openGithub() }
@@ -398,14 +395,20 @@ class MainActivity : BaseActivity() {
             settingsLauncher.launch(intent)
         }
 
-        val sortButton: View? = findViewById(R.id.sortButton)
-        sortButton?.setOnClickListener {
-            showSortDialog()
-        }
-
-        val profilesButton: View? = findViewById(R.id.profilesButton)
-        profilesButton?.setOnClickListener {
-            showProfilesSheet()
+        val moreButton: View? = findViewById(R.id.moreButton)
+        moreButton?.setOnClickListener { view ->
+            PopupMenu(this, view).apply {
+                menu.add(0, 1, 0, R.string.profiles).setIcon(R.drawable.ic_profiles_24px)
+                menu.add(0, 2, 0, R.string.sort).setIcon(R.drawable.ic_sort)
+                setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        1 -> showProfilesSheet()
+                        2 -> showSortDialog()
+                    }
+                    true
+                }
+                show()
+            }
         }
 
         showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)

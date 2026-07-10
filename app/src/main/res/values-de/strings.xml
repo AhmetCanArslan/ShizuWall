@@ -1,6 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">ShizuWall</string>
+    <string name="settings_category_appearance_title">Erscheinungsbild</string>
+    <string name="settings_category_appearance_desc">Design, Farben, Schriftart, Sprache</string>
+    <string name="settings_category_firewall_title">Firewall-Verhalten</string>
+    <string name="settings_category_firewall_desc">Modi, Bestätigungen, Fehlerbehandlung</string>
+    <string name="settings_category_backend_title">Backend &amp; Arbeitsmodus</string>
+    <string name="settings_category_backend_desc">Shizuku, LADB, Root</string>
+    <string name="settings_category_notifications_title">Benachrichtigungen &amp; schwebender Button</string>
+    <string name="settings_category_notifications_desc">Überwachung, Warnungen, Overlay-Button</string>
+    <string name="settings_category_backup_title">Sicherung</string>
+    <string name="settings_category_backup_desc">Einstellungen exportieren oder importieren</string>
+    <string name="settings_category_about_title">Über &amp; Support</string>
+    <string name="settings_category_about_desc">Version, Links, App zurücksetzen</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Spenden</string>

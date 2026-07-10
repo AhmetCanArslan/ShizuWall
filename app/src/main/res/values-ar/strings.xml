@@ -1,5 +1,17 @@
 <resources>
     <string name="app_name">ShizuWall</string>
+    <string name="settings_category_appearance_title">المظهر</string>
+    <string name="settings_category_appearance_desc">السمة، الألوان، الخط، اللغة</string>
+    <string name="settings_category_firewall_title">سلوك جدار الحماية</string>
+    <string name="settings_category_firewall_desc">الأوضاع، التأكيدات، معالجة الأخطاء</string>
+    <string name="settings_category_backend_title">الخلفية ووضع التشغيل</string>
+    <string name="settings_category_backend_desc">Shizuku، LADB، الروت</string>
+    <string name="settings_category_notifications_title">الإشعارات والزر العائم</string>
+    <string name="settings_category_notifications_desc">المراقبة، التنبيهات، الزر العائم</string>
+    <string name="settings_category_backup_title">النسخ الاحتياطي</string>
+    <string name="settings_category_backup_desc">تصدير أو استيراد إعداداتك</string>
+    <string name="settings_category_about_title">حول والدعم</string>
+    <string name="settings_category_about_desc">الإصدار، الروابط، إعادة الضبط</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">تبرع</string>

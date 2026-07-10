@@ -1,5 +1,17 @@
 <resources>
     <string name="app_name">ShizuWall</string>
+    <string name="settings_category_appearance_title">外観</string>
+    <string name="settings_category_appearance_desc">テーマ、色、フォント、言語</string>
+    <string name="settings_category_firewall_title">ファイアウォールの動作</string>
+    <string name="settings_category_firewall_desc">モード、確認、エラー処理</string>
+    <string name="settings_category_backend_title">バックエンドと動作モード</string>
+    <string name="settings_category_backend_desc">Shizuku、LADB、Root</string>
+    <string name="settings_category_notifications_title">通知とフローティングボタン</string>
+    <string name="settings_category_notifications_desc">監視、アラート、オーバーレイボタン</string>
+    <string name="settings_category_backup_title">バックアップ</string>
+    <string name="settings_category_backup_desc">設定のエクスポートまたはインポート</string>
+    <string name="settings_category_about_title">アプリ情報とサポート</string>
+    <string name="settings_category_about_desc">バージョン、リンク、アプリのリセット</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">寄付</string>
