@@ -440,7 +440,7 @@ class LadbManager private constructor(private val context: Context) {
         return try {
             val (privateKey, certificate) = getOrCreateKeyMaterial()
 
-            val conn = withTimeout(15_000L) {
+            val (c, established) = withTimeout(35_000L) {
                 withContext(Dispatchers.IO) {
                     val c = AdbConnection.Builder()
                         .setHost(targetHost)
@@ -448,14 +448,29 @@ class LadbManager private constructor(private val context: Context) {
                         .setPrivateKey(privateKey)
                         .setCertificate(certificate)
                         .build()
-                    c.connect(10, java.util.concurrent.TimeUnit.SECONDS, true)
-                    c
+                    val ok = c.connect(30, java.util.concurrent.TimeUnit.SECONDS, false)
+                    c to ok
                 }
             }
-            connectionRef.set(conn)
-            _state.set(State.CONNECTED)
-            true
+            if (!established) {
+                val e = java.util.concurrent.TimeoutException("Timed out waiting for on-device authorization")
+                recordError("connect", targetHost, targetPort, e)
+                _state.set(State.ERROR)
+                try { c.close() } catch (_: Exception) {}
+                false
+            } else {
+                connectionRef.set(c)
+                _state.set(State.CONNECTED)
+                true
+            }
         } catch (e: io.github.muntashirakon.adb.AdbPairingRequiredException) {
+            recordError("connect", targetHost, targetPort, e)
+            _state.set(State.PAIRED)
+            false
+        } catch (e: io.github.muntashirakon.adb.AdbAuthenticationFailedException) {
+            // Peer has never seen our RSA key (e.g. a foreign/manual ADB WiFi daemon that was
+            // never paired with this app) and rejected it outright. Same remedy as an explicit
+            // pairing-required response: the user needs to pair first.
             recordError("connect", targetHost, targetPort, e)
             _state.set(State.PAIRED)
             false
