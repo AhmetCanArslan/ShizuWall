@@ -113,6 +113,12 @@ class LadbManager private constructor(private val context: Context) {
         } catch (_: Exception) {
             // ignore
         }
+
+        try {
+            LadbLogStore.append(context, "LADB error: $operation failed (${e::class.java.simpleName}: ${e.message})")
+        } catch (_: Exception) {
+            // ignore
+        }
     }
 
     private val connectionRef = AtomicReference<AdbConnection?>(null)
@@ -433,20 +439,29 @@ class LadbManager private constructor(private val context: Context) {
 
         return try {
             val (privateKey, certificate) = getOrCreateKeyMaterial()
-            val conn = AdbConnection.Builder()
-                .setHost(targetHost)
-                .setPort(targetPort)
-                .setPrivateKey(privateKey)
-                .setCertificate(certificate)
-                .build()
 
-            conn.connect(10, java.util.concurrent.TimeUnit.SECONDS, true)
+            val conn = withTimeout(15_000L) {
+                withContext(Dispatchers.IO) {
+                    val c = AdbConnection.Builder()
+                        .setHost(targetHost)
+                        .setPort(targetPort)
+                        .setPrivateKey(privateKey)
+                        .setCertificate(certificate)
+                        .build()
+                    c.connect(10, java.util.concurrent.TimeUnit.SECONDS, true)
+                    c
+                }
+            }
             connectionRef.set(conn)
             _state.set(State.CONNECTED)
             true
         } catch (e: io.github.muntashirakon.adb.AdbPairingRequiredException) {
             recordError("connect", targetHost, targetPort, e)
             _state.set(State.PAIRED)
+            false
+        } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
+            recordError("connect", targetHost, targetPort, e)
+            _state.set(State.ERROR)
             false
         } catch (e: Exception) {
             recordError("connect", targetHost, targetPort, e)
