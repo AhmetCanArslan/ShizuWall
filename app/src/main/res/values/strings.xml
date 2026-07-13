@@ -173,6 +173,7 @@
     <string name="app_monitor_service_description">Show a notification when a new app is installed</string>
     <string name="auto_firewall_new_apps">Auto-Firewall New Apps</string>
     <string name="auto_firewall_new_apps_description">Automatically block newly installed apps (except in Whitelist mode)</string>
+    <string name="auto_firewall_include_restored_apps">Also block apps restored from backup (e.g. Swift Backup)</string>
     <string name="firewall_status_notification">Firewall Status Notification</string>
     <string name="firewall_status_notification_description">Show a permanent notification with the current firewall status</string>
     <string name="firewall_status_notification_enabled_title">Firewall enabled</string>

@@ -153,6 +153,7 @@
     <string name="app_monitor_service_description">当新应用安装时显示通知</string>
     <string name="auto_firewall_new_apps">自动封锁新应用</string>
     <string name="auto_firewall_new_apps_description">自动封锁新安装的应用（白名单模式除外）</string>
+    <string name="auto_firewall_include_restored_apps">同时封锁从备份恢复的应用（如 Swift Backup）</string>
     <string name="firewall_status_notification">防火墙状态通知</string>
     <string name="firewall_status_notification_description">显示带有当前防火墙状态的常驻通知</string>
     <string name="firewall_status_notification_enabled_title">防火墙已启用</string>

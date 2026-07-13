@@ -19,6 +19,7 @@ import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.FloatingButtonService
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.checkbox.MaterialCheckBox
 
 class NotificationsSettingsActivity : BaseActivity() {
 
@@ -27,6 +28,7 @@ class NotificationsSettingsActivity : BaseActivity() {
 
     private lateinit var switchAppMonitor: androidx.appcompat.widget.SwitchCompat
     private lateinit var switchAutoFirewallNewApps: androidx.appcompat.widget.SwitchCompat
+    private lateinit var checkboxIncludeRestoredApps: MaterialCheckBox
     private lateinit var switchFirewallStatusNotification: androidx.appcompat.widget.SwitchCompat
     private lateinit var switchFloatingButton: androidx.appcompat.widget.SwitchCompat
 
@@ -57,6 +59,7 @@ class NotificationsSettingsActivity : BaseActivity() {
 
         switchAppMonitor = findViewById(R.id.switchAppMonitor)
         switchAutoFirewallNewApps = findViewById(R.id.switchAutoFirewallNewApps)
+        checkboxIncludeRestoredApps = findViewById(R.id.checkboxIncludeRestoredApps)
         switchFirewallStatusNotification = findViewById(R.id.switchFirewallStatusNotification)
         switchFloatingButton = findViewById(R.id.switchFloatingButton)
         findViewById<MaterialButton>(R.id.btnFloatingButtonSettings).setOnClickListener {
@@ -83,6 +86,8 @@ class NotificationsSettingsActivity : BaseActivity() {
     private fun loadSettings() {
         switchAppMonitor.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
         switchAutoFirewallNewApps.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false)
+        checkboxIncludeRestoredApps.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_AUTO_FIREWALL_INCLUDE_RESTORED, false)
+        checkboxIncludeRestoredApps.isEnabled = switchAutoFirewallNewApps.isChecked
         switchFirewallStatusNotification.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_FIREWALL_STATUS_NOTIFICATION, false)
         switchFloatingButton.isChecked = sharedPreferences.getBoolean(FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)
     }
@@ -118,8 +123,14 @@ class NotificationsSettingsActivity : BaseActivity() {
 
         switchAutoFirewallNewApps.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit().putBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, isChecked).apply()
+            checkboxIncludeRestoredApps.isEnabled = isChecked
             setResult(RESULT_OK)
             syncAppMonitorService()
+        }
+
+        checkboxIncludeRestoredApps.setOnCheckedChangeListener { _, isChecked ->
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_AUTO_FIREWALL_INCLUDE_RESTORED, isChecked).apply()
+            setResult(RESULT_OK)
         }
 
         switchFirewallStatusNotification.setOnCheckedChangeListener { _, isChecked ->

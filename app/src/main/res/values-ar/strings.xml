@@ -161,6 +161,7 @@
     <string name="app_monitor_service_description">إظهار إشعار عند تثبيت تطبيق جديد</string>
     <string name="auto_firewall_new_apps">حظر التطبيقات الجديدة تلقائيًا</string>
     <string name="auto_firewall_new_apps_description">حظر التطبيقات المثبتة حديثًا تلقائيًا (إلا في وضع القائمة البيضاء)</string>
+    <string name="auto_firewall_include_restored_apps">حظر التطبيقات المستعادة من النسخ الاحتياطي أيضًا (مثل Swift Backup)</string>
     <string name="firewall_status_notification">إشعار حالة الجدار الناري</string>
     <string name="firewall_status_notification_description">إظهار إشعار دائم بحالة الجدار الناري الحالية</string>
     <string name="firewall_status_notification_enabled_title">الجدار الناري مُفعّل</string>

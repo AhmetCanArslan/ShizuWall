@@ -116,6 +116,7 @@ class MainActivity : BaseActivity() {
         const val KEY_FIREWALL_UPDATE_TS = "firewall_update_ts"
         const val KEY_APP_MONITOR_ENABLED = "app_monitor_enabled"
         const val KEY_AUTO_FIREWALL_NEW_APPS = "auto_firewall_new_apps"
+        const val KEY_AUTO_FIREWALL_INCLUDE_RESTORED = "auto_firewall_include_restored"
         const val KEY_SHOW_FIREWALL_STATUS_NOTIFICATION = "show_firewall_status_notification"
         const val KEY_APP_MODES = "app_modes_json"
         const val KEY_PROFILES = "profiles_json"

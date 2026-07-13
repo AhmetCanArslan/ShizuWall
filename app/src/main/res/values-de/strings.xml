@@ -153,6 +153,7 @@
     <string name="app_monitor_service_description">Benachrichtigung anzeigen, wenn eine neue App installiert wird</string>
     <string name="auto_firewall_new_apps">Neue Apps automatisch blockieren</string>
     <string name="auto_firewall_new_apps_description">Neu installierte Apps automatisch blockieren (außer im Whitelist-Modus)</string>
+    <string name="auto_firewall_include_restored_apps">Auch aus Backups wiederhergestellte Apps blockieren (z. B. Swift Backup)</string>
     <string name="firewall_status_notification">Firewall-Status-Benachrichtigung</string>
     <string name="firewall_status_notification_description">Eine dauerhafte Benachrichtigung mit dem aktuellen Firewall-Status anzeigen</string>
     <string name="firewall_status_notification_enabled_title">Firewall aktiviert</string>

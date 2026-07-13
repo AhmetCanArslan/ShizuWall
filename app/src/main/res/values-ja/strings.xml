@@ -159,6 +159,7 @@
     <string name="app_monitor_service_description">新しいアプリがインストールされたときに通知を表示する</string>
     <string name="auto_firewall_new_apps">新しいアプリを自動ブロック</string>
     <string name="auto_firewall_new_apps_description">新しくインストールされたアプリを自動的にブロックする（ホワイトリストモード以外）</string>
+    <string name="auto_firewall_include_restored_apps">バックアップから復元されたアプリもブロックする（例: Swift Backup）</string>
     <string name="firewall_status_notification">ファイアウォール状態の通知</string>
     <string name="firewall_status_notification_description">現在のファイアウォールの状態を常時通知で表示します</string>
     <string name="firewall_status_notification_enabled_title">ファイアウォール有効</string>

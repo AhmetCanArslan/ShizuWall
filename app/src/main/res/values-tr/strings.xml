@@ -153,6 +153,7 @@
     <string name="app_monitor_service_description">Yeni bir uygulama yüklendiğinde bildirim göster</string>
     <string name="auto_firewall_new_apps">Yeni Uygulamaları Otomatik Engelle</string>
     <string name="auto_firewall_new_apps_description">Yeni yüklenen uygulamaları otomatik olarak engelle (Beyaz Liste modu hariç)</string>
+    <string name="auto_firewall_include_restored_apps">Yedekten geri yüklenen uygulamaları da engelle (ör. Swift Backup)</string>
     <string name="firewall_status_notification">Güvenlik Duvarı Durumu Bildirimi</string>
     <string name="firewall_status_notification_description">Geçerli güvenlik duvarı durumunu kalıcı bir bildirimde göster</string>
     <string name="firewall_status_notification_enabled_title">Güvenlik duvarı etkin</string>
