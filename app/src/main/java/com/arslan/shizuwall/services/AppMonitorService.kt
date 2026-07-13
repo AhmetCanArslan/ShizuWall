@@ -38,10 +38,7 @@ class AppMonitorService : Service() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == Intent.ACTION_PACKAGE_ADDED) {
                 val packageName = intent.data?.schemeSpecificPart ?: return
-                val isReplacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
-                if (!isReplacing) {
-                    showNewAppNotification(context, packageName)
-                }
+                showNewAppNotification(context, packageName)
             }
         }
     }
