@@ -440,9 +440,7 @@ class LadbManager private constructor(private val context: Context) {
                 .setCertificate(certificate)
                 .build()
 
-            withTimeout(10_000L) { // 10 seconds timeout for LADB connection
-                conn.connect()
-            }
+            conn.connect(10, java.util.concurrent.TimeUnit.SECONDS, true)
             connectionRef.set(conn)
             _state.set(State.CONNECTED)
             true
