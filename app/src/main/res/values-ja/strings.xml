@@ -446,5 +446,9 @@
     <string name="profile_switched">「%1$s」に切り替えました</string>
     <string name="profile_already_active">「%1$s」はすでに有効です</string>
     <string name="profile_not_found">プロファイルが見つかりません: %1$s</string>
+    <string name="profile_automation">自動化</string>
+    <string name="profile_automation_title">マクロから\"%1$s\"を切り替え</string>
+    <string name="profile_automation_desc">マクロアプリ（Tasker、MacroDroid、Automate）または adb からこのプロファイルに切り替えます。マクロアプリで、下記のレシーバーを対象にした「ブロードキャスト送信」アクションを追加してください。値をタップするとコピーできます。</string>
+    <string name="profile_automation_adb_label">ADB コマンド</string>
     
 </resources>

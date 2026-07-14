@@ -449,4 +449,8 @@
     <string name="profile_switched">Переключено на \"%1$s\"</string>
     <string name="profile_already_active">\"%1$s\" уже активен</string>
     <string name="profile_not_found">Профиль не найден: %1$s</string>
+    <string name="profile_automation">Автоматизация</string>
+    <string name="profile_automation_title">Управление \"%1$s\" из макроса</string>
+    <string name="profile_automation_desc">Переключитесь на этот профиль из макро-приложения (Tasker, MacroDroid, Automate) или через adb. В макро-приложении добавьте действие «Отправить широковещание», нацеленное на приёмник ниже. Нажмите на значение, чтобы скопировать.</string>
+    <string name="profile_automation_adb_label">Команда ADB</string>
 </resources>

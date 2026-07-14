@@ -452,5 +452,9 @@
     <string name="profile_switched">تم التبديل إلى \"%1$s\"</string>
     <string name="profile_already_active">\"%1$s\" نشط بالفعل</string>
     <string name="profile_not_found">لم يتم العثور على الملف التعريفي: %1$s</string>
+    <string name="profile_automation">أتمتة</string>
+    <string name="profile_automation_title">التحكم في \"%1$s\" من ماكرو</string>
+    <string name="profile_automation_desc">بدّل إلى هذا الملف التعريفي من تطبيق ماكرو (Tasker، MacroDroid، Automate) أو adb. في تطبيق الماكرو، أضف إجراء \"إرسال بث\" يستهدف المستقبل أدناه. انقر أي قيمة لنسخها.</string>
+    <string name="profile_automation_adb_label">أمر ADB</string>
 
 </resources>

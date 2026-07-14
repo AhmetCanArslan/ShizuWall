@@ -97,6 +97,7 @@ class ProfilesBottomSheet(
             when (item.itemId) {
                 R.id.action_profile_rename -> { promptRename(profile); true }
                 R.id.action_profile_update -> { updateToCurrent(profile); true }
+                R.id.action_profile_automation -> { showAutomationDialog(profile); true }
                 R.id.action_profile_delete -> { confirmDelete(profile); true }
                 else -> false
             }
@@ -156,6 +157,72 @@ class ProfilesBottomSheet(
                 refresh(playLayoutAnim = false)
                 Toast.makeText(context, context.getString(R.string.profile_updated, profile.name), Toast.LENGTH_SHORT).show()
             }
+            .show()
+    }
+
+    private fun showAutomationDialog(profile: Profile) {
+        val action = MainActivity.ACTION_PROFILE_CONTROL
+        val component = "com.arslan.shizuwall/.receivers.ProfileControlReceiver"
+        val extra = "${MainActivity.EXTRA_PROFILE_NAME}=${profile.name}"
+        val adbCmd = "adb shell am broadcast -a $action -n $component " +
+            "--es ${MainActivity.EXTRA_PROFILE_NAME} \"${profile.name}\""
+
+        val density = context.resources.displayMetrics.density
+        fun dp(v: Int) = (v * density).toInt()
+
+        val clipboard = context.getSystemService(android.content.ClipboardManager::class.java)
+        fun copy(label: String, value: String) {
+            clipboard?.setPrimaryClip(android.content.ClipData.newPlainText(label, value))
+            Toast.makeText(context, context.getString(R.string.copied), Toast.LENGTH_SHORT).show()
+        }
+
+        val container = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(24), dp(8), dp(24), dp(8))
+        }
+
+        val desc = TextView(context).apply {
+            text = context.getString(R.string.profile_automation_desc)
+            textSize = 13f
+            setPadding(0, 0, 0, dp(12))
+        }
+        container.addView(desc)
+
+        fun addRow(labelText: String, value: String) {
+            val label = TextView(context).apply {
+                text = labelText
+                textSize = 12f
+                alpha = 0.7f
+                setPadding(0, dp(8), 0, dp(2))
+            }
+            val valueView = TextView(context).apply {
+                text = value
+                textSize = 14f
+                typeface = android.graphics.Typeface.MONOSPACE
+                setTextIsSelectable(true)
+                setPadding(dp(12), dp(10), dp(12), dp(10))
+                val outValue = android.util.TypedValue()
+                context.theme.resolveAttribute(
+                    android.R.attr.selectableItemBackground, outValue, true
+                )
+                setBackgroundResource(outValue.resourceId)
+                setOnClickListener { copy(labelText, value) }
+            }
+            container.addView(label)
+            container.addView(valueView)
+        }
+
+        addRow(context.getString(R.string.adb_broadcast_field_action), action)
+        addRow(context.getString(R.string.adb_broadcast_field_component), component)
+        addRow(context.getString(R.string.adb_broadcast_field_extras), extra)
+        addRow(context.getString(R.string.profile_automation_adb_label), adbCmd)
+
+        val scroll = android.widget.ScrollView(context).apply { addView(container) }
+
+        MaterialAlertDialogBuilder(context)
+            .setTitle(context.getString(R.string.profile_automation_title, profile.name))
+            .setView(scroll)
+            .setPositiveButton(R.string.ok, null)
             .show()
     }
 

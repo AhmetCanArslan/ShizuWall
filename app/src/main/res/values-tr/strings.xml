@@ -445,4 +445,8 @@
     <string name="profile_switched">\"%1$s\" profiline geçildi</string>
     <string name="profile_already_active">\"%1$s\" zaten etkin</string>
     <string name="profile_not_found">Profil bulunamadı: %1$s</string>
+    <string name="profile_automation">Otomasyon</string>
+    <string name="profile_automation_title">\"%1$s\" profilini makro ile değiştir</string>
+    <string name="profile_automation_desc">Bu profile bir makro uygulamasından (Tasker, MacroDroid, Automate) veya adb ile geç. Makro uygulamasında, aşağıdaki alıcıyı hedefleyen bir \"Yayın Gönder (Send Broadcast)\" eylemi ekle. Kopyalamak için herhangi bir değere dokun.</string>
+    <string name="profile_automation_adb_label">ADB komutu</string>
 </resources>

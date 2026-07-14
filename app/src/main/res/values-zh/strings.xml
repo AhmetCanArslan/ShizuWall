@@ -444,4 +444,8 @@
     <string name="profile_switched">已切换到“%1$s”</string>
     <string name="profile_already_active">“%1$s”已处于启用状态</string>
     <string name="profile_not_found">未找到配置文件：%1$s</string>
+    <string name="profile_automation">自动化</string>
+    <string name="profile_automation_title">通过宏控制\"%1$s\"</string>
+    <string name="profile_automation_desc">从宏应用（Tasker、MacroDroid、Automate）或 adb 切换到此配置文件。在宏应用中，添加一个指向下方接收器的\"发送广播\"操作。点按任意值即可复制。</string>
+    <string name="profile_automation_adb_label">ADB 命令</string>
 </resources>

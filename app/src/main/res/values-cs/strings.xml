@@ -449,5 +449,9 @@
     <string name="profile_switched">Přepnuto na \"%1$s\"</string>
     <string name="profile_already_active">\"%1$s\" je již aktivní</string>
     <string name="profile_not_found">Profil nenalezen: %1$s</string>
+    <string name="profile_automation">Automatizace</string>
+    <string name="profile_automation_title">Ovládat \"%1$s\" z makra</string>
+    <string name="profile_automation_desc">Přepněte na tento profil z makro aplikace (Tasker, MacroDroid, Automate) nebo adb. V makro aplikaci přidejte akci „Odeslat vysílání" cílenou na níže uvedený receiver. Klepnutím na hodnotu ji zkopírujete.</string>
+    <string name="profile_automation_adb_label">Příkaz ADB</string>
 
 </resources>

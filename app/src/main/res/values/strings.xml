@@ -450,5 +450,9 @@
     <string name="profile_switched">Switched to \"%1$s\"</string>
     <string name="profile_already_active">\"%1$s\" is already active</string>
     <string name="profile_not_found">Profile not found: %1$s</string>
+    <string name="profile_automation">Automation</string>
+    <string name="profile_automation_title">Control \"%1$s\" from a macro</string>
+    <string name="profile_automation_desc">Switch to this profile from a macro app (Tasker, MacroDroid, Automate) or adb. In the macro app, add a \"Send Broadcast\" action targeting the receiver below. Tap any value to copy it.</string>
+    <string name="profile_automation_adb_label">ADB command</string>
 
 </resources>

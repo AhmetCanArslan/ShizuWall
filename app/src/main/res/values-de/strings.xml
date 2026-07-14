@@ -444,4 +444,8 @@
     <string name="profile_switched">Zu \"%1$s\" gewechselt</string>
     <string name="profile_already_active">\"%1$s\" ist bereits aktiv</string>
     <string name="profile_not_found">Profil nicht gefunden: %1$s</string>
+    <string name="profile_automation">Automatisierung</string>
+    <string name="profile_automation_title">\"%1$s\" per Makro steuern</string>
+    <string name="profile_automation_desc">Zu diesem Profil aus einer Makro-App (Tasker, MacroDroid, Automate) oder per adb wechseln. Füge in der Makro-App eine „Broadcast senden"-Aktion hinzu, die den unten stehenden Receiver anspricht. Tippe auf einen Wert, um ihn zu kopieren.</string>
+    <string name="profile_automation_adb_label">ADB-Befehl</string>
 </resources>

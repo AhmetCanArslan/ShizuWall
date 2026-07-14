@@ -9,6 +9,10 @@
         android:icon="@drawable/content_copy_24px"
         android:title="@string/profile_update_to_current" />
     <item
+        android:id="@+id/action_profile_automation"
+        android:icon="@drawable/adb_24px"
+        android:title="@string/profile_automation" />
+    <item
         android:id="@+id/action_profile_delete"
         android:icon="@drawable/ic_delete_24px"
         android:title="@string/profile_delete" />

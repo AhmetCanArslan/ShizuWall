@@ -447,5 +447,9 @@
     <string name="profile_switched">Se cambió a \"%1$s\"</string>
     <string name="profile_already_active">\"%1$s\" ya está activo</string>
     <string name="profile_not_found">Perfil no encontrado: %1$s</string>
+    <string name="profile_automation">Automatización</string>
+    <string name="profile_automation_title">Controlar \"%1$s\" desde una macro</string>
+    <string name="profile_automation_desc">Cambia a este perfil desde una app de macros (Tasker, MacroDroid, Automate) o adb. En la app de macros, añade una acción \"Enviar difusión\" dirigida al receptor de abajo. Toca cualquier valor para copiarlo.</string>
+    <string name="profile_automation_adb_label">Comando ADB</string>
 
 </resources>
