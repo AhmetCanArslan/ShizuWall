@@ -437,6 +437,11 @@ class LadbManager private constructor(private val context: Context) {
             // ignore
         }
 
+        // Snapshot the current end of our own logcat so the diagnostic below only reports the
+        // library lines emitted during THIS connect attempt (see captureHandshakeDiagnostic).
+        clearLibraryLogcat()
+        val startMs = System.currentTimeMillis()
+
         return try {
             val (privateKey, certificate) = getOrCreateKeyMaterial()
 
@@ -455,6 +460,7 @@ class LadbManager private constructor(private val context: Context) {
             if (!established) {
                 val e = java.util.concurrent.TimeoutException("Timed out waiting for on-device authorization")
                 recordError("connect", targetHost, targetPort, e)
+                logHandshakeDiagnostic("connect-timeout", startMs)
                 _state.set(State.ERROR)
                 try { c.close() } catch (_: Exception) {}
                 false
@@ -465,6 +471,7 @@ class LadbManager private constructor(private val context: Context) {
             }
         } catch (e: io.github.muntashirakon.adb.AdbPairingRequiredException) {
             recordError("connect", targetHost, targetPort, e)
+            logHandshakeDiagnostic("pairing-required", startMs)
             _state.set(State.PAIRED)
             false
         } catch (e: io.github.muntashirakon.adb.AdbAuthenticationFailedException) {
@@ -472,16 +479,80 @@ class LadbManager private constructor(private val context: Context) {
             // never paired with this app) and rejected it outright. Same remedy as an explicit
             // pairing-required response: the user needs to pair first.
             recordError("connect", targetHost, targetPort, e)
+            logHandshakeDiagnostic("auth-failed", startMs)
             _state.set(State.PAIRED)
             false
         } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
             recordError("connect", targetHost, targetPort, e)
+            logHandshakeDiagnostic("outer-timeout", startMs)
             _state.set(State.ERROR)
             false
         } catch (e: Exception) {
             recordError("connect", targetHost, targetPort, e)
+            logHandshakeDiagnostic("connect-exception", startMs)
             _state.set(State.ERROR)
             false
+        }
+    }
+
+    private fun logHandshakeDiagnostic(outcome: String, startMs: Long) {
+        try {
+            val elapsedMs = System.currentTimeMillis() - startMs
+            val libLines = captureLibraryLogcat()
+            val sawTls = libLines.any { it.contains("Handshake succeeded", ignoreCase = true) }
+
+            val diag = buildString {
+                appendLine("LADB handshake diagnostic (#116)")
+                appendLine("outcome=$outcome")
+                appendLine("elapsedMs=$elapsedMs")
+                appendLine("tlsHandshake=$sawTls")
+                if (libLines.isEmpty()) {
+                    appendLine("libadbLog=(none captured)")
+                } else {
+                    appendLine("libadbLog:")
+                    libLines.forEach { appendLine("  $it") }
+                }
+            }
+
+            val combined = (lastErrorLogRef.get()?.plus("\n") ?: "") + diag
+            lastErrorLogRef.set(combined)
+            try {
+                getPrefs().edit().putString(KEY_LAST_ERROR_LOG, combined).apply()
+            } catch (_: Exception) {
+            }
+            try {
+                LadbLogStore.append(
+                    context,
+                    "LADB handshake: $outcome after ${elapsedMs}ms, tls=$sawTls, libLines=${libLines.size}"
+                )
+            } catch (_: Exception) {
+            }
+        } catch (_: Exception) {
+        }
+    }
+
+    private fun clearLibraryLogcat() {
+        try {
+            Runtime.getRuntime()
+                .exec(arrayOf("logcat", "-b", "main", "-c"))
+                .waitFor()
+        } catch (_: Exception) {
+        }
+    }
+
+    private fun captureLibraryLogcat(): List<String> {
+        return try {
+            val proc = Runtime.getRuntime().exec(
+                arrayOf("logcat", "-b", "main", "-d", "-v", "time", "-t", "400", "AdbConnection:V", "*:S")
+            )
+            val text = proc.inputStream.bufferedReader().use { it.readText() }
+            proc.waitFor()
+            text.lineSequence()
+                .map { it.trim() }
+                .filter { it.isNotEmpty() && it.contains("AdbConnection") }
+                .toList()
+        } catch (_: Exception) {
+            emptyList()
         }
     }
 
