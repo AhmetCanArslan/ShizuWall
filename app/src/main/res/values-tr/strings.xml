@@ -212,6 +212,8 @@
     <string name="manual_connect_not_available">Nothing reachable on that host/port.</string>
     <string name="manual_connect_needs_pairing">Port reachable but not paired yet. Use Pair below.</string>
     <string name="manual_connect_invalid_port">Enter a valid port (1–65535).</string>
+    <string name="manual_connect_authorize">Bağlantı noktasına erişilebilir. Bu cihazda bir iletişim kutusu görünürse yetkilendirmek için İzin Ver\'e dokunun.</string>
+    <string name="manual_connect_authorize_timeout">Erişilebilir ancak zamanında yetkilendirilmedi. Bu cihazdaki \"Kablosuz hata ayıklamaya izin ver\" istemini kabul edin, ardından tekrar Bağlan\'a dokunun.</string>
     <string name="ladb_status_unconfigured">Yapılandırılmadı</string>
     <string name="ladb_status_paired">Eşleşti (bağlı değil)</string>
     <string name="ladb_status_connected">Ladb Kablosuz Hata Ayıklamaya Bağlandı</string>

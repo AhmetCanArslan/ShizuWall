@@ -226,6 +226,8 @@
     <string name="manual_connect_not_available">Nothing reachable on that host/port.</string>
     <string name="manual_connect_needs_pairing">Port reachable but not paired yet. Use Pair below.</string>
     <string name="manual_connect_invalid_port">Enter a valid port (1–65535).</string>
+    <string name="manual_connect_authorize">ポートに到達可能です。この端末にダイアログが表示されたら、「許可」をタップして認証してください。</string>
+    <string name="manual_connect_authorize_timeout">到達可能ですが、時間内に認証されませんでした。この端末で「ワイヤレスデバッグを許可」を承認してから、もう一度「接続」をタップしてください。</string>
     <string name="ladb_status_unconfigured">未構成</string>
     <string name="ladb_status_paired">ペアリング済み (未接続)</string>
     <string name="ladb_status_connected">LADB がワイヤレスデバッグに接続されました</string>

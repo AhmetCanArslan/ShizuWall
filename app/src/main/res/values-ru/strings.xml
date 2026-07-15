@@ -226,6 +226,8 @@
     <string name="manual_connect_not_available">Nothing reachable on that host/port.</string>
     <string name="manual_connect_needs_pairing">Port reachable but not paired yet. Use Pair below.</string>
     <string name="manual_connect_invalid_port">Enter a valid port (1–65535).</string>
+    <string name="manual_connect_authorize">Порт доступен. Если на этом устройстве появится диалоговое окно, нажмите «Разрешить» для авторизации.</string>
+    <string name="manual_connect_authorize_timeout">Доступно, но авторизация не выполнена вовремя. Подтвердите запрос «Разрешить беспроводную отладку» на этом устройстве, затем снова нажмите «Подключить».</string>
     <string name="ladb_status_unconfigured">Не настроено</string>
     <string name="ladb_status_paired">Связь установлена (не подключено)</string>
     <string name="ladb_status_connected">LADB подключен к беспроводной отладке</string>

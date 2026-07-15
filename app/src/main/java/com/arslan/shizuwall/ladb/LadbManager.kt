@@ -445,7 +445,7 @@ class LadbManager private constructor(private val context: Context) {
         return try {
             val (privateKey, certificate) = getOrCreateKeyMaterial()
 
-            val (c, established) = withTimeout(35_000L) {
+            val (c, established) = withTimeout(65_000L) {
                 withContext(Dispatchers.IO) {
                     val c = AdbConnection.Builder()
                         .setHost(targetHost)
@@ -453,7 +453,7 @@ class LadbManager private constructor(private val context: Context) {
                         .setPrivateKey(privateKey)
                         .setCertificate(certificate)
                         .build()
-                    val ok = c.connect(30, java.util.concurrent.TimeUnit.SECONDS, false)
+                    val ok = c.connect(60, java.util.concurrent.TimeUnit.SECONDS, false)
                     c to ok
                 }
             }

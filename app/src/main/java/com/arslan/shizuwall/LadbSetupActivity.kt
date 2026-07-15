@@ -770,6 +770,8 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
             withContext(Dispatchers.IO) { ladbManager.saveConnectConfig(host, port) }
             appendLog(getString(R.string.log_connecting_to, host, port))
+
+            tvManualConnectStatus.text = getString(R.string.manual_connect_authorize)
             val ok = withContext(Dispatchers.IO) { ladbManager.connect(host, port) }
             updateStatus()
 
@@ -784,8 +786,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 // Reachable but our TLS key isn't trusted yet on this device/port.
                 tvManualConnectStatus.text = getString(R.string.manual_connect_needs_pairing)
             } else {
-                tvManualConnectStatus.text = getString(R.string.manual_connect_not_available)
-                withContext(Dispatchers.IO) { ladbManager.clearConnectPort() }
+                tvManualConnectStatus.text = getString(R.string.manual_connect_authorize_timeout)
             }
 
             btnCheckAndConnect.isEnabled = true

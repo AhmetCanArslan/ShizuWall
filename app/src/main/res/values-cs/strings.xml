@@ -234,6 +234,8 @@
     <string name="manual_connect_not_available">Nothing reachable on that host/port.</string>
     <string name="manual_connect_needs_pairing">Port reachable but not paired yet. Use Pair below.</string>
     <string name="manual_connect_invalid_port">Enter a valid port (1–65535).</string>
+    <string name="manual_connect_authorize">Port je dostupný. Pokud se na tomto zařízení zobrazí dialog, klepnutím na Povolit autorizujte.</string>
+    <string name="manual_connect_authorize_timeout">Dostupné, ale autorizace neproběhla včas. Potvrďte výzvu „Povolit bezdrátové ladění“ na tomto zařízení a poté znovu klepněte na Připojit.</string>
     <string name="ladb_status_unconfigured">Nenakonfigurováno</string>
     <string name="ladb_status_paired">Spárováno (nepřipojeno)</string>
     <string name="ladb_status_connected">Ladb připojený k bezdrátovému ladění</string>
