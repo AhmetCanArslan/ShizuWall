@@ -778,10 +778,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             if (ok) {
                 tvManualConnectStatus.text = getString(R.string.manual_connect_success)
                 appendLog(getString(R.string.log_connection_success))
-                if (!isDaemonRunning) {
-                    delay(2000)
-                    performDaemonStart()
-                }
             } else if (ladbManager.state == LadbManager.State.PAIRED) {
                 // Reachable but our TLS key isn't trusted yet on this device/port.
                 tvManualConnectStatus.text = getString(R.string.manual_connect_needs_pairing)
