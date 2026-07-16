@@ -1,0 +1,7 @@
+Profile management feature #114 (can be used with macro apps guide is in profiles section)
+"Don't dim" option for floating button visibility settings #107
+Custom port/host connection feature for LADB #116
+Option to include restored apps in auto-firewall settings #117
+Refactored settings screen
+Simplified package receiver in AppMonitorService (#117)
+Updated launcher icon
