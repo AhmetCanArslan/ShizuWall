@@ -24,7 +24,6 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.TextView
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -396,21 +395,11 @@ class MainActivity : BaseActivity() {
             settingsLauncher.launch(intent)
         }
 
-        val moreButton: View? = findViewById(R.id.moreButton)
-        moreButton?.setOnClickListener { view ->
-            PopupMenu(this, view).apply {
-                menu.add(0, 1, 0, R.string.profiles).setIcon(R.drawable.ic_profiles_24px)
-                menu.add(0, 2, 0, R.string.sort).setIcon(R.drawable.ic_sort)
-                setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        1 -> showProfilesSheet()
-                        2 -> showSortDialog()
-                    }
-                    true
-                }
-                show()
-            }
-        }
+        val profileButton: View? = findViewById(R.id.profileButton)
+        profileButton?.setOnClickListener { showProfilesSheet() }
+
+        val sortButton: View? = findViewById(R.id.sortButton)
+        sortButton?.setOnClickListener { showSortDialog() }
 
         showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
         moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
