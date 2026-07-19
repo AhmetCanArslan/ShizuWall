@@ -423,6 +423,8 @@
     <!-- Profiles -->
     <string name="profiles">Profiller</string>
     <string name="profiles_subtitle">Güvenlik duvarı bağlamlarını tek dokunuşla değiştirin</string>
+    <string name="profile_auto_enable_firewall">Profil etkinleştirilince güvenlik duvarını aç</string>
+    <string name="profile_auto_enable_firewall_desc">Bir profile dokunmak, kapalıysa güvenlik duvarını da açar</string>
     <string name="profiles_empty_title">Henüz profil yok</string>
     <string name="profiles_empty_message">Güvenlik duvarına almak istediğiniz uygulamaları seçin, ardından kurulumlar arasında anında geçiş yapmak için bunları profil olarak kaydedin.</string>
     <string name="profile_active">Etkin</string>

@@ -425,6 +425,8 @@
         <!-- Profiles -->
     <string name="profiles">Perfiles</string>
     <string name="profiles_subtitle">Cambia de contexto de firewall con un toque</string>
+    <string name="profile_auto_enable_firewall">Activar el firewall al activar un perfil</string>
+    <string name="profile_auto_enable_firewall_desc">Tocar un perfil también activa el firewall si está apagado</string>
     <string name="profiles_empty_title">Aún no hay perfiles</string>
     <string name="profiles_empty_message">Selecciona las apps que quieres bloquear con el firewall y guárdalas como un perfil para cambiar de configuración al instante.</string>
     <string name="profile_active">Activo</string>

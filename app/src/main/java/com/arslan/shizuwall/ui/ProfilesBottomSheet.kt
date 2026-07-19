@@ -42,6 +42,15 @@ class ProfilesBottomSheet(
         recyclerView = view.findViewById(R.id.profilesRecyclerView)
         emptyState = view.findViewById(R.id.profilesEmptyState)
         val saveCurrent = view.findViewById<Button>(R.id.profileSaveCurrentButton)
+        val autoEnableSwitch =
+            view.findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.profileAutoEnableSwitch)
+
+        val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        autoEnableSwitch.isChecked =
+            prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_PROFILE_ACTIVATE, false)
+        autoEnableSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_PROFILE_ACTIVATE, isChecked).apply()
+        }
 
         adapter = ProfileAdapter(
             onProfileClick = { profile -> activate(profile) },
@@ -54,6 +63,10 @@ class ProfilesBottomSheet(
 
         refresh(playLayoutAnim = true)
         dialog.show()
+    }
+
+    fun dismiss() {
+        if (dialog.isShowing) dialog.dismiss()
     }
 
     fun notifyActivated(profileId: String?) {

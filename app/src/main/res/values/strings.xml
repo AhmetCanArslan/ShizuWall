@@ -428,6 +428,8 @@
     <!-- Profiles -->
     <string name="profiles">Profiles</string>
     <string name="profiles_subtitle">Switch firewall contexts in one tap</string>
+    <string name="profile_auto_enable_firewall">Turn on firewall when activating a profile</string>
+    <string name="profile_auto_enable_firewall_desc">Tapping a profile also enables the firewall if it is off</string>
     <string name="profiles_empty_title">No profiles yet</string>
     <string name="profiles_empty_message">Select the apps you want to firewall, then save them as a profile to switch between setups instantly.</string>
     <string name="profile_active">Active</string>

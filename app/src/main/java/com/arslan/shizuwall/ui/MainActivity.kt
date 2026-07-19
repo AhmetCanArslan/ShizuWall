@@ -120,6 +120,7 @@ class MainActivity : BaseActivity() {
         const val KEY_APP_MODES = "app_modes_json"
         const val KEY_PROFILES = "profiles_json"
         const val KEY_ACTIVE_PROFILE_ID = "active_profile_id"
+        const val KEY_AUTO_ENABLE_ON_PROFILE_ACTIVATE = "auto_enable_on_profile_activate"
         private const val KEY_APPS_CACHE_JSON = "apps_cache_json_v1"
 
         const val ACTION_PROFILE_CONTROL = "shizuwall.PROFILE"
@@ -154,6 +155,12 @@ class MainActivity : BaseActivity() {
     private var defaultItemAnimator: RecyclerView.ItemAnimator? = null
     private var isAppListLoadingVisible = false
     private var isFirewallProcessRunning = false
+
+    private var profileEnableActive = false
+    private val skipDimForProfileEnable: Boolean
+        get() = profileEnableActive && firewallMode != FirewallMode.DEFAULT
+
+    private var profileEnableRequested = false
     private var isEnablingProcess = false
     private var lastSelectedCountToastTime = 0L
 
@@ -295,8 +302,9 @@ class MainActivity : BaseActivity() {
             updateCategoryChips()
             
             if (isFirewallEnabled) {
-                if (firewallMode.allowsDynamicSelection()) hideDimOverlay() else showDimOverlay()
-                appListAdapter.setSelectionEnabled(firewallMode.allowsDynamicSelection() || !isFirewallEnabled)
+                val keepInteractive = firewallMode.allowsDynamicSelection() || skipDimForProfileEnable
+                if (keepInteractive) hideDimOverlay() else showDimOverlay()
+                appListAdapter.setSelectionEnabled(keepInteractive || !isFirewallEnabled)
                 updateInteractiveViews()
             }
             appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
@@ -1388,6 +1396,8 @@ class MainActivity : BaseActivity() {
         firewallToggle.setOnCheckedChangeListener { _, isChecked ->
             if (suppressToggleListener) return@setOnCheckedChangeListener
             if (isChecked) {
+                profileEnableActive = profileEnableRequested
+                profileEnableRequested = false
                 val selectedApps = appList.filter { it.isSelected }
                 val whitelistAllowPkgs = mutableListOf<String>()
                 val targetAppPkgs = if (firewallMode == FirewallMode.WHITELIST) {
@@ -2037,7 +2047,7 @@ class MainActivity : BaseActivity() {
                             com.arslan.shizuwall.services.FloatingButtonService.start(this@MainActivity)
                         }
                         
-                        if (firewallMode.allowsDynamicSelection()) {
+                        if (firewallMode.allowsDynamicSelection() || skipDimForProfileEnable) {
                             appListAdapter.setSelectionEnabled(true)
                             updateInteractiveViews()
                             hideDimOverlay()
@@ -2069,6 +2079,7 @@ class MainActivity : BaseActivity() {
                 // We consider it disabled because disableFirewall() disables the global chain.
                     if (successful.isNotEmpty() || installed.isEmpty()) {
                     isFirewallEnabled = false
+                    profileEnableActive = false
                     saveFirewallEnabled(false)
                     // Ensure toggle stays OFF
                     suppressToggleListener = true
@@ -2273,7 +2284,8 @@ class MainActivity : BaseActivity() {
             return
         }
 
-        val shouldLockSelection = isFirewallEnabled && !firewallMode.allowsDynamicSelection()
+        val shouldLockSelection =
+            isFirewallEnabled && !firewallMode.allowsDynamicSelection() && !skipDimForProfileEnable
         if (shouldLockSelection) {
             showDimOverlay()
         } else {
@@ -2648,6 +2660,15 @@ class MainActivity : BaseActivity() {
 
         if (!isFirewallEnabled) {
             profilesBottomSheet?.notifyActivated(profile.id)
+            if (sharedPreferences.getBoolean(KEY_AUTO_ENABLE_ON_PROFILE_ACTIVATE, false) &&
+                !isFirewallProcessRunning
+            ) {
+                // Close the sheet so the confirm/permission dialogs are visible, then run the
+                // regular enable flow (it reads the selection we just wrote into appList).
+                profilesBottomSheet?.dismiss()
+                profileEnableRequested = true
+                firewallToggle.isChecked = true
+            }
             return
         }
 

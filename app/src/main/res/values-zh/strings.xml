@@ -423,6 +423,8 @@
     <!-- Profiles -->
     <string name="profiles">配置文件</string>
     <string name="profiles_subtitle">一键切换防火墙场景</string>
+    <string name="profile_auto_enable_firewall">启用配置时自动开启防火墙</string>
+    <string name="profile_auto_enable_firewall_desc">点击配置时，若防火墙已关闭则自动开启</string>
     <string name="profiles_empty_title">暂无配置文件</string>
     <string name="profiles_empty_message">选择要用防火墙拦截的应用，然后保存为配置文件，即可在不同设置间即时切换。</string>
     <string name="profile_active">已启用</string>

@@ -425,6 +425,8 @@
     <!-- Profiles -->
     <string name="profiles">プロファイル</string>
     <string name="profiles_subtitle">ワンタップでファイアウォールのコンテキストを切り替え</string>
+    <string name="profile_auto_enable_firewall">プロファイル適用時にファイアウォールを有効化</string>
+    <string name="profile_auto_enable_firewall_desc">プロファイルをタップすると、オフのファイアウォールも有効になります</string>
     <string name="profiles_empty_title">プロファイルがありません</string>
     <string name="profiles_empty_message">ファイアウォールで制限したいアプリを選択し、プロファイルとして保存すると、設定を瞬時に切り替えられます。</string>
     <string name="profile_active">有効</string>

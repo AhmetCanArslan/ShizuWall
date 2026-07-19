@@ -422,6 +422,8 @@
     <string name="floating_disable_dim_desc">Button dauerhaft sichtbar halten und ihn im Leerlauf nie abdunkeln oder einklappen</string>
     <string name="profiles">Profile</string>
     <string name="profiles_subtitle">Firewall-Kontexte mit einem Tippen wechseln</string>
+    <string name="profile_auto_enable_firewall">Firewall beim Aktivieren eines Profils einschalten</string>
+    <string name="profile_auto_enable_firewall_desc">Ein Tippen auf ein Profil aktiviert auch die Firewall, wenn sie aus ist</string>
     <string name="profiles_empty_title">Noch keine Profile</string>
     <string name="profiles_empty_message">Wähle die Apps aus, die du per Firewall sperren möchtest, und speichere sie als Profil, um sofort zwischen Setups zu wechseln.</string>
     <string name="profile_active">Aktiv</string>

@@ -426,6 +426,8 @@
         <!-- Profiles -->
     <string name="profiles">ملفات التعريف</string>
     <string name="profiles_subtitle">بدّل سياقات جدار الحماية بنقرة واحدة</string>
+    <string name="profile_auto_enable_firewall">تشغيل جدار الحماية عند تفعيل ملف تعريف</string>
+    <string name="profile_auto_enable_firewall_desc">النقر على ملف تعريف يشغّل جدار الحماية أيضًا إذا كان متوقفًا</string>
     <string name="profiles_empty_title">لا توجد ملفات تعريف بعد</string>
     <string name="profiles_empty_message">حدد التطبيقات التي تريد حظرها بجدار الحماية، ثم احفظها كملف تعريف للتبديل بين الإعدادات فورًا.</string>
     <string name="profile_active">نشط</string>

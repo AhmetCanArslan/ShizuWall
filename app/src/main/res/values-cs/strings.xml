@@ -426,6 +426,8 @@
         <!-- Profiles -->
     <string name="profiles">Profily</string>
     <string name="profiles_subtitle">Přepínejte kontexty firewallu jedním klepnutím</string>
+    <string name="profile_auto_enable_firewall">Zapnout firewall při aktivaci profilu</string>
+    <string name="profile_auto_enable_firewall_desc">Klepnutí na profil zapne i firewall, pokud je vypnutý</string>
     <string name="profiles_empty_title">Zatím žádné profily</string>
     <string name="profiles_empty_message">Vyberte aplikace, které chcete blokovat firewallem, a uložte je jako profil, abyste mohli okamžitě přepínat mezi nastaveními.</string>
     <string name="profile_active">Aktivní</string>

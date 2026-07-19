@@ -425,6 +425,8 @@
     <!-- Profiles -->
     <string name="profiles">Профили</string>
     <string name="profiles_subtitle">Переключайте конфигурации брандмауэра одним касанием</string>
+    <string name="profile_auto_enable_firewall">Включать брандмауэр при активации профиля</string>
+    <string name="profile_auto_enable_firewall_desc">Нажатие на профиль также включит брандмауэр, если он выключен</string>
     <string name="profiles_empty_title">Профилей пока нет</string>
     <string name="profiles_empty_message">Выберите приложения, которые нужно ограничить брандмауэром, и сохраните их как профиль, чтобы мгновенно переключаться между наборами.</string>
     <string name="profile_active">Активен</string>

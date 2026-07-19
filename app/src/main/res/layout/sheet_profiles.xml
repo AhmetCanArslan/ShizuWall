@@ -104,6 +104,25 @@
             android:textSize="13sp" />
     </LinearLayout>
 
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/profileAutoEnableSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="8dp"
+        android:paddingVertical="8dp"
+        android:text="@string/profile_auto_enable_firewall"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:text="@string/profile_auto_enable_firewall_desc"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="12sp" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/profileSaveCurrentButton"
         android:layout_width="match_parent"

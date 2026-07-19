@@ -422,6 +422,8 @@
     <string name="floating_disable_dim_desc">Mantenha o botão totalmente visível e nunca o esmaeça ou recolha quando estiver inativo</string>
     <string name="profiles">Perfis</string>
     <string name="profiles_subtitle">Alterne contextos de firewall com um toque</string>
+    <string name="profile_auto_enable_firewall">Ligar o firewall ao ativar um perfil</string>
+    <string name="profile_auto_enable_firewall_desc">Tocar num perfil também ativa o firewall se estiver desligado</string>
     <string name="profiles_empty_title">Ainda não há perfis</string>
     <string name="profiles_empty_message">Selecione os apps que deseja bloquear no firewall e salve-os como um perfil para alternar entre configurações instantaneamente.</string>
     <string name="profile_active">Ativo</string>

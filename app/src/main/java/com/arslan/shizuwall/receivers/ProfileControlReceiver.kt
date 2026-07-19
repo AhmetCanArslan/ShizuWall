@@ -53,7 +53,9 @@ class ProfileControlReceiver : BroadcastReceiver() {
 
                 ProfilesStore.writeSelectionFromProfile(context, profile)
 
-                if (wasEnabled) {
+                val autoEnable = prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_PROFILE_ACTIVATE, false)
+
+                if (wasEnabled || autoEnable) {
                     val executor = ShellExecutorProvider.forContext(context)
                     for (pkg in oldActive) {
                         try {
