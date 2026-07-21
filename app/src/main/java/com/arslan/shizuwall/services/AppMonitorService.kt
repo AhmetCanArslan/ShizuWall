@@ -10,6 +10,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.profiles.ProfilesStore
 import com.arslan.shizuwall.receivers.FirewallControlReceiver
 import com.arslan.shizuwall.receivers.NotificationActionReceiver
 import com.arslan.shizuwall.ui.MainActivity
@@ -28,7 +29,8 @@ class AppMonitorService : Service() {
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == MainActivity.KEY_FIREWALL_ENABLED ||
-            key == MainActivity.KEY_SHOW_FIREWALL_STATUS_NOTIFICATION
+            key == MainActivity.KEY_SHOW_FIREWALL_STATUS_NOTIFICATION ||
+            key == MainActivity.KEY_ACTIVE_PROFILE_ID
         ) {
             updateForegroundNotification()
         }
@@ -110,14 +112,16 @@ class AppMonitorService : Service() {
         )
 
         val showFirewallStatus = prefs.getBoolean(MainActivity.KEY_SHOW_FIREWALL_STATUS_NOTIFICATION, false)
+        val profileName = ProfilesStore.activeProfileId(this)
+            ?.let { ProfilesStore.getById(this, it)?.name }
         val (title, text) = if (showFirewallStatus) {
             val firewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
             if (firewallEnabled) {
                 getString(R.string.firewall_status_notification_enabled_title) to
-                    getString(R.string.firewall_status_notification_enabled_text)
+                    buildStatusText(getString(R.string.firewall_status_notification_enabled_text), profileName)
             } else {
                 getString(R.string.firewall_status_notification_disabled_title) to
-                    getString(R.string.firewall_status_notification_disabled_text)
+                    buildStatusText(getString(R.string.firewall_status_notification_disabled_text), profileName)
             }
         } else {
             getString(R.string.app_monitor_service) to getString(R.string.app_monitor_service_description)
@@ -131,6 +135,10 @@ class AppMonitorService : Service() {
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
+    }
+
+    private fun buildStatusText(baseText: String, profileName: String?): String {
+        return profileName ?: baseText
     }
 
     private fun updateForegroundNotification() {
