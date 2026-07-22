@@ -163,6 +163,7 @@ class MainActivity : BaseActivity() {
     private var profileEnableRequested = false
     private var isEnablingProcess = false
     private var lastSelectedCountToastTime = 0L
+    private var sortFilterRunnable = Runnable {}
 
     private val requestPermissionResultListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
         onRequestPermissionsResult(requestCode, grantResult)
@@ -1366,17 +1367,17 @@ class MainActivity : BaseActivity() {
         }
 
         if (animate || smoothTransition) {
+            appList.sortWith(finalComparator)
+            filterApps(currentQuery)
             val fadeOutDuration = if (smoothTransition) 180L else 200L
+            recyclerView.removeCallbacks(sortFilterRunnable)
+            sortFilterRunnable = Runnable { updateList() }
             recyclerView.animate().cancel()
             recyclerView.animate()
                 .alpha(0f)
                 .setDuration(fadeOutDuration)
-                .withEndAction {
-                    appList.sortWith(finalComparator)
-                    filterApps(currentQuery)
-                    updateList()
-                }
                 .start()
+            recyclerView.postDelayed(sortFilterRunnable, fadeOutDuration)
         } else {
             appList.sortWith(finalComparator)
             filterApps(currentQuery)
@@ -2656,7 +2657,6 @@ class MainActivity : BaseActivity() {
         updateSelectedCount()
         updateCategoryChips()
         updateSelectAllCheckbox()
-        sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, smoothTransition = true)
 
         if (!isFirewallEnabled) {
             profilesBottomSheet?.notifyActivated(profile.id)
@@ -2669,10 +2669,12 @@ class MainActivity : BaseActivity() {
                 profileEnableRequested = true
                 firewallToggle.isChecked = true
             }
+            sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, smoothTransition = true)
             return
         }
 
         reapplyForProfileSwitch(profile, oldActive, appModes)
+        sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true)
     }
 
     private fun reapplyForProfileSwitch(
@@ -2741,6 +2743,7 @@ class MainActivity : BaseActivity() {
                 appListAdapter.setSelectionEnabled(true)
                 updateInteractiveViews()
                 applyListInteractionState()
+                sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true)
             }
         }
     }
