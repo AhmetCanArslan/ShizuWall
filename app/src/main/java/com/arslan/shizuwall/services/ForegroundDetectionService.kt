@@ -56,12 +56,21 @@ class ForegroundDetectionService : Service() {
         private const val TAG = "ForegroundDetection"
         private const val CHANNEL_ID = "smart_foreground_channel"
         private const val NOTIFICATION_ID = 4001
-        private const val DEBOUNCE_MS = 150L
         private const val POLL_INTERVAL_MS = 1000L
         private const val SETTLE_RECHECK_MS = 350L
 
         private const val RETRY_DELAY_MS = 300L
         private const val UNMANAGED_ALLOW_THROTTLE_MS = 2000L
+        private const val BLOCK_CONFIRM_DELAY_MS = 900L
+
+        private val OVERLAY_PACKAGES = setOf(
+            "com.android.systemui",
+            "com.android.keyguard",
+            "com.android.permissioncontroller",
+            "com.google.android.permissioncontroller",
+            "com.android.packageinstaller",
+            "com.google.android.packageinstaller"
+        )
 
         // System packages that should never be managed by Smart Foreground
         private val SYSTEM_PACKAGES = setOf(
@@ -135,6 +144,7 @@ class ForegroundDetectionService : Service() {
     private val executorLock = Any()
 
     @Volatile private var dynamicSkipPackages: Set<String> = emptySet()
+    @Volatile private var dynamicImePackages: Set<String> = emptySet()
     @Volatile private var selectedPackages: Set<String> = emptySet()
     @Volatile private var cachedAppModes: Map<String, Int> = emptyMap()
     @Volatile private var lastUnmanagedAllowedPackage: String? = null
@@ -340,9 +350,13 @@ class ForegroundDetectionService : Service() {
     private suspend fun onForegroundSample(packageName: String) {
         // Skip self for non-focus-tracker modes to avoid processing our own windows.
         if (packageName == this.packageName && cachedFirewallMode != FirewallMode.FOCUS_TRACKER) return
+        if (isTransientOverlayPackage(packageName)) return
 
         // Skip same-package samples immediately.
-        if (packageName == currentForegroundPackage) return
+        if (packageName == currentForegroundPackage) {
+            healBlockedForegroundApp(packageName)
+            return
+        }
 
         publishObservedForegroundApp(packageName)
 
@@ -359,6 +373,33 @@ class ForegroundDetectionService : Service() {
         }
         if (confirm != packageName) return // changed again; next poll handles it
         processPackageChange(packageName)
+    }
+
+    private suspend fun healBlockedForegroundApp(packageName: String) {
+        if (!cachedFirewallEnabled) return
+        if (packageName != lastManagedPackage) return
+        val blocked = sharedPreferences.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
+        if (!blocked.contains(packageName)) return
+
+        withContext(Dispatchers.IO) {
+            try {
+                val result = execWithRetry(
+                    getShellExecutor(),
+                    "cmd connectivity set-package-networking-enabled true $packageName"
+                )
+                if (result.isEffectivelySuccess) {
+                    sharedPreferences.edit()
+                        .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, blocked - packageName)
+                        .putString(MainActivity.KEY_SMART_FOREGROUND_APP, packageName)
+                        .apply()
+                    Log.d(TAG, "$packageName → [heal] re-allowed while in foreground")
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Heal allow failed for $packageName", e)
+            }
+        }
     }
 
     private fun speculativelyAllowIfManaged(packageName: String) {
@@ -423,7 +464,19 @@ class ForegroundDetectionService : Service() {
             if (previous != null) {
                 // Store which package we're about to block so a quick return can cancel it.
                 pendingBlockPackage = previous
-                delay(DEBOUNCE_MS) // extra grace period before committing the block
+                delay(BLOCK_CONFIRM_DELAY_MS) // grace period before committing the block
+
+                val stillForeground = withContext(Dispatchers.IO) {
+                    ForegroundAppResolver.getForegroundPackage(applicationContext)
+                }
+                if (stillForeground == previous) {
+                    pendingBlockPackage = null
+                    currentForegroundPackage = previous
+                    lastManagedPackage = previous
+                    Log.d(TAG, "$previous returned to foreground — block cancelled")
+                    return
+                }
+
                 if (pendingBlockPackage == previous) {
                     pendingBlockPackage = null
                     blockPackage(previous)
@@ -497,13 +550,26 @@ class ForegroundDetectionService : Service() {
         } catch (e: Exception) {
             Log.w(TAG, "Failed to resolve launchers", e)
         }
+        val imePackages = mutableSetOf<String>()
         try {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            imm?.enabledInputMethodList?.forEach { packages.add(it.packageName) }
+            imm?.enabledInputMethodList?.forEach { imePackages.add(it.packageName) }
         } catch (e: Exception) {
             Log.w(TAG, "Failed to resolve input methods", e)
         }
+        dynamicImePackages = imePackages
+        packages.addAll(imePackages)
         return packages
+    }
+
+    private fun isTransientOverlayPackage(packageName: String): Boolean {
+        if (OVERLAY_PACKAGES.contains(packageName)) return true
+        if (INPUT_METHOD_PACKAGES.contains(packageName)) return true
+        if (dynamicImePackages.contains(packageName)) return true
+        return packageName.contains("inputmethod", ignoreCase = true) ||
+                packageName.contains("keyboard", ignoreCase = true) ||
+                packageName.contains(".ime.", ignoreCase = true) ||
+                packageName.endsWith(".ime", ignoreCase = true)
     }
 
     private suspend fun handleForegroundAppChange(previousPackage: String?, newPackage: String) {
