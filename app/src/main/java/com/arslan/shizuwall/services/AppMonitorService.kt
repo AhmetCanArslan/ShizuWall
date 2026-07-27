@@ -41,9 +41,7 @@ class AppMonitorService : Service() {
             if (intent.action == Intent.ACTION_PACKAGE_ADDED) {
                 val packageName = intent.data?.schemeSpecificPart ?: return
                 val isReplacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
-                val includeRestored = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-                    .getBoolean(MainActivity.KEY_AUTO_FIREWALL_INCLUDE_RESTORED, false)
-                if (!isReplacing || includeRestored) {
+                if (!isReplacing) {
                     showNewAppNotification(context, packageName, isReplacing)
                 }
             }
