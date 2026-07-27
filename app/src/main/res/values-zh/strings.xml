@@ -353,6 +353,18 @@
     <string name="firewall_mode_whitelist_description">默认阻止所有应用，允许选定的应用</string>
     <string name="whitelist_info_system_apps_warning">当"显示系统应用"被禁用时，系统应用将不会在白名单模式下被防火墙阻止。\n\n如果您已启用"显示系统应用"并使用白名单模式，此组合尚未完全测试。请谨慎使用。</string>
     <string name="firewall_mode_change_disabled">启用防火墙时无法更改防火墙模式。请先禁用防火墙。</string>
+
+    <!-- Firewall Mode detailed explanations -->
+    <string name="firewall_mode_details_button">这些模式如何工作？</string>
+    <string name="firewall_mode_details_title">防火墙模式的工作方式</string>
+    <string name="firewall_mode_default_details">你勾选要拦截的应用，然后开启防火墙。只有这些应用会失去网络，其他应用照常联网。修改勾选后，需要关闭并重新开启防火墙才会生效。</string>
+    <string name="firewall_mode_adaptive_details">拦截列表与默认模式相同，但编辑时防火墙保持开启。勾选或取消勾选应用会立即生效，无需关闭再开启防火墙。</string>
+    <string name="firewall_mode_whitelist_details">选择被反转：默认拦截所有应用，只有你勾选的应用保留网络。注意：关闭「显示系统应用」时，该模式不会拦截系统应用。</string>
+    <string name="firewall_mode_screen_lock_details">选中的应用在屏幕锁定时被拦截，解锁后恢复。可以设置延迟，避免短暂息屏就触发拦截。后台服务负责监视锁屏状态，重启后仍会继续工作。</string>
+    <string name="firewall_mode_smart_foreground_details">只有你当前正在使用的应用保留网络。其他选中的应用保持拦截，切换到别的应用时网络权限随之转移。后台服务约每秒检查一次前台应用，因此需要持续运行，会略微增加耗电。</string>
+    <string name="firewall_mode_focus_tracker_details">防火墙跟随 ShizuWall 自身：离开或最小化 ShizuWall 会开启防火墙，再次打开则关闭防火墙。适合让拦截恰好在你修改设置期间暂停。</string>
+    <string name="firewall_mode_hybrid_details">每个应用单独设置模式，而不是所有应用共用一条规则。可为每个应用选择默认拦截（始终拦截）、智能前台（仅使用时放行）或屏幕锁定（锁屏时拦截）。这些规则同时生效。</string>
+    <string name="firewall_mode_details_foreground_note">智能前台、混合模式和焦点跟踪需要检测前台应用。可通过 Shizuku 实现，或通过使用情况访问权限实现——在 LADB 和 Root 模式下，ShizuWall 会用特权 shell 自行授予该权限。</string>
     <string name="firewall_mode_hybrid">混合模式</string>
     <string name="firewall_mode_hybrid_description">为每个应用单独配置模式</string>
     <string name="hybrid_mode_default_block">默认阻止</string>

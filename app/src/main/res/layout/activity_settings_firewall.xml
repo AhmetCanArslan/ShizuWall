@@ -268,6 +268,15 @@
                             android:visibility="gone" />
 
                     </RadioGroup>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnFirewallModeDetails"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginStart="24dp"
+                        android:text="@string/firewall_mode_details_button" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

@@ -355,6 +355,18 @@
     <string name="firewall_mode_whitelist_description">デフォルトですべてのアプリをブロックし、選択されたアプリを許可</string>
     <string name="whitelist_info_system_apps_warning">"システムアプリを表示"が無効の場合、ホワイトリストモードでシステムアプリはファイアウォールの対象になりません。\n\n"システムアプリを表示"を有効にしてホワイトリストモードを使用している場合、この組み合わせは十分にテストされていません。注意して使用してください。</string>
     <string name="firewall_mode_change_disabled">ファイアウォールが有効になっている間はモードを変更できません。まずファイアウォールを無効にしてください。</string>
+
+    <!-- Firewall Mode detailed explanations -->
+    <string name="firewall_mode_details_button">各モードの仕組み</string>
+    <string name="firewall_mode_details_title">ファイアウォールモードの仕組み</string>
+    <string name="firewall_mode_default_details">ブロックしたいアプリを選び、ファイアウォールをオンにします。選んだアプリだけがネットワークを失い、他はオンラインのままです。選択の変更は、ファイアウォールをオフにして再びオンにしたときに反映されます。</string>
+    <string name="firewall_mode_adaptive_details">ブロック対象はデフォルトモードと同じですが、編集中もファイアウォールはオンのままです。アプリのチェックの追加や解除は即座に反映され、オフ・オンの切り替えは不要です。</string>
+    <string name="firewall_mode_whitelist_details">選択が反転します。既定ですべてのアプリがブロックされ、チェックしたアプリだけがネットワークを使えます。「システムアプリを表示」がオフの場合、このモードではシステムアプリはブロックされません。</string>
+    <string name="firewall_mode_screen_lock_details">選択したアプリは画面ロック時にブロックされ、ロック解除時に解除されます。短時間の画面オフでブロックされないように遅延を設定できます。バックグラウンドサービスがロック状態を監視するため、再起動後も動作します。</string>
+    <string name="firewall_mode_smart_foreground_details">今使っているアプリだけがネットワークを使えます。他の選択済みアプリはブロックされたままで、別のアプリに移ると同時に許可も切り替わります。バックグラウンドサービスが約1秒ごとに前面アプリを確認するため、常時稼働が必要でバッテリーを少し多く使います。</string>
+    <string name="firewall_mode_focus_tracker_details">ファイアウォールが ShizuWall 自体に追従します。ShizuWall を離れる、または最小化するとファイアウォールがオンになり、再び開くとオフになります。設定を変更している間だけブロックを止めたいときに便利です。</string>
+    <string name="firewall_mode_hybrid_details">すべてに同じルールを適用する代わりに、アプリごとにモードを設定します。アプリごとに、既定ブロック（常にブロック）、スマートフォアグラウンド（使用中のみ許可）、画面ロック（画面ロック中はブロック）から選べます。これらのルールは同時に動作します。</string>
+    <string name="firewall_mode_details_foreground_note">スマートフォアグラウンド、ハイブリッド、フォーカストラッカーは前面アプリの検出が必要です。検出は Shizuku 経由、または使用状況アクセス経由で行われます。使用状況アクセスは LADB／Root モードで ShizuWall が特権シェルを使って自身に付与します。</string>
     <string name="firewall_mode_hybrid">ハイブリッドモード</string>
     <string name="firewall_mode_hybrid_description">アプリごとにモードを個別に設定</string>
     <string name="hybrid_mode_default_block">デフォルトブロック</string>

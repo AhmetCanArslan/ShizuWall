@@ -355,6 +355,18 @@
     <string name="firewall_mode_whitelist_description">Bloquear todas las apps por defecto, permitir apps seleccionadas</string>
     <string name="whitelist_info_system_apps_warning">Cuando "Mostrar apps del sistema" está desactivado, las apps del sistema no serán bloqueadas por el firewall en modo Lista blanca.\n\nSi has activado "Mostrar apps del sistema" y estás usando el modo Lista blanca, esta combinación no ha sido completamente probada. Úsala con precaución.</string>
     <string name="firewall_mode_change_disabled">No se puede cambiar el modo de firewall mientras está activado. Por favor, desactiva el firewall primero.</string>
+
+    <!-- Firewall Mode detailed explanations -->
+    <string name="firewall_mode_details_button">¿Cómo funcionan estos modos?</string>
+    <string name="firewall_mode_details_title">Cómo funcionan los modos de firewall</string>
+    <string name="firewall_mode_default_details">Marcas las aplicaciones que quieres bloquear y enciendes el firewall. Solo esas aplicaciones pierden el acceso a la red; el resto sigue conectado. Los cambios en la selección se aplican la próxima vez que apagues y vuelvas a encender el firewall.</string>
+    <string name="firewall_mode_adaptive_details">La misma lista de bloqueo que el modo Predeterminado, pero el firewall sigue encendido mientras la editas. Marcar o desmarcar una aplicación se aplica al instante, sin apagar y encender el firewall.</string>
+    <string name="firewall_mode_whitelist_details">La selección se invierte: todas las aplicaciones están bloqueadas por defecto y solo las que marcas conservan el acceso a la red. Ten en cuenta que, si «Mostrar aplicaciones del sistema» está desactivado, las aplicaciones del sistema no se bloquean en este modo.</string>
+    <string name="firewall_mode_screen_lock_details">Las aplicaciones seleccionadas se bloquean al bloquear la pantalla y se desbloquean al desbloquearla. Puedes definir un retardo para que apagados breves de pantalla no activen el bloqueo. Un servicio en segundo plano vigila el estado de bloqueo, por lo que sigue funcionando tras reiniciar.</string>
+    <string name="firewall_mode_smart_foreground_details">Solo la aplicación que estás usando en ese momento conserva el acceso a la red. Las demás aplicaciones seleccionadas siguen bloqueadas y el acceso cambia en cuanto pasas a otra aplicación. Un servicio en segundo plano comprueba la aplicación en primer plano una vez por segundo aproximadamente, así que debe seguir activo y consume algo más de batería.</string>
+    <string name="firewall_mode_focus_tracker_details">El firewall sigue a la propia ShizuWall: salir o minimizar ShizuWall enciende el firewall y volver a abrirla lo apaga. Útil cuando quieres que el bloqueo se pause justo mientras cambias ajustes.</string>
+    <string name="firewall_mode_hybrid_details">Cada aplicación tiene su propio modo en lugar de una regla para todas. Por aplicación puedes elegir Bloqueo predeterminado (siempre bloqueada), Primer plano inteligente (permitida solo mientras se usa) o Bloqueo de pantalla (bloqueada con la pantalla bloqueada). Todas estas reglas funcionan a la vez.</string>
+    <string name="firewall_mode_details_foreground_note">Primer plano inteligente, Híbrido y Seguimiento de foco necesitan detectar la aplicación en primer plano. Esto funciona a través de Shizuku o del acceso de uso, que ShizuWall se concede a sí misma mediante el shell privilegiado en los modos LADB y Root.</string>
     <string name="firewall_mode_hybrid">Modo Híbrido</string>
     <string name="firewall_mode_hybrid_description">Configurar modo individualmente por aplicación</string>
     <string name="hybrid_mode_default_block">Bloqueo Predeterminado</string>

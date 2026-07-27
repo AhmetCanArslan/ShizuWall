@@ -353,6 +353,18 @@
     <string name="firewall_mode_whitelist_description">Alle Apps standardmäßig blockieren, ausgewählte Apps erlauben</string>
     <string name="whitelist_info_system_apps_warning">Wenn "System-Apps anzeigen" deaktiviert ist, werden System-Apps im Whitelist-Modus nicht durch die Firewall geschützt.\n\nWenn Sie "System-Apps anzeigen" aktiviert haben und den Whitelist-Modus verwenden, wurde diese Kombination nicht vollständig getestet. Verwenden Sie sie mit Vorsicht.</string>
     <string name="firewall_mode_change_disabled">Firewall-Modus kann nicht geändert werden, während die Firewall aktiviert ist. Bitte deaktivieren Sie zuerst die Firewall.</string>
+
+    <!-- Firewall Mode detailed explanations -->
+    <string name="firewall_mode_details_button">Wie funktionieren diese Modi?</string>
+    <string name="firewall_mode_details_title">So funktionieren die Firewall-Modi</string>
+    <string name="firewall_mode_default_details">Du wählst die Apps aus, die blockiert werden sollen, und schaltest die Firewall ein. Nur diese Apps verlieren den Netzwerkzugriff, alle anderen bleiben online. Änderungen an der Auswahl wirken sich aus, sobald du die Firewall aus- und wieder einschaltest.</string>
+    <string name="firewall_mode_adaptive_details">Dieselbe Sperrliste wie im Standardmodus, aber die Firewall bleibt beim Bearbeiten eingeschaltet. Das An- oder Abwählen einer App wirkt sofort, ohne die Firewall aus- und wieder einzuschalten.</string>
+    <string name="firewall_mode_whitelist_details">Die Auswahl ist umgekehrt: Standardmäßig sind alle Apps blockiert und nur die ausgewählten Apps behalten Netzwerkzugriff. Beachte: Wenn „Systemapps anzeigen“ deaktiviert ist, werden Systemapps in diesem Modus nicht blockiert.</string>
+    <string name="firewall_mode_screen_lock_details">Die ausgewählten Apps werden beim Sperren des Bildschirms blockiert und beim Entsperren wieder freigegeben. Du kannst eine Verzögerung einstellen, damit kurzes Ausschalten des Bildschirms keine Sperre auslöst. Ein Hintergrunddienst überwacht den Sperrstatus und läuft auch nach einem Neustart weiter.</string>
+    <string name="firewall_mode_smart_foreground_details">Nur die App, die du gerade benutzt, behält Netzwerkzugriff. Alle anderen ausgewählten Apps bleiben blockiert, und der Zugriff wechselt, sobald du zu einer anderen App wechselst. Ein Hintergrunddienst prüft die Vordergrund-App etwa einmal pro Sekunde, muss also laufen und verbraucht etwas mehr Akku.</string>
+    <string name="firewall_mode_focus_tracker_details">Die Firewall folgt ShizuWall selbst: Wenn du ShizuWall verlässt oder minimierst, schaltet sich die Firewall ein; öffnest du es wieder, schaltet sie sich aus. Praktisch, wenn die Blockierung genau während des Einstellens pausieren soll.</string>
+    <string name="firewall_mode_hybrid_details">Jede App bekommt ihren eigenen Modus statt einer Regel für alle. Pro App wählst du Standard-Blockierung (immer blockiert), Smart-Vordergrund (nur während der Nutzung erlaubt) oder Bildschirmsperre (blockiert bei gesperrtem Bildschirm). Alle Regeln laufen gleichzeitig.</string>
+    <string name="firewall_mode_details_foreground_note">Smart-Vordergrund, Hybrid und Fokus-Tracker müssen die Vordergrund-App erkennen. Das geschieht über Shizuku oder über den Nutzungszugriff, den sich ShizuWall in den Modi LADB und Root selbst über die privilegierte Shell gewährt.</string>
     <string name="firewall_mode_hybrid">Hybrid-Modus</string>
     <string name="firewall_mode_hybrid_description">Modus für jede App einzeln konfigurieren</string>
     <string name="hybrid_mode_default_block">Standard-Blockierung</string>

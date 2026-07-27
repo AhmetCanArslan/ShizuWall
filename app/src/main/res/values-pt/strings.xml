@@ -353,6 +353,18 @@
     <string name="firewall_mode_whitelist_description">Bloquear todos os apps por padrão, permitir apps selecionados</string>
     <string name="whitelist_info_system_apps_warning">Quando "Mostrar apps do sistema" está desativado, os apps do sistema não serão bloqueados pelo firewall no modo Lista branca.\n\nSe você ativou "Mostrar apps do sistema" e está usando o modo Lista branca, esta combinação não foi totalmente testada. Use com cuidado.</string>
     <string name="firewall_mode_change_disabled">Não é possível alterar o modo de firewall enquanto está ativado. Por favor, desative o firewall primeiro.</string>
+
+    <!-- Firewall Mode detailed explanations -->
+    <string name="firewall_mode_details_button">Como funcionam estes modos?</string>
+    <string name="firewall_mode_details_title">Como funcionam os modos de firewall</string>
+    <string name="firewall_mode_default_details">Você marca os apps que quer bloquear e liga a firewall. Apenas esses apps perdem o acesso à rede; os outros continuam online. As alterações na seleção passam a valer quando você desliga e liga a firewall novamente.</string>
+    <string name="firewall_mode_adaptive_details">A mesma lista de bloqueio do modo Padrão, mas a firewall continua ligada enquanto você a edita. Marcar ou desmarcar um app é aplicado na hora, sem precisar desligar e ligar a firewall.</string>
+    <string name="firewall_mode_whitelist_details">A seleção é invertida: todos os apps ficam bloqueados por padrão e só os que você marcar mantêm acesso à rede. Atenção: com «Mostrar apps do sistema» desativado, os apps do sistema não são bloqueados neste modo.</string>
+    <string name="firewall_mode_screen_lock_details">Os apps selecionados são bloqueados quando a tela é bloqueada e liberados ao desbloquear. Você pode definir um atraso para que telas apagadas por pouco tempo não acionem o bloqueio. Um serviço em segundo plano monitora o estado de bloqueio, por isso continua funcionando após reiniciar.</string>
+    <string name="firewall_mode_smart_foreground_details">Apenas o app que você está usando no momento mantém acesso à rede. Os demais apps selecionados continuam bloqueados, e o acesso muda assim que você troca de app. Um serviço em segundo plano verifica o app em primeiro plano cerca de uma vez por segundo, então precisa continuar ativo e gasta um pouco mais de bateria.</string>
+    <string name="firewall_mode_focus_tracker_details">A firewall acompanha o próprio ShizuWall: sair ou minimizar o ShizuWall liga a firewall e abri-lo de novo desliga. Útil quando você quer que o bloqueio pare exatamente enquanto altera configurações.</string>
+    <string name="firewall_mode_hybrid_details">Cada app recebe o seu próprio modo, em vez de uma regra para todos. Por app você pode escolher Bloqueio padrão (sempre bloqueado), Primeiro plano inteligente (permitido só durante o uso) ou Bloqueio de tela (bloqueado com a tela bloqueada). Todas essas regras funcionam ao mesmo tempo.</string>
+    <string name="firewall_mode_details_foreground_note">Primeiro plano inteligente, Híbrido e Rastreador de foco precisam detectar o app em primeiro plano. Isso funciona via Shizuku ou via acesso de uso, que o ShizuWall concede a si mesmo pelo shell privilegiado nos modos LADB e Root.</string>
     <string name="firewall_mode_hybrid">Modo Híbrido</string>
     <string name="firewall_mode_hybrid_description">Configurar modo individualmente por aplicativo</string>
     <string name="hybrid_mode_default_block">Bloqueio Padrão</string>

@@ -19,6 +19,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.core.text.HtmlCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.FirewallMode
@@ -48,6 +49,7 @@ class FirewallSettingsActivity : BaseActivity() {
     private lateinit var layoutScreenLockDelay: android.widget.LinearLayout
     private lateinit var tvScreenLockDelayValue: TextView
     private lateinit var tvFirewallModeDisabledWarning: TextView
+    private lateinit var btnFirewallModeDetails: com.google.android.material.button.MaterialButton
     private lateinit var layoutAdbBroadcastUsage: android.widget.LinearLayout
     private lateinit var rootView: ViewGroup
 
@@ -109,6 +111,33 @@ class FirewallSettingsActivity : BaseActivity() {
         layoutScreenLockDelay = findViewById(R.id.layoutScreenLockDelay)
         tvScreenLockDelayValue = findViewById(R.id.tvScreenLockDelayValue)
         tvFirewallModeDisabledWarning = findViewById(R.id.tvFirewallModeDisabledWarning)
+        btnFirewallModeDetails = findViewById(R.id.btnFirewallModeDetails)
+    }
+
+    private fun showFirewallModeDetailsDialog() {
+        val modes = listOf(
+            R.string.firewall_mode_default to R.string.firewall_mode_default_details,
+            R.string.firewall_mode_adaptive to R.string.firewall_mode_adaptive_details,
+            R.string.firewall_mode_whitelist to R.string.firewall_mode_whitelist_details,
+            R.string.firewall_mode_screen_lock to R.string.firewall_mode_screen_lock_details,
+            R.string.firewall_mode_smart_foreground to R.string.firewall_mode_smart_foreground_details,
+            R.string.firewall_mode_hybrid to R.string.firewall_mode_hybrid_details,
+            R.string.firewall_mode_focus_tracker to R.string.firewall_mode_focus_tracker_details
+        )
+
+        val html = buildString {
+            modes.forEach { (titleRes, detailsRes) ->
+                append("<b>").append(getString(titleRes)).append("</b><br>")
+                append(getString(detailsRes)).append("<br><br>")
+            }
+            append("<i>").append(getString(R.string.firewall_mode_details_foreground_note)).append("</i>")
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.firewall_mode_details_title)
+            .setMessage(HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY))
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
     }
 
     private fun loadSettings() {
@@ -209,6 +238,8 @@ class FirewallSettingsActivity : BaseActivity() {
     }
 
     private fun setupListeners() {
+        btnFirewallModeDetails.setOnClickListener { showFirewallModeDetailsDialog() }
+
         radioGroupFirewallMode.setOnCheckedChangeListener { _, checkedId ->
             if (suppressFirewallModeListener) return@setOnCheckedChangeListener
 

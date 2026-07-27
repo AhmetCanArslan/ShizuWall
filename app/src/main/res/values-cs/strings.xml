@@ -352,6 +352,18 @@
     <string name="firewall_mode_focus_tracker">Focus Tracker</string>
     <string name="firewall_mode_focus_tracker_description">Zapnout bránu firewall, když není ShizuWall aktivní, a vypnout ji, když je aktivní.</string>
     <string name="firewall_mode_change_disabled">Nelze změnit režim brány firewall, když je brána firewall aktivní. Nejprve ji deaktivujte.</string>
+
+    <!-- Firewall Mode detailed explanations -->
+    <string name="firewall_mode_details_button">Jak tyto režimy fungují?</string>
+    <string name="firewall_mode_details_title">Jak fungují režimy brány firewall</string>
+    <string name="firewall_mode_default_details">Zaškrtnete aplikace, které chcete blokovat, a zapnete bránu firewall. Připojení ztratí pouze tyto aplikace, ostatní zůstanou online. Změny výběru se projeví, až bránu firewall vypnete a znovu zapnete.</string>
+    <string name="firewall_mode_adaptive_details">Stejný seznam blokovaných aplikací jako u výchozího režimu, ale brána firewall zůstává během úprav zapnutá. Zaškrtnutí nebo odškrtnutí aplikace se projeví okamžitě, bez vypínání a zapínání.</string>
+    <string name="firewall_mode_whitelist_details">Výběr je obrácený: ve výchozím stavu jsou blokovány všechny aplikace a připojení si udrží jen ty, které zaškrtnete. Pozor: pokud je vypnuto „Zobrazit systémové aplikace“, systémové aplikace se v tomto režimu neblokují.</string>
+    <string name="firewall_mode_screen_lock_details">Vybrané aplikace se zablokují při uzamčení obrazovky a odblokují po odemčení. Můžete nastavit prodlevu, aby krátké zhasnutí obrazovky blokování nespustilo. Stav zámku sleduje služba na pozadí, takže funguje i po restartu.</string>
+    <string name="firewall_mode_smart_foreground_details">Připojení si udrží pouze aplikace, kterou právě používáte. Ostatní vybrané aplikace zůstávají blokované a přístup se přepne, jakmile přejdete do jiné aplikace. Služba na pozadí kontroluje aplikaci v popředí zhruba jednou za sekundu, takže musí běžet a spotřebuje trochu baterie.</string>
+    <string name="firewall_mode_focus_tracker_details">Brána firewall sleduje samotný ShizuWall: opuštění nebo minimalizace ShizuWall bránu firewall zapne, jeho opětovné otevření ji vypne. Hodí se, když má blokování pauzu přesně po dobu, kdy měníte nastavení.</string>
+    <string name="firewall_mode_hybrid_details">Každá aplikace má vlastní režim místo jednoho pravidla pro všechny. U každé aplikace zvolíte Výchozí blokování (vždy blokováno), Chytré popředí (povoleno jen během používání) nebo Zámek obrazovky (blokováno při uzamčené obrazovce). Všechna pravidla běží současně.</string>
+    <string name="firewall_mode_details_foreground_note">Chytré popředí, Hybridní režim a Sledování zaměření potřebují rozpoznat aplikaci v popředí. Funguje to přes Shizuku nebo přes přístup k údajům o využití, který si ShizuWall v režimech LADB a Root uděluje sám pomocí privilegovaného shellu.</string>
     <string name="firewall_mode_hybrid">Hybridní režim</string>
     <string name="firewall_mode_hybrid_description">Nastavit režim individuálně pro každou aplikaci</string>
     <string name="hybrid_mode_default_block">Výchozí blokování</string>

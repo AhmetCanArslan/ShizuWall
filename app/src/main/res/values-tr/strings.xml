@@ -353,6 +353,18 @@
     <string name="firewall_mode_whitelist_description">Varsayılan olarak tüm uygulamaları engelle, seçili uygulamalara izin ver</string>
     <string name="whitelist_info_system_apps_warning">"Sistem uygulamalarını göster" devre dışı bırakıldığında, sistem uygulamaları Beyaz Liste modunda güvenlik duvarı tarafından engellenmez.\n\n"Sistem uygulamalarını göster" seçeneğini etkinleştirdiyseniz ve Beyaz Liste modunu kullanıyorsanız, bu kombinasyon tam olarak test edilmemiştir. Dikkatli kullanın.</string>
     <string name="firewall_mode_change_disabled">Güvenlik duvarı etkinleştirilirken modu değiştiremezsiniz. Lütfen önce güvenlik duvarını devre dışı bırakın.</string>
+
+    <!-- Firewall Mode detailed explanations -->
+    <string name="firewall_mode_details_button">Bu modlar nasıl çalışır?</string>
+    <string name="firewall_mode_details_title">Güvenlik duvarı modları nasıl çalışır</string>
+    <string name="firewall_mode_default_details">Engellemek istediğiniz uygulamaları işaretler, sonra güvenlik duvarını açarsınız. Yalnızca o uygulamalar ağ erişimini kaybeder, diğerleri çevrimiçi kalır. Seçimdeki değişiklikler, güvenlik duvarını kapatıp yeniden açtığınızda geçerli olur.</string>
+    <string name="firewall_mode_adaptive_details">Varsayılan moddaki engel listesinin aynısı, ancak listeyi düzenlerken güvenlik duvarı açık kalır. Bir uygulamayı işaretlemek veya işareti kaldırmak anında uygulanır; kapatıp açmaya gerek yoktur.</string>
+    <string name="firewall_mode_whitelist_details">Seçim tersine döner: varsayılan olarak tüm uygulamalar engellenir ve yalnızca işaretlediğiniz uygulamalar ağ erişimini korur. «Sistem uygulamalarını göster» kapalıyken sistem uygulamalarının bu modda engellenmediğini unutmayın.</string>
+    <string name="firewall_mode_screen_lock_details">Seçilen uygulamalar ekran kilitlendiğinde engellenir, kilidi açtığınızda engel kalkar. Kısa süreli ekran kapanmalarının engellemeyi tetiklememesi için bir gecikme ayarlayabilirsiniz. Kilit durumunu bir arka plan hizmeti izler, bu yüzden yeniden başlatmadan sonra da çalışmaya devam eder.</string>
+    <string name="firewall_mode_smart_foreground_details">Yalnızca o an kullandığınız uygulama ağ erişimini korur. Seçili diğer tüm uygulamalar engelli kalır ve başka bir uygulamaya geçtiğiniz anda erişim ona geçer. Bir arka plan hizmeti ön plandaki uygulamayı yaklaşık saniyede bir kontrol eder; bu nedenle çalışır durumda kalmalıdır ve biraz fazla pil harcar.</string>
+    <string name="firewall_mode_focus_tracker_details">Güvenlik duvarı ShizuWall\'ın kendisini takip eder: ShizuWall\'dan çıkmak veya küçültmek güvenlik duvarını açar, tekrar açmak kapatır. Engellemenin tam olarak ayarları değiştirdiğiniz sürece duraklamasını istediğinizde işe yarar.</string>
+    <string name="firewall_mode_hybrid_details">Herkes için tek kural yerine her uygulama kendi modunu alır. Uygulama başına Varsayılan Engelleme (her zaman engelli), Akıllı Ön Plan (yalnızca kullanılırken izinli) veya Ekran Kilidi (ekran kilitliyken engelli) seçebilirsiniz. Bu kuralların hepsi aynı anda çalışır.</string>
+    <string name="firewall_mode_details_foreground_note">Akıllı Ön Plan, Hibrit ve Odak Takibi modlarının ön plandaki uygulamayı algılaması gerekir. Bu, Shizuku üzerinden ya da ShizuWall\'ın LADB ve Root modlarında ayrıcalıklı kabuk ile kendisine verdiği kullanım erişimi üzerinden çalışır.</string>
     <string name="firewall_mode_hybrid">Hibrit Mod</string>
     <string name="firewall_mode_hybrid_description">Her uygulama için modu ayrı ayrı yapılandır</string>
     <string name="hybrid_mode_default_block">Varsayılan Engel</string>

@@ -359,6 +359,18 @@
     <string name="firewall_mode_focus_tracker">Focus Tracker</string>
     <string name="firewall_mode_focus_tracker_description">Enable firewall when ShizuWall is unfocused, and disable when focused.</string>
     <string name="firewall_mode_change_disabled">Cannot change firewall mode while firewall is enabled. Please disable the firewall first.</string>
+
+    <!-- Firewall Mode detailed explanations -->
+    <string name="firewall_mode_details_button">How do these modes work?</string>
+    <string name="firewall_mode_details_title">How firewall modes work</string>
+    <string name="firewall_mode_default_details">You tick the apps you want blocked, then turn the firewall on. Only those apps lose network access; everything else stays online. Changes to the selection take effect the next time you turn the firewall off and on again.</string>
+    <string name="firewall_mode_adaptive_details">Same block list as Default, but the firewall stays on while you edit it. Ticking or unticking an app applies immediately, with no need to toggle the firewall off and on.</string>
+    <string name="firewall_mode_whitelist_details">The selection is inverted: every app is blocked by default and only the apps you tick keep network access. Note that when "Show system apps" is off, system apps are not firewalled in this mode.</string>
+    <string name="firewall_mode_screen_lock_details">The selected apps are blocked when the screen locks and unblocked when you unlock. You can set a delay so short screen-offs do not trigger blocking. A background service watches the lock state, so it keeps working after a reboot.</string>
+    <string name="firewall_mode_smart_foreground_details">Only the app you are using right now keeps network access. Every other selected app stays blocked, and access switches over as soon as you move to another app. A background service checks the foreground app about once per second, so it must stay running and uses a little extra battery.</string>
+    <string name="firewall_mode_focus_tracker_details">The firewall follows ShizuWall itself: leaving or minimising ShizuWall turns the firewall on, opening it again turns the firewall off. Useful when you want the blocking to pause exactly while you are changing settings.</string>
+    <string name="firewall_mode_hybrid_details">Each app gets its own mode instead of one rule for all. Per app you can pick Default Block (always blocked), Smart Foreground (allowed only while in use), or Screen Lock (blocked while the screen is locked). All of these rules run at the same time.</string>
+    <string name="firewall_mode_details_foreground_note">Smart Foreground, Hybrid and Focus Tracker need to detect the foreground app. This works through Shizuku, or through usage access, which ShizuWall grants itself via the privileged shell in LADB and Root modes.</string>
     <string name="firewall_mode_hybrid">Hybrid Mode</string>
     <string name="firewall_mode_hybrid_description">Configure mode individually per app</string>
     <string name="hybrid_mode_default_block">Default Block</string>

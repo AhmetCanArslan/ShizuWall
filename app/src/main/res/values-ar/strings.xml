@@ -335,6 +335,18 @@
     <string name="firewall_mode_focus_tracker">متتبع التركيز</string>
     <string name="firewall_mode_focus_tracker_description">.خارج نطاق التركيز، وقم بتعطيله عندما يكون داخل نطاق التركيزShizuWall قم بتفعيل جدار الحماية عندما يكون </string>
     <string name="firewall_mode_change_disabled">لا يمكن تغيير وضع الجدار الناري أثناء تفعيله. يرجى تعطيل الجدار الناري أولاً.</string>
+
+    <!-- Firewall Mode detailed explanations -->
+    <string name="firewall_mode_details_button">كيف تعمل هذه الأوضاع؟</string>
+    <string name="firewall_mode_details_title">كيف تعمل أوضاع الجدار الناري</string>
+    <string name="firewall_mode_default_details">تحدد التطبيقات التي تريد حظرها، ثم تُفعّل الجدار الناري. تفقد تلك التطبيقات فقط الاتصال بالشبكة، ويبقى غيرها متصلاً. تسري تغييرات التحديد عند إيقاف الجدار الناري وتشغيله مرة أخرى.</string>
+    <string name="firewall_mode_adaptive_details">نفس قائمة الحظر كما في الوضع الافتراضي، لكن الجدار الناري يبقى مُفعّلاً أثناء تعديلها. يُطبَّق تحديد أو إلغاء تحديد أي تطبيق فوراً دون الحاجة إلى إيقاف الجدار الناري وتشغيله.</string>
+    <string name="firewall_mode_whitelist_details">يُعكس التحديد: تُحظر جميع التطبيقات افتراضياً وتبقى التطبيقات التي تحددها فقط متصلة بالشبكة. لاحظ أنه عند إيقاف \"إظهار تطبيقات النظام\" لا تُحظر تطبيقات النظام في هذا الوضع.</string>
+    <string name="firewall_mode_screen_lock_details">تُحظر التطبيقات المحددة عند قفل الشاشة وتُلغى حظرها عند إلغاء القفل. يمكنك ضبط مهلة تأخير حتى لا يؤدي إطفاء الشاشة القصير إلى الحظر. تراقب خدمة في الخلفية حالة القفل، لذلك تستمر بالعمل بعد إعادة التشغيل.</string>
+    <string name="firewall_mode_smart_foreground_details">يبقى التطبيق الذي تستخدمه الآن فقط متصلاً بالشبكة. تبقى بقية التطبيقات المحددة محظورة، وينتقل الوصول فور تبديلك إلى تطبيق آخر. تفحص خدمة في الخلفية التطبيق الأمامي مرة كل ثانية تقريباً، لذا يجب أن تظل تعمل وتستهلك قليلاً من البطارية.</string>
+    <string name="firewall_mode_focus_tracker_details">يتبع الجدار الناري تطبيق ShizuWall نفسه: مغادرة ShizuWall أو تصغيره يُفعّل الجدار الناري، وفتحه من جديد يعطّله. مفيد عندما تريد إيقاف الحظر مؤقتاً أثناء تغيير الإعدادات فقط.</string>
+    <string name="firewall_mode_hybrid_details">يحصل كل تطبيق على وضعه الخاص بدلاً من قاعدة واحدة للجميع. لكل تطبيق يمكنك اختيار الحظر الافتراضي (محظور دائماً)، أو المقدمة الذكية (مسموح أثناء الاستخدام فقط)، أو قفل الشاشة (محظور أثناء قفل الشاشة). تعمل كل هذه القواعد في الوقت نفسه.</string>
+    <string name="firewall_mode_details_foreground_note">تحتاج أوضاع المقدمة الذكية والهجين وتتبع التركيز إلى معرفة التطبيق الأمامي. يتم ذلك عبر Shizuku أو عبر صلاحية الاستخدام التي يمنحها ShizuWall لنفسه من خلال الصدفة المرتفعة الصلاحيات في وضعي LADB وRoot.</string>
     <string name="firewall_mode_hybrid">الوضع الهجين</string>
     <string name="firewall_mode_hybrid_description">تكوين الوضع بشكل فردي لكل تطبيق</string>
     <string name="hybrid_mode_default_block">حظر افتراضي</string>
