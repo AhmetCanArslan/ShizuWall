@@ -9,16 +9,11 @@
     <string name="settings_category_backend_desc">Shizuku, LADB, Root</string>
     <string name="settings_category_notifications_title">Benachrichtigungen &amp; schwebender Button</string>
     <string name="settings_category_notifications_desc">Überwachung, Warnungen, Overlay-Button</string>
-    <string name="settings_category_backup_title">Sicherung</string>
-    <string name="settings_category_backup_desc">Einstellungen exportieren oder importieren</string>
-    <string name="settings_category_about_title">Über &amp; Support</string>
-    <string name="settings_category_about_desc">Version, Links, App zurücksetzen</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Spenden</string>
     <string name="show_system_apps">System-Apps anzeigen</string>
     <string name="skip_enable_dialog">Aktivierungsbestätigung überspringen</string>
-    <string name="github_button_desc">GitHub-Repository öffnen</string>
     <string name="app_icon_desc">App-Symbol</string>
     <string name="app_switch_selected">%1$s, ausgewählt, %2$s</string>
     <string name="app_switch_unselected">%1$s, nicht ausgewählt, %2$s</string>
@@ -33,11 +28,6 @@
     <string name="cat_favorites">Favoriten</string>
     <string name="made_by">Mit ❤️ gemacht von Ahmet Can Arslan</string>
     <string name="reset_app_menu">App zurücksetzen</string>
-    <string name="theme_changed_title">Theme geändert</string>
-    <string name="theme_changed_message">Das Theme wurde aktualisiert. Bitte starten Sie die App neu, um die Änderungen anzuwenden.</string>
-    <string name="font_changed_title">Schriftart geändert</string>
-    <string name="font_changed_message">Die Schriftart wurde aktualisiert. Bitte starten Sie die App neu, um die Änderungen anzuwenden.</string>
-    <string name="restart_now">Jetzt neu starten</string>
     <string name="later">Später</string>
     <string name="export_successful">Export erfolgreich</string>
     <string name="export_failed">Export fehlgeschlagen: %s</string>
@@ -72,7 +62,6 @@
 
 %2$s (string, optional): kommagetrennte Paketliste. Wenn weggelassen, verwendet die App die in ShizuWall gespeicherten ausgewählten Pakete.</string>
     <string name="ok">OK</string>
-    <string name="adb_broadcast_usage_text" formatted="false">Action:\n%1$s\n\nComponent:\n%2$s\n\nExtras:\n\n%3$s (boolean) — true = enable, false = disable\n\n%4$s (string, optional) — comma-separated package list to operate on. If omitted, app falls back to saved selected apps.\n\n\nExamples:\n\nEnable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nDisable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nEnable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s "com.example.app1,com.example.app2"\n\nDisable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s "com.example.app1,com.example.app2"\n\n\nNotes:\n\n- The receiver is exported for adb automation; prefer targeting the receiver explicitly (for example: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver) to avoid external broadcasts.\n\n- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.\n\n- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.</string>
     <string name="no_apps_selected">Keine Apps ausgewählt</string>
     <string name="shizuku_not_running">Shizuku läuft nicht</string>
     <string name="shizuku_permission_required">Shizuku-Berechtigung erforderlich</string>
@@ -120,8 +109,6 @@
     <string name="firewall_disabled_no_apps">Firewall deaktiviert (keine Apps ausgewählt)</string>
     <string name="none_selected_apps_installed">Keine der ausgewählten Apps ist installiert. Abbruch.</string>
     <string name="selected_apps_not_installed">%d ausgewählte Apps sind nicht installiert und wurden ignoriert.</string>
-    <string name="firewall_enabled_for_apps">Firewall für %d Apps aktiviert</string>
-    <string name="firewall_enabled_adaptive">Firewall aktiviert (Adaptiver Modus)</string>
     <string name="failed_to_enable_firewall">Firewall für keine Apps aktivieren fehlgeschlagen</string>
     <string name="failed_to_disable_firewall">Firewall für keine Apps deaktivieren fehlgeschlagen</string>
     <string name="operation_failed_for_apps">Operation für %d Apps fehlgeschlagen</string>
@@ -132,8 +119,6 @@
     <string name="no_error_details">Keine zusätzlichen Details verfügbar.</string>
     <string name="close">Schließen</string>
     <string name="settings_title">Einstellungen</string>
-    <string name="display_section">Anzeige</string>
-    <string name="show_system_apps_description">Systemanwendungen in die Liste einschließen</string>
     <string name="show_system_apps_uncheck_confirm">Jede ausgewählte System-App wird abgewählt und auf ihren Standardzustand zurückgesetzt. Möchten Sie das Häkchen entfernen?</string>
     <string name="move_selected_top">Ausgewählte Apps nach oben verschieben</string>
     <string name="move_selected_top_description">Ausgewählte Apps am Anfang anzeigen</string>
@@ -141,14 +126,11 @@
     <string name="use_dynamic_color_description">Hintergrundfarben auf das App-Theme anwenden</string>
     <string name="use_amoled_black">AMOLED-Design verwenden</string>
     <string name="use_amoled_black_description">Reines Schwarz für OLED-Displays</string>
-    <string name="firewall_section">Firewall</string>
     <string name="skip_enable_confirmation_description">Nicht fragen, wenn Firewall aktiviert wird</string>
-    <string name="adaptive_mode">Adaptiver Modus</string>
     <string name="working_mode_title">Arbeitsmodus</string>
     <string name="working_mode_summary">Wählen Sie, wie Firewall-Befehle ausgeführt werden</string>
     <string name="working_mode_shizuku">Shizuku</string>
     <string name="working_mode_ladb">LADB</string>
-    <string name="notifications_section">Benachrichtigungen</string>
     <string name="app_monitor_service">Benachrichtigungen für neue Apps</string>
     <string name="app_monitor_service_description">Benachrichtigung anzeigen, wenn eine neue App installiert wird</string>
     <string name="auto_firewall_new_apps">Neue Apps automatisch blockieren</string>
@@ -168,25 +150,20 @@
     <string name="app_monitor_notification_channel_description">Hintergrunddienst zur Überwachung neuer Apps</string>
     <string name="app_installed_notification_channel_name">Neue App installiert</string>
     <string name="app_installed_notification_channel_description">Benachrichtigungen, wenn eine neue App installiert wird</string>
-    <string name="adaptive_mode_description">Regeln sofort anwenden. Firewall bleibt an.</string>
     <string name="skip_error_dialog">Fehlerdialog überspringen</string>
     <string name="skip_error_dialog_description">Keine Warnung bei Fehler anzeigen</string>
     <string name="keep_failed_apps_selected">Fehlgeschlagene Apps ausgewählt lassen</string>
     <string name="keep_failed_apps_selected_description">Apps bei Fehler nicht abwählen</string>
     <string name="auto_enable_on_shizuku_start">Firewall automatisch aktivieren, wenn Shizuku gestartet wird</string>
     <string name="auto_enable_on_shizuku_start_description">Firewall automatisch aktivieren, wenn der Shizuku-Dienst verfügbar wird</string>
-    <string name="appearance_section">Erscheinungsbild</string>
     <string name="font">Schriftart</string>
     <string name="language">Sprache</string>
     <string name="language_system_default">Systemstandard</string>
-    <string name="advanced_section">Erweitert</string>
     <string name="adb_broadcast_usage_description">Schnellübersicht zur Verwendung von adb zur Firewall-Steuerung</string>
-    <string name="data_management_section">Datenverwaltung</string>
     <string name="export_settings">Einstellungen exportieren</string>
     <string name="export_settings_description">Ihre Konfiguration in einer Datei speichern</string>
     <string name="import_settings">Einstellungen importieren</string>
     <string name="import_settings_description">Konfiguration aus einer Datei wiederherstellen</string>
-    <string name="others_section">Sonstiges</string>
     <string name="support_developer_description">Den Entwickler unterstützen</string>
     <string name="github">GitHub</string>
     <string name="github_description">Quellcode anzeigen und beitragen</string>
@@ -272,7 +249,6 @@
     <string name="app_filtering_note">Anwendungen ohne Internetzugriffsberechtigung werden in der Liste nicht angezeigt.</string>
     <string name="failed_to_update_rules_count">Regeln für %d Apps konnten nicht aktualisiert werden</string>
     <string name="failed_to_unblock_count">%d Apps konnten nicht entsperrt werden</string>
-    <string name="all_apps_unselected">Alle Apps abgewählt</string>
     <string name="failed_to_unblock_app">%s konnte nicht entsperrt werden</string>
     <string name="notification_permission_required_title">Benachrichtigungsberechtigung erforderlich</string>
     <string name="notification_permission_required_message">ShizuWall benötigt die Benachrichtigungsberechtigung, um die Kopplungscode-Benachrichtigung anzuzeigen.\n\nOhne diese Berechtigung können Sie den Kopplungscode nicht einfach eingeben.</string>
@@ -296,7 +272,6 @@
     <string name="log_no_pairing_config">Keine Kopplungskonfiguration gefunden, warte auf automatische Erkennung...</string>
     <string name="log_showing_pairing_notif">Zeige Kopplungsbenachrichtigung für Konfiguration: %1$s:%2$d</string>
     <string name="log_logging_enabled">Protokollierung aktiviert</string>
-    <string name="log_setup_initialized">LADB-Setup initialisiert. Aktueller Status: %s</string>
     <string name="log_daemon_already_running">Daemon läuft bereits</string>
     <string name="log_killing_daemon">Beende Daemon über LADB...</string>
     <string name="log_kill_success">Beendigungsbefehl erfolgreich gesendet</string>
@@ -314,7 +289,6 @@
     <string name="log_device_unpaired">Gerät entkoppelt</string>
     <string name="log_logs_cleared">Protokolle gelöscht</string>
     <string name="log_logs_copied">Protokolle in die Zwischenablage kopiert</string>
-    <string name="log_status_updated">Status aktualisiert: %s</string>
 
     <!-- Exit confirmation -->
     <string name="exit_confirm_message">Nochmal drücken zum Beenden</string>
@@ -337,7 +311,6 @@
     
     <string name="focus_tracker_active">Fokus-Tracker: Aktiv</string>
     <string name="focus_tracker_paused">Focus Tracker: Inaktiv</string>
-    <string name="firewall_enabled_smart_foreground">Firewall aktiviert (Smart-Vordergrund-Modus)</string>
     <string name="smart_foreground_active_app">Aktiv: %s</string>
     <string name="enable_firewall_dialog_title">Firewall aktivieren</string>
     <string name="enable_firewall_dialog_message">Möchten Sie die Firewall für die unten aufgeführten %d Apps aktivieren?</string>
@@ -347,8 +320,6 @@
     <string name="select_font">Schriftart auswählen</string>
     <string name="apply">Anwenden</string>
 
-    <string name="accept">Akzeptieren</string>
-    <string name="decline">Ablehnen</string>
     <string name="firewall_mode_whitelist">Ausnahmeliste</string>
     <string name="firewall_mode_whitelist_description">Alle Apps standardmäßig blockieren, ausgewählte Apps erlauben</string>
     <string name="whitelist_info_system_apps_warning">Wenn "System-Apps anzeigen" deaktiviert ist, werden System-Apps im Whitelist-Modus nicht durch die Firewall geschützt.\n\nWenn Sie "System-Apps anzeigen" aktiviert haben und den Whitelist-Modus verwenden, wurde diese Kombination nicht vollständig getestet. Verwenden Sie sie mit Vorsicht.</string>
@@ -379,7 +350,6 @@
     <string name="floating_button_content_description">Firewall umschalten</string>
     <string name="overlay_permission_required">Überlagerungsberechtigung ist für die schwebende Schaltfläche erforderlich</string>
     <string name="scroll_to_top">Nach oben scrollen</string>
-    <string name="retry">Erneut versuchen</string>
     <string name="select">Auswählen</string>
     <string name="select_all_apps_confirm">%d Apps auswählen?</string>
     <string name="apply_root_rules_after_reboot">Firewall-Regeln nach dem Neustart anwenden</string>
@@ -397,22 +367,18 @@
     <string name="ladb_daemon_log_detected_hint">Aktuelle Daemon-Protokolle sind unter Details verfügbar.</string>
     <string name="firewall_reboot_apply_failed_message">Die Firewall-Regeln konnten nach dem Neustart nicht erneut angewendet werden. Tippen Sie, um die App zu öffnen.</string>
 
-    <string name="open_settings">Einstellungen öffnen</string>
     <string name="notification_permission_background_request">Bitte erteilen Sie die Berechtigung, weiterhin im Hintergrund ausgeführt zu werden.</string>
 
     <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">Bildschirmsperre-Modus (Dienst)</string>
-    <string name="adb_broadcast_quick_reference">Kurzübersicht mit kopierfertigen Werten und Befehlen.</string>
     <string name="screen_lock_delay_title">Sperrverzögerung</string>
     <string name="screen_lock_mode_notification_text">Überwachung von Sperren/Entsperren zur Anwendung von Firewall-Regeln</string>
     <string name="firewall_mode_screen_lock_description">Ausgewählte Apps bei Sperrung blockieren, bei Entsperrung freigeben</string>
     <string name="screen_lock_delay_value">Nach %1$d Sekunden Sperre aktivieren</string>
     <string name="firewall_mode_screen_lock">Bildschirmsperre-Modus</string>
     <string name="screen_lock_mode_notification_title">Bildschirmsperre-Modus</string>
-    <string name="increase">Vergrößern</string>
     <string name="screen_lock_mode_operation_failed">Bildschirmsperre-Modus-Vorgang fehlgeschlagen</string>
     <string name="screen_lock_mode_notification_channel_description">Hintergrunddienst für Bildschirmsperren-Automatisierung</string>
-    <string name="decrease">Verkleinern</string>
     <string name="screen_lock_delay_dialog_title">Bildschirmsperren-Verzögerung</string>
 
     <!-- Floating Button Personalization -->

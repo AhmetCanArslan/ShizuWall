@@ -8,16 +8,11 @@
     <string name="settings_category_backend_desc">Shizuku, LADB, Root</string>
     <string name="settings_category_notifications_title">Oznámení a plovoucí tlačítko</string>
     <string name="settings_category_notifications_desc">Sledování, upozornění, plovoucí tlačítko</string>
-    <string name="settings_category_backup_title">Záloha</string>
-    <string name="settings_category_backup_desc">Exportujte nebo importujte nastavení</string>
-    <string name="settings_category_about_title">O aplikaci a podpora</string>
-    <string name="settings_category_about_desc">Verze, odkazy, reset aplikace</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Podpořit</string>
     <string name="show_system_apps">Zobrazit systémové aplikace</string>
     <string name="skip_enable_dialog">Přeskočit potvrzení povolení</string>
-    <string name="github_button_desc">Otevřít GitHub repozitář</string>
     <string name="app_icon_desc">Ikona aplikace</string>
     <string name="app_switch_selected">%1$s, vybráno, %2$s</string>
     <string name="app_switch_unselected">%1$s, nevybráno, %2$s</string>
@@ -33,11 +28,6 @@
     <string name="cat_favorites">Oblíbené</string>
     <string name="made_by">Vytvořil s ❤️ Ahmet Can Arslan</string>
     <string name="reset_app_menu">Resetovat aplikaci</string>
-    <string name="theme_changed_title">Téma změněno</string>
-    <string name="theme_changed_message">Téma bylo aktualizováno. Chcete-li změny použít, restartujte aplikaci.</string>
-    <string name="font_changed_title">Font změněn</string>
-    <string name="font_changed_message">Písmo bylo aktualizováno. Chcete-li změny použít, restartujte aplikaci.</string>
-    <string name="restart_now">Restartovat teď</string>
     <string name="later">Později</string>
     <string name="export_successful">Export úspěšný</string>
     <string name="export_failed">Export selhal: %s</string>
@@ -74,7 +64,6 @@
 
 %2$s (string, volitelné): seznam balíčků oddělených čárkami. Pokud je vynecháno, aplikace použije vybrané balíčky uložené v ShizuWall.</string>
     <string name="ok">OK</string>
-    <string name="adb_broadcast_usage_text" formatted="false">Akce:\n%1$s\n\Komponenta:\n%2$s\n\nExtras:\n\n%3$s (boolean) — true = enable, false = disable\n\n%4$s (string, volitelné) — seznam balíčků oddělených čárkami, se kterými má aplikace pracovat. Pokud je tento parametr vynechán, aplikace se vrátí k uloženým vybraným aplikacím.\n\n\nPříklady:\n\nPovolit bránu firewall pro vybrané aplikace (vybrané v ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nZakázat bránu firewall pro vybrané aplikace (vybrané v ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nPovolit bránu firewall pro konkrétní balíčky (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\nZakázat bránu firewall pro konkrétní balíčky (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\nPoznámky:\n\n- Přijímač je exportován pro automatizaci adb; upřednostňujte explicitní zacílení přijímače (například: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver) abyste předešli externím broadcastům.\n\n- Aby tyto vysílání fungovaly, musí být spuštěna aplikace Shizuku a musí mít oprávnění Shizuku.\n\n- Přijímač používá stejné příkazy jako uživatelské rozhraní (cmd connectivity ...). Používejte s opatrností.</string>
     <string name="no_apps_selected">Žádné aplikace nevybrány</string>
     <string name="shizuku_not_running">Shizuku neběží</string>
     <string name="shizuku_permission_required">Oprávnění Shizuku vyžadováno.</string>
@@ -122,8 +111,6 @@
     <string name="firewall_disabled_no_apps">Firewall je vypnutý (žádné aplikace nejsou vybrány)</string>
     <string name="none_selected_apps_installed">Žádná z vybraných aplikací není nainstalována. Přerušuji.</string>
     <string name="selected_apps_not_installed">%d vybraných aplikací není nainstalováno a bylo ignorováno.</string>
-    <string name="firewall_enabled_for_apps">Firewall aktivován pro %d aplikací</string>
-    <string name="firewall_enabled_adaptive">Firewall aktivován (Adaptivní režim)</string>
     <string name="failed_to_enable_firewall">Nepodařilo se povolit bránu firewall pro žádné aplikace</string>
     <string name="failed_to_disable_firewall">Nepodařilo se deaktivovat bránu firewall pro žádnou aplikaci</string>
     <string name="screen_lock_mode_operation_failed">Operace selhala</string>
@@ -135,8 +122,6 @@
     <string name="no_error_details">Další podrobnosti nejsou k dispozici..</string>
     <string name="close">Zavřít</string>
     <string name="settings_title">Nastavení</string>
-    <string name="display_section">Displej</string>
-    <string name="show_system_apps_description">Zahrnout systémové aplikace do seznamu</string>
     <string name="show_system_apps_uncheck_confirm">Každá vybraná systémová aplikace bude odznačena a obnovena do výchozího stavu. Chcete to zrušit?</string>
     <string name="move_selected_top">Přesunout vybrané aplikace nahoru</string>
     <string name="move_selected_top_description">Zobrazit vybrané aplikace na začátku</string>
@@ -144,10 +129,7 @@
     <string name="use_dynamic_color_description">Použít barvy tapety na motiv aplikace</string>
     <string name="use_amoled_black">Použít AMOLED motiv</string>
     <string name="use_amoled_black_description">Čistě černá pro OLED displeje</string>
-    <string name="firewall_section">Brána firewall</string>
     <string name="skip_enable_confirmation_description">Neptat se při zapínání firewallu</string>
-    <string name="adaptive_mode">Adaptivní režim</string>
-    <string name="adaptive_mode_description">Pravidla se aplikují okamžitě. Firewall zůstává zapnutý.</string>
     <string name="skip_error_dialog">Přeskočit dialog chyby</string>
     <string name="skip_error_dialog_description">Nezobrazovat varování při selhání</string>
     <string name="keep_failed_apps_selected">Nechat neúspěšné aplikace označené</string>
@@ -162,7 +144,6 @@
     <string name="working_mode_ladb">LADB</string>
     <string name="working_mode_root">Root (su)</string>
     <string name="root_not_found_message">Root nenalezen, prosím povolte ShizuWall přístup k rootu.</string>
-    <string name="notifications_section">Oznámení</string>
     <string name="app_monitor_service">Oznámení o nových aplikacích</string>
     <string name="app_monitor_service_description">Zobrazit oznámení při instalaci nové aplikace</string>
     <string name="auto_firewall_new_apps">Automaticky blokovat nové aplikace</string>
@@ -182,18 +163,14 @@
     <string name="app_monitor_notification_channel_description">Služba na pozadí pro monitorování nových aplikací</string>
     <string name="app_installed_notification_channel_name">Nová aplikace nainstalováno</string>
     <string name="app_installed_notification_channel_description">Oznámení při instalaci nové aplikace</string>
-    <string name="appearance_section">Vzhled</string>
     <string name="font">Písmo</string>
     <string name="language">Jazyk</string>
     <string name="language_system_default">Vychozí systémové</string>
-    <string name="advanced_section">Pokročilé</string>
     <string name="adb_broadcast_usage_description">Stručný návod k použití adb pro ovládání brány firewall</string>
-    <string name="data_management_section">Správa dat</string>
     <string name="export_settings">Export nastavení</string>
     <string name="export_settings_description">Uložte svou konfiguraci do souboru</string>
     <string name="import_settings">Import nastavení</string>
     <string name="import_settings_description">Obnovit konfiguraci ze souboru</string>
-    <string name="others_section">Ostatní</string>
     <string name="support_developer_description">Podpořit vývojáře</string>
     <string name="github">GitHub</string>
     <string name="github_description">Zobrazit zdrojový kód a podílet se</string>
@@ -290,7 +267,6 @@
     <string name="app_filtering_note">Aplikace bez oprávnění k přístupu k internetu se v seznamu nezobrazují.</string>
     <string name="failed_to_update_rules_count">Nepodařilo se aktualizovat pravidla pro %d aplikací</string>
     <string name="failed_to_unblock_count">Nepodařilo se odblokovat %d aplikací</string>
-    <string name="all_apps_unselected">Všechny aplikace nezaškrtnuté</string>
     <string name="failed_to_unblock_app">Selhalo odblokování %s</string>
     <string name="notification_permission_required_title">Vyžaduje se povolení k zasílání oznámení</string>
     <string name="notification_permission_required_message">ShizuWall potřebuje oprávnění k zasílání oznámení, aby mohl zobrazit oznámení s párovacím kódem. Bez tohoto oprávnění nebudete moci snadno zadat párovací kód.</string>
@@ -315,7 +291,6 @@
     <string name="log_no_pairing_config">Nebylo nalezeno žádné nastavení párování, čekání na automatické vyhledání...</string>
     <string name="log_showing_pairing_notif">Zobrazení oznámení o párování pro konfiguraci: %1$s:%2$d</string>
     <string name="log_logging_enabled">Logování povoleno</string>
-    <string name="log_setup_initialized">LADB inicializace nastavení. Aktuální stav: %s</string>
     <string name="log_daemon_already_running">Daemon již běží</string>
     <string name="log_killing_daemon">Zastavuji daemon přes LADB...</string>
     <string name="log_kill_success">Příkaz k zastavení úspěšně odeslán</string>
@@ -333,7 +308,6 @@
     <string name="log_device_unpaired">Zařízení odpárováno</string>
     <string name="log_logs_cleared">Logy vymazány</string>
     <string name="log_logs_copied">Logy zkopírovány do schránky</string>
-    <string name="log_status_updated">Status aktualizován: %s</string>
     
     <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">Firewall režim</string>
@@ -376,7 +350,6 @@
     
     <string name="focus_tracker_active">Focus Tracker: Aktivní</string>
     <string name="focus_tracker_paused">Focus Tracker: Neaktivní</string>
-    <string name="firewall_enabled_smart_foreground">Firewall aktivován (režim Inteligentního popředí)</string>
     <string name="smart_foreground_active_app">Aktivní: %s</string>
     <string name="enable_firewall_dialog_title">Povolit Firewall</string>
     <string name="enable_firewall_dialog_message">Chcete povolit bránu firewall pro %d aplikací uvedených níže?</string>
@@ -386,8 +359,6 @@
     <string name="select_font">Vybrat písmo</string>
     <string name="apply">Aplikovat</string>
 
-    <string name="accept">Přijmout</string>
-    <string name="decline">Odmítnout</string>
 
         <!-- Floating Firewall Button -->
     <string name="floating_button">Plovoucí tlačítko firewallu</string>
@@ -398,7 +369,6 @@
     <string name="floating_button_notification_text">Klepnutím na plovoucí tlačítko přepnete firewall</string>
     <string name="floating_button_content_description">Přepnout firewall</string>
     <string name="overlay_permission_required">Pro plovoucí tlačítko je vyžadováno oprávnění k překrytí</string>
-    <string name="retry">Zkusit znovu</string>
     <string name="select">Vybrat</string>
     <string name="select_all_apps_confirm">Vybrat %d aplikací?</string>
     <string name="double_tap_or_long_press">Dvojitým klepnutím vyberete vše, dlouhým stiskem zrušíte výběr všeho</string>
@@ -410,13 +380,9 @@
     <string name="screen_lock_mode_notification_channel_description">Služba na pozadí pro automatizaci uzamčení</string>
     <string name="screen_lock_mode_notification_title">Režim uzamčení obrazovky</string>
     <string name="screen_lock_mode_notification_text">Sledování uzamčení/odemčení pro aplikaci pravidel</string>
-    <string name="open_settings">Otevřít Nastavení</string>
     <string name="notification_permission_background_request">Udělte prosím oprávnění k běhu na pozadí.</string>
 
     <!-- Auto-added missing translations (English fallback) -->
-    <string name="decrease">Zmenšit</string>
-    <string name="adb_broadcast_quick_reference">Stručná referenční příručka s připravenými příkazy.</string>
-    <string name="increase">Zvětšit</string>
 
     <!-- Floating Button Personalization -->
     <string name="floating_settings_title">Floating Button</string>

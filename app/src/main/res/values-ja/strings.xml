@@ -8,16 +8,11 @@
     <string name="settings_category_backend_desc">Shizuku、LADB、Root</string>
     <string name="settings_category_notifications_title">通知とフローティングボタン</string>
     <string name="settings_category_notifications_desc">監視、アラート、オーバーレイボタン</string>
-    <string name="settings_category_backup_title">バックアップ</string>
-    <string name="settings_category_backup_desc">設定のエクスポートまたはインポート</string>
-    <string name="settings_category_about_title">アプリ情報とサポート</string>
-    <string name="settings_category_about_desc">バージョン、リンク、アプリのリセット</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">寄付</string>
     <string name="show_system_apps">システムアプリを表示</string>
     <string name="skip_enable_dialog">確認ダイアログをスキップ</string>
-    <string name="github_button_desc">GitHubリポジトリを開く</string>
     <string name="app_icon_desc">アプリのアイコン</string>
     <string name="app_switch_selected">%1$s、選択済み、%2$s</string>
     <string name="app_switch_unselected">%1$s、未選択、%2$s</string>
@@ -32,11 +27,6 @@
     <string name="cat_favorites">お気に入り</string>
     <string name="made_by">Made with ❤️ by Ahmet Can Arslan</string>
     <string name="reset_app_menu">アプリをリセット</string>
-    <string name="theme_changed_title">テーマが変更されました</string>
-    <string name="theme_changed_message">テーマが更新されました。変更を適用するには、アプリを再起動してください。</string>
-    <string name="font_changed_title">フォントが変更されました</string>
-    <string name="font_changed_message">フォントが更新されました。変更を適用するには、アプリを再起動してください。</string>
-    <string name="restart_now">今すぐ再起動</string>
     <string name="later">後で</string>
     <string name="export_successful">エクスポートに成功しました</string>
     <string name="export_failed">エクスポートに失敗しました: %s</string>
@@ -71,7 +61,6 @@
 
 %2$s (string, オプション): カンマ区切りのパッケージ一覧。省略した場合、アプリは ShizuWall に保存された選択済みパッケージを使用します。</string>
     <string name="ok">OK</string>
-    <string name="adb_broadcast_usage_text" formatted="false">アクション:\n%1$s\n\nコンポーネント:\n%2$s\n\n拡張機能（Extras）:\n\n%3$s (boolean) — true = 有効, false = 無効\n\n%4$s (string, オプション) — 操作対象のパッケージリスト（カンマ区切り）。省略した場合、アプリで保存された選択済みアプリが使用されます。\n\n\n例:\n\n（ShizuWallで）選択したアプリのファイアウォールを有効にする:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\n（ShizuWallで）選択したアプリのファイアウォールを無効にする:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\n特定のパッケージ（CSV）のファイアウォールを有効にする:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n特定のパッケージ（CSV）のファイアウォールを無効にする:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\n注意:\n\n- レシーバーは ADB 自動化用に公開されています。外部のブロードキャストを避けるため、明示的にレシーバーを指定すること（例: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver）をお勧めします。\n\n- これらのブロードキャストを成功させるには、Shizuku が実行されており、アプリに Shizuku の権限が付与されている必要があります。\n\n- レシーバーは UI と同じコマンド（cmd connectivity ...）を適用します。慎重に使用してください。</string>
     <string name="no_apps_selected">アプリが選択されていません</string>
     <string name="shizuku_not_running">Shizuku が実行されていません</string>
     <string name="shizuku_permission_required">Shizuku の権限が必要です</string>
@@ -119,8 +108,6 @@
     <string name="firewall_disabled_no_apps">ファイアウォールが無効になりました（アプリが選択されていません）</string>
     <string name="none_selected_apps_installed">選択されたアプリはいずれもインストールされていません。中止します。</string>
     <string name="selected_apps_not_installed">%d 個の選択されたアプリはインストールされておらず、無視されました。</string>
-    <string name="firewall_enabled_for_apps">%d 個のアプリでファイアウォールが有効になりました</string>
-    <string name="firewall_enabled_adaptive">ファイアウォールが有効になりました (アダプティブモード)</string>
     <string name="failed_to_enable_firewall">アプリのファイアウォール有効化に失敗しました</string>
     <string name="failed_to_disable_firewall">アプリのファイアウォール無効化に失敗しました</string>
     <string name="operation_failed_for_apps">%d 個のアプリで操作に失敗しました</string>
@@ -131,8 +118,6 @@
     <string name="no_error_details">利用可能な追加の詳細情報はありません。</string>
     <string name="close">閉じる</string>
     <string name="settings_title">設定</string>
-    <string name="display_section">表示</string>
-    <string name="show_system_apps_description">リストにシステムアプリケーションを含める</string>
     <string name="show_system_apps_uncheck_confirm">選択中のシステムアプリはすべて選択解除され、既定の状態に戻ります。チェックを外しますか？</string>
     <string name="move_selected_top">選択したアプリを先頭に移動</string>
     <string name="move_selected_top_description">選択したアプリをリストの最初に表示する</string>
@@ -140,10 +125,7 @@
     <string name="use_dynamic_color_description">壁紙の色をアプリのテーマに適用する</string>
     <string name="use_amoled_black">AMOLEDテーマを使用</string>
     <string name="use_amoled_black_description">OLED画面向けの純粋な黒</string>
-    <string name="firewall_section">ファイアウォール</string>
     <string name="skip_enable_confirmation_description">ファイアウォール有効化時に確認しない</string>
-    <string name="adaptive_mode">アダプティブモード</string>
-    <string name="adaptive_mode_description">ルールを即座に適用します。ファイアウォールはオンのままです。</string>
     <string name="skip_error_dialog">エラーダイアログをスキップ</string>
     <string name="skip_error_dialog_description">失敗時に警告を表示しない</string>
     <string name="keep_failed_apps_selected">失敗したアプリの選択を維持</string>
@@ -154,7 +136,6 @@
     <string name="working_mode_summary">ファイアウォールコマンドの実行方法を選択</string>
     <string name="working_mode_shizuku">Shizuku</string>
     <string name="working_mode_ladb">LADB (ベータ)</string>
-    <string name="notifications_section">通知</string>
     <string name="app_monitor_service">新しいアプリの通知</string>
     <string name="app_monitor_service_description">新しいアプリがインストールされたときに通知を表示する</string>
     <string name="auto_firewall_new_apps">新しいアプリを自動ブロック</string>
@@ -174,18 +155,14 @@
     <string name="app_monitor_notification_channel_description">新しいアプリを監視するためのバックグラウンドサービス</string>
     <string name="app_installed_notification_channel_name">新規アプリインストール</string>
     <string name="app_installed_notification_channel_description">新しいアプリがインストールされたときの通知</string>
-    <string name="appearance_section">外観</string>
     <string name="font">フォント</string>
     <string name="language">言語</string>
     <string name="language_system_default">システムのデフォルト</string>
-    <string name="advanced_section">高度な設定</string>
     <string name="adb_broadcast_usage_description">adb を使用したファイアウォール制御のクイックガイド</string>
-    <string name="data_management_section">データ管理</string>
     <string name="export_settings">設定をエクスポート</string>
     <string name="export_settings_description">設定をファイルに保存する</string>
     <string name="import_settings">設定をインポート</string>
     <string name="import_settings_description">ファイルから設定を復元する</string>
-    <string name="others_section">その他</string>
     <string name="support_developer_description">開発者を支援する</string>
     <string name="github">GitHub</string>
     <string name="github_description">ソースコードの表示と貢献</string>
@@ -274,7 +251,6 @@
     <string name="app_filtering_note">インターネットアクセス権限のないアプリは一覧に表示されません。</string>
     <string name="failed_to_update_rules_count">%d 個のアプリのルールの更新に失敗しました</string>
     <string name="failed_to_unblock_count">%d 個のアプリのブロック解除に失敗しました</string>
-    <string name="all_apps_unselected">すべてのアプリの選択が解除されました</string>
     <string name="failed_to_unblock_app">%s のブロック解除に失敗しました</string>
     <string name="notification_permission_required_title">通知の権限が必要です</string>
     <string name="notification_permission_required_message">ShizuWall がペアリングコードの通知を表示するには、通知の権限が必要です。\n\nこの権限がないと、ペアリングコードの入力が困難になります。</string>
@@ -298,7 +274,6 @@
     <string name="log_no_pairing_config">ペアリング構成が見つかりません。自動検出を待機しています...</string>
     <string name="log_showing_pairing_notif">構成のペアリング通知を表示しています: %1$s:%2$d</string>
     <string name="log_logging_enabled">ロギングが有効になりました</string>
-    <string name="log_setup_initialized">LADB セットアップが初期化されました。現在のステータス: %s</string>
     <string name="log_daemon_already_running">デーモンはすでに実行されています</string>
     <string name="log_killing_daemon">LADB 経由でデーモンを停止しています...</string>
     <string name="log_kill_success">停止コマンドが正常に送信されました</string>
@@ -316,7 +291,6 @@
     <string name="log_device_unpaired">デバイスのペアリングが解除されました</string>
     <string name="log_logs_cleared">ログが消去されました</string>
     <string name="log_logs_copied">ログがクリップボードにコピーされました</string>
-    <string name="log_status_updated">ステータスが更新されました: %s</string>
 
     <!-- Exit confirmation -->
     <string name="exit_confirm_message">もう一度押すと終了します</string>
@@ -339,7 +313,6 @@
     
     <string name="focus_tracker_active">フォーカス・トラッカー：有効</string>
     <string name="focus_tracker_paused">フォーカス・トラッカー：非アクティブ</string>
-    <string name="firewall_enabled_smart_foreground">ファイアウォールが有効になりました (スマートフォアグラウンドモード)</string>
     <string name="smart_foreground_active_app">アクティブ: %s</string>
     <string name="enable_firewall_dialog_title">ファイアウォールを有効にする</string>
     <string name="enable_firewall_dialog_message">以下の %d 個のアプリに対してファイアウォールを有効にしますか？</string>
@@ -349,8 +322,6 @@
     <string name="select_font">フォントを選択</string>
     <string name="apply">適用</string>
 
-    <string name="accept">受け入れる</string>
-    <string name="decline">拒否</string>
     <string name="firewall_mode_whitelist">ホワイトリスト</string>
     <string name="firewall_mode_whitelist_description">デフォルトですべてのアプリをブロックし、選択されたアプリを許可</string>
     <string name="whitelist_info_system_apps_warning">"システムアプリを表示"が無効の場合、ホワイトリストモードでシステムアプリはファイアウォールの対象になりません。\n\n"システムアプリを表示"を有効にしてホワイトリストモードを使用している場合、この組み合わせは十分にテストされていません。注意して使用してください。</string>
@@ -381,7 +352,6 @@
     <string name="floating_button_content_description">ファイアウォールを切り替え</string>
     <string name="overlay_permission_required">フローティングボタンにはオーバーレイ権限が必要です</string>
     <string name="scroll_to_top">一番上へスクロール</string>
-    <string name="retry">再試行</string>
     <string name="select">選択</string>
     <string name="select_all_apps_confirm">%d 個のアプリを選択しますか？</string>
     <string name="apply_root_rules_after_reboot">再起動後にファイアウォールルールを適用</string>
@@ -399,22 +369,18 @@
     <string name="ladb_daemon_log_detected_hint">最近のデーモンログは 詳細 で確認できます。</string>
     <string name="firewall_reboot_apply_failed_message">再起動後にファイアウォールルールを再適用できませんでした。タップしてアプリを開いてください。</string>
 
-    <string name="open_settings">設定を開く</string>
     <string name="notification_permission_background_request">バックグラウンドで実行し続けるには権限を付与してください。</string>
 
     <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">画面ロックモード (サービス)</string>
-    <string name="adb_broadcast_quick_reference">コピー可能な値とコマンドのクイックリファレンス。</string>
     <string name="screen_lock_delay_title">ロックの遅延</string>
     <string name="screen_lock_mode_notification_text">ファイアウォールルールを適用するためのロック監視</string>
     <string name="firewall_mode_screen_lock_description">ロック時に選択されたアプリをブロック</string>
     <string name="screen_lock_delay_value">ロックの %1$d 秒後に有効化</string>
     <string name="firewall_mode_screen_lock">画面ロックモード</string>
     <string name="screen_lock_mode_notification_title">画面ロックモード</string>
-    <string name="increase">増加</string>
     <string name="screen_lock_mode_operation_failed">操作に失敗しました</string>
     <string name="screen_lock_mode_notification_channel_description">画面ロック自動化のためのバックグラウンドサービス</string>
-    <string name="decrease">減少</string>
     <string name="screen_lock_delay_dialog_title">画面ロックの遅延</string>
 
     <!-- Floating Button Personalization -->

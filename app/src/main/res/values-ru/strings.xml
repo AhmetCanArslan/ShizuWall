@@ -8,16 +8,11 @@
     <string name="settings_category_backend_desc">Shizuku, LADB, Root</string>
     <string name="settings_category_notifications_title">Уведомления и плавающая кнопка</string>
     <string name="settings_category_notifications_desc">Мониторинг, оповещения, плавающая кнопка</string>
-    <string name="settings_category_backup_title">Резервная копия</string>
-    <string name="settings_category_backup_desc">Экспорт или импорт настроек</string>
-    <string name="settings_category_about_title">О приложении и поддержка</string>
-    <string name="settings_category_about_desc">Версия, ссылки, сброс приложения</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Пожертвовать</string>
     <string name="show_system_apps">Показать системные приложения</string>
     <string name="skip_enable_dialog">Пропустить подтверждение включения</string>
-    <string name="github_button_desc">Открыть репозиторий GitHub</string>
     <string name="app_icon_desc">Иконка приложения</string>
     <string name="app_switch_selected">%1$s, выбрано, %2$s</string>
     <string name="app_switch_unselected">%1$s, не выбрано, %2$s</string>
@@ -32,11 +27,6 @@
     <string name="cat_favorites">Избранное</string>
     <string name="made_by">Сделано с ❤️ Ахметом Джаном Арсланом</string>
     <string name="reset_app_menu">Сбросить приложение</string>
-    <string name="theme_changed_title">Тема изменена</string>
-    <string name="theme_changed_message">Тема была обновлена. Пожалуйста, перезапустите приложение, чтобы применить изменения.</string>
-    <string name="font_changed_title">Шрифт изменен</string>
-    <string name="font_changed_message">Шрифт был обновлен. Пожалуйста, перезапустите приложение, чтобы применить изменения.</string>
-    <string name="restart_now">Перезагрузить сейчас</string>
     <string name="later">Позже</string>
     <string name="export_successful">Экспорт прошел успешно</string>
     <string name="export_failed">Ошибка экспорта: %s</string>
@@ -71,7 +61,6 @@
 
 %2$s (string, необязательно): список пакетов через запятую. Если не указано, приложение использует выбранные пакеты, сохраненные в ShizuWall.</string>
     <string name="ok">ОК</string>
-    <string name="adb_broadcast_usage_text" formatted="false">Действие:\n%1$s\n\nКомпонент:\n%2$s\n\nДополнительно:\n\n%3$s (boolean) — true = включить, false = выключить\n\n%4$s (string, необязательно) — список пакетов через запятую. Если пропущено, приложение использует сохраненные выбранные приложения.\n\n\nПримеры:\n\nВключить брандмауэр для выбранных (в ShizuWall) приложений:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nВыключить брандмауэр для выбранных (в ShizuWall) приложений:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nВключить брандмауэр для определенных пакетов (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\nВыключить брандмауэр для определенных пакетов (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\nПримечания:\n\n- Слушатель (receiver) экспортирован для автоматизации ADB; предпочтительно указывать его явно (например: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver), чтобы избежать внешних трансляций.\n\n- Shizuku должен быть запущен, и у приложения должно быть разрешение Shizuku для успешной работы этих трансляций.\n\n- Слушатель применяет те же команды, что и интерфейс (cmd connectivity ...). Используйте с осторожностью.</string>
     <string name="no_apps_selected">Приложения не выбраны</string>
     <string name="shizuku_not_running">Shizuku не запущен</string>
     <string name="shizuku_permission_required">Требуется разрешение Shizuku</string>
@@ -119,8 +108,6 @@
     <string name="firewall_disabled_no_apps">Брандмауэр отключен (приложения не выбраны)</string>
     <string name="none_selected_apps_installed">Ни одно из выбранных приложений не установлено. Отмена.</string>
     <string name="selected_apps_not_installed">%d выбранных приложений не установлены и были проигнорированы.</string>
-    <string name="firewall_enabled_for_apps">Брандмауэр активирован для %d приложений</string>
-    <string name="firewall_enabled_adaptive">Брандмауэр активирован (Адаптивный режим)</string>
     <string name="failed_to_enable_firewall">Не удалось включить брандмауэр ни для одного приложения</string>
     <string name="failed_to_disable_firewall">Не удалось отключить брандмауэр ни для одного приложения</string>
     <string name="operation_failed_for_apps">Операция не удалась для %d приложений</string>
@@ -131,8 +118,6 @@
     <string name="no_error_details">Дополнительные сведения отсутствуют.</string>
     <string name="close">Закрыть</string>
     <string name="settings_title">Настройки</string>
-    <string name="display_section">Отображение</string>
-    <string name="show_system_apps_description">Включать системные приложения в список</string>
     <string name="show_system_apps_uncheck_confirm">Любое выбранное системное приложение будет снято с выбора и возвращено в состояние по умолчанию. Снять флажок?</string>
     <string name="move_selected_top">Переместить выбранные вверх</string>
     <string name="move_selected_top_description">Показывать выбранные приложения в начале списка</string>
@@ -140,10 +125,7 @@
     <string name="use_dynamic_color_description">Применять цвета обоев к теме приложения</string>
     <string name="use_amoled_black">Использовать AMOLED-тему</string>
     <string name="use_amoled_black_description">Чистый черный для OLED-экранов</string>
-    <string name="firewall_section">Брандмауэр</string>
     <string name="skip_enable_confirmation_description">Не спрашивать при включении брандмауэра</string>
-    <string name="adaptive_mode">Адаптивный режим</string>
-    <string name="adaptive_mode_description">Применять правила мгновенно. Брандмауэр остается включенным.</string>
     <string name="skip_error_dialog">Пропускать диалог ошибки</string>
     <string name="skip_error_dialog_description">Не показывать предупреждение при сбое</string>
     <string name="keep_failed_apps_selected">Сохранять выделение для приложений со сбоем</string>
@@ -154,7 +136,6 @@
     <string name="working_mode_summary">Выберите, как выполняются команды брандмауэра</string>
     <string name="working_mode_shizuku">Shizuku</string>
     <string name="working_mode_ladb">LADB (Бета)</string>
-    <string name="notifications_section">Уведомления</string>
     <string name="app_monitor_service">Уведомления о новых приложениях</string>
     <string name="app_monitor_service_description">Показывать уведомление при установке нового приложения</string>
     <string name="auto_firewall_new_apps">Автоматически блокировать новые приложения</string>
@@ -174,18 +155,14 @@
     <string name="app_monitor_notification_channel_description">Фоновый сервис для мониторинга новых приложений</string>
     <string name="app_installed_notification_channel_name">Установлено новое приложение</string>
     <string name="app_installed_notification_channel_description">Уведомления при установке нового приложения</string>
-    <string name="appearance_section">Внешний вид</string>
     <string name="font">Шрифт</string>
     <string name="language">Язык</string>
     <string name="language_system_default">Системный по умолчанию</string>
-    <string name="advanced_section">Расширенные настройки</string>
     <string name="adb_broadcast_usage_description">Краткое руководство по использованию adb для управления брандмауэром</string>
-    <string name="data_management_section">Управление данными</string>
     <string name="export_settings">Экспорт настроек</string>
     <string name="export_settings_description">Сохранить конфигурацию в файл</string>
     <string name="import_settings">Импорт настроек</string>
     <string name="import_settings_description">Восстановить конфигурацию из файла</string>
-    <string name="others_section">Прочее</string>
     <string name="support_developer_description">Поддержать разработчика</string>
     <string name="github">GitHub</string>
     <string name="github_description">Просмотреть исходный код и внести вклад</string>
@@ -274,7 +251,6 @@
         <string name="app_filtering_note">Приложения без разрешения на доступ к Интернету не отображаются в списке.</string>
     <string name="failed_to_update_rules_count">Не удалось обновить правила для %d приложений</string>
     <string name="failed_to_unblock_count">Не удалось разблокировать %d приложений</string>
-    <string name="all_apps_unselected">Выделение со всех приложений снято</string>
     <string name="failed_to_unblock_app">Не удалось разблокировать %s</string>
     <string name="notification_permission_required_title">Требуется разрешение на уведомления</string>
     <string name="notification_permission_required_message">ShizuWall требуется разрешение на уведомления для отображения уведомления о коде сопряжения.\n\nБез этого разрешения вы не сможете легко ввести код сопряжения.</string>
@@ -298,7 +274,6 @@
     <string name="log_no_pairing_config">Конфигурация сопряжения не найдена, ожидание автоматического обнаружения...</string>
     <string name="log_showing_pairing_notif">Отображение уведомления о сопряжении для конфигурации: %1$s:%2$d</string>
     <string name="log_logging_enabled">Ведение логов включено</string>
-    <string name="log_setup_initialized">Настройка LADB инициализирована. Текущий статус: %s</string>
     <string name="log_daemon_already_running">Демон уже запущен</string>
     <string name="log_killing_daemon">Остановка демона через LADB...</string>
     <string name="log_kill_success">Команда остановки успешно отправлена</string>
@@ -316,7 +291,6 @@
     <string name="log_device_unpaired">Связь с устройством разорвана</string>
     <string name="log_logs_cleared">Логи очищены</string>
     <string name="log_logs_copied">Логи скопированы в буфер обмена</string>
-    <string name="log_status_updated">Статус обновлен: %s</string>
 
     <!-- Exit confirmation -->
     <string name="exit_confirm_message">Нажмите назад ещё раз для выхода</string>
@@ -339,7 +313,6 @@
 
     <string name="focus_tracker_active">Отслеживание фокуса: Активно</string>
     <string name="focus_tracker_paused">Отслеживание фокуса: Неактивно</string>
-    <string name="firewall_enabled_smart_foreground">Брандмауэр активирован (Режим умного переднего плана)</string>
     <string name="smart_foreground_active_app">Активно: %s</string>
     <string name="enable_firewall_dialog_title">Включить брандмауэр</string>
     <string name="enable_firewall_dialog_message">Вы хотите включить брандмауэр для %d приложений, перечисленных ниже?</string>
@@ -349,8 +322,6 @@
     <string name="select_font">Выбрать шрифт</string>
     <string name="apply">Применить</string>
 
-    <string name="accept">Принять</string>
-    <string name="decline">Отклонить</string>
     <string name="firewall_mode_whitelist">Белый список</string>
     <string name="firewall_mode_whitelist_description">Блокировать все приложения по умолчанию, разрешить выбранные приложения</string>
     <string name="whitelist_info_system_apps_warning">Когда "Показать системные приложения" отключено, системные приложения не будут заблокированы брандмауэром в режиме Белого списка.\n\nЕсли вы включили "Показать системные приложения" и используете режим Белого списка, эта комбинация не была полностью протестирована. Используйте с осторожностью.</string>
@@ -381,7 +352,6 @@
     <string name="floating_button_content_description">Переключить брандмауэр</string>
     <string name="overlay_permission_required">Для плавающей кнопки требуется разрешение на отображение поверх других окон</string>
     <string name="scroll_to_top">Прокрутить вверх</string>
-    <string name="retry">Повторить</string>
     <string name="select">Выбрать</string>
     <string name="select_all_apps_confirm">Выбрать %d приложений?</string>
     <string name="apply_root_rules_after_reboot">Применять правила брандмауэра после перезагрузки</string>
@@ -399,22 +369,18 @@
     <string name="ladb_daemon_log_detected_hint">Недавние журналы демона доступны в разделе Детали.</string>
     <string name="firewall_reboot_apply_failed_message">Не удалось повторно применить правила брандмауэра после перезагрузки. Нажмите, чтобы открыть приложение.</string>
 
-    <string name="open_settings">Открыть настройки</string>
     <string name="notification_permission_background_request">Пожалуйста, предоставьте разрешение для продолжения работы в фоновом режиме.</string>
 
     <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">Режим блокировки экрана (Сервис)</string>
-    <string name="adb_broadcast_quick_reference">Краткий справочник с командами для копирования.</string>
     <string name="screen_lock_delay_title">Задержка блокировки</string>
     <string name="screen_lock_mode_notification_text">Мониторинг блокировки/разблокировки для применения правил брандмауэра</string>
     <string name="firewall_mode_screen_lock_description">Блокировать выбранные приложения при блокировке экрана</string>
     <string name="screen_lock_delay_value">Включить через %1$d секунд после блокировки</string>
     <string name="firewall_mode_screen_lock">Режим блокировки экрана</string>
     <string name="screen_lock_mode_notification_title">Режим блокировки экрана</string>
-    <string name="increase">Увеличить</string>
     <string name="screen_lock_mode_operation_failed">Ошибка режима блокировки экрана</string>
     <string name="screen_lock_mode_notification_channel_description">Фоновый сервис автоматизации блокировки</string>
-    <string name="decrease">Уменьшить</string>
     <string name="screen_lock_delay_dialog_title">Задержка блокировки экрана</string>
 
     <!-- Floating Button Personalization -->

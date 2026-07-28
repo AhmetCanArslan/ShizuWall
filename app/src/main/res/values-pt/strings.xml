@@ -9,16 +9,11 @@
     <string name="settings_category_backend_desc">Shizuku, LADB, Root</string>
     <string name="settings_category_notifications_title">Notificações e botão flutuante</string>
     <string name="settings_category_notifications_desc">Monitoramento, alertas, botão flutuante</string>
-    <string name="settings_category_backup_title">Backup</string>
-    <string name="settings_category_backup_desc">Exporte ou importe suas configurações</string>
-    <string name="settings_category_about_title">Sobre e suporte</string>
-    <string name="settings_category_about_desc">Versão, links, redefinir app</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Doar</string>
     <string name="show_system_apps">Mostrar apps do sistema</string>
     <string name="skip_enable_dialog">Pular confirmação de ativação</string>
-    <string name="github_button_desc">Abrir repositório GitHub</string>
     <string name="app_icon_desc">Ícone do app</string>
     <string name="app_switch_selected">%1$s, selecionado, %2$s</string>
     <string name="app_switch_unselected">%1$s, não selecionado, %2$s</string>
@@ -33,11 +28,6 @@
     <string name="cat_favorites">Favoritos</string>
     <string name="made_by">Feito com ❤️ por Ahmet Can Arslan</string>
     <string name="reset_app_menu">Redefinir App</string>
-    <string name="theme_changed_title">Tema Alterado</string>
-    <string name="theme_changed_message">O tema foi atualizado. Por favor, reinicie o app para aplicar as mudanças.</string>
-    <string name="font_changed_title">Fonte Alterada</string>
-    <string name="font_changed_message">A fonte foi atualizada. Por favor, reinicie o app para aplicar as mudanças.</string>
-    <string name="restart_now">Reiniciar Agora</string>
     <string name="later">Mais Tarde</string>
     <string name="export_successful">Exportação bem-sucedida</string>
     <string name="export_failed">Exportação falhou: %s</string>
@@ -72,7 +62,6 @@
 
 %2$s (string, opcional): lista de pacotes separada por vírgulas. Se omitido, o app usa os pacotes selecionados salvos no ShizuWall.</string>
     <string name="ok">OK</string>
-    <string name="adb_broadcast_usage_text" formatted="false">Action:\n%1$s\n\nComponent:\n%2$s\n\nExtras:\n\n%3$s (boolean) — true = enable, false = disable\n\n%4$s (string, optional) — comma-separated package list to operate on. If omitted, app falls back to saved selected apps.\n\n\nExamples:\n\nEnable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nDisable firewall for selected (selected in ShizuWall) apps:\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nEnable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s "com.example.app1,com.example.app2"\n\nDisable firewall for specific packages (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s "com.example.app1,com.example.app2"\n\n\nNotes:\n\n- The receiver is exported for adb automation; prefer targeting the receiver explicitly (for example: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver) to avoid external broadcasts.\n\n- Shizuku must be running and the app must have Shizuku permission for these broadcasts to succeed.\n\n- The receiver applies the same commands as the UI (cmd connectivity ...). Use with care.</string>
     <string name="no_apps_selected">Nenhum app selecionado</string>
     <string name="shizuku_not_running">Shizuku não está rodando</string>
     <string name="shizuku_permission_required">Permissão Shizuku necessária</string>
@@ -120,8 +109,6 @@
     <string name="firewall_disabled_no_apps">Firewall desabilitado (nenhum app selecionado)</string>
     <string name="none_selected_apps_installed">Nenhum dos apps selecionados está instalado. Abortando.</string>
     <string name="selected_apps_not_installed">%d apps selecionados não estão instalados e foram ignorados.</string>
-    <string name="firewall_enabled_for_apps">Firewall ativado para %d apps</string>
-    <string name="firewall_enabled_adaptive">Firewall ativado (Modo Adaptativo)</string>
     <string name="failed_to_enable_firewall">Falha ao ativar firewall para qualquer app</string>
     <string name="failed_to_disable_firewall">Falha ao desativar firewall para qualquer app</string>
     <string name="operation_failed_for_apps">Operação falhou para %d apps</string>
@@ -132,8 +119,6 @@
     <string name="no_error_details">Não há detalhes adicionais disponíveis.</string>
     <string name="close">Fechar</string>
     <string name="settings_title">Configurações</string>
-    <string name="display_section">Exibição</string>
-    <string name="show_system_apps_description">Incluir aplicações do sistema na lista</string>
     <string name="show_system_apps_uncheck_confirm">Qualquer aplicação do sistema selecionada será desmarcada e reposta no seu estado predefinido. Deseja desmarcá-la?</string>
     <string name="move_selected_top">Mover apps selecionados para o topo</string>
     <string name="move_selected_top_description">Mostrar apps selecionados no início</string>
@@ -141,14 +126,11 @@
     <string name="use_dynamic_color_description">Aplicar cores do papel de parede ao tema do app</string>
     <string name="use_amoled_black">Usar tema AMOLED</string>
     <string name="use_amoled_black_description">Preto puro para telas OLED</string>
-    <string name="firewall_section">Firewall</string>
     <string name="skip_enable_confirmation_description">Não perguntar ao ativar firewall</string>
-    <string name="adaptive_mode">Modo Adaptativo</string>
     <string name="working_mode_title">Modo de trabalho</string>
     <string name="working_mode_summary">Escolha como os comandos do Firewall são executados</string>
     <string name="working_mode_shizuku">Shizuku</string>
     <string name="working_mode_ladb">LADB</string>
-    <string name="notifications_section">Notificações</string>
     <string name="app_monitor_service">Notificações de Novos Apps</string>
     <string name="app_monitor_service_description">Mostrar uma notificação quando um novo app é instalado</string>
     <string name="auto_firewall_new_apps">Bloquear novos apps automaticamente</string>
@@ -168,25 +150,20 @@
     <string name="app_monitor_notification_channel_description">Serviço em segundo plano para monitorar novos apps</string>
     <string name="app_installed_notification_channel_name">Novo App Instalado</string>
     <string name="app_installed_notification_channel_description">Notificações quando um novo app é instalado</string>
-    <string name="adaptive_mode_description">Aplicar regras instantaneamente. Firewall permanece ligado.</string>
     <string name="skip_error_dialog">Pular diálogo de erro</string>
     <string name="skip_error_dialog_description">Não mostrar aviso em caso de falha</string>
     <string name="keep_failed_apps_selected">Manter apps com falha selecionados</string>
     <string name="keep_failed_apps_selected_description">Não desmarcar apps em caso de falha</string>
     <string name="auto_enable_on_shizuku_start">Ativar firewall automaticamente quando o Shizuku iniciar</string>
     <string name="auto_enable_on_shizuku_start_description">Ative automaticamente o firewall quando o serviço Shizuku ficar disponível</string>
-    <string name="appearance_section">Aparência</string>
     <string name="font">Fonte</string>
     <string name="language">Idioma</string>
     <string name="language_system_default">Padrão do sistema</string>
-    <string name="advanced_section">Avançado</string>
     <string name="adb_broadcast_usage_description">Guia rápido para usar adb para controlar firewall</string>
-    <string name="data_management_section">Gerenciamento de Dados</string>
     <string name="export_settings">Exportar configurações</string>
     <string name="export_settings_description">Salvar sua configuração em um arquivo</string>
     <string name="import_settings">Importar configurações</string>
     <string name="import_settings_description">Restaurar configuração de um arquivo</string>
-    <string name="others_section">Outros</string>
     <string name="support_developer_description">Apoiar o desenvolvedor</string>
     <string name="github">GitHub</string>
     <string name="github_description">Ver código fonte e contribuir</string>
@@ -272,7 +249,6 @@
     <string name="app_filtering_note">Aplicativos sem permissão de acesso à internet não são exibidos na lista.</string>
     <string name="failed_to_update_rules_count">Falha ao atualizar regras para %d apps</string>
     <string name="failed_to_unblock_count">Falha ao desbloquear %d apps</string>
-    <string name="all_apps_unselected">Todos os apps desmarcados</string>
     <string name="failed_to_unblock_app">Falha ao desbloquear %s</string>
     <string name="notification_permission_required_title">Permissão de Notificação Necessária</string>
     <string name="notification_permission_required_message">ShizuWall precisa de permissão de notificação para mostrar a notificação do código de pareamento.\n\nSem esta permissão, você não poderá inserir o código de pareamento facilmente.</string>
@@ -296,7 +272,6 @@
     <string name="log_no_pairing_config">Nenhuma configuração de pareamento encontrada, aguardando descoberta automática...</string>
     <string name="log_showing_pairing_notif">Mostrando notificação de pareamento para a configuração: %1$s:%2$d</string>
     <string name="log_logging_enabled">Registro de logs ativado</string>
-    <string name="log_setup_initialized">Configuração LADB inicializada. Status atual: %s</string>
     <string name="log_daemon_already_running">O daemon já está em execução</string>
     <string name="log_killing_daemon">Parando o daemon via LADB...</string>
     <string name="log_kill_success">Comando de parada enviado com sucesso</string>
@@ -314,7 +289,6 @@
     <string name="log_device_unpaired">Dispositivo despareado</string>
     <string name="log_logs_cleared">Logs limpos</string>
     <string name="log_logs_copied">Logs copiados para a área de transferência</string>
-    <string name="log_status_updated">Status atualizado: %s</string>
 
     <!-- Exit confirmation -->
     <string name="exit_confirm_message">Pressione voltar novamente para sair</string>
@@ -337,7 +311,6 @@
     
     <string name="focus_tracker_active">Monitor de Foco: Ativo</string>
     <string name="focus_tracker_paused">Monitor de Foco: Inativo</string>
-    <string name="firewall_enabled_smart_foreground">Firewall ativado (Modo Primeiro Plano Inteligente)</string>
     <string name="smart_foreground_active_app">Ativo: %s</string>
     <string name="enable_firewall_dialog_title">Ativar Firewall</string>
     <string name="enable_firewall_dialog_message">Você quer ativar o firewall para os %d apps listados abaixo?</string>
@@ -347,8 +320,6 @@
     <string name="select_font">Selecionar fonte</string>
     <string name="apply">Aplicar</string>
 
-    <string name="accept">Aceitar</string>
-    <string name="decline">Recusar</string>
     <string name="firewall_mode_whitelist">Lista branca</string>
     <string name="firewall_mode_whitelist_description">Bloquear todos os apps por padrão, permitir apps selecionados</string>
     <string name="whitelist_info_system_apps_warning">Quando "Mostrar apps do sistema" está desativado, os apps do sistema não serão bloqueados pelo firewall no modo Lista branca.\n\nSe você ativou "Mostrar apps do sistema" e está usando o modo Lista branca, esta combinação não foi totalmente testada. Use com cuidado.</string>
@@ -379,7 +350,6 @@
     <string name="floating_button_content_description">Alternar firewall</string>
     <string name="overlay_permission_required">A permissão de sobreposição é necessária para o botão flutuante</string>
     <string name="scroll_to_top">Rolar para o topo</string>
-    <string name="retry">Tentar novamente</string>
     <string name="select">Selecionar</string>
     <string name="select_all_apps_confirm">Selecionar %d aplicativos?</string>
     <string name="apply_root_rules_after_reboot">Aplicar regras do firewall após reiniciar</string>
@@ -397,22 +367,18 @@
     <string name="ladb_daemon_log_detected_hint">Os logs recentes do daemon estão disponíveis em Detalhes.</string>
     <string name="firewall_reboot_apply_failed_message">Falha ao reaplicar as regras do firewall após reiniciar. Toque para abrir o app.</string>
 
-    <string name="open_settings">Abrir Configurações</string>
     <string name="notification_permission_background_request">Por favor, conceda permissão para continuar executando em segundo plano.</string>
 
     <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">Modo de bloqueio de tela (Serviço)</string>
-    <string name="adb_broadcast_quick_reference">Referência rápida com comandos prontos para copiar.</string>
     <string name="screen_lock_delay_title">Atraso de bloqueio</string>
     <string name="screen_lock_mode_notification_text">Monitorando bloqueio/desbloqueio para regras</string>
     <string name="firewall_mode_screen_lock_description">Bloquear apps selecionados no bloqueio de tela</string>
     <string name="screen_lock_delay_value">Ativar após %1$d segundos de bloqueio</string>
     <string name="firewall_mode_screen_lock">Modo de bloqueio de tela</string>
     <string name="screen_lock_mode_notification_title">Modo de bloqueio de tela</string>
-    <string name="increase">Aumentar</string>
     <string name="screen_lock_mode_operation_failed">Falha na operação de bloqueio</string>
     <string name="screen_lock_mode_notification_channel_description">Serviço para automação de bloqueio</string>
-    <string name="decrease">Diminuir</string>
     <string name="screen_lock_delay_dialog_title">Atraso de bloqueio de tela</string>
 
     <!-- Floating Button Personalization -->

@@ -8,16 +8,11 @@
     <string name="settings_category_backend_desc">Shizuku، LADB، الروت</string>
     <string name="settings_category_notifications_title">الإشعارات والزر العائم</string>
     <string name="settings_category_notifications_desc">المراقبة، التنبيهات، الزر العائم</string>
-    <string name="settings_category_backup_title">النسخ الاحتياطي</string>
-    <string name="settings_category_backup_desc">تصدير أو استيراد إعداداتك</string>
-    <string name="settings_category_about_title">حول والدعم</string>
-    <string name="settings_category_about_desc">الإصدار، الروابط، إعادة الضبط</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">تبرع</string>
     <string name="show_system_apps">إظهار تطبيقات النظام</string>
     <string name="skip_enable_dialog">تخطي تأكيد التفعيل</string>
-    <string name="github_button_desc">فتح مستودع GitHub</string>
     <string name="app_icon_desc">أيقونة التطبيق</string>
     <string name="app_switch_selected">%1$s، محدد، %2$s</string>
     <string name="app_switch_unselected">%1$s، غير محدد، %2$s</string>
@@ -32,11 +27,6 @@
     <string name="cat_favorites">المفضلة</string>
     <string name="made_by">صنع بـ ❤️ بواسطة Ahmet Can Arslan</string>
     <string name="reset_app_menu">إعادة تعيين التطبيق</string>
-    <string name="theme_changed_title">تغير المظهر</string>
-    <string name="theme_changed_message">تم تحديث المظهر. يرجى إعادة تشغيل التطبيق لتطبيق التغييرات.</string>
-    <string name="font_changed_title">تغير الخط</string>
-    <string name="font_changed_message">تم تحديث الخط. يرجى إعادة تشغيل التطبيق لتطبيق التغييرات.</string>
-    <string name="restart_now">إعادة التشغيل الآن</string>
     <string name="later">لاحقاً</string>
     <string name="export_successful">نجح التصدير</string>
     <string name="export_failed">فشل التصدير: %s</string>
@@ -73,7 +63,6 @@
 
 %2$s (string، اختياري): قائمة حزم مفصولة بفاصلة. إذا تم تجاهلها، يستخدم التطبيق الحزم المحددة المحفوظة في ShizuWall.</string>
     <string name="ok">موافق</string>
-    <string name="adb_broadcast_usage_text" formatted="false">الإجراء:\n%1$s\n\nالمكون:\n%2$s\n\nالإضافات:\n\n%3$s (boolean) — true = تفعيل، false = تعطيل\n\n%4$s (string، اختياري) — قائمة حزم مفصولة بفاصلة للعمل عليها. إذا تم حذفها، يعود التطبيق إلى التطبيقات المحددة المحفوظة.\n\n\nأمثلة:\n\nتفعيل الجدار الناري للتطبيقات المختارة (المحددة في ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true\n\n\nتعطيل الجدار الناري للتطبيقات المختارة (المحددة في ShizuWall):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false\n\nتفعيل الجدار الناري لحزم محددة (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s true --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\nتعطيل الجدار الناري لحزم محددة (CSV):\n\nadb shell am broadcast -a %1$s -n %2$s --ez %3$s false --es %4$s &quot;com.example.app1,com.example.app2&quot;\n\n\nملاحظات:\n\n- المستقبل مكشوف لأتمتة adb؛ يفضل استهداف المستقبل بشكل صريح (على سبيل المثال: -n com.arslan.shizuwall/.receivers.FirewallControlReceiver) لتجنب عمليات البث الخارجية.\n\n- يجب تشغيل Shizuku ويجب أن يحصل التطبيق على إذن Shizuku لنجاح عمليات البث هذه.\n\n- يطبق المستقبل نفس الأوامر الموجودة في واجهة المستخدم (cmd connectivity ...). استخدام بحذر.</string>
     <string name="no_apps_selected">لا توجد تطبيقات محددة</string>
     <string name="shizuku_not_running">Shizuku لا يعمل</string>
     <string name="shizuku_permission_required">إذن Shizuku مطلوب</string>
@@ -121,8 +110,6 @@
     <string name="firewall_disabled_no_apps">تم تعطيل الجدار الناري (لم يتم تحديد تطبيقات)</string>
     <string name="none_selected_apps_installed">لا توجد أي من التطبيقات المحددة مثبتة. إلغاء العملية.</string>
     <string name="selected_apps_not_installed">%d تطبيقات محددة ليست مثبتة وتم تجاهلها.</string>
-    <string name="firewall_enabled_for_apps">تم تفعيل الجدار الناري لـ %d تطبيقات</string>
-    <string name="firewall_enabled_adaptive">تم تفعيل الجدار الناري (الوضع التكيفي)</string>
     <string name="failed_to_enable_firewall">فشل تفعيل الجدار الناري لأي تطبيق</string>
     <string name="failed_to_disable_firewall">فشل تعطيل الجدار الناري لأي تطبيق</string>
     <string name="operation_failed_for_apps">فشلت العملية لـ %d تطبيقات</string>
@@ -133,8 +120,6 @@
     <string name="no_error_details">لا توجد تفاصيل إضافية متاحة.</string>
     <string name="close">إغلاق</string>
     <string name="settings_title">الإعدادات</string>
-    <string name="display_section">العرض</string>
-    <string name="show_system_apps_description">تضمين تطبيقات النظام في القائمة</string>
     <string name="show_system_apps_uncheck_confirm">سيتم إلغاء تحديد أي تطبيق نظام محدد وإعادته إلى حالته الافتراضية. هل تريد إلغاء التحديد؟</string>
     <string name="move_selected_top">نقل التطبيقات المحددة للأعلى</string>
     <string name="move_selected_top_description">إظهار التطبيقات المحددة في البداية</string>
@@ -142,10 +127,7 @@
     <string name="use_dynamic_color_description">تطبيق ألوان خلفية الشاشة على مظهر التطبيق</string>
     <string name="use_amoled_black">استخدام سمة AMOLED</string>
     <string name="use_amoled_black_description">أسود نقي لشاشات OLED</string>
-    <string name="firewall_section">الجدار الناري</string>
     <string name="skip_enable_confirmation_description">لا تسأل عند تفعيل الجدار الناري</string>
-    <string name="adaptive_mode">الوضع التكيفي</string>
-    <string name="adaptive_mode_description">تطبيق القواعد فوراً. الجدار الناري سيبقى يعمل.</string>
     <string name="skip_error_dialog">تخطي حوار الخطأ</string>
     <string name="skip_error_dialog_description">عدم إظهار تحذير عند الفشل</string>
     <string name="keep_failed_apps_selected">إبقاء التطبيقات الفاشلة محددة</string>
@@ -156,7 +138,6 @@
     <string name="working_mode_summary">اختر كيفية تنفيذ أوامر الجدار الناري</string>
     <string name="working_mode_shizuku">Shizuku</string>
     <string name="working_mode_ladb">LADB</string>
-    <string name="notifications_section">الإشعارات</string>
     <string name="app_monitor_service">إشعارات التطبيقات الجديدة</string>
     <string name="app_monitor_service_description">إظهار إشعار عند تثبيت تطبيق جديد</string>
     <string name="auto_firewall_new_apps">حظر التطبيقات الجديدة تلقائيًا</string>
@@ -176,18 +157,14 @@
     <string name="app_monitor_notification_channel_description">خدمة خلفية لمراقبة التطبيقات الجديدة</string>
     <string name="app_installed_notification_channel_name">تم تثبيت تطبيق جديد</string>
     <string name="app_installed_notification_channel_description">إشعارات عند تثبيت تطبيق جديد</string>
-    <string name="appearance_section">المظهر</string>
     <string name="font">الخط</string>
     <string name="language">اللغة</string>
     <string name="language_system_default">افتراضي النظام</string>
-    <string name="advanced_section">متقدم</string>
     <string name="adb_broadcast_usage_description">دليل سريع لاستخدام adb للتحكم في الجدار الناري</string>
-    <string name="data_management_section">إدارة البيانات</string>
     <string name="export_settings">تصدير الإعدادات</string>
     <string name="export_settings_description">حفظ الإعدادات الخاصة بك في ملف</string>
     <string name="import_settings">استيراد الإعدادات</string>
     <string name="import_settings_description">استعادة الإعدادات من ملف</string>
-    <string name="others_section">أخرى</string>
     <string name="support_developer_description">دعم المطور</string>
     <string name="github">GitHub</string>
     <string name="github_description">عرض الكود المصدري والمساهمة</string>
@@ -276,7 +253,6 @@
     <string name="failed_to_update_rules_count">فشل تحديث القواعد لـ %d تطبيقات</string>
     <string name="failed_to_unblock_count">فشل إلغاء الحظر لـ %d تطبيقات</string>
         <string name="app_filtering_note">لا يتم عرض التطبيقات التي لا تملك إذن الوصول إلى الإنترنت في القائمة.</string>
-    <string name="all_apps_unselected">تم إلغاء تحديد جميع التطبيقات</string>
     <string name="failed_to_unblock_app">فشل إلغاء حظر %s</string>
     <string name="notification_permission_required_title">إذن الإشعارات مطلوب</string>
     <string name="notification_permission_required_message">يحتاج ShizuWall إلى إذن الإشعارات لإظهار إشعار رمز الإقران.\n\nبدون هذا الإذن، لن تتمكن من إدخال رمز الإقران بسهولة.</string>
@@ -300,7 +276,6 @@
     <string name="log_no_pairing_config">لم يتم العثور على تكوين إقران، في انتظار الاكتشاف التلقائي...</string>
     <string name="log_showing_pairing_notif">عرض إشعار الإقران للتكوين: %1$s:%2$d</string>
     <string name="log_logging_enabled">تم تفعيل التسجيل</string>
-    <string name="log_setup_initialized">تم تهيئة إعداد LADB. الحالة الحالية: %s</string>
     <string name="log_daemon_already_running">الخدمة تعمل بالفعل</string>
     <string name="log_killing_daemon">إيقاف الخدمة عبر LADB...</string>
     <string name="log_kill_success">تم إرسال أمر الإيقاف بنجاح</string>
@@ -318,7 +293,6 @@
     <string name="log_device_unpaired">تم إلغاء إقران الجهاز</string>
     <string name="log_logs_cleared">تم مسح السجلات</string>
     <string name="log_logs_copied">تم نسخ السجلات إلى الحافظة</string>
-    <string name="log_status_updated">تم تحديث الحالة: %s</string>
     
     <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">وضع الجدار الناري</string>
@@ -359,7 +333,6 @@
     
     <string name="focus_tracker_active">متتبع التركيز: نشط</string>
     <string name="focus_tracker_paused">متتبع التركيز: غير نشط</string>
-    <string name="firewall_enabled_smart_foreground">تم تفعيل الجدار الناري (وضع الواجهة الذكية)</string>
     <string name="smart_foreground_active_app">نشط: %s</string>
     <string name="enable_firewall_dialog_title">تفعيل الجدار الناري</string>
     <string name="enable_firewall_dialog_message">هل تريد تفعيل الجدار الناري لـ %d من التطبيقات المدرجة أدناه؟</string>
@@ -368,8 +341,6 @@
     <string name="select_font">اختر الخط</string>
     <string name="apply">تطبيق</string>
 
-    <string name="accept">قبول</string>
-    <string name="decline">رفض</string>
     <string name="do_not_show_again">لا تظهر مرة أخرى</string>
 
     <!-- Floating Firewall Button -->
@@ -382,7 +353,6 @@
     <string name="floating_button_content_description">تغيير حالة الجدار الناري</string>
     <string name="overlay_permission_required">إذن العرض فوق التطبيقات الأخرى مطلوب للزر العائم</string>
     <string name="scroll_to_top">التمرير إلى الأعلى</string>
-    <string name="retry">إعادة المحاولة</string>
     <string name="select">اختيار</string>
     <string name="select_all_apps_confirm">هل تريد اختيار %d تطبيقات؟</string>
     <string name="apply_root_rules_after_reboot">تطبيق قواعد الجدار الناري بعد إعادة التشغيل</string>
@@ -400,22 +370,18 @@
     <string name="ladb_daemon_log_detected_hint">سجلات الخدمة الأخيرة متاحة في قسم التفاصيل.</string>
     <string name="firewall_reboot_apply_failed_message">فشلت إعادة تطبيق قواعد الجدار الناري بعد إعادة التشغيل. اضغط لفتح التطبيق.</string>
 
-    <string name="open_settings">فتح الإعدادات</string>
     <string name="notification_permission_background_request">يرجى منح الإذن للتشغيل في الخلفية.</string>
 
     <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">وضع قفل الشاشة (خدمة)</string>
-    <string name="adb_broadcast_quick_reference">مرجع سريع مع أوامر جاهزة للنسخ.</string>
     <string name="screen_lock_delay_title">تأخير القفل</string>
     <string name="screen_lock_mode_notification_text">مراقبة القفل لتطبيق قواعد جدار الحماية</string>
     <string name="firewall_mode_screen_lock_description">حظر التطبيقات المحددة عند قفل الشاشة</string>
     <string name="screen_lock_delay_value">تفعيل بعد %1$d ثانية من القفل</string>
     <string name="firewall_mode_screen_lock">وضع قفل الشاشة</string>
     <string name="screen_lock_mode_notification_title">وضع قفل الشاشة</string>
-    <string name="increase">زيادة</string>
     <string name="screen_lock_mode_operation_failed">فشلت عملية وضع قفل الشاشة</string>
     <string name="screen_lock_mode_notification_channel_description">خدمة خلفية لأتمتة قفل الشاشة</string>
-    <string name="decrease">تقليل</string>
     <string name="screen_lock_delay_dialog_title">تأخير قفل الشاشة</string>
 
     <!-- Floating Button Personalization -->
