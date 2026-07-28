@@ -416,6 +416,7 @@
     <plurals name="profile_app_count">
         <item quantity="one">%d aplikace</item>
         <item quantity="few">%d aplikace</item>
+        <item quantity="many">%d aplikace</item>
         <item quantity="other">%d aplikací</item>
     </plurals>
     <string name="profile_rename">Přejmenovat</string>

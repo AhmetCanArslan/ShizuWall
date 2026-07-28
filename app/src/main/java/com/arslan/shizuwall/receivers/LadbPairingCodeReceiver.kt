@@ -1,11 +1,14 @@
 package com.arslan.shizuwall.receivers
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.app.PendingIntent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.RemoteInput
 import com.arslan.shizuwall.R
@@ -71,8 +74,12 @@ class LadbPairingCodeReceiver : BroadcastReceiver() {
                 .setContentIntent(contentIntent)
                 .build()
 
-            NotificationManagerCompat.from(context)
-                .notify(NOTIFICATION_ID, notification)
+            val granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+            if (granted) {
+                NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+            }
         }
 
         CoroutineScope(Dispatchers.IO).launch {
