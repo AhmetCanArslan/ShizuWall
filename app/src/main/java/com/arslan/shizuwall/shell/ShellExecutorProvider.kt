@@ -10,10 +10,11 @@ object ShellExecutorProvider {
     fun forContext(context: Context): ShellExecutor {
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         val modeName = prefs.getString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name)
-        return when (WorkingMode.fromName(modeName)) {
+        val executor = when (WorkingMode.fromName(modeName)) {
             WorkingMode.LADB -> DaemonShellExecutor(context)
             WorkingMode.ROOT -> RootShellExecutor()
             else -> ShizukuShellExecutor()
         }
+        return PerUidRoutingExecutor(context, executor)
     }
 }

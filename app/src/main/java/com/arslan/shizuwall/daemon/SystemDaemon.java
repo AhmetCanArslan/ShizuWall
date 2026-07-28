@@ -28,6 +28,8 @@ public class SystemDaemon {
     private static final int MAX_CONCURRENT_COMMANDS = 4;
     private static final int COMMAND_TIMEOUT_SECONDS = 30;
     private static final int MAX_COMMAND_LENGTH = 4096;
+    private static final String FW_UID_RULE_COMMAND = "fw-uid-rule";
+    private static final int FIREWALL_CHAIN_OEM_DENY_3 = 9;
     
     // Blocked dangerous commands
     private static final Set<String> BLOCKED_PATTERNS = new HashSet<>(Arrays.asList(
@@ -60,6 +62,12 @@ public class SystemDaemon {
     }
     
     public static void main(String[] args) {
+        // One-shot mode for root: apply a single firewall rule and exit, no server, no token.
+        if (args != null && args.length == 3 && FW_UID_RULE_COMMAND.equals(args[0])) {
+            System.out.println(setUidFirewallRule(args[0] + " " + args[1] + " " + args[2]));
+            return;
+        }
+
         // Setup shutdown hook for graceful termination
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("SystemDaemon: Shutdown signal received");
@@ -218,6 +226,8 @@ public class SystemDaemon {
             String result;
             if (command.trim().equalsIgnoreCase("ping")) {
                 result = "pong";
+            } else if (command.trim().startsWith(FW_UID_RULE_COMMAND)) {
+                result = setUidFirewallRule(command.trim());
             } else if (command.trim().equalsIgnoreCase("status")) {
                 result = "active:" + activeConnections.get() + ",uptime:" + 
                          (System.currentTimeMillis() / 1000);
@@ -255,6 +265,48 @@ public class SystemDaemon {
             try {
                 socket.close();
             } catch (Exception ignored) {}
+        }
+    }
+
+    /**
+     * Handles "fw-uid-rule &lt;uid&gt; &lt;rule&gt;". Unlike the shell command, the binder API takes
+     * a uid, so a block does not follow the appId into other users. Callable here because the
+     * process runs as shell and app_process leaves non-SDK interfaces reachable.
+     */
+    private static String setUidFirewallRule(String command) {
+        String[] parts = command.split("\\s+");
+        if (parts.length != 3) {
+            return "Error (code 22): usage: " + FW_UID_RULE_COMMAND + " <uid> <rule>";
+        }
+        final int uid;
+        final int rule;
+        try {
+            uid = Integer.parseInt(parts[1]);
+            rule = Integer.parseInt(parts[2]);
+        } catch (NumberFormatException e) {
+            return "Error (code 22): uid and rule must be integers";
+        }
+        try {
+            Object binder = Class.forName("android.os.ServiceManager")
+                    .getMethod("getService", String.class)
+                    .invoke(null, "connectivity");
+            if (binder == null) {
+                return "Error (code 1): connectivity service unavailable";
+            }
+            Object service = Class.forName("android.net.IConnectivityManager$Stub")
+                    .getMethod("asInterface", Class.forName("android.os.IBinder"))
+                    .invoke(null, binder);
+            if (service == null) {
+                return "Error (code 1): could not bind IConnectivityManager";
+            }
+            service.getClass()
+                    .getMethod("setUidFirewallRule", int.class, int.class, int.class)
+                    .invoke(service, FIREWALL_CHAIN_OEM_DENY_3, uid, rule);
+            return "OK " + uid + " " + rule;
+        } catch (Throwable t) {
+            Throwable cause = (t.getCause() != null) ? t.getCause() : t;
+            logE("setUidFirewallRule failed for uid " + uid, cause);
+            return "Error (code 1): " + cause;
         }
     }
 
