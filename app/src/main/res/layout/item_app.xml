@@ -26,7 +26,9 @@
                 android:id="@+id/appIcon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:importantForAccessibility="no"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
                 android:scaleType="fitCenter" />
 
             <LinearLayout

@@ -434,4 +434,24 @@
     <string name="profile_automation_title">Управление \"%1$s\" из макроса</string>
     <string name="profile_automation_desc">Переключитесь на этот профиль из макро-приложения (Tasker, MacroDroid, Automate) или через adb. В макро-приложении добавьте действие «Отправить широковещание», нацеленное на приёмник ниже. Нажмите на значение, чтобы скопировать.</string>
     <string name="profile_automation_adb_label">Команда ADB</string>
+
+    <!-- App info dialog / tracker detection -->
+    <string name="app_info_icon_content_description">Сведения о %1$s</string>
+    <string name="app_info_version">Версия %1$s</string>
+    <string name="app_info_installed">Установлено %1$s</string>
+    <string name="app_info_updated">Обновлено %1$s</string>
+    <string name="app_info_uid">UID %1$d</string>
+    <string name="app_info_internet_yes">Есть доступ в интернет</string>
+    <string name="app_info_internet_no">Нет доступа в интернет</string>
+    <string name="app_info_unavailable">Сведения недоступны</string>
+    <string name="app_info_open_settings">О приложении</string>
+    <string name="app_info_trackers_title">Трекеры</string>
+    <string name="app_info_trackers_scanning">Сканирование…</string>
+    <string name="app_info_trackers_none">Известные трекеры не найдены</string>
+    <string name="app_info_trackers_count">Найдено трекеров: %1$d</string>
+    <string name="app_info_trackers_failed">Не удалось проверить это приложение</string>
+    <string name="app_info_trackers_note">Найдены при анализе кода приложения. ShizuWall не использует VPN и не анализирует трафик. Эти трекеры отрезаны, пока приложение заблокировано.</string>
+    <string name="tracker_db_title">База трекеров</string>
+    <string name="tracker_db_description">Сигнатур трекеров: %1$d, входят в приложение. Обнаружение работает полностью офлайн.</string>
+    <string name="tracker_data_attribution">Данные о трекерах: Exodus Privacy, ODbL 1.0</string>
 </resources>

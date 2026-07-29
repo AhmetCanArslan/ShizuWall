@@ -181,6 +181,9 @@ Always verify which apps you block.
 
 Licensed under **GNU General Public License v3.0 (GPLv3)**. See [LICENSE.md](LICENSE.md).
 
+The bundled tracker signature data is not code and carries its own license
+(ODbL v1.0). See [TRACKER_DATA_LICENSE.md](TRACKER_DATA_LICENSE.md).
+
 ## Support
 
 - ⭐ Star the project: [GitHub Stars](https://github.com/AhmetCanArslan/ShizuWall/stargazers)
@@ -191,3 +194,4 @@ Licensed under **GNU General Public License v3.0 (GPLv3)**. See [LICENSE.md](LIC
 
 - [Shizuku](https://github.com/RikkaApps/Shizuku) — API that enables privileged command execution flow.
 - [LibADB](https://github.com/MuntashirAkon/libadb-android) — Wireless debugging and daemon connection support.
+- [Exodus Privacy](https://exodus-privacy.eu.org/) — Tracker signature database used to detect tracker SDKs inside apps, licensed under [ODbL v1.0](https://opendatacommons.org/licenses/odbl/1-0/). ShizuWall bundles a trimmed copy and never contacts their API. See [TRACKER_DATA_LICENSE.md](TRACKER_DATA_LICENSE.md).

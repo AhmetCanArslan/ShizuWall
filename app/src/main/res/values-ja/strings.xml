@@ -432,4 +432,24 @@
     <string name="profile_automation_desc">マクロアプリ（Tasker、MacroDroid、Automate）または adb からこのプロファイルに切り替えます。マクロアプリで、下記のレシーバーを対象にした「ブロードキャスト送信」アクションを追加してください。値をタップするとコピーできます。</string>
     <string name="profile_automation_adb_label">ADB コマンド</string>
     
+
+    <!-- App info dialog / tracker detection -->
+    <string name="app_info_icon_content_description">%1$s の詳細</string>
+    <string name="app_info_version">バージョン %1$s</string>
+    <string name="app_info_installed">インストール %1$s</string>
+    <string name="app_info_updated">更新 %1$s</string>
+    <string name="app_info_uid">UID %1$d</string>
+    <string name="app_info_internet_yes">インターネット権限あり</string>
+    <string name="app_info_internet_no">インターネット権限なし</string>
+    <string name="app_info_unavailable">詳細を取得できません</string>
+    <string name="app_info_open_settings">アプリの詳細</string>
+    <string name="app_info_trackers_title">トラッカー</string>
+    <string name="app_info_trackers_scanning">スキャン中…</string>
+    <string name="app_info_trackers_none">既知のトラッカーは見つかりませんでした</string>
+    <string name="app_info_trackers_count">%1$d 件のトラッカーを検出</string>
+    <string name="app_info_trackers_failed">このアプリはスキャンできませんでした</string>
+    <string name="app_info_trackers_note">アプリのコードを調べて検出しました。ShizuWall は VPN を使わず通信を見ません。このアプリをブロックする間、これらのトラッカーも遮断されます。</string>
+    <string name="tracker_db_title">トラッカー定義</string>
+    <string name="tracker_db_description">%1$d 件のトラッカー署名がアプリに同梱されています。検出は完全にオフラインで動作します。</string>
+    <string name="tracker_data_attribution">トラッカーデータ: Exodus Privacy、ODbL 1.0</string>
 </resources>

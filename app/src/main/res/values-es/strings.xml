@@ -433,4 +433,24 @@
     <string name="profile_automation_desc">Cambia a este perfil desde una app de macros (Tasker, MacroDroid, Automate) o adb. En la app de macros, añade una acción \"Enviar difusión\" dirigida al receptor de abajo. Toca cualquier valor para copiarlo.</string>
     <string name="profile_automation_adb_label">Comando ADB</string>
 
+
+    <!-- App info dialog / tracker detection -->
+    <string name="app_info_icon_content_description">Detalles de %1$s</string>
+    <string name="app_info_version">Versión %1$s</string>
+    <string name="app_info_installed">Instalada %1$s</string>
+    <string name="app_info_updated">Actualizada %1$s</string>
+    <string name="app_info_uid">UID %1$d</string>
+    <string name="app_info_internet_yes">Tiene permiso de internet</string>
+    <string name="app_info_internet_no">Sin permiso de internet</string>
+    <string name="app_info_unavailable">Detalles no disponibles</string>
+    <string name="app_info_open_settings">Detalles de la app</string>
+    <string name="app_info_trackers_title">Rastreadores</string>
+    <string name="app_info_trackers_scanning">Analizando la app…</string>
+    <string name="app_info_trackers_none">No se encontraron rastreadores conocidos</string>
+    <string name="app_info_trackers_count">%1$d rastreadores encontrados</string>
+    <string name="app_info_trackers_failed">No se pudo analizar esta app</string>
+    <string name="app_info_trackers_note">Detectados analizando el código de la app. ShizuWall no usa VPN ni inspecciona el tráfico: estos rastreadores quedan cortados mientras la app esté bloqueada.</string>
+    <string name="tracker_db_title">Definiciones de rastreadores</string>
+    <string name="tracker_db_description">%1$d firmas de rastreadores, incluidas en la app. La detección funciona totalmente sin conexión.</string>
+    <string name="tracker_data_attribution">Datos de rastreadores: Exodus Privacy, ODbL 1.0</string>
 </resources>

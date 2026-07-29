@@ -429,4 +429,24 @@
     <string name="profile_automation_title">通过宏控制\"%1$s\"</string>
     <string name="profile_automation_desc">从宏应用（Tasker、MacroDroid、Automate）或 adb 切换到此配置文件。在宏应用中，添加一个指向下方接收器的\"发送广播\"操作。点按任意值即可复制。</string>
     <string name="profile_automation_adb_label">ADB 命令</string>
+
+    <!-- App info dialog / tracker detection -->
+    <string name="app_info_icon_content_description">%1$s 的详情</string>
+    <string name="app_info_version">版本 %1$s</string>
+    <string name="app_info_installed">安装于 %1$s</string>
+    <string name="app_info_updated">更新于 %1$s</string>
+    <string name="app_info_uid">UID %1$d</string>
+    <string name="app_info_internet_yes">具有联网权限</string>
+    <string name="app_info_internet_no">无联网权限</string>
+    <string name="app_info_unavailable">无法获取详情</string>
+    <string name="app_info_open_settings">应用详情</string>
+    <string name="app_info_trackers_title">追踪器</string>
+    <string name="app_info_trackers_scanning">正在扫描应用…</string>
+    <string name="app_info_trackers_none">未发现已知追踪器</string>
+    <string name="app_info_trackers_count">发现 %1$d 个追踪器</string>
+    <string name="app_info_trackers_failed">无法扫描此应用</string>
+    <string name="app_info_trackers_note">通过扫描应用代码发现。ShizuWall 不使用 VPN，也不检查流量。封锁该应用时，这些追踪器也会被断开。</string>
+    <string name="tracker_db_title">追踪器定义</string>
+    <string name="tracker_db_description">%1$d 条追踪器特征，随应用附带。检测完全离线运行。</string>
+    <string name="tracker_data_attribution">追踪器数据：Exodus Privacy，ODbL 1.0</string>
 </resources>

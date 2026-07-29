@@ -435,4 +435,24 @@
     <string name="profile_automation_desc">Switch to this profile from a macro app (Tasker, MacroDroid, Automate) or adb. In the macro app, add a \"Send Broadcast\" action targeting the receiver below. Tap any value to copy it.</string>
     <string name="profile_automation_adb_label">ADB command</string>
 
+
+    <!-- App info dialog / tracker detection -->
+    <string name="app_info_icon_content_description">Details for %1$s</string>
+    <string name="app_info_version">Version %1$s</string>
+    <string name="app_info_installed">Installed %1$s</string>
+    <string name="app_info_updated">Updated %1$s</string>
+    <string name="app_info_uid">UID %1$d</string>
+    <string name="app_info_internet_yes">Has internet permission</string>
+    <string name="app_info_internet_no">No internet permission</string>
+    <string name="app_info_unavailable">App details unavailable</string>
+    <string name="app_info_open_settings">App details</string>
+    <string name="app_info_trackers_title">Trackers</string>
+    <string name="app_info_trackers_scanning">Scanning app…</string>
+    <string name="app_info_trackers_none">No known trackers found</string>
+    <string name="app_info_trackers_count">%1$d trackers found</string>
+    <string name="app_info_trackers_failed">This app could not be scanned</string>
+    <string name="app_info_trackers_note">Found by scanning the app\'s code. ShizuWall uses no VPN and never inspects traffic. These trackers are cut off while this app is blocked.</string>
+    <string name="tracker_db_title">Tracker definitions</string>
+    <string name="tracker_db_description">%1$d tracker signatures, bundled with the app. Detection runs entirely offline.</string>
+    <string name="tracker_data_attribution">Tracker data: Exodus Privacy, ODbL 1.0</string>
 </resources>

@@ -436,4 +436,24 @@
     <string name="profile_automation_desc">Přepněte na tento profil z makro aplikace (Tasker, MacroDroid, Automate) nebo adb. V makro aplikaci přidejte akci „Odeslat vysílání" cílenou na níže uvedený receiver. Klepnutím na hodnotu ji zkopírujete.</string>
     <string name="profile_automation_adb_label">Příkaz ADB</string>
 
+
+    <!-- App info dialog / tracker detection -->
+    <string name="app_info_icon_content_description">Podrobnosti o %1$s</string>
+    <string name="app_info_version">Verze %1$s</string>
+    <string name="app_info_installed">Nainstalováno %1$s</string>
+    <string name="app_info_updated">Aktualizováno %1$s</string>
+    <string name="app_info_uid">UID %1$d</string>
+    <string name="app_info_internet_yes">Má oprávnění k internetu</string>
+    <string name="app_info_internet_no">Bez oprávnění k internetu</string>
+    <string name="app_info_unavailable">Podrobnosti nejsou k dispozici</string>
+    <string name="app_info_open_settings">Podrobnosti aplikace</string>
+    <string name="app_info_trackers_title">Sledovače</string>
+    <string name="app_info_trackers_scanning">Prohlížím aplikaci…</string>
+    <string name="app_info_trackers_none">Nenalezeny žádné známé sledovače</string>
+    <string name="app_info_trackers_count">Nalezeno sledovačů: %1$d</string>
+    <string name="app_info_trackers_failed">Tuto aplikaci se nepodařilo prohlédnout</string>
+    <string name="app_info_trackers_note">Nalezeno analýzou kódu aplikace. ShizuWall nepoužívá VPN a nezkoumá provoz. Tyto sledovače jsou odstřiženy, dokud je aplikace blokována.</string>
+    <string name="tracker_db_title">Definice sledovačů</string>
+    <string name="tracker_db_description">%1$d podpisů sledovačů, součást aplikace. Detekce běží zcela offline.</string>
+    <string name="tracker_data_attribution">Data o sledovačích: Exodus Privacy, ODbL 1.0</string>
 </resources>

@@ -39,7 +39,8 @@ class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
 
 class AppListAdapter(
     private val onAppClick: (AppInfo) -> Unit,
-    private val onAppLongClick: (AppInfo) -> Unit
+    private val onAppLongClick: (AppInfo) -> Unit,
+    private val onAppIconClick: (AppInfo) -> Unit = {}
 ) : ListAdapter<AppInfo, AppListAdapter.AppViewHolder>(AppInfoDiffCallback()) {
 
     // Cache icons to avoid reloading. Max size 1/8th of available memory.
@@ -140,6 +141,11 @@ class AppListAdapter(
                 appInfo.appName
             }
             packageName.text = appInfo.packageName
+
+            appIcon.setOnClickListener { onAppIconClick(appInfo) }
+            appIcon.contentDescription = itemView.context.getString(
+                R.string.app_info_icon_content_description, appInfo.appName
+            )
 
             if (appInfo.isSelected && isHybridMode) {
                 modeDropdownText.visibility = View.VISIBLE

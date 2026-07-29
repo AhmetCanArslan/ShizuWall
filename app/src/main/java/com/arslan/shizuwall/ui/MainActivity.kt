@@ -1067,6 +1067,9 @@ class MainActivity : BaseActivity() {
             },
             onAppLongClick = { appInfo ->
                 toggleFavorite(appInfo)
+            },
+            onAppIconClick = { appInfo ->
+                AppInfoDialog.show(this, this, appInfo.packageName, appInfo.appName)
             }
         )
         appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
