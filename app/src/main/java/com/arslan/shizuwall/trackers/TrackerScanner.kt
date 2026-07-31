@@ -19,6 +19,36 @@ object TrackerScanner {
 
     private const val CACHE_PREFIX = "scan:"
 
+    /**
+     * Result for an already-scanned package, without touching disk beyond prefs.
+     * Returns null when nothing usable is cached, so the caller must run [scan].
+     * Cheap enough for the main thread: it never opens an APK and never parses
+     * the tracker asset (bails out if the registry has not been loaded yet).
+     */
+    fun cachedResult(context: Context, packageName: String): ScanResult? {
+        val definitions = TrackerRegistry.trackersIfLoaded() ?: return null
+        if (definitions.isEmpty()) return null
+
+        val versionCode = try {
+            @Suppress("DEPRECATION")
+            context.packageManager.getPackageInfo(packageName, 0).longVersionCode
+        } catch (_: PackageManager.NameNotFoundException) {
+            return null
+        }
+
+        val cached = context.getSharedPreferences(TrackerRegistry.PREFS_NAME, Context.MODE_PRIVATE)
+            .getString("$CACHE_PREFIX$packageName", null) ?: return null
+        val parts = cached.split('|')
+        if (parts.size != 3 || parts[0] != versionCode.toString() ||
+            parts[1] != TrackerRegistry.stamp(context)
+        ) {
+            return null
+        }
+
+        val ids = parts[2].split(',').mapNotNull { it.toIntOrNull() }.toSet()
+        return ScanResult.Success(definitions.filter { it.id in ids }.sortedBy { it.name.lowercase() })
+    }
+
     suspend fun scan(context: Context, packageName: String): ScanResult =
         withContext(Dispatchers.IO) {
             val definitions = TrackerRegistry.trackers(context)

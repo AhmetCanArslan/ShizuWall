@@ -49,6 +49,14 @@ object AppInfoDialog {
         }
         metaView.text = buildMeta(context, packageInfo)
 
+        // On a repeat open the scan result comes back from cache almost instantly, so
+        // swapping the tracker section in after show() resizes the dialog mid enter
+        // animation and reads as a flicker. Render it up front when it is already known.
+        val cachedResult = TrackerScanner.cachedResult(context, packageName)
+        if (cachedResult != null) {
+            renderTrackers(context, cachedResult, loadingView, summaryView, listView, noteView)
+        }
+
         val dialog = MaterialAlertDialogBuilder(context)
             .setView(view)
             .setPositiveButton(R.string.close, null)
@@ -66,40 +74,52 @@ object AppInfoDialog {
             .create()
         dialog.show()
 
+        if (cachedResult != null) return
+
         owner.lifecycleScope.launch {
             val result = TrackerScanner.scan(context, packageName)
             if (!dialog.isShowing) return@launch
+            renderTrackers(context, result, loadingView, summaryView, listView, noteView)
+        }
+    }
 
-            loadingView.visibility = View.GONE
-            summaryView.visibility = View.VISIBLE
+    private fun renderTrackers(
+        context: Context,
+        result: TrackerScanner.ScanResult,
+        loadingView: View,
+        summaryView: TextView,
+        listView: TextView,
+        noteView: TextView
+    ) {
+        loadingView.visibility = View.GONE
+        summaryView.visibility = View.VISIBLE
 
-            val attribution = context.getString(R.string.tracker_data_attribution)
-            noteView.text = attribution
-            noteView.visibility = View.VISIBLE
+        val attribution = context.getString(R.string.tracker_data_attribution)
+        noteView.text = attribution
+        noteView.visibility = View.VISIBLE
 
-            when (result) {
-                is TrackerScanner.ScanResult.Failed -> {
-                    summaryView.text = context.getString(R.string.app_info_trackers_failed)
-                }
+        when (result) {
+            is TrackerScanner.ScanResult.Failed -> {
+                summaryView.text = context.getString(R.string.app_info_trackers_failed)
+            }
 
-                is TrackerScanner.ScanResult.Success -> {
-                    val trackers = result.trackers
-                    if (trackers.isEmpty()) {
-                        summaryView.text = context.getString(R.string.app_info_trackers_none)
-                    } else {
-                        summaryView.text =
-                            context.getString(R.string.app_info_trackers_count, trackers.size)
-                        listView.text = trackers.joinToString("\n") { tracker ->
-                            if (tracker.categories.isEmpty()) {
-                                "• ${tracker.name}"
-                            } else {
-                                "• ${tracker.name} (${tracker.categories.joinToString(", ")})"
-                            }
+            is TrackerScanner.ScanResult.Success -> {
+                val trackers = result.trackers
+                if (trackers.isEmpty()) {
+                    summaryView.text = context.getString(R.string.app_info_trackers_none)
+                } else {
+                    summaryView.text =
+                        context.getString(R.string.app_info_trackers_count, trackers.size)
+                    listView.text = trackers.joinToString("\n") { tracker ->
+                        if (tracker.categories.isEmpty()) {
+                            "• ${tracker.name}"
+                        } else {
+                            "• ${tracker.name} (${tracker.categories.joinToString(", ")})"
                         }
-                        listView.visibility = View.VISIBLE
-                        noteView.text = context.getString(R.string.app_info_trackers_note) +
-                            "\n\n" + attribution
                     }
+                    listView.visibility = View.VISIBLE
+                    noteView.text = context.getString(R.string.app_info_trackers_note) +
+                        "\n\n" + attribution
                 }
             }
         }

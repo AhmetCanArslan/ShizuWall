@@ -25,6 +25,9 @@ object TrackerRegistry {
     @Volatile
     private var databaseStamp: String = ""
 
+    /** Already-parsed database, or null if it has never been loaded on this process. */
+    fun trackersIfLoaded(): List<Tracker>? = cached
+
     fun trackers(context: Context): List<Tracker> {
         cached?.let { return it }
         synchronized(this) {
