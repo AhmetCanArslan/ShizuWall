@@ -450,6 +450,13 @@
     <string name="tracker_db_description">%1$d Tracker-Signaturen, in der App enthalten. Die Erkennung läuft vollständig offline.</string>
     <string name="tracker_data_attribution">Tracker-Daten: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Apps in anderen Profilen anzeigen</string>
-    <string name="show_other_profiles_description">Arbeitsprofil, privater Bereich, Secure Folder und geklonte Apps</string>
-    <string name="show_other_profiles_uncheck_confirm">Alle ausgewählten Apps aus anderen Profilen werden abgewählt und auf ihren Standardzustand zurückgesetzt. Möchten Sie das Häkchen entfernen?</string>
+    <string name="show_other_profiles_description">Arbeitsprofil, privater Bereich, Secure Folder und geklonte Apps. Wenn deaktiviert, blockiert das Sperren einer App auch alle ihre Kopien; aktivieren Sie dies, um jede Kopie einzeln zu steuern.</string>
+    <string name="show_other_profiles_uncheck_confirm">Alle ausgewählten Apps aus anderen Profilen werden abgewählt und auf ihren Standardzustand zurückgesetzt. Ab jetzt blockiert das Sperren einer App auch jede ihrer Kopien in anderen Profilen. Möchten Sie das Häkchen entfernen?</string>
+
+    <string name="onboarding_how_title">Kein VPN, kein Root nötig</string>
+    <string name="onboarding_how_message">ShizuWall blockiert Apps auf Systemebene über eine privilegierte Shell – Shizuku, drahtloses ADB oder Root. Der VPN-Slot wird nie belegt, Ihr echtes VPN läuft also weiter. Alles bleibt auf diesem Gerät: kein Konto, keine Analytik, kein Internetzugriff.</string>
+    <string name="onboarding_experimental_title">Betrachten Sie es als experimentell</string>
+    <string name="onboarding_experimental_message">Das Blockieren nutzt versteckte Android-Befehle, und die ROM jedes Herstellers verhält sich etwas anders. Manche Modi funktionieren auf Ihrem Gerät möglicherweise nicht, Regeln können nach einem Neustart oder Systemupdate verloren gehen, und einige Apps liefern eine Weile weiter Inhalte aus dem Cache. Testen Sie einen Modus, bevor Sie sich darauf verlassen, und prüfen Sie die Protokolle in den Einstellungen, wenn etwas nicht stimmt.</string>
+    <string name="onboarding_battery_title">Messen Sie den Akkuverbrauch selbst</string>
+    <string name="onboarding_battery_message">Der Standardmodus kostet praktisch keinen zusätzlichen Akku. Die vordergrundabhängigen Modi (Smart Foreground, Hybrid, Fokus-Tracker) prüfen die aktive App etwa einmal pro Sekunde und können daher deutlich mehr verbrauchen – wie viel, hängt ganz von Ihrem Gerät ab. Nutzen Sie einen Modus einen Tag lang, sehen Sie sich den Akkuverbrauch in den Systemeinstellungen an und behalten Sie den Modus mit dem besten Verhältnis.</string>
 </resources>

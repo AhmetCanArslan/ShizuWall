@@ -5,6 +5,7 @@ import com.arslan.shizuwall.firewall.PerUidFirewall
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.FirewallUtils
+import com.arslan.shizuwall.utils.MultiUserApps
 class PerUidRoutingExecutor(
     private val context: Context,
     private val delegate: ShellExecutor
@@ -28,9 +29,13 @@ class PerUidRoutingExecutor(
     }
 
     private suspend fun block(key: String, command: String): ShellResult {
-        if (PerUidFirewall.setRule(context, key, PerUidFirewall.RULE_DENY)) return PER_UID_SUCCESS
-        if (AppKey.isSecondary(key)) return unresolved(key)
-        return delegate.exec(command)
+        val result = when {
+            PerUidFirewall.setRule(context, key, PerUidFirewall.RULE_DENY) -> PER_UID_SUCCESS
+            AppKey.isSecondary(key) -> unresolved(key)
+            else -> delegate.exec(command)
+        }
+        if (result.isEffectivelySuccess) mirrorToClones(key, PerUidFirewall.RULE_DENY)
+        return result
     }
 
     private suspend fun unblock(key: String, command: String): ShellResult {
@@ -43,9 +48,30 @@ class PerUidRoutingExecutor(
         }
 
         val result = delegate.exec(command)
-        if (result.isEffectivelySuccess) restoreSecondaryRules(AppKey.packageOf(key))
+        if (result.isEffectivelySuccess) {
+            if (mirroringClones()) {
+                mirrorToClones(key, PerUidFirewall.RULE_DEFAULT)
+            } else {
+                restoreSecondaryRules(AppKey.packageOf(key))
+            }
+        }
         return result
     }
+
+
+    private suspend fun mirrorToClones(key: String, rule: Int) {
+        if (!mirroringClones() || AppKey.isSecondary(key)) return
+        for (cloneKey in cloneKeysOf(AppKey.packageOf(key))) {
+            PerUidFirewall.setRule(context, cloneKey, rule)
+        }
+    }
+
+    private fun mirroringClones(): Boolean = !MultiUserApps.isEnabled(context)
+
+    private fun cloneKeysOf(packageName: String): List<String> =
+        MultiUserApps.cachedSnapshot(context).apps
+            .filter { it.packageName == packageName }
+            .map { it.key }
 
     private suspend fun restoreSecondaryRules(packageName: String) {
         for (key in activeSecondaryKeys()) {
@@ -58,6 +84,13 @@ class PerUidRoutingExecutor(
     private suspend fun clearSecondaryRules() {
         for (key in activeSecondaryKeys()) {
             PerUidFirewall.setRule(context, key, PerUidFirewall.RULE_DEFAULT)
+        }
+        if (!mirroringClones()) return
+        val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        for (key in FirewallUtils.loadActivePackages(prefs).filterNot { AppKey.isSecondary(it) }) {
+            for (cloneKey in cloneKeysOf(key)) {
+                PerUidFirewall.setRule(context, cloneKey, PerUidFirewall.RULE_DEFAULT)
+            }
         }
     }
 

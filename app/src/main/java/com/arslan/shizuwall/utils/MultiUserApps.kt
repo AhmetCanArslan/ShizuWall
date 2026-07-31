@@ -37,8 +37,6 @@ object MultiUserApps {
         prefs(context).getBoolean(MainActivity.KEY_SHOW_OTHER_PROFILES, false)
 
     suspend fun snapshot(context: Context, forceRefresh: Boolean = false): Snapshot {
-        if (!isEnabled(context)) return Snapshot.EMPTY
-
         val cached = readCache(context)
         val age = System.currentTimeMillis() - prefs(context).getLong(KEY_CACHE_TS, 0L)
         if (!forceRefresh && cached != null && age < CACHE_TTL_MS) return cached

@@ -38,10 +38,14 @@ object WhitelistFilter {
             }
         }
 
-        // Apps in other Android users are invisible to PackageManager, so whitelist mode would
-        // silently leave every clone unblocked without this.
+        val perProfileSelection = MultiUserApps.isEnabled(context)
         for (app in MultiUserApps.cachedSnapshot(context).apps) {
-            if (selectedPkgs.contains(app.key)) toAllow.add(app.key) else toBlock.add(app.key)
+            val selected = if (perProfileSelection) {
+                selectedPkgs.contains(app.key)
+            } else {
+                selectedPkgs.contains(app.packageName)
+            }
+            if (selected) toAllow.add(app.key) else toBlock.add(app.key)
         }
 
         return WhitelistResult(toBlock, toAllow)

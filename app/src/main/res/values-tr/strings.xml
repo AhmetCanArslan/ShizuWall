@@ -451,6 +451,13 @@
     <string name="tracker_db_description">%1$d izleyici imzası, uygulamayla birlikte gelir. Tespit tamamen çevrimdışı çalışır.</string>
     <string name="tracker_data_attribution">İzleyici verisi: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Diğer profillerdeki uygulamalar</string>
-    <string name="show_other_profiles_description">İş profili, gizli alan, Güvenli Klasör ve klonlanmış uygulamalar</string>
-    <string name="show_other_profiles_uncheck_confirm">Diğer profillerden seçili tüm uygulamaların seçimi kaldırılacak ve varsayılan durumuna sıfırlanacak. İşareti kaldırmak istiyor musunuz?</string>
+    <string name="show_other_profiles_description">İş profili, gizli alan, Güvenli Klasör ve klonlanmış uygulamalar. Kapalıyken bir uygulamayı engellemek tüm kopyalarını da engeller; her kopyayı ayrı yönetmek için işaretleyin.</string>
+    <string name="show_other_profiles_uncheck_confirm">Diğer profillerden seçili tüm uygulamaların seçimi kaldırılacak ve varsayılan durumuna sıfırlanacak. Bundan sonra bir uygulamayı engellediğinizde diğer profillerdeki tüm kopyaları da engellenecek. İşareti kaldırmak istiyor musunuz?</string>
+
+    <string name="onboarding_how_title">VPN ve root gerekmez</string>
+    <string name="onboarding_how_message">ShizuWall uygulamaları sistem düzeyinde, ayrıcalıklı bir kabuk üzerinden engeller: Shizuku, kablosuz ADB veya root. VPN yuvasını hiç kullanmaz, bu yüzden asıl VPN\'iniz çalışmaya devam eder. Her şey bu cihazda kalır: hesap yok, analitik yok, internet erişimi yok.</string>
+    <string name="onboarding_experimental_title">Deneysel olduğunu unutmayın</string>
+    <string name="onboarding_experimental_message">Engelleme, Android\'in gizli komutlarını kullanır ve her üreticinin ROM\'u biraz farklı davranır. Bazı modlar cihazınızda çalışmayabilir, kurallar yeniden başlatma veya sistem güncellemesinden sonra düşebilir ve bazı uygulamalar bir süre önbellekten içerik sunmayı sürdürebilir. Bir moda güvenmeden önce deneyin; bir şey ters görünürse Ayarlar\'daki günlüklere bakın.</string>
+    <string name="onboarding_battery_title">Bataryayı kendiniz ölçün</string>
+    <string name="onboarding_battery_message">Varsayılan mod neredeyse hiç ek batarya harcamaz. Ön plan tabanlı modlar (Akıllı Ön Plan, Hibrit, Odak Takibi) etkin uygulamayı saniyede bir kez kontrol eder; bu yüzden gözle görülür şekilde daha fazla tüketebilir ve miktarı tamamen cihazınıza bağlıdır. Bir modu bir gün kullanın, sistem ayarlarındaki batarya kullanımına bakın ve size en iyi dengeyi veren modda kalın.</string>
 </resources>

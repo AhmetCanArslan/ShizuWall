@@ -450,6 +450,13 @@
     <string name="tracker_db_description">%1$d 条追踪器特征，随应用附带。检测完全离线运行。</string>
     <string name="tracker_data_attribution">追踪器数据：Exodus Privacy，ODbL 1.0</string>
     <string name="show_other_profiles">显示其他配置文件中的应用</string>
-    <string name="show_other_profiles_description">工作资料、私密空间、安全文件夹和克隆应用</string>
-    <string name="show_other_profiles_uncheck_confirm">其他配置文件中已选择的应用将被取消选择并重置为默认状态。要取消勾选吗？</string>
+    <string name="show_other_profiles_description">工作资料、私密空间、安全文件夹和克隆应用。关闭时，阻止某个应用也会阻止它的所有副本；勾选后可分别控制每个副本。</string>
+    <string name="show_other_profiles_uncheck_confirm">其他配置文件中已选择的应用将被取消选择并重置为默认状态。此后，阻止某个应用也会阻止它在其他配置文件中的所有副本。要取消勾选吗？</string>
+
+    <string name="onboarding_how_title">无需 VPN，无需 root</string>
+    <string name="onboarding_how_message">ShizuWall 通过特权 shell（Shizuku、无线 ADB 或 root）在系统层面阻止应用联网。它不会占用 VPN 通道，你真正的 VPN 仍可正常使用。所有数据都留在本机：无需账号、没有统计分析、也不需要联网。</string>
+    <string name="onboarding_experimental_title">请视其为实验性功能</string>
+    <string name="onboarding_experimental_message">阻止功能依赖 Android 的隐藏命令，而各厂商的 ROM 行为略有差异。某些模式在你的设备上可能无法工作，规则可能在重启或系统更新后失效，少数应用还会继续显示一段时间的缓存内容。在依赖某个模式之前请先测试；若发现异常，请查看设置中的日志。</string>
+    <string name="onboarding_battery_title">请自行测量耗电</string>
+    <string name="onboarding_battery_message">默认模式几乎不会带来额外耗电。前台感知模式（智能前台、混合、焦点追踪）大约每秒检查一次当前应用，因此耗电可能明显增加，具体取决于你的设备。先用某一模式使用一天，在系统设置中查看电池用量，然后保留最平衡的那个模式。</string>
 </resources>

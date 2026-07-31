@@ -453,6 +453,13 @@
     <string name="tracker_db_description">%1$d 件のトラッカー署名がアプリに同梱されています。検出は完全にオフラインで動作します。</string>
     <string name="tracker_data_attribution">トラッカーデータ: Exodus Privacy、ODbL 1.0</string>
     <string name="show_other_profiles">他のプロファイルのアプリを表示</string>
-    <string name="show_other_profiles_description">仕事用プロファイル、プライベートスペース、Secure Folder、クローンアプリ</string>
-    <string name="show_other_profiles_uncheck_confirm">他のプロファイルで選択されているアプリはすべて選択解除され、既定の状態に戻ります。チェックを外しますか？</string>
+    <string name="show_other_profiles_description">仕事用プロファイル、プライベートスペース、Secure Folder、クローンアプリ。オフの場合、アプリをブロックするとそのすべてのコピーもブロックされます。コピーごとに個別に管理するにはオンにしてください。</string>
+    <string name="show_other_profiles_uncheck_confirm">他のプロファイルで選択されているアプリはすべて選択解除され、既定の状態に戻ります。以降、アプリをブロックすると他のプロファイルにあるそのコピーもすべてブロックされます。チェックを外しますか？</string>
+
+    <string name="onboarding_how_title">VPN も root も不要</string>
+    <string name="onboarding_how_message">ShizuWall は特権シェル（Shizuku、ワイヤレス ADB、root）を通じてシステムレベルでアプリをブロックします。VPN スロットを占有しないため、本来の VPN はそのまま使えます。すべての情報はこの端末内に留まります。アカウント不要、解析なし、インターネット接続も不要です。</string>
+    <string name="onboarding_experimental_title">実験的な機能として扱ってください</string>
+    <string name="onboarding_experimental_message">ブロックは Android の隠しコマンドを利用しており、メーカーごとの ROM で動作が少し異なります。一部のモードはお使いの端末で動作しないことがあり、再起動やシステム更新後にルールが失われる場合もあります。また一部のアプリはしばらくキャッシュから表示を続けます。頼りにする前に必ず試し、おかしいと感じたら設定内のログを確認してください。</string>
+    <string name="onboarding_battery_title">バッテリーは自分で測定してください</string>
+    <string name="onboarding_battery_message">デフォルトモードの追加消費はほぼありません。フォアグラウンド連動モード（スマートフォアグラウンド、ハイブリッド、フォーカストラッカー）は約 1 秒ごとに実行中のアプリを確認するため、消費が目に見えて増えることがあります。その量は端末によって大きく異なります。1 つのモードを 1 日使い、システム設定のバッテリー使用量を確認して、最もバランスの良いモードを選んでください。</string>
 </resources>

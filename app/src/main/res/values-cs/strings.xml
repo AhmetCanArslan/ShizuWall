@@ -457,6 +457,13 @@
     <string name="tracker_db_description">%1$d podpisů sledovačů, součást aplikace. Detekce běží zcela offline.</string>
     <string name="tracker_data_attribution">Data o sledovačích: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Zobrazit aplikace z jiných profilů</string>
-    <string name="show_other_profiles_description">Pracovní profil, soukromý prostor, Secure Folder a klonované aplikace</string>
-    <string name="show_other_profiles_uncheck_confirm">Všechny vybrané aplikace z jiných profilů budou odznačeny a vráceny do výchozího stavu. Chcete zrušit zaškrtnutí?</string>
+    <string name="show_other_profiles_description">Pracovní profil, soukromý prostor, Secure Folder a klonované aplikace. Když je vypnuto, zablokování aplikace zablokuje i všechny její kopie; zaškrtnutím budete každou kopii ovládat zvlášť.</string>
+    <string name="show_other_profiles_uncheck_confirm">Všechny vybrané aplikace z jiných profilů budou odznačeny a vráceny do výchozího stavu. Od této chvíle zablokování aplikace zablokuje i všechny její kopie v jiných profilech. Chcete zrušit zaškrtnutí?</string>
+
+    <string name="onboarding_how_title">Bez VPN, bez rootu</string>
+    <string name="onboarding_how_message">ShizuWall blokuje aplikace na úrovni systému přes privilegovaný shell – Shizuku, bezdrátové ADB nebo root. Nikdy neobsazuje slot pro VPN, takže vaše skutečná VPN dál funguje. Vše zůstává v tomto zařízení: žádný účet, žádná analytika, žádný přístup k internetu.</string>
+    <string name="onboarding_experimental_title">Berte to jako experimentální</string>
+    <string name="onboarding_experimental_message">Blokování využívá skryté příkazy Androidu a ROM každého výrobce se chová trochu jinak. Některé režimy na vašem zařízení nemusí fungovat, pravidla mohou po restartu nebo aktualizaci systému zmizet a několik aplikací může chvíli dál zobrazovat obsah z cache. Než se na režim spolehnete, vyzkoušejte ho, a pokud něco nevypadá správně, zkontrolujte protokoly v Nastavení.</string>
+    <string name="onboarding_battery_title">Baterii si změřte sami</string>
+    <string name="onboarding_battery_message">Výchozí režim nespotřebuje téměř žádnou baterii navíc. Režimy sledující popředí (Smart Foreground, Hybridní, Sledování zaměření) kontrolují aktivní aplikaci asi jednou za sekundu, takže mohou spotřebovat výrazně více – kolik, závisí zcela na vašem zařízení. Vyzkoušejte jeden režim po celý den, podívejte se na spotřebu baterie v nastavení systému a nechte si ten, který vám dá nejlepší kompromis.</string>
 </resources>

@@ -450,6 +450,13 @@
     <string name="tracker_db_description">%1$d assinaturas de rastreadores, incluídas no app. A detecção funciona totalmente offline.</string>
     <string name="tracker_data_attribution">Dados de rastreadores: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Mostrar apps de outros perfis</string>
-    <string name="show_other_profiles_description">Perfil de trabalho, espaço privado, Secure Folder e apps clonados</string>
-    <string name="show_other_profiles_uncheck_confirm">Todos os apps selecionados de outros perfis serão desmarcados e voltarão ao estado padrão. Deseja desmarcar?</string>
+    <string name="show_other_profiles_description">Perfil de trabalho, espaço privado, Secure Folder e apps clonados. Quando desativado, bloquear um app também bloqueia todas as suas cópias; marque para controlar cada cópia separadamente.</string>
+    <string name="show_other_profiles_uncheck_confirm">Todos os apps selecionados de outros perfis serão desmarcados e voltarão ao estado padrão. A partir de agora, bloquear um app também bloqueará todas as suas cópias em outros perfis. Deseja desmarcar?</string>
+
+    <string name="onboarding_how_title">Sem VPN e sem root</string>
+    <string name="onboarding_how_message">O ShizuWall bloqueia apps no nível do sistema por meio de um shell privilegiado: Shizuku, ADB sem fio ou root. Ele nunca ocupa o slot de VPN, então a sua VPN real continua funcionando. Tudo permanece neste dispositivo: sem conta, sem analytics, sem acesso à internet.</string>
+    <string name="onboarding_experimental_title">Considere isto experimental</string>
+    <string name="onboarding_experimental_message">O bloqueio usa comandos ocultos do Android e a ROM de cada fabricante se comporta de forma um pouco diferente. Alguns modos podem não funcionar no seu dispositivo, as regras podem ser perdidas após uma reinicialização ou atualização do sistema, e alguns apps continuam a servir conteúdo em cache por um tempo. Teste um modo antes de depender dele e verifique os registros nas Configurações se algo parecer errado.</string>
+    <string name="onboarding_battery_title">Meça a bateria você mesmo</string>
+    <string name="onboarding_battery_message">O modo padrão praticamente não consome bateria extra. Os modos baseados em primeiro plano (Primeiro Plano Inteligente, Híbrido, Rastreador de Foco) verificam o app ativo cerca de uma vez por segundo, portanto podem consumir bem mais — o quanto depende inteiramente do seu dispositivo. Use um modo por um dia, veja o consumo de bateria nas configurações do sistema e fique com o modo que oferecer o melhor equilíbrio.</string>
 </resources>

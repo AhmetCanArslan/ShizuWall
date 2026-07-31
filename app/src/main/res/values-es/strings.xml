@@ -454,6 +454,13 @@
     <string name="tracker_db_description">%1$d firmas de rastreadores, incluidas en la app. La detección funciona totalmente sin conexión.</string>
     <string name="tracker_data_attribution">Datos de rastreadores: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Mostrar apps de otros perfiles</string>
-    <string name="show_other_profiles_description">Perfil de trabajo, espacio privado, Secure Folder y apps clonadas</string>
-    <string name="show_other_profiles_uncheck_confirm">Cualquier app seleccionada de otro perfil se deseleccionará y volverá a su estado predeterminado. ¿Quieres desmarcarlo?</string>
+    <string name="show_other_profiles_description">Perfil de trabajo, espacio privado, Secure Folder y apps clonadas. Si está desactivado, bloquear una app también bloquea todas sus copias; márcalo para controlar cada copia por separado.</string>
+    <string name="show_other_profiles_uncheck_confirm">Cualquier app seleccionada de otro perfil se deseleccionará y volverá a su estado predeterminado. A partir de ahora, bloquear una app también bloqueará todas sus copias en otros perfiles. ¿Quieres desmarcarlo?</string>
+
+    <string name="onboarding_how_title">Sin VPN ni root</string>
+    <string name="onboarding_how_message">ShizuWall bloquea apps a nivel de sistema mediante un shell privilegiado: Shizuku, ADB inalámbrico o root. Nunca ocupa la ranura de VPN, así que tu VPN real sigue funcionando. Todo se queda en este dispositivo: sin cuenta, sin analíticas, sin acceso a internet.</string>
+    <string name="onboarding_experimental_title">Considéralo experimental</string>
+    <string name="onboarding_experimental_message">El bloqueo usa comandos ocultos de Android y la ROM de cada fabricante se comporta de forma algo distinta. Algunos modos pueden no funcionar en tu dispositivo, las reglas pueden perderse tras un reinicio o una actualización del sistema, y unas pocas apps siguen sirviendo contenido en caché un rato. Prueba un modo antes de depender de él y revisa los registros en Ajustes si algo no cuadra.</string>
+    <string name="onboarding_battery_title">Mide la batería tú mismo</string>
+    <string name="onboarding_battery_message">El modo predeterminado casi no consume batería extra. Los modos basados en primer plano (Primer plano inteligente, Híbrido, Seguimiento de foco) comprueban la app activa una vez por segundo, así que pueden consumir bastante más; cuánto depende por completo de tu dispositivo. Usa un modo durante un día, mira el consumo de batería en los ajustes del sistema y quédate con el modo que te dé el mejor equilibrio.</string>
 </resources>

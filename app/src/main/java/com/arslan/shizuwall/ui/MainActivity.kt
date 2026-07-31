@@ -1698,7 +1698,12 @@ class MainActivity : BaseActivity() {
                 val pm = packageManager
                 val packages = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
 
-                val secondarySnapshot = MultiUserApps.snapshot(this@MainActivity)
+                val scannedSecondary = MultiUserApps.snapshot(this@MainActivity)
+                val secondarySnapshot = if (MultiUserApps.isEnabled(this@MainActivity)) {
+                    scannedSecondary
+                } else {
+                    MultiUserApps.Snapshot.EMPTY
+                }
 
                 val installedPackageNames = packages.mapTo(HashSet(packages.size)) { it.packageName }
                 secondarySnapshot.apps.forEach { installedPackageNames.add(it.key) }
