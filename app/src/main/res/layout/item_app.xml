@@ -56,6 +56,22 @@
                     android:textSize="12sp"
                     android:textColor="?attr/colorOnSurfaceVariant" />
 
+                <!-- Names the Android user of apps outside the primary profile: work profile,
+                     private space, Secure Folder, app clones. Hidden for user 0. -->
+                <TextView
+                    android:id="@+id/profileBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:background="@drawable/bg_profile_badge"
+                    android:importantForAccessibility="no"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    android:textColor="?attr/colorOnTertiaryContainer" />
+
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton

@@ -452,4 +452,7 @@
     <string name="tracker_db_title">トラッカー定義</string>
     <string name="tracker_db_description">%1$d 件のトラッカー署名がアプリに同梱されています。検出は完全にオフラインで動作します。</string>
     <string name="tracker_data_attribution">トラッカーデータ: Exodus Privacy、ODbL 1.0</string>
+    <string name="show_other_profiles">他のプロファイルのアプリを表示</string>
+    <string name="show_other_profiles_description">仕事用プロファイル、プライベートスペース、Secure Folder、クローンアプリ</string>
+    <string name="show_other_profiles_uncheck_confirm">他のプロファイルで選択されているアプリはすべて選択解除され、既定の状態に戻ります。チェックを外しますか？</string>
 </resources>

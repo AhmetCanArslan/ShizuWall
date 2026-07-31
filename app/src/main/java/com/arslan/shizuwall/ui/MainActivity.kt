@@ -68,6 +68,8 @@ import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.utils.ForegroundAppResolver
+import com.arslan.shizuwall.utils.AppKey
+import com.arslan.shizuwall.utils.MultiUserApps
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONArray
 import org.json.JSONObject
@@ -89,6 +91,7 @@ class MainActivity : BaseActivity() {
         const val KEY_SKIP_ANDROID11_INFO = "skip_android11_info"
         const val KEY_KEEP_ERROR_APPS_SELECTED = "keep_error_apps_selected"
         const val KEY_SHOW_SYSTEM_APPS = "show_system_apps"
+        const val KEY_SHOW_OTHER_PROFILES = "show_other_profiles"
         const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
         const val KEY_SELECTED_FONT = "selected_font"
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
@@ -141,6 +144,7 @@ class MainActivity : BaseActivity() {
     private var isFirewallEnabled = false
     private var currentQuery = ""
     private var showSystemApps = false 
+    private var showOtherProfiles = false
     private var moveSelectedTop = true
     private var firewallMode = FirewallMode.DEFAULT
     private enum class SortOrder { NAME_ASC, NAME_DESC, INSTALL_TIME }
@@ -295,6 +299,7 @@ class MainActivity : BaseActivity() {
         if (result.resultCode == RESULT_OK) {
             // Reload settings and refresh the app list
             showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
+        showOtherProfiles = sharedPreferences.getBoolean(KEY_SHOW_OTHER_PROFILES, false)
             moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
             firewallMode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
             updateFirewallToggleThumbIcon()
@@ -410,6 +415,7 @@ class MainActivity : BaseActivity() {
         sortButton?.setOnClickListener { showSortDialog() }
 
         showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
+        showOtherProfiles = sharedPreferences.getBoolean(KEY_SHOW_OTHER_PROFILES, false)
         moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
         firewallMode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
         currentSortOrder = try {
@@ -713,7 +719,7 @@ class MainActivity : BaseActivity() {
                     // If permission was requested due to toggle attempt, resume the enable flow
                     if (pendingToggleEnable) {
                         pendingToggleEnable = false
-                        val selectedAppPkgs = pendingEnableSelectedApps ?: appList.filter { it.isSelected }.map { it.packageName }
+                        val selectedAppPkgs = pendingEnableSelectedApps ?: appList.filter { it.isSelected }.map { it.key }
                         val selectedApps = appList.filter { selectedAppPkgs.contains(it.packageName) }
                         pendingEnableSelectedApps = null
                         if (selectedApps.isNotEmpty()) {
@@ -739,7 +745,7 @@ class MainActivity : BaseActivity() {
                     // If permission was requested for an auto-enable flow, resume it here
                     else if (pendingAutoEnable) {
                         pendingAutoEnable = false
-                        val pkgs = pendingAutoEnableSelectedApps ?: appList.filter { it.isSelected }.map { it.packageName }
+                        val pkgs = pendingAutoEnableSelectedApps ?: appList.filter { it.isSelected }.map { it.key }
                         pendingAutoEnableSelectedApps = null
                         if (pkgs.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                             val targetPkgs = getTargetPackagesToBlock(pkgs)
@@ -927,7 +933,7 @@ class MainActivity : BaseActivity() {
                         .setTitle(getString(R.string.unselect_all))
                         .setMessage(getString(R.string.deselect_all_apps))
                         .setPositiveButton(getString(R.string.unselect)) { _, _ ->
-                            val previouslySelected = appList.filter { it.isSelected }.map { it.packageName }
+                            val previouslySelected = appList.filter { it.isSelected }.map { it.key }
                             for (i in appList.indices) appList[i] = appList[i].copy(isSelected = false)
                             updateSelectedCount()
                             saveSelectedApps()
@@ -990,7 +996,7 @@ class MainActivity : BaseActivity() {
                     return@AppListAdapter
                 }
 
-                val idx = appList.indexOfFirst { it.packageName == appInfo.packageName }
+                val idx = appList.indexOfFirst { it.key == appInfo.key }
                 if (idx != -1) {
                     appList[idx] = appInfo
                 }
@@ -1009,7 +1015,7 @@ class MainActivity : BaseActivity() {
                         }
                     }
                 } else if (isFirewallEnabled && firewallMode.allowsDynamicSelection()) {
-                    val pkg = appInfo.packageName
+                    val pkg = appInfo.key
                     val isSelected = appInfo.isSelected
                     
                     lifecycleScope.launch(Dispatchers.IO) {
@@ -1039,7 +1045,7 @@ class MainActivity : BaseActivity() {
                                     val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
 
                                     if (!(skipErrorDialog && keepErrorAppsSelected)) {
-                                        val revertIdx = appList.indexOfFirst { it.packageName == pkg }
+                                        val revertIdx = appList.indexOfFirst { it.key == pkg }
                                         if (revertIdx != -1) {
                                             appList[revertIdx] = appList[revertIdx].copy(isSelected = !isSelected)
                                         }
@@ -1051,7 +1057,7 @@ class MainActivity : BaseActivity() {
                                     showOperationErrorsDialog(listOf(pkg), lastOperationErrorDetails)
                                 } else {
                                     // Failed to unblock
-                                    val revertIdx = appList.indexOfFirst { it.packageName == pkg }
+                                    val revertIdx = appList.indexOfFirst { it.key == pkg }
                                     if (revertIdx != -1) {
                                         appList[revertIdx] = appList[revertIdx].copy(isSelected = !isSelected)
                                     }
@@ -1088,11 +1094,11 @@ class MainActivity : BaseActivity() {
                 val isChecked = true
                 val changedApps = filteredAppList.filter { it.isSelected != isChecked }
                 if (changedApps.isNotEmpty()) {
-                    val packagesToUpdate = changedApps.map { it.packageName }
-                    val filteredPackages = filteredAppList.map { it.packageName }.toSet()
+                    val packagesToUpdate = changedApps.map { it.key }
+                    val filteredKeys = filteredAppList.map { it.key }.toSet()
                     for (i in appList.indices) {
                         val ai = appList[i]
-                        if (ai.packageName in filteredPackages) {
+                        if (ai.key in filteredKeys) {
                             appList[i] = ai.copy(isSelected = isChecked)
                         }
                     }
@@ -1132,7 +1138,7 @@ class MainActivity : BaseActivity() {
                                         val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
                                         if (!(skipErrorDialog && keepErrorAppsSelected)) {
                                             for (pkg in failed) {
-                                                val idx = appList.indexOfFirst { it.packageName == pkg }
+                                                val idx = appList.indexOfFirst { it.key == pkg }
                                                 if (idx != -1) appList[idx] = appList[idx].copy(isSelected = !isChecked)
                                             }
                                             updateSelectedCount()
@@ -1142,7 +1148,7 @@ class MainActivity : BaseActivity() {
                                         showOperationErrorsDialog(failed, lastOperationErrorDetails)
                                     } else {
                                         for (pkg in failed) {
-                                            val idx = appList.indexOfFirst { it.packageName == pkg }
+                                            val idx = appList.indexOfFirst { it.key == pkg }
                                             if (idx != -1) appList[idx] = appList[idx].copy(isSelected = !isChecked)
                                         }
                                         updateSelectedCount()
@@ -1161,7 +1167,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun toggleFavorite(appInfo: AppInfo) {
-        val idx = appList.indexOfFirst { it.packageName == appInfo.packageName }
+        val idx = appList.indexOfFirst { it.key == appInfo.key }
         if (idx != -1) {
             val newFavoriteState = !appList[idx].isFavorite
             appList[idx] = appList[idx].copy(isFavorite = newFavoriteState)
@@ -1170,17 +1176,17 @@ class MainActivity : BaseActivity() {
             
             // If we're viewing favorites and removed this item, remove it from filtered list
             if (currentCategory == Category.FAVORITES && !newFavoriteState) {
-                filteredAppList.removeAll { it.packageName == appInfo.packageName }
+                filteredAppList.removeAll { it.key == appInfo.key }
             } else if (currentCategory == Category.FAVORITES && newFavoriteState) {
                 // If we're viewing favorites and added this item, it should already be there
                 // but let's update it to be safe
-                val filteredIdx = filteredAppList.indexOfFirst { it.packageName == appInfo.packageName }
+                val filteredIdx = filteredAppList.indexOfFirst { it.key == appInfo.key }
                 if (filteredIdx != -1) {
                     filteredAppList[filteredIdx] = appList[idx]
                 }
             } else {
                 // For other categories, just update the item in place
-                val filteredIdx = filteredAppList.indexOfFirst { it.packageName == appInfo.packageName }
+                val filteredIdx = filteredAppList.indexOfFirst { it.key == appInfo.key }
                 if (filteredIdx != -1) {
                     filteredAppList[filteredIdx] = appList[idx]
                 }
@@ -1192,7 +1198,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun saveFavoriteApps() {
-        val favoritePackages = appList.filter { it.isFavorite }.map { it.packageName }.toSet()
+        val favoritePackages = appList.filter { it.isFavorite }.map { it.key }.toSet()
         sharedPreferences.edit()
             .putStringSet(KEY_FAVORITE_APPS, favoritePackages)
             .apply()
@@ -1236,6 +1242,7 @@ class MainActivity : BaseActivity() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sort, null)
         val radioGroup = dialogView.findViewById<RadioGroup>(R.id.radioGroupSort)
         val checkboxShowSystem = dialogView.findViewById<MaterialCheckBox>(R.id.checkboxShowSystemApps)
+        val checkboxShowOtherProfiles = dialogView.findViewById<MaterialCheckBox>(R.id.checkboxShowOtherProfiles)
 
         // Set current sort order
         when (currentSortOrder) {
@@ -1247,9 +1254,24 @@ class MainActivity : BaseActivity() {
         // Set current show system apps state
         checkboxShowSystem.isChecked = showSystemApps
         
-        // Disable show system apps checkbox when firewall is enabled to prevent list changes during active filtering
+        checkboxShowOtherProfiles.isChecked = showOtherProfiles
+
+        checkboxShowOtherProfiles.setOnCheckedChangeListener { _, isChecked ->
+            if (!isChecked && showOtherProfiles && appList.any { it.userId != 0 && it.isSelected }) {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.show_other_profiles)
+                    .setMessage(R.string.show_other_profiles_uncheck_confirm)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setNegativeButton(android.R.string.cancel) { _, _ ->
+                        checkboxShowOtherProfiles.isChecked = true
+                    }
+                    .show()
+            }
+        }
+
         if (isFirewallEnabled) {
             checkboxShowSystem.isEnabled = false
+            checkboxShowOtherProfiles.isEnabled = false
         }
 
         checkboxShowSystem.setOnCheckedChangeListener { _, isChecked ->
@@ -1310,6 +1332,29 @@ class MainActivity : BaseActivity() {
                     sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
                 } else if (sortChanged) {
                     sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = true)
+                }
+
+                val newShowOtherProfiles = checkboxShowOtherProfiles.isChecked
+                if (newShowOtherProfiles != showOtherProfiles) {
+                    showOtherProfiles = newShowOtherProfiles
+                    sharedPreferences.edit().putBoolean(KEY_SHOW_OTHER_PROFILES, showOtherProfiles).apply()
+
+                    if (!showOtherProfiles) {
+                        val hadSelection = appList.any { it.userId != 0 && it.isSelected }
+                        for (i in appList.indices) {
+                            if (appList[i].userId != 0 && appList[i].isSelected) {
+                                appList[i] = appList[i].copy(isSelected = false)
+                            }
+                        }
+                        if (hadSelection) {
+                            saveSelectedApps()
+                            updateSelectedCount()
+                        }
+
+                        MultiUserApps.clearCache(this)
+                    }
+
+                    loadInstalledApps(showLoadingIfListEmpty = true)
                 }
             }
             .setNegativeButton(android.R.string.cancel, null)
@@ -1404,12 +1449,12 @@ class MainActivity : BaseActivity() {
                 val selectedApps = appList.filter { it.isSelected }
                 val whitelistAllowPkgs = mutableListOf<String>()
                 val targetAppPkgs = if (firewallMode == FirewallMode.WHITELIST) {
-                    val selectedPkgs = selectedApps.map { it.packageName }
+                    val selectedPkgs = selectedApps.map { it.key }
                     val result = WhitelistFilter.compute(this, selectedPkgs, showSystemApps)
                     whitelistAllowPkgs.addAll(result.toAllow)
                     result.toBlock
                 } else {
-                    selectedApps.map { it.packageName }
+                    selectedApps.map { it.key }
                 }
                 
                 if (targetAppPkgs.isEmpty() && !firewallMode.allowsDynamicSelection()) {
@@ -1528,7 +1573,7 @@ class MainActivity : BaseActivity() {
         } catch (_: Exception) {}
     }
 
-    private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>, blockPkgs: List<String> = selectedApps.map { it.packageName }, whitelistAllowApps: List<String> = emptyList()) {
+    private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>, blockPkgs: List<String> = selectedApps.map { it.key }, whitelistAllowApps: List<String> = emptyList()) {
         // If user opted to skip the confirmation, directly apply the firewall
         val prefsLocal = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         if (prefsLocal.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
@@ -1652,11 +1697,20 @@ class MainActivity : BaseActivity() {
             val result = withContext(Dispatchers.IO) {
                 val pm = packageManager
                 val packages = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
-                
+
+                val secondarySnapshot = MultiUserApps.snapshot(this@MainActivity)
+
                 val installedPackageNames = packages.mapTo(HashSet(packages.size)) { it.packageName }
+                secondarySnapshot.apps.forEach { installedPackageNames.add(it.key) }
+
+                val secondaryScanUsable = secondarySnapshot.apps.isNotEmpty()
+                val isKnown = { key: String ->
+                    installedPackageNames.contains(key) ||
+                        (AppKey.isSecondary(key) && !secondaryScanUsable)
+                }
 
                 val savedActive = loadActivePackages().toMutableSet()
-                val activeToRemove = savedActive.filterNot { installedPackageNames.contains(it) }
+                val activeToRemove = savedActive.filterNot(isKnown)
                 val appsWereRemoved = activeToRemove.isNotEmpty()
 
                 if (appsWereRemoved) {
@@ -1665,7 +1719,7 @@ class MainActivity : BaseActivity() {
                 }
 
                 val savedSelected = loadSelectedApps().toMutableSet()
-                val selectedToRemove = savedSelected.filterNot { installedPackageNames.contains(it) }
+                val selectedToRemove = savedSelected.filterNot(isKnown)
                 // Remove this app itself from saved selected apps if present
                 val selfPkg = this@MainActivity.packageName
                 var selectedChanged = false
@@ -1719,8 +1773,16 @@ class MainActivity : BaseActivity() {
                         chunkResult
                     }
                 }.awaitAll().flatten()
-                
-                Triple(results, savedActive, appsWereRemoved)
+
+                val secondaryApps = buildSecondaryAppList(
+                    snapshot = secondarySnapshot,
+                    primaryApps = results,
+                    savedSelected = savedSelected,
+                    favoritePackages = favoritePackages,
+                    modesJson = modesJson
+                )
+
+                Triple(results + secondaryApps, savedActive, appsWereRemoved)
             }
 
             val builtList = result.first
@@ -1766,6 +1828,33 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private fun buildSecondaryAppList(
+        snapshot: MultiUserApps.Snapshot,
+        primaryApps: List<AppInfo>,
+        savedSelected: Set<String>,
+        favoritePackages: Set<String>,
+        modesJson: JSONObject
+    ): List<AppInfo> {
+        if (snapshot.apps.isEmpty()) return emptyList()
+        val primaryByPackage = primaryApps.associateBy { it.packageName }
+
+        return snapshot.apps.map { app ->
+            val base = primaryByPackage[app.packageName]
+            val key = app.key
+            AppInfo(
+                appName = base?.appName ?: app.packageName,
+                packageName = app.packageName,
+                isSelected = savedSelected.contains(key),
+                isSystem = base?.isSystem ?: false,
+                isFavorite = favoritePackages.contains(key),
+                installTime = base?.installTime ?: 0L,
+                appFirewallMode = modesJson.optInt(key, 0),
+                userId = app.userId,
+                uid = app.uid
+            )
+        }
+    }
+
     private fun restoreAppListFromCache(): Boolean {
         val json = sharedPreferences.getString(KEY_APPS_CACHE_JSON, null) ?: return false
         val selectedPackages = loadSelectedApps()
@@ -1780,16 +1869,20 @@ class MainActivity : BaseActivity() {
                 val obj = arr.optJSONObject(i) ?: continue
                 val packageName = obj.optString("packageName")
                 if (packageName.isBlank()) continue
+                val userId = obj.optInt("userId", 0)
+                val key = AppKey.of(userId, packageName)
 
                 parsed.add(
                     AppInfo(
                         appName = obj.optString("appName", packageName),
                         packageName = packageName,
-                        isSelected = selectedPackages.contains(packageName),
+                        isSelected = selectedPackages.contains(key),
                         isSystem = obj.optBoolean("isSystem", false),
-                        isFavorite = favoritePackages.contains(packageName),
+                        isFavorite = favoritePackages.contains(key),
                         installTime = obj.optLong("installTime", 0L),
-                        appFirewallMode = modesJson.optInt(packageName, 0)
+                        appFirewallMode = modesJson.optInt(key, 0),
+                        userId = userId,
+                        uid = obj.optInt("uid", -1)
                     )
                 )
             }
@@ -1816,6 +1909,8 @@ class MainActivity : BaseActivity() {
                     put("isSystem", app.isSystem)
                     put("installTime", app.installTime)
                     put("appFirewallMode", app.appFirewallMode)
+                    put("userId", app.userId)
+                    put("uid", app.uid)
                 }
             )
         }
@@ -1833,12 +1928,12 @@ class MainActivity : BaseActivity() {
     private fun saveSelectedApps() {
         val selectedPackages = appList
             .filter { it.isSelected && !ShizukuPackageResolver.isShizukuPackage(this, it.packageName) }
-            .map { it.packageName }
+            .map { it.key }
             .toSet()
-            
+
         val modesJson = JSONObject()
         appList.filter { it.appFirewallMode != 0 }.forEach {
-            modesJson.put(it.packageName, it.appFirewallMode)
+            modesJson.put(it.key, it.appFirewallMode)
         }
             
         sharedPreferences.edit()
@@ -2111,7 +2206,7 @@ class MainActivity : BaseActivity() {
                 // Only unselect if user hasn't opted to keep them selected
                 if (!(skipErrorDialog && keepErrorAppsSelected)) {
                     for (pkg in failed) {
-                        val idx = appList.indexOfFirst { it.packageName == pkg }
+                        val idx = appList.indexOfFirst { it.key == pkg }
                         if (idx != -1) {
                             if (firewallMode == FirewallMode.WHITELIST) {
                                 // For whitelist mode: If we failed to block/unblock during enable/disable, invert.
@@ -2153,10 +2248,16 @@ class MainActivity : BaseActivity() {
         val installed = mutableListOf<String>()
         val missing = mutableListOf<String>()
         val pm = packageManager
+        val secondaryKeys = MultiUserApps.cachedSnapshot(this).apps.mapTo(HashSet()) { it.key }
         for (pkg in packageNames) {
             // Treat Shizuku packages as "missing" / never-operable
-            if (ShizukuPackageResolver.isShizukuPackage(this, pkg)) {
+            if (ShizukuPackageResolver.isShizukuPackage(this, AppKey.packageOf(pkg))) {
                 missing.add(pkg)
+                continue
+            }
+
+            if (AppKey.isSecondary(pkg)) {
+                if (secondaryKeys.contains(pkg)) installed.add(pkg) else missing.add(pkg)
                 continue
             }
             try {
@@ -2222,7 +2323,7 @@ class MainActivity : BaseActivity() {
         val failed = mutableListOf<String>()
         lastOperationErrorDetails.clear()
 
-        val toUnblock = packageNames.toMutableList()
+        val toUnblock = packageNames.sortedBy { AppKey.isSecondary(it) }.toMutableList()
         if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || firewallMode == FirewallMode.FOCUS_TRACKER) {
             val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
             if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
@@ -2303,14 +2404,14 @@ class MainActivity : BaseActivity() {
             val it = appList.iterator()
             while (it.hasNext()) {
                 val ai = it.next()
-                if (ai.packageName == pkg) {
+                if (ai.userId == 0 && ai.packageName == pkg) {
                     it.remove()
                     changed = true
                 }
             }
             if (changed) {
                 // update filtered list and UI
-                filteredAppList.removeAll { it.packageName == pkg }
+                filteredAppList.removeAll { it.userId == 0 && it.packageName == pkg }
 
                 // Remove from active firewall set and persist
                 activeFirewallPackages.remove(pkg)
@@ -2358,7 +2459,7 @@ class MainActivity : BaseActivity() {
                 if (ShizukuPackageResolver.isShizukuPackage(this@MainActivity, appInfo.packageName)) return@let
 
                 // Avoid duplicates (in case it was already present)
-                if (appList.any { it.packageName == appInfo.packageName }) return@let
+                if (appList.any { it.key == appInfo.key }) return@let
                 appList.add(appInfo)
                 sortAndFilterApps(preserveScrollPosition = false)
                 updateSelectedCount()
@@ -2393,7 +2494,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun showOperationErrorsDialog(failedPackages: List<String>, errorDetails: Map<String, String> = emptyMap()) {
-        val failedApps = appList.filter { it.packageName in failedPackages }
+        val failedApps = appList.filter { it.key in failedPackages }
         if (failedApps.isEmpty()) return
 
         // Check if user opted to skip error dialogs
@@ -2574,7 +2675,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun showErrorDetailsDialog(failedPackages: List<String>, errorDetails: Map<String, String> = emptyMap()) {
-        val failedApps = appList.filter { it.packageName in failedPackages }
+        val failedApps = appList.filter { it.key in failedPackages }
         if (failedApps.isEmpty()) return
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_error_details, null)

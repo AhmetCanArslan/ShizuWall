@@ -450,4 +450,7 @@
     <string name="tracker_db_title">İzleyici tanımları</string>
     <string name="tracker_db_description">%1$d izleyici imzası, uygulamayla birlikte gelir. Tespit tamamen çevrimdışı çalışır.</string>
     <string name="tracker_data_attribution">İzleyici verisi: Exodus Privacy, ODbL 1.0</string>
+    <string name="show_other_profiles">Diğer profillerdeki uygulamalar</string>
+    <string name="show_other_profiles_description">İş profili, gizli alan, Güvenli Klasör ve klonlanmış uygulamalar</string>
+    <string name="show_other_profiles_uncheck_confirm">Diğer profillerden seçili tüm uygulamaların seçimi kaldırılacak ve varsayılan durumuna sıfırlanacak. İşareti kaldırmak istiyor musunuz?</string>
 </resources>

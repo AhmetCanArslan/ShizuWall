@@ -455,4 +455,7 @@
     <string name="tracker_db_title">Tracker definitions</string>
     <string name="tracker_db_description">%1$d tracker signatures, bundled with the app. Detection runs entirely offline.</string>
     <string name="tracker_data_attribution">Tracker data: Exodus Privacy, ODbL 1.0</string>
+    <string name="show_other_profiles">Show apps in other profiles</string>
+    <string name="show_other_profiles_description">Work profile, private space, Secure Folder and cloned apps</string>
+    <string name="show_other_profiles_uncheck_confirm">Any selected app from another profile will be unselected and reset to its default state. Do you want to un-check it?</string>
 </resources>

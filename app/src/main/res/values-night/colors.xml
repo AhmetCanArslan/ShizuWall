@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Lifted maroon: the light-theme tone falls below readable contrast on a dark surface. -->
+    <color name="filtering_note">#FFE58A96</color>
+</resources>

@@ -37,6 +37,13 @@ object WhitelistFilter {
                 toBlock.add(pInfo.packageName)
             }
         }
+
+        // Apps in other Android users are invisible to PackageManager, so whitelist mode would
+        // silently leave every clone unblocked without this.
+        for (app in MultiUserApps.cachedSnapshot(context).apps) {
+            if (selectedPkgs.contains(app.key)) toAllow.add(app.key) else toBlock.add(app.key)
+        }
+
         return WhitelistResult(toBlock, toAllow)
     }
 }

@@ -7,6 +7,8 @@ import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.daemon.PersistentDaemonManager
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.ui.MainActivity
+import com.arslan.shizuwall.utils.AppKey
+import com.arslan.shizuwall.utils.MultiUserApps
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,23 +17,12 @@ import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
 
-/**
- * Denies networking for a single uid instead of a whole appId.
- *
- * `cmd connectivity set-package-networking-enabled false <pkg>` writes the deny bit for the
- * package's appId in every Android user, so it also blocks work profile / Secure Folder clones
- * (#126). The shell has no per-uid command for this chain, so the rule goes through
- * IConnectivityManager.setUidFirewallRule instead, from a process holding the permission it
- * requires: Shizuku, the LADB daemon, or app_process under root.
- *
- * Only blocking goes through here — unblocking stays on the shell command, whose fan-out clears
- * leftovers in the other profiles.
- */
 object PerUidFirewall {
 
     private const val TAG = "PerUidFirewall"
     private const val CHAIN_OEM_DENY_3 = 9
-    private const val RULE_DENY = 2
+    const val RULE_DEFAULT = 0
+    const val RULE_DENY = 2
     // Keep in sync with SystemDaemon.FW_UID_RULE_COMMAND.
     private const val DAEMON_COMMAND = "fw-uid-rule"
     private const val DAEMON_ASSET_NAME = "daemon.bin"
@@ -40,22 +31,30 @@ object PerUidFirewall {
     @Volatile
     private var hiddenApisUnlocked = false
 
-    /** Returns false when the call is not possible, so callers can fall back to the shell command. */
-    suspend fun blockPackage(context: Context, packageName: String): Boolean = withContext(Dispatchers.IO) {
-        val uid = try {
-            context.packageManager.getApplicationInfo(packageName, 0).uid
-        } catch (_: Exception) {
-            return@withContext false
-        }
+    suspend fun setRule(context: Context, key: String, rule: Int): Boolean = withContext(Dispatchers.IO) {
+        val uid = resolveUid(context, key) ?: return@withContext false
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
-            WorkingMode.SHIZUKU -> blockViaShizuku(uid)
-            WorkingMode.LADB -> blockViaDaemon(context, uid)
-            WorkingMode.ROOT -> blockViaRoot(context, uid)
+            WorkingMode.SHIZUKU -> applyViaShizuku(uid, rule)
+            WorkingMode.LADB -> applyViaDaemon(context, uid, rule)
+            WorkingMode.ROOT -> applyViaRoot(context, uid, rule)
         }
     }
 
-    private fun blockViaShizuku(uid: Int): Boolean {
+    suspend fun blockPackage(context: Context, packageName: String): Boolean =
+        setRule(context, packageName, RULE_DENY)
+
+
+    private fun resolveUid(context: Context, key: String): Int? {
+        if (AppKey.isSecondary(key)) return MultiUserApps.cachedUid(context, key)
+        return try {
+            context.packageManager.getApplicationInfo(key, 0).uid
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun applyViaShizuku(uid: Int, rule: Int): Boolean {
         return try {
             if (!Shizuku.pingBinder()) return false
             unlockHiddenApis()
@@ -69,32 +68,32 @@ object PerUidFirewall {
                 Int::class.javaPrimitiveType,
                 Int::class.javaPrimitiveType,
                 Int::class.javaPrimitiveType
-            ).invoke(service, CHAIN_OEM_DENY_3, uid, RULE_DENY)
+            ).invoke(service, CHAIN_OEM_DENY_3, uid, rule)
             true
         } catch (t: Throwable) {
-            Log.w(TAG, "Per-uid block via Shizuku failed for uid $uid", t)
+            Log.w(TAG, "Per-uid rule $rule via Shizuku failed for uid $uid", t)
             false
         }
     }
 
-    private suspend fun blockViaDaemon(context: Context, uid: Int): Boolean {
+    private suspend fun applyViaDaemon(context: Context, uid: Int, rule: Int): Boolean {
         return try {
             val response = PersistentDaemonManager(context)
-                .executeCommand("$DAEMON_COMMAND $uid $RULE_DENY")
+                .executeCommand("$DAEMON_COMMAND $uid $rule")
                 .trim()
             if (!response.startsWith("OK")) {
-                Log.w(TAG, "Daemon rejected per-uid block for $uid: $response")
+                Log.w(TAG, "Daemon rejected per-uid rule $rule for $uid: $response")
                 return false
             }
             true
         } catch (t: Throwable) {
-            Log.w(TAG, "Per-uid block via daemon failed for uid $uid", t)
+            Log.w(TAG, "Per-uid rule $rule via daemon failed for uid $uid", t)
             false
         }
     }
 
     // Root has no privileged process to talk to, so run the daemon class for this one rule.
-    private suspend fun blockViaRoot(context: Context, uid: Int): Boolean {
+    private suspend fun applyViaRoot(context: Context, uid: Int, rule: Int): Boolean {
         return try {
             val dex = File(context.cacheDir, DAEMON_DEX_NAME)
             if (!dex.exists()) {
@@ -104,15 +103,15 @@ object PerUidFirewall {
             }
             val result = RootShellExecutor().exec(
                 "CLASSPATH=${dex.absolutePath} app_process / " +
-                    "com.arslan.shizuwall.daemon.SystemDaemon $DAEMON_COMMAND $uid $RULE_DENY"
+                    "com.arslan.shizuwall.daemon.SystemDaemon $DAEMON_COMMAND $uid $rule"
             )
             val ok = result.success && result.stdout.trim().startsWith("OK")
             if (!ok) {
-                Log.w(TAG, "Root rejected per-uid block for $uid: ${result.stdout}${result.stderr}")
+                Log.w(TAG, "Root rejected per-uid rule $rule for $uid: ${result.stdout}${result.stderr}")
             }
             ok
         } catch (t: Throwable) {
-            Log.w(TAG, "Per-uid block via root failed for uid $uid", t)
+            Log.w(TAG, "Per-uid rule $rule via root failed for uid $uid", t)
             false
         }
     }

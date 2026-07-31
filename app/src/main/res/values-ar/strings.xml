@@ -458,4 +458,7 @@
     <string name="tracker_db_title">تعريفات المتتبعات</string>
     <string name="tracker_db_description">%1$d توقيع متتبع، مضمّنة مع التطبيق. يعمل الكشف دون اتصال بالإنترنت تمامًا.</string>
     <string name="tracker_data_attribution">بيانات المتتبعات: Exodus Privacy، ODbL 1.0</string>
+    <string name="show_other_profiles">إظهار التطبيقات في الملفات الشخصية الأخرى</string>
+    <string name="show_other_profiles_description">ملف العمل والمساحة الخاصة و Secure Folder والتطبيقات المستنسخة</string>
+    <string name="show_other_profiles_uncheck_confirm">سيتم إلغاء تحديد أي تطبيق محدد من ملف شخصي آخر وإعادته إلى حالته الافتراضية. هل تريد إلغاء التحديد؟</string>
 </resources>

@@ -454,4 +454,7 @@
     <string name="tracker_db_title">База трекеров</string>
     <string name="tracker_db_description">Сигнатур трекеров: %1$d, входят в приложение. Обнаружение работает полностью офлайн.</string>
     <string name="tracker_data_attribution">Данные о трекерах: Exodus Privacy, ODbL 1.0</string>
+    <string name="show_other_profiles">Показывать приложения из других профилей</string>
+    <string name="show_other_profiles_description">Рабочий профиль, приватное пространство, Secure Folder и клоны приложений</string>
+    <string name="show_other_profiles_uncheck_confirm">Все выбранные приложения из других профилей будут сняты с выбора и возвращены в исходное состояние. Снять флажок?</string>
 </resources>

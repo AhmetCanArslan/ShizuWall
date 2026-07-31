@@ -25,11 +25,12 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.UiUtils
 
 class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
     override fun areItemsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
-        return oldItem.packageName == newItem.packageName
+        return oldItem.key == newItem.key
     }
 
     override fun areContentsTheSame(oldItem: AppInfo, newItem: AppInfo): Boolean {
@@ -86,6 +87,7 @@ class AppListAdapter(
         val appName: TextView = itemView.findViewById(R.id.appName)
         val packageName: TextView = itemView.findViewById(R.id.packageName)
         val appSwitch: ImageView = itemView.findViewById(R.id.appSwitch)
+        val profileBadge: TextView = itemView.findViewById(R.id.profileBadge)
         val modeDropdownText: MaterialButton = itemView.findViewById(R.id.modeDropdownText)
 
 
@@ -109,7 +111,6 @@ class AppListAdapter(
         }
 
         fun bind(appInfo: AppInfo) {
-            // Load icon async
             val pkg = appInfo.packageName
             appIcon.tag = pkg
             appIcon.setImageDrawable(null) // Clear previous
@@ -141,6 +142,13 @@ class AppListAdapter(
                 appInfo.appName
             }
             packageName.text = appInfo.packageName
+
+            if (appInfo.userId != 0) {
+                profileBadge.visibility = View.VISIBLE
+                profileBadge.text = MultiUserApps.userLabel(itemView.context, appInfo.userId)
+            } else {
+                profileBadge.visibility = View.GONE
+            }
 
             appIcon.setOnClickListener { onAppIconClick(appInfo) }
             appIcon.contentDescription = itemView.context.getString(

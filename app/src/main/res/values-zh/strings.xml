@@ -449,4 +449,7 @@
     <string name="tracker_db_title">追踪器定义</string>
     <string name="tracker_db_description">%1$d 条追踪器特征，随应用附带。检测完全离线运行。</string>
     <string name="tracker_data_attribution">追踪器数据：Exodus Privacy，ODbL 1.0</string>
+    <string name="show_other_profiles">显示其他配置文件中的应用</string>
+    <string name="show_other_profiles_description">工作资料、私密空间、安全文件夹和克隆应用</string>
+    <string name="show_other_profiles_uncheck_confirm">其他配置文件中已选择的应用将被取消选择并重置为默认状态。要取消勾选吗？</string>
 </resources>
