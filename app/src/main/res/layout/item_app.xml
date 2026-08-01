@@ -26,9 +26,7 @@
                 android:id="@+id/appIcon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
+                android:importantForAccessibility="no"
                 android:scaleType="fitCenter" />
 
             <LinearLayout
@@ -106,10 +104,22 @@
                 android:minWidth="0dp"
                 android:minHeight="0dp"
                 android:padding="0dp"
-                android:layout_marginEnd="6dp"
+                android:layout_marginEnd="12dp"
                 android:visibility="gone"
                 app:cornerRadius="8dp"
                 app:iconSize="22dp" />
+
+            <ImageView
+                android:id="@+id/appInfoButton"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="2dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/info_24px" />
 
             <ImageView
                 android:id="@+id/appSwitch"

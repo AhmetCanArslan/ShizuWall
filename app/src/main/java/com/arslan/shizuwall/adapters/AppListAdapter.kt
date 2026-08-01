@@ -89,6 +89,7 @@ class AppListAdapter(
         val appSwitch: ImageView = itemView.findViewById(R.id.appSwitch)
         val profileBadge: TextView = itemView.findViewById(R.id.profileBadge)
         val modeDropdownText: MaterialButton = itemView.findViewById(R.id.modeDropdownText)
+        val appInfoButton: ImageView = itemView.findViewById(R.id.appInfoButton)
 
 
         private fun buildFavoriteName(name: String): CharSequence {
@@ -150,9 +151,14 @@ class AppListAdapter(
                 profileBadge.visibility = View.GONE
             }
 
-            appIcon.setOnClickListener { onAppIconClick(appInfo) }
-            appIcon.contentDescription = itemView.context.getString(
+            appInfoButton.setOnClickListener { onAppIconClick(appInfo) }
+            appInfoButton.contentDescription = itemView.context.getString(
                 R.string.app_info_icon_content_description, appInfo.appName
+            )
+            appInfoButton.imageTintList = android.content.res.ColorStateList.valueOf(
+                MaterialColors.getColor(
+                    itemView, com.google.android.material.R.attr.colorOnSurfaceVariant
+                )
             )
 
             if (appInfo.isSelected && isHybridMode) {
