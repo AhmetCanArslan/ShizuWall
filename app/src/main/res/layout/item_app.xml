@@ -36,8 +36,6 @@
                 android:layout_marginStart="16dp"
                 android:orientation="vertical">
 
-                <!-- Name + profile badge share one row; name shrinks so the badge stays glued
-                     to its end instead of being pushed to the far right. -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -59,8 +57,6 @@
                         app:layout_constraintEnd_toStartOf="@id/profileBadge"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <!-- Names the Android user of apps outside the primary profile: work profile,
-                         private space, Secure Folder, app clones. Hidden for user 0. -->
                     <TextView
                         android:id="@+id/profileBadge"
                         android:layout_width="wrap_content"

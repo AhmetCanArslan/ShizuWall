@@ -11,7 +11,6 @@ import org.json.JSONObject
 object MultiUserApps {
 
     private const val TAG = "MultiUserApps"
-    private const val CACHE_TTL_MS = 5 * 60 * 1000L
 
     private val USER_LINE = Regex("""UserInfo\{(\d+):([^:]*):""")
     private val PACKAGE_LINE = Regex("""^package:(\S+)\s+uid:(\d+)$""")
@@ -36,11 +35,8 @@ object MultiUserApps {
     fun isEnabled(context: Context): Boolean =
         prefs(context).getBoolean(MainActivity.KEY_SHOW_OTHER_PROFILES, false)
 
-    suspend fun snapshot(context: Context, forceRefresh: Boolean = false): Snapshot {
+    suspend fun snapshot(context: Context): Snapshot {
         val cached = readCache(context)
-        val age = System.currentTimeMillis() - prefs(context).getLong(KEY_CACHE_TS, 0L)
-        if (!forceRefresh && cached != null && age < CACHE_TTL_MS) return cached
-
         val scanned = scan(context)
         return when {
             scanned != null -> {
@@ -114,7 +110,6 @@ object MultiUserApps {
     }
 
     private const val KEY_CACHE = "secondary_user_apps_cache"
-    private const val KEY_CACHE_TS = "secondary_user_apps_cache_ts"
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
@@ -138,7 +133,6 @@ object MultiUserApps {
         }
         prefs(context).edit()
             .putString(KEY_CACHE, root.toString())
-            .putLong(KEY_CACHE_TS, System.currentTimeMillis())
             .apply()
     }
 
@@ -167,6 +161,6 @@ object MultiUserApps {
     }
 
     fun clearCache(context: Context) {
-        prefs(context).edit().remove(KEY_CACHE).remove(KEY_CACHE_TS).apply()
+        prefs(context).edit().remove(KEY_CACHE).apply()
     }
 }
