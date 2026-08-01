@@ -38,14 +38,52 @@
                 android:layout_marginStart="16dp"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/appName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:importantForAccessibility="no"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface" />
+                <!-- Name + profile badge share one row; name shrinks so the badge stays glued
+                     to its end instead of being pushed to the far right. -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/appName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:importantForAccessibility="no"
+                        android:maxLines="1"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface"
+                        app:layout_constrainedWidth="true"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintHorizontal_chainStyle="packed"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/profileBadge"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- Names the Android user of apps outside the primary profile: work profile,
+                         private space, Secure Folder, app clones. Hidden for user 0. -->
+                    <TextView
+                        android:id="@+id/profileBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="2dp"
+                        android:background="@drawable/bg_profile_badge"
+                        android:importantForAccessibility="no"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        android:textColor="?attr/colorOnTertiaryContainer"
+                        app:layout_constraintStart_toEndOf="@id/appName"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintBottom_toBottomOf="@id/appName"
+                        app:layout_constraintTop_toTopOf="@id/appName"
+                        app:layout_goneMarginStart="0dp" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
                     android:id="@+id/packageName"
@@ -55,22 +93,6 @@
                     android:importantForAccessibility="no"
                     android:textSize="12sp"
                     android:textColor="?attr/colorOnSurfaceVariant" />
-
-                <!-- Names the Android user of apps outside the primary profile: work profile,
-                     private space, Secure Folder, app clones. Hidden for user 0. -->
-                <TextView
-                    android:id="@+id/profileBadge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="2dp"
-                    android:background="@drawable/bg_profile_badge"
-                    android:importantForAccessibility="no"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    android:textColor="?attr/colorOnTertiaryContainer" />
 
             </LinearLayout>
 
