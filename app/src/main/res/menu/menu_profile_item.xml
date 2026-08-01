@@ -5,6 +5,10 @@
         android:icon="@drawable/ic_edit_24px"
         android:title="@string/profile_rename" />
     <item
+        android:id="@+id/action_profile_icon"
+        android:icon="@drawable/ic_picon_palette"
+        android:title="@string/profile_change_icon" />
+    <item
         android:id="@+id/action_profile_update"
         android:icon="@drawable/content_copy_24px"
         android:title="@string/profile_update_to_current" />

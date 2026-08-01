@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.model.Profile
+import com.arslan.shizuwall.profiles.ProfileIcons
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 
@@ -75,6 +76,8 @@ class ProfileAdapter(
             val appsLabel = ctx.resources.getQuantityString(R.plurals.profile_app_count, count, count)
             val modeLabel = friendlyModeName(ctx, profile.firewallMode)
             subtitle.text = ctx.getString(R.string.profile_subtitle_format, appsLabel, modeLabel)
+
+            glyph.setImageResource(ProfileIcons.resFor(profile.icon))
 
             avatar.setBackgroundResource(
                 if (isActive) R.drawable.profile_avatar_bg_active else R.drawable.profile_avatar_bg

@@ -410,6 +410,7 @@ class MainActivity : BaseActivity() {
 
         val profileButton: View? = findViewById(R.id.profileButton)
         profileButton?.setOnClickListener { showProfilesSheet() }
+        updateProfileButtonIcon()
 
         val sortButton: View? = findViewById(R.id.sortButton)
         sortButton?.setOnClickListener { showSortDialog() }
@@ -1950,6 +1951,7 @@ class MainActivity : BaseActivity() {
         val profile = com.arslan.shizuwall.profiles.ProfilesStore.getById(this, activeId)
         if (profile == null) {
             com.arslan.shizuwall.profiles.ProfilesStore.setActiveProfileId(this, null)
+            updateProfileButtonIcon()
             return
         }
         val currentPackages = sharedPreferences.getStringSet(KEY_SELECTED_APPS, emptySet()) ?: emptySet()
@@ -1962,6 +1964,7 @@ class MainActivity : BaseActivity() {
             parseAppModes(profile.appModesJson) == parseAppModes(sharedPreferences.getString(KEY_APP_MODES, "{}"))
         if (!matches) {
             com.arslan.shizuwall.profiles.ProfilesStore.setActiveProfileId(this, null)
+            updateProfileButtonIcon()
         }
     }
 
@@ -2728,10 +2731,23 @@ class MainActivity : BaseActivity() {
 
     private var profilesBottomSheet: ProfilesBottomSheet? = null
 
+    private fun updateProfileButtonIcon() {
+        val button = findViewById<android.widget.ImageView>(R.id.profileButton) ?: return
+        val active = com.arslan.shizuwall.profiles.ProfilesStore.activeProfile(this)
+        button.setImageResource(
+            if (active == null) R.drawable.ic_profiles_24px
+            else com.arslan.shizuwall.profiles.ProfileIcons.resFor(active.icon)
+        )
+    }
+
     private fun showProfilesSheet() {
         val sheet = ProfilesBottomSheet(this, object : ProfilesBottomSheet.Listener {
             override fun onActivateProfile(profile: com.arslan.shizuwall.model.Profile) {
                 activateProfile(profile)
+            }
+
+            override fun onProfilesChanged() {
+                updateProfileButtonIcon()
             }
         })
         profilesBottomSheet = sheet
@@ -2742,6 +2758,7 @@ class MainActivity : BaseActivity() {
         val oldActive = activeFirewallPackages.toList()
 
         com.arslan.shizuwall.profiles.ProfilesStore.writeSelectionFromProfile(this, profile)
+        updateProfileButtonIcon()
 
         firewallMode = FirewallMode.fromName(profile.firewallMode)
         showSystemApps = profile.showSystemApps

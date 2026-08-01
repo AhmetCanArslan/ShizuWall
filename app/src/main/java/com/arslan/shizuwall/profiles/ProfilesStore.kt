@@ -78,6 +78,13 @@ object ProfilesStore {
         saveProfiles(p, updated)
     }
 
+    fun activeProfile(context: Context): Profile? =
+        activeProfileId(context)?.let { getById(context, it) }
+
+    fun setIcon(context: Context, id: String, iconKey: String) {
+        getById(context, id)?.let { update(context, it.copy(icon = iconKey)) }
+    }
+
     fun rename(context: Context, id: String, newName: String) {
         getById(context, id)?.let { update(context, it.copy(name = newName.trim())) }
     }

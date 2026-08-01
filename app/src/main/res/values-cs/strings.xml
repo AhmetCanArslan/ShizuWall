@@ -410,6 +410,7 @@
         <item quantity="other">%d aplikací</item>
     </plurals>
     <string name="profile_rename">Přejmenovat</string>
+    <string name="profile_change_icon">Změnit ikonu</string>
     <string name="profile_update_to_current">Aktualizovat na aktuální výběr</string>
     <string name="profile_update_action">Aktualizovat</string>
     <string name="profile_update_confirm">Přepsat \"%1$s\" aktuálně vybranými aplikacemi a režimem?</string>

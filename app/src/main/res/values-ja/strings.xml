@@ -406,6 +406,7 @@
         <item quantity="other">%d 個のアプリ</item>
     </plurals>
     <string name="profile_rename">名前を変更</string>
+    <string name="profile_change_icon">アイコンを変更</string>
     <string name="profile_update_to_current">現在の選択で更新</string>
     <string name="profile_update_action">更新</string>
     <string name="profile_update_confirm">「%1$s」を現在選択中のアプリとモードで上書きしますか？</string>

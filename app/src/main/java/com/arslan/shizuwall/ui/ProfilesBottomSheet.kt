@@ -28,6 +28,8 @@ class ProfilesBottomSheet(
 
     interface Listener {
         fun onActivateProfile(profile: Profile)
+
+        fun onProfilesChanged() {}
     }
 
     private val dialog = BottomSheetDialog(context)
@@ -109,6 +111,7 @@ class ProfilesBottomSheet(
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_profile_rename -> { promptRename(profile); true }
+                R.id.action_profile_icon -> { promptChangeIcon(profile); true }
                 R.id.action_profile_update -> { updateToCurrent(profile); true }
                 R.id.action_profile_automation -> { showAutomationDialog(profile); true }
                 R.id.action_profile_delete -> { confirmDelete(profile); true }
@@ -135,6 +138,7 @@ class ProfilesBottomSheet(
             )
             ProfilesStore.setActiveProfileId(context, profile.id)
             refresh(playLayoutAnim = true)
+            listener.onProfilesChanged()
             Toast.makeText(context, context.getString(R.string.profile_saved, name), Toast.LENGTH_SHORT).show()
         }
     }
@@ -147,6 +151,14 @@ class ProfilesBottomSheet(
         ) { name ->
             ProfilesStore.rename(context, profile.id, name)
             refresh(playLayoutAnim = false)
+        }
+    }
+
+    private fun promptChangeIcon(profile: Profile) {
+        ProfileIconPickerDialog.show(context, profile.icon) { iconKey ->
+            ProfilesStore.setIcon(context, profile.id, iconKey)
+            refresh(playLayoutAnim = false)
+            listener.onProfilesChanged()
         }
     }
 
@@ -168,6 +180,7 @@ class ProfilesBottomSheet(
                 )
                 ProfilesStore.setActiveProfileId(context, profile.id)
                 refresh(playLayoutAnim = false)
+                listener.onProfilesChanged()
                 Toast.makeText(context, context.getString(R.string.profile_updated, profile.name), Toast.LENGTH_SHORT).show()
             }
             .show()
@@ -247,6 +260,7 @@ class ProfilesBottomSheet(
             .setPositiveButton(R.string.profile_delete) { _, _ ->
                 ProfilesStore.delete(context, profile.id)
                 refresh(playLayoutAnim = false)
+                listener.onProfilesChanged()
             }
             .show()
     }

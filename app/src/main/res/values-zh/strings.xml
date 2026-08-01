@@ -404,6 +404,7 @@
         <item quantity="other">%d 个应用</item>
     </plurals>
     <string name="profile_rename">重命名</string>
+    <string name="profile_change_icon">更改图标</string>
     <string name="profile_update_to_current">更新为当前选择</string>
     <string name="profile_update_action">更新</string>
     <string name="profile_update_confirm">用当前所选的应用和模式覆盖“%1$s”？</string>

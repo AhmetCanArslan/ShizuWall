@@ -407,6 +407,7 @@
         <item quantity="other">%d apps</item>
     </plurals>
     <string name="profile_rename">Cambiar nombre</string>
+    <string name="profile_change_icon">Cambiar icono</string>
     <string name="profile_update_to_current">Actualizar con la selección actual</string>
     <string name="profile_update_action">Actualizar</string>
     <string name="profile_update_confirm">¿Sobrescribir \"%1$s\" con las apps y el modo seleccionados actualmente?</string>

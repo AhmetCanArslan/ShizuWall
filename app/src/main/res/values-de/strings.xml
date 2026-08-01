@@ -404,6 +404,7 @@
         <item quantity="other">%d Apps</item>
     </plurals>
     <string name="profile_rename">Umbenennen</string>
+    <string name="profile_change_icon">Symbol ändern</string>
     <string name="profile_update_to_current">Auf aktuelle Auswahl aktualisieren</string>
     <string name="profile_update_action">Aktualisieren</string>
     <string name="profile_update_confirm">\"%1$s\" mit den aktuell ausgewählten Apps und dem Modus überschreiben?</string>
