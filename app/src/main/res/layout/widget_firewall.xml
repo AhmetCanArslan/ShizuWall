@@ -3,6 +3,7 @@
     android:id="@+id/widget_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/widget_bg_system"
     android:orientation="vertical"
     android:padding="8dp"
     android:gravity="center">
@@ -11,7 +12,7 @@
         android:id="@+id/widget_icon"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:src="@drawable/ic_quick_tile"
+        android:src="@drawable/ic_widget_network_allowed"
         android:contentDescription="@string/firewall" />
 
 </LinearLayout>

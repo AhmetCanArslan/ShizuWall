@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 class ProfileControlReceiver : BroadcastReceiver() {
 
     companion object {
+        const val EXTRA_FORCE_ENABLE = "force_enable"
         private const val TAG = "ProfileControl"
     }
 
@@ -54,8 +55,9 @@ class ProfileControlReceiver : BroadcastReceiver() {
                 ProfilesStore.writeSelectionFromProfile(context, profile)
 
                 val autoEnable = prefs.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_PROFILE_ACTIVATE, false)
+                val forceEnable = intent.getBooleanExtra(EXTRA_FORCE_ENABLE, false)
 
-                if (wasEnabled || autoEnable) {
+                if (wasEnabled || autoEnable || forceEnable) {
                     val executor = ShellExecutorProvider.forContext(context)
                     for (pkg in oldActive) {
                         try {
@@ -68,6 +70,7 @@ class ProfileControlReceiver : BroadcastReceiver() {
                         action = MainActivity.ACTION_FIREWALL_CONTROL
                         putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)
                         putExtra(FirewallControlReceiver.EXTRA_AUTOMATION_EVENT, true)
+                        addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES or Intent.FLAG_RECEIVER_FOREGROUND)
                     }
                     context.sendBroadcast(enableIntent)
                 } else {
@@ -77,12 +80,14 @@ class ProfileControlReceiver : BroadcastReceiver() {
                     context.sendBroadcast(updateIntent)
                 }
 
+                val message = if (!wasEnabled && (autoEnable || forceEnable)) {
+                    context.getString(R.string.profile_switched_firewall_on, profile.name)
+                } else {
+                    context.getString(R.string.profile_switched, profile.name)
+                }
+
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.profile_switched, profile.name),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }
             } catch (t: Throwable) {
                 android.util.Log.e(TAG, "Failed to activate profile", t)

@@ -123,6 +123,7 @@ class MainActivity : BaseActivity() {
         const val KEY_PROFILES = "profiles_json"
         const val KEY_ACTIVE_PROFILE_ID = "active_profile_id"
         const val KEY_AUTO_ENABLE_ON_PROFILE_ACTIVATE = "auto_enable_on_profile_activate"
+        const val KEY_TILE_COLLAPSE_SHADE = "tile_collapse_shade"
         private const val KEY_APPS_CACHE_JSON = "apps_cache_json_v1"
 
         const val ACTION_PROFILE_CONTROL = "shizuwall.PROFILE"
@@ -411,6 +412,7 @@ class MainActivity : BaseActivity() {
         val profileButton: View? = findViewById(R.id.profileButton)
         profileButton?.setOnClickListener { showProfilesSheet() }
         updateProfileButtonIcon()
+        com.arslan.shizuwall.profiles.ProfileTileSlots.sync(this)
 
         val sortButton: View? = findViewById(R.id.sortButton)
         sortButton?.setOnClickListener { showSortDialog() }
@@ -597,6 +599,7 @@ class MainActivity : BaseActivity() {
         updateFirewallToggleThumbIcon()
 
         reconcileActiveProfile()
+        updateProfileButtonIcon()
 
         // Reflect current firewall state in UI
         if (!isFirewallProcessRunning) {
@@ -1952,6 +1955,7 @@ class MainActivity : BaseActivity() {
         if (profile == null) {
             com.arslan.shizuwall.profiles.ProfilesStore.setActiveProfileId(this, null)
             updateProfileButtonIcon()
+            com.arslan.shizuwall.utils.FirewallUtils.notifyProfileSurfaces(this)
             return
         }
         val currentPackages = sharedPreferences.getStringSet(KEY_SELECTED_APPS, emptySet()) ?: emptySet()
@@ -1965,6 +1969,7 @@ class MainActivity : BaseActivity() {
         if (!matches) {
             com.arslan.shizuwall.profiles.ProfilesStore.setActiveProfileId(this, null)
             updateProfileButtonIcon()
+            com.arslan.shizuwall.utils.FirewallUtils.notifyProfileSurfaces(this)
         }
     }
 

@@ -410,6 +410,22 @@
     </plurals>
     <string name="profile_rename">Переименовать</string>
     <string name="profile_change_icon">Изменить значок</string>
+    <string name="profile_add_tile">Добавить плитку</string>
+    <string name="profile_remove_tile">Удалить плитку быстрых настроек</string>
+    <string name="profile_tile_removed">Плитка «%1$s» удалена.</string>
+    <string name="profile_tile_label">Плитка профиля</string>
+    <string name="profile_tile_label_1">Плитка профиля 1</string>
+    <string name="profile_tile_label_2">Плитка профиля 2</string>
+    <string name="profile_tile_label_3">Плитка профиля 3</string>
+    <string name="profile_tile_label_4">Плитка профиля 4</string>
+    <string name="profile_tile_label_5">Плитка профиля 5</string>
+    <string name="profile_tile_collapse_shade">Закрывать быстрые настройки при нажатии плитки</string>
+    <string name="profile_tile_unassigned">Профиль не назначен</string>
+    <string name="profile_tile_no_slot">Все %1$d плиток профилей заняты</string>
+    <string name="profile_tile_add_manually">Плитка готова. Добавьте «%1$s» в быстрых настройках.</string>
+    <string name="profile_widget_pick">Выберите профиль</string>
+    <string name="profile_widget_no_profiles">Сначала создайте профиль</string>
+    <string name="profile_switched_firewall_on">%1$s активен · Брандмауэр включён</string>
     <string name="profile_update_to_current">Обновить по текущему выбору</string>
     <string name="profile_update_action">Обновить</string>
     <string name="profile_update_confirm">Перезаписать \"%1$s\" текущими выбранными приложениями и режимом?</string>
@@ -450,4 +466,17 @@
 
     <string name="app_info_button_title">Кнопка информации о приложении</string>
     <string name="app_info_button_description">Показывает значок информации у каждого приложения; нажмите, чтобы увидеть сведения и офлайн-проверку трекеров.</string>
+    <string name="widget_firewall_label">Брандмауэр</string>
+    <string name="widget_firewall_description">Нажмите, чтобы включить или выключить брандмауэр.</string>
+    <string name="widget_profile_label">Профили</string>
+    <string name="widget_profile_description">Нажмите, чтобы активировать сохранённый профиль.</string>
+    <string name="widget_config_profile">Профиль</string>
+    <string name="widget_config_appearance">Оформление</string>
+    <string name="widget_config_add">Добавить виджет</string>
+    <string name="widget_config_profile_subtitle">Выберите профиль, который активирует этот виджет, и его оформление.</string>
+    <string name="widget_config_firewall_subtitle">Выберите оформление виджета брандмауэра на главном экране.</string>
+    <string name="widget_theme_system">Как в системе</string>
+    <string name="widget_theme_light">Светлое</string>
+    <string name="widget_theme_dark">Тёмное</string>
+    <string name="widget_theme_transparent">Прозрачное</string>
 </resources>

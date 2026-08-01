@@ -405,6 +405,22 @@
     </plurals>
     <string name="profile_rename">Umbenennen</string>
     <string name="profile_change_icon">Symbol ändern</string>
+    <string name="profile_add_tile">Schnelleinstellung hinzufügen</string>
+    <string name="profile_remove_tile">Schnelleinstellungs-Kachel entfernen</string>
+    <string name="profile_tile_removed">Kachel für „%1$s“ entfernt.</string>
+    <string name="profile_tile_label">Profil-Kachel</string>
+    <string name="profile_tile_label_1">Profil-Kachel 1</string>
+    <string name="profile_tile_label_2">Profil-Kachel 2</string>
+    <string name="profile_tile_label_3">Profil-Kachel 3</string>
+    <string name="profile_tile_label_4">Profil-Kachel 4</string>
+    <string name="profile_tile_label_5">Profil-Kachel 5</string>
+    <string name="profile_tile_collapse_shade">Schnelleinstellungen beim Kachel-Tippen schließen</string>
+    <string name="profile_tile_unassigned">Kein Profil zugewiesen</string>
+    <string name="profile_tile_no_slot">Alle %1$d Profil-Kacheln sind belegt</string>
+    <string name="profile_tile_add_manually">Kachel bereit. Füge „%1$s“ über die Schnelleinstellungen hinzu.</string>
+    <string name="profile_widget_pick">Profil auswählen</string>
+    <string name="profile_widget_no_profiles">Erstelle zuerst ein Profil</string>
+    <string name="profile_switched_firewall_on">%1$s aktiviert · Firewall an</string>
     <string name="profile_update_to_current">Auf aktuelle Auswahl aktualisieren</string>
     <string name="profile_update_action">Aktualisieren</string>
     <string name="profile_update_confirm">\"%1$s\" mit den aktuell ausgewählten Apps und dem Modus überschreiben?</string>
@@ -445,4 +461,17 @@
 
     <string name="app_info_button_title">Info-Schaltfläche der App</string>
     <string name="app_info_button_description">Zeigt bei jeder App ein Info-Symbol; tippe darauf für App-Details und einen Offline-Tracker-Scan.</string>
+    <string name="widget_firewall_label">Firewall</string>
+    <string name="widget_firewall_description">Tippe, um die Firewall ein- oder auszuschalten.</string>
+    <string name="widget_profile_label">Profile</string>
+    <string name="widget_profile_description">Tippe, um ein gespeichertes Profil zu aktivieren.</string>
+    <string name="widget_config_profile">Profil</string>
+    <string name="widget_config_appearance">Darstellung</string>
+    <string name="widget_config_add">Widget hinzufügen</string>
+    <string name="widget_config_profile_subtitle">Wähle das Profil, das dieses Widget aktiviert, und dann sein Aussehen.</string>
+    <string name="widget_config_firewall_subtitle">Wähle, wie das Firewall-Widget auf dem Startbildschirm aussieht.</string>
+    <string name="widget_theme_system">System folgen</string>
+    <string name="widget_theme_light">Hell</string>
+    <string name="widget_theme_dark">Dunkel</string>
+    <string name="widget_theme_transparent">Transparent</string>
 </resources>

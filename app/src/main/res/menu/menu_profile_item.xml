@@ -9,6 +9,14 @@
         android:icon="@drawable/ic_picon_palette"
         android:title="@string/profile_change_icon" />
     <item
+        android:id="@+id/action_profile_tile"
+        android:icon="@drawable/ic_picon_dashboard"
+        android:title="@string/profile_add_tile" />
+    <item
+        android:id="@+id/action_profile_tile_remove"
+        android:icon="@drawable/ic_picon_remove"
+        android:title="@string/profile_remove_tile" />
+    <item
         android:id="@+id/action_profile_update"
         android:icon="@drawable/content_copy_24px"
         android:title="@string/profile_update_to_current" />

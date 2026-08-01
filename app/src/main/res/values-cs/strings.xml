@@ -411,6 +411,22 @@
     </plurals>
     <string name="profile_rename">Přejmenovat</string>
     <string name="profile_change_icon">Změnit ikonu</string>
+    <string name="profile_add_tile">Přidat dlaždici</string>
+    <string name="profile_remove_tile">Odebrat dlaždici Rychlého nastavení</string>
+    <string name="profile_tile_removed">Dlaždice pro „%1$s“ byla odebrána.</string>
+    <string name="profile_tile_label">Dlaždice profilu</string>
+    <string name="profile_tile_label_1">Dlaždice profilu 1</string>
+    <string name="profile_tile_label_2">Dlaždice profilu 2</string>
+    <string name="profile_tile_label_3">Dlaždice profilu 3</string>
+    <string name="profile_tile_label_4">Dlaždice profilu 4</string>
+    <string name="profile_tile_label_5">Dlaždice profilu 5</string>
+    <string name="profile_tile_collapse_shade">Zavřít rychlá nastavení po klepnutí na dlaždici</string>
+    <string name="profile_tile_unassigned">Žádný profil</string>
+    <string name="profile_tile_no_slot">Všech %1$d dlaždic profilů je obsazeno</string>
+    <string name="profile_tile_add_manually">Dlaždice je připravena. Přidejte „%1$s“ v Rychlých nastaveních.</string>
+    <string name="profile_widget_pick">Vyberte profil</string>
+    <string name="profile_widget_no_profiles">Nejprve vytvořte profil</string>
+    <string name="profile_switched_firewall_on">%1$s aktivován · Firewall zapnut</string>
     <string name="profile_update_to_current">Aktualizovat na aktuální výběr</string>
     <string name="profile_update_action">Aktualizovat</string>
     <string name="profile_update_confirm">Přepsat \"%1$s\" aktuálně vybranými aplikacemi a režimem?</string>
@@ -452,4 +468,17 @@
 
     <string name="app_info_button_title">Tlačítko informací o aplikaci</string>
     <string name="app_info_button_description">Zobrazí u každé aplikace ikonu informací; klepnutím zobrazíte podrobnosti a offline sken trackerů.</string>
+    <string name="widget_firewall_label">Firewall</string>
+    <string name="widget_firewall_description">Klepnutím zapnete nebo vypnete firewall.</string>
+    <string name="widget_profile_label">Profily</string>
+    <string name="widget_profile_description">Klepnutím aktivujete uložený profil.</string>
+    <string name="widget_config_profile">Profil</string>
+    <string name="widget_config_appearance">Vzhled</string>
+    <string name="widget_config_add">Přidat widget</string>
+    <string name="widget_config_profile_subtitle">Vyberte profil, který tento widget aktivuje, a zvolte jeho vzhled.</string>
+    <string name="widget_config_firewall_subtitle">Zvolte, jak bude widget firewallu vypadat na ploše.</string>
+    <string name="widget_theme_system">Podle systému</string>
+    <string name="widget_theme_light">Světlý</string>
+    <string name="widget_theme_dark">Tmavý</string>
+    <string name="widget_theme_transparent">Průhledný</string>
 </resources>

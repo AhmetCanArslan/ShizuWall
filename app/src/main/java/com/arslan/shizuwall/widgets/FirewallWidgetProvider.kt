@@ -23,6 +23,11 @@ class FirewallWidgetProvider : AppWidgetProvider() {
         }
     }
 
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
+        super.onDeleted(context, appWidgetIds)
+        WidgetTheme.clear(context, appWidgetIds)
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
         if (intent.action == ACTION_WIDGET_CLICK) {
@@ -85,7 +90,13 @@ class FirewallWidgetProvider : AppWidgetProvider() {
 
         private fun updateAppWidgetOptimistic(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, isEnabled: Boolean) {
             val views = RemoteViews(context.packageName, R.layout.widget_firewall)
-            views.setImageViewResource(R.id.widget_icon, if (isEnabled) R.drawable.ic_firewall_enabled else R.drawable.ic_quick_tile)
+            val theme = WidgetTheme.of(context, appWidgetId)
+            views.setInt(R.id.widget_layout, "setBackgroundResource", theme.backgroundRes)
+            views.setImageViewResource(
+                R.id.widget_icon,
+                if (isEnabled) R.drawable.ic_widget_network_blocked else R.drawable.ic_widget_network_allowed
+            )
+            views.setInt(R.id.widget_icon, "setColorFilter", theme.contentColor(context))
 
             val intent = Intent(context, FirewallWidgetProvider::class.java).apply {
                 action = ACTION_WIDGET_CLICK

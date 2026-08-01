@@ -407,6 +407,22 @@
     </plurals>
     <string name="profile_rename">名前を変更</string>
     <string name="profile_change_icon">アイコンを変更</string>
+    <string name="profile_add_tile">クイックタイルを追加</string>
+    <string name="profile_remove_tile">クイック設定タイルを削除</string>
+    <string name="profile_tile_removed">「%1$s」のタイルを削除しました。</string>
+    <string name="profile_tile_label">プロファイル タイル</string>
+    <string name="profile_tile_label_1">プロファイルタイル 1</string>
+    <string name="profile_tile_label_2">プロファイルタイル 2</string>
+    <string name="profile_tile_label_3">プロファイルタイル 3</string>
+    <string name="profile_tile_label_4">プロファイルタイル 4</string>
+    <string name="profile_tile_label_5">プロファイルタイル 5</string>
+    <string name="profile_tile_collapse_shade">タイル操作時にクイック設定を閉じる</string>
+    <string name="profile_tile_unassigned">プロファイル未割当</string>
+    <string name="profile_tile_no_slot">%1$d 個のプロファイル タイルはすべて使用中です</string>
+    <string name="profile_tile_add_manually">タイルの準備ができました。クイック設定の編集画面から「%1$s」を追加してください。</string>
+    <string name="profile_widget_pick">プロファイルを選択</string>
+    <string name="profile_widget_no_profiles">先にプロファイルを作成してください</string>
+    <string name="profile_switched_firewall_on">%1$s を適用 · ファイアウォールオン</string>
     <string name="profile_update_to_current">現在の選択で更新</string>
     <string name="profile_update_action">更新</string>
     <string name="profile_update_confirm">「%1$s」を現在選択中のアプリとモードで上書きしますか？</string>
@@ -448,4 +464,17 @@
 
     <string name="app_info_button_title">アプリ情報ボタン</string>
     <string name="app_info_button_description">各アプリに情報アイコンを表示します。タップするとアプリの詳細とオフラインのトラッカー検査が開きます。</string>
+    <string name="widget_firewall_label">ファイアウォール</string>
+    <string name="widget_firewall_description">タップしてファイアウォールをオン/オフします。</string>
+    <string name="widget_profile_label">プロファイル</string>
+    <string name="widget_profile_description">タップして保存済みプロファイルを有効にします。</string>
+    <string name="widget_config_profile">プロファイル</string>
+    <string name="widget_config_appearance">外観</string>
+    <string name="widget_config_add">ウィジェットを追加</string>
+    <string name="widget_config_profile_subtitle">このウィジェットで有効にするプロファイルと外観を選択します。</string>
+    <string name="widget_config_firewall_subtitle">ホーム画面でのファイアウォールウィジェットの外観を選択します。</string>
+    <string name="widget_theme_system">システムに従う</string>
+    <string name="widget_theme_light">ライト</string>
+    <string name="widget_theme_dark">ダーク</string>
+    <string name="widget_theme_transparent">透明</string>
 </resources>

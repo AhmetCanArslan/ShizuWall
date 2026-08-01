@@ -11,7 +11,8 @@ data class Profile(
     val appModesJson: String,
     val showSystemApps: Boolean,
     val createdAt: Long,
-    val icon: String = ""
+    val icon: String = "",
+    val tileSlot: Int = -1
 ) {
     fun toJson(): JSONObject = JSONObject().apply {
         put(KEY_ID, id)
@@ -22,6 +23,7 @@ data class Profile(
         put(KEY_SHOW_SYSTEM, showSystemApps)
         put(KEY_CREATED_AT, createdAt)
         put(KEY_ICON, icon)
+        put(KEY_TILE_SLOT, tileSlot)
     }
 
     companion object {
@@ -33,6 +35,7 @@ data class Profile(
         private const val KEY_SHOW_SYSTEM = "showSystem"
         private const val KEY_CREATED_AT = "createdAt"
         private const val KEY_ICON = "icon"
+        private const val KEY_TILE_SLOT = "tileSlot"
 
         fun fromJson(obj: JSONObject): Profile {
             val pkgs = mutableSetOf<String>()
@@ -50,7 +53,8 @@ data class Profile(
                 appModesJson = obj.optString(KEY_APP_MODES, "{}"),
                 showSystemApps = obj.optBoolean(KEY_SHOW_SYSTEM, false),
                 createdAt = obj.optLong(KEY_CREATED_AT, 0L),
-                icon = obj.optString(KEY_ICON, "")
+                icon = obj.optString(KEY_ICON, ""),
+                tileSlot = obj.optInt(KEY_TILE_SLOT, -1)
             )
         }
     }

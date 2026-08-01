@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.adapters.ProfileAdapter
 import com.arslan.shizuwall.model.Profile
+import com.arslan.shizuwall.profiles.ProfileTileSlots
 import com.arslan.shizuwall.profiles.ProfilesStore
+import com.arslan.shizuwall.widgets.ProfileWidgetProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -54,6 +56,14 @@ class ProfilesBottomSheet(
             prefs.edit().putBoolean(MainActivity.KEY_AUTO_ENABLE_ON_PROFILE_ACTIVATE, isChecked).apply()
         }
 
+        val collapseShadeSwitch =
+            view.findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.profileCollapseShadeSwitch)
+        collapseShadeSwitch.isChecked =
+            prefs.getBoolean(MainActivity.KEY_TILE_COLLAPSE_SHADE, true)
+        collapseShadeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean(MainActivity.KEY_TILE_COLLAPSE_SHADE, isChecked).apply()
+        }
+
         adapter = ProfileAdapter(
             onProfileClick = { profile -> activate(profile) },
             onMenuClick = { profile, anchor -> showItemMenu(profile, anchor) }
@@ -90,6 +100,9 @@ class ProfilesBottomSheet(
         adapter.setActiveProfileId(activeId, animate = false)
         adapter.submitList(profiles)
 
+        ProfileTileSlots.sync(context)
+        ProfileWidgetProvider.refreshAll(context)
+
         val isEmpty = profiles.isEmpty()
         emptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
         recyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
@@ -108,10 +121,15 @@ class ProfilesBottomSheet(
             popup.setForceShowIcon(true)
         } catch (_: Throwable) {
         }
+        val hasTile = profile.tileSlot >= 0
+        popup.menu.findItem(R.id.action_profile_tile)?.isVisible = !hasTile
+        popup.menu.findItem(R.id.action_profile_tile_remove)?.isVisible = hasTile
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_profile_rename -> { promptRename(profile); true }
                 R.id.action_profile_icon -> { promptChangeIcon(profile); true }
+                R.id.action_profile_tile -> { addQuickTile(profile); true }
+                R.id.action_profile_tile_remove -> { removeQuickTile(profile); true }
                 R.id.action_profile_update -> { updateToCurrent(profile); true }
                 R.id.action_profile_automation -> { showAutomationDialog(profile); true }
                 R.id.action_profile_delete -> { confirmDelete(profile); true }
@@ -160,6 +178,32 @@ class ProfilesBottomSheet(
             refresh(playLayoutAnim = false)
             listener.onProfilesChanged()
         }
+    }
+
+    private fun addQuickTile(profile: Profile) {
+        val slot = ProfileTileSlots.claimSlot(context, profile)
+        if (slot == null) {
+            Toast.makeText(context, context.getString(R.string.profile_tile_no_slot, ProfileTileSlots.slotCount), Toast.LENGTH_LONG).show()
+            return
+        }
+        refresh(playLayoutAnim = false)
+        val updated = ProfilesStore.getById(context, profile.id) ?: profile
+        if (ProfileTileSlots.canRequestAdd()) {
+            ProfileTileSlots.requestAddTile(context, slot, updated)
+        } else {
+            Toast.makeText(context, context.getString(R.string.profile_tile_add_manually, updated.name), Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun removeQuickTile(profile: Profile) {
+        ProfileTileSlots.releaseSlot(context, profile)
+        refresh(playLayoutAnim = false)
+        listener.onProfilesChanged()
+        Toast.makeText(
+            context,
+            context.getString(R.string.profile_tile_removed, profile.name),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun updateToCurrent(profile: Profile) {

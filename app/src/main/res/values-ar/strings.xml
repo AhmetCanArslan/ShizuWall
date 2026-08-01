@@ -413,6 +413,22 @@
     </plurals>
     <string name="profile_rename">إعادة تسمية</string>
     <string name="profile_change_icon">تغيير الأيقونة</string>
+    <string name="profile_add_tile">إضافة مربع سريع</string>
+    <string name="profile_remove_tile">إزالة مربع الإعدادات السريعة</string>
+    <string name="profile_tile_removed">تمت إزالة المربع الخاص بـ ”%1$s“.</string>
+    <string name="profile_tile_label">مربع الملف</string>
+    <string name="profile_tile_label_1">مربع الملف الشخصي 1</string>
+    <string name="profile_tile_label_2">مربع الملف الشخصي 2</string>
+    <string name="profile_tile_label_3">مربع الملف الشخصي 3</string>
+    <string name="profile_tile_label_4">مربع الملف الشخصي 4</string>
+    <string name="profile_tile_label_5">مربع الملف الشخصي 5</string>
+    <string name="profile_tile_collapse_shade">إغلاق الإعدادات السريعة عند الضغط على المربع</string>
+    <string name="profile_tile_unassigned">لم يُعيّن ملف</string>
+    <string name="profile_tile_no_slot">جميع مربعات الملفات %1$d قيد الاستخدام</string>
+    <string name="profile_tile_add_manually">المربع جاهز. أضف «%1$s» من الإعدادات السريعة.</string>
+    <string name="profile_widget_pick">اختر ملفًا</string>
+    <string name="profile_widget_no_profiles">أنشئ ملفًا أولاً</string>
+    <string name="profile_switched_firewall_on">%1$s مُفعّل · الجدار الناري يعمل</string>
     <string name="profile_update_to_current">التحديث إلى التحديد الحالي</string>
     <string name="profile_update_action">تحديث</string>
     <string name="profile_update_confirm">هل تريد استبدال \"%1$s\" بالتطبيقات والوضع المحددين حاليًا؟</string>
@@ -454,4 +470,17 @@
 
     <string name="app_info_button_title">زر معلومات التطبيق</string>
     <string name="app_info_button_description">يعرض أيقونة معلومات على كل تطبيق؛ اضغط عليها لعرض تفاصيل التطبيق وفحص المتعقبات دون اتصال.</string>
+    <string name="widget_firewall_label">جدار الحماية</string>
+    <string name="widget_firewall_description">اضغط لتشغيل الجدار الناري أو إيقافه.</string>
+    <string name="widget_profile_label">الملفات الشخصية</string>
+    <string name="widget_profile_description">اضغط لتفعيل ملف شخصي محفوظ.</string>
+    <string name="widget_config_profile">الملف الشخصي</string>
+    <string name="widget_config_appearance">المظهر</string>
+    <string name="widget_config_add">إضافة أداة</string>
+    <string name="widget_config_profile_subtitle">اختر الملف الشخصي الذي تفعّله هذه الأداة، ثم اختر شكلها.</string>
+    <string name="widget_config_firewall_subtitle">اختر شكل أداة الجدار الناري على الشاشة الرئيسية.</string>
+    <string name="widget_theme_system">حسب النظام</string>
+    <string name="widget_theme_light">فاتح</string>
+    <string name="widget_theme_dark">داكن</string>
+    <string name="widget_theme_transparent">شفاف</string>
 </resources>

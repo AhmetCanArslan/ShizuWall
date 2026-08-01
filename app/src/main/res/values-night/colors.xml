@@ -2,4 +2,5 @@
 <resources>
     <!-- Lifted maroon: the light-theme tone falls below readable contrast on a dark surface. -->
     <color name="filtering_note">#FFE58A96</color>
+    <color name="widget_content_system">#FFECECEC</color>
 </resources>

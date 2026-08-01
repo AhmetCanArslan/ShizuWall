@@ -406,6 +406,22 @@
     </plurals>
     <string name="profile_rename">Yeniden adlandır</string>
     <string name="profile_change_icon">Simgeyi değiştir</string>
+    <string name="profile_add_tile">Hızlı ayar ekle</string>
+    <string name="profile_remove_tile">Hızlı Ayarlar kutucuğunu kaldır</string>
+    <string name="profile_tile_removed">“%1$s” kutucuğu kaldırıldı.</string>
+    <string name="profile_tile_label">Profil kartı</string>
+    <string name="profile_tile_label_1">Profil kutucuğu 1</string>
+    <string name="profile_tile_label_2">Profil kutucuğu 2</string>
+    <string name="profile_tile_label_3">Profil kutucuğu 3</string>
+    <string name="profile_tile_label_4">Profil kutucuğu 4</string>
+    <string name="profile_tile_label_5">Profil kutucuğu 5</string>
+    <string name="profile_tile_collapse_shade">Kart basıldığında hızlı ayarları kapat</string>
+    <string name="profile_tile_unassigned">Profil atanmadı</string>
+    <string name="profile_tile_no_slot">%1$d profil kartının tamamı kullanımda</string>
+    <string name="profile_tile_add_manually">Kart hazır. “%1$s” kartını Hızlı Ayarlar düzenleme ekranından ekleyin.</string>
+    <string name="profile_widget_pick">Bir profil seçin</string>
+    <string name="profile_widget_no_profiles">Önce bir profil oluşturun</string>
+    <string name="profile_switched_firewall_on">%1$s etkin · Güvenlik duvarı açık</string>
     <string name="profile_update_to_current">Geçerli seçimle güncelle</string>
     <string name="profile_update_action">Güncelle</string>
     <string name="profile_update_confirm">\"%1$s\" profili şu anda seçili uygulamalar ve modla değiştirilsin mi?</string>
@@ -446,4 +462,17 @@
 
     <string name="app_info_button_title">Uygulama bilgisi düğmesi</string>
     <string name="app_info_button_description">Her uygulamada bir bilgi simgesi gösterir; dokununca uygulama ayrıntıları ve çevrimdışı izleyici taraması açılır.</string>
+    <string name="widget_firewall_label">Güvenlik duvarı</string>
+    <string name="widget_firewall_description">Güvenlik duvarını açmak veya kapatmak için dokunun.</string>
+    <string name="widget_profile_label">Profiller</string>
+    <string name="widget_profile_description">Kayıtlı bir profili etkinleştirmek için dokunun.</string>
+    <string name="widget_config_profile">Profil</string>
+    <string name="widget_config_appearance">Görünüm</string>
+    <string name="widget_config_add">Widget ekle</string>
+    <string name="widget_config_profile_subtitle">Bu widget\'ın etkinleştireceği profili ve ardından görünümünü seçin.</string>
+    <string name="widget_config_firewall_subtitle">Güvenlik duvarı widget\'ının ana ekrandaki görünümünü seçin.</string>
+    <string name="widget_theme_system">Sistemi izle</string>
+    <string name="widget_theme_light">Açık</string>
+    <string name="widget_theme_dark">Koyu</string>
+    <string name="widget_theme_transparent">Saydam</string>
 </resources>

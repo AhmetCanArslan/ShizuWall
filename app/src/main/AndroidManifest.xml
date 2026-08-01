@@ -154,6 +154,66 @@
         </service>
 
         <service
+            android:name=".services.ProfileTileService1"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/ic_profiles_24px"
+            android:label="@string/profile_tile_label_1"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".services.ProfileTileService2"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/ic_profiles_24px"
+            android:label="@string/profile_tile_label_2"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".services.ProfileTileService3"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/ic_profiles_24px"
+            android:label="@string/profile_tile_label_3"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".services.ProfileTileService4"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/ic_profiles_24px"
+            android:label="@string/profile_tile_label_4"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".services.ProfileTileService5"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/ic_profiles_24px"
+            android:label="@string/profile_tile_label_5"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
             android:name=".services.FloatingButtonService"
             android:enabled="true"
             android:exported="false"
@@ -168,7 +228,8 @@
 
         <receiver
             android:name=".widgets.FirewallWidgetProvider"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/widget_firewall_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.arslan.shizuwall.ACTION_FIREWALL_STATE_CHANGED" />
@@ -177,6 +238,39 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/firewall_widget_info" />
         </receiver>
+
+        <receiver
+            android:name=".widgets.ProfileWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_profile_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.arslan.shizuwall.ACTION_FIREWALL_STATE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/profile_widget_info" />
+        </receiver>
+
+        <activity
+            android:name=".ui.ProfileWidgetConfigActivity"
+            android:exported="true"
+            android:label="@string/widget_profile_label"
+            android:theme="@style/Theme.ShizuWall">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.FirewallWidgetConfigActivity"
+            android:exported="true"
+            android:label="@string/widget_firewall_label"
+            android:theme="@style/Theme.ShizuWall">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -43,7 +43,14 @@ object FirewallUtils {
         intent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
         context.sendBroadcast(intent)
 
+        notifyProfileSurfaces(context)
+
         com.arslan.shizuwall.services.ScreenLockMonitorService.sync(context)
+    }
+
+    fun notifyProfileSurfaces(context: Context) {
+        com.arslan.shizuwall.profiles.ProfileTileSlots.refreshTiles(context)
+        com.arslan.shizuwall.widgets.ProfileWidgetProvider.refreshAll(context)
     }
 
     fun saveActivePackages(prefs: SharedPreferences, packages: Set<String>) {

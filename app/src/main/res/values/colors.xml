@@ -3,4 +3,7 @@
     <color name="black">#FF000000</color>
     <!-- Maroon, for the app-list filtering note: meant to catch the eye without reading as an error. -->
     <color name="filtering_note">#FF8E1F2F</color>
+    <color name="widget_content_system">#FF1B1B1F</color>
+    <color name="widget_content_light">#FF1B1B1F</color>
+    <color name="widget_content_dark">#FFECECEC</color>
 </resources>

@@ -115,13 +115,15 @@
         android:textColor="?attr/colorOnSurface"
         android:textSize="14sp" />
 
-    <TextView
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/profileCollapseShadeSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:text="@string/profile_auto_enable_firewall_desc"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:textSize="12sp" />
+        android:paddingVertical="8dp"
+        android:text="@string/profile_tile_collapse_shade"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="14sp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/profileSaveCurrentButton"

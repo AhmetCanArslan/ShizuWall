@@ -405,6 +405,22 @@
     </plurals>
     <string name="profile_rename">重命名</string>
     <string name="profile_change_icon">更改图标</string>
+    <string name="profile_add_tile">添加快捷开关</string>
+    <string name="profile_remove_tile">移除快捷设置磁贴</string>
+    <string name="profile_tile_removed">已移除“%1$s”的磁贴。</string>
+    <string name="profile_tile_label">配置文块</string>
+    <string name="profile_tile_label_1">配置文件磁贴 1</string>
+    <string name="profile_tile_label_2">配置文件磁贴 2</string>
+    <string name="profile_tile_label_3">配置文件磁贴 3</string>
+    <string name="profile_tile_label_4">配置文件磁贴 4</string>
+    <string name="profile_tile_label_5">配置文件磁贴 5</string>
+    <string name="profile_tile_collapse_shade">点按磁贴时关闭快捷设置</string>
+    <string name="profile_tile_unassigned">未分配配置文件</string>
+    <string name="profile_tile_no_slot">%1$d 个配置文块均已使用</string>
+    <string name="profile_tile_add_manually">磁贴已就绪。请在快捷设置编辑页面添加“%1$s”。</string>
+    <string name="profile_widget_pick">选择配置文件</string>
+    <string name="profile_widget_no_profiles">请先创建配置文件</string>
+    <string name="profile_switched_firewall_on">%1$s 已启用 · 防火墙已开启</string>
     <string name="profile_update_to_current">更新为当前选择</string>
     <string name="profile_update_action">更新</string>
     <string name="profile_update_confirm">用当前所选的应用和模式覆盖“%1$s”？</string>
@@ -445,4 +461,17 @@
 
     <string name="app_info_button_title">应用信息按钮</string>
     <string name="app_info_button_description">在每个应用上显示信息图标；点按可查看应用详情和离线跟踪器扫描。</string>
+    <string name="widget_firewall_label">防火墙</string>
+    <string name="widget_firewall_description">点按以开启或关闭防火墙。</string>
+    <string name="widget_profile_label">配置文件</string>
+    <string name="widget_profile_description">点按以启用已保存的配置文件。</string>
+    <string name="widget_config_profile">配置文件</string>
+    <string name="widget_config_appearance">外观</string>
+    <string name="widget_config_add">添加小部件</string>
+    <string name="widget_config_profile_subtitle">选择此小部件要启用的配置文件，然后选择外观。</string>
+    <string name="widget_config_firewall_subtitle">选择防火墙小部件在主屏幕上的外观。</string>
+    <string name="widget_theme_system">跟随系统</string>
+    <string name="widget_theme_light">浅色</string>
+    <string name="widget_theme_dark">深色</string>
+    <string name="widget_theme_transparent">透明</string>
 </resources>

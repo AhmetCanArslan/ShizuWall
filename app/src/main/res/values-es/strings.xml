@@ -408,6 +408,22 @@
     </plurals>
     <string name="profile_rename">Cambiar nombre</string>
     <string name="profile_change_icon">Cambiar icono</string>
+    <string name="profile_add_tile">Añadir mosaico rápido</string>
+    <string name="profile_remove_tile">Quitar mosaico de Ajustes rápidos</string>
+    <string name="profile_tile_removed">Se quitó el mosaico de «%1$s».</string>
+    <string name="profile_tile_label">Mosaico de perfil</string>
+    <string name="profile_tile_label_1">Mosaico de perfil 1</string>
+    <string name="profile_tile_label_2">Mosaico de perfil 2</string>
+    <string name="profile_tile_label_3">Mosaico de perfil 3</string>
+    <string name="profile_tile_label_4">Mosaico de perfil 4</string>
+    <string name="profile_tile_label_5">Mosaico de perfil 5</string>
+    <string name="profile_tile_collapse_shade">Cerrar los ajustes rápidos al pulsar el mosaico</string>
+    <string name="profile_tile_unassigned">Sin perfil asignado</string>
+    <string name="profile_tile_no_slot">Los %1$d mosaicos de perfil están en uso</string>
+    <string name="profile_tile_add_manually">Mosaico listo. Añade “%1$s” desde los Ajustes rápidos.</string>
+    <string name="profile_widget_pick">Elige un perfil</string>
+    <string name="profile_widget_no_profiles">Crea un perfil primero</string>
+    <string name="profile_switched_firewall_on">%1$s activado · Cortafuegos activo</string>
     <string name="profile_update_to_current">Actualizar con la selección actual</string>
     <string name="profile_update_action">Actualizar</string>
     <string name="profile_update_confirm">¿Sobrescribir \"%1$s\" con las apps y el modo seleccionados actualmente?</string>
@@ -449,4 +465,17 @@
 
     <string name="app_info_button_title">Botón de información de la aplicación</string>
     <string name="app_info_button_description">Muestra un icono de información en cada aplicación; tócalo para ver detalles y un análisis de rastreadores sin conexión.</string>
+    <string name="widget_firewall_label">Cortafuegos</string>
+    <string name="widget_firewall_description">Toca para activar o desactivar el cortafuegos.</string>
+    <string name="widget_profile_label">Perfiles</string>
+    <string name="widget_profile_description">Toca para activar un perfil guardado.</string>
+    <string name="widget_config_profile">Perfil</string>
+    <string name="widget_config_appearance">Apariencia</string>
+    <string name="widget_config_add">Añadir widget</string>
+    <string name="widget_config_profile_subtitle">Elige el perfil que activa este widget y luego su aspecto.</string>
+    <string name="widget_config_firewall_subtitle">Elige el aspecto del widget del cortafuegos en la pantalla de inicio.</string>
+    <string name="widget_theme_system">Seguir al sistema</string>
+    <string name="widget_theme_light">Claro</string>
+    <string name="widget_theme_dark">Oscuro</string>
+    <string name="widget_theme_transparent">Transparente</string>
 </resources>
