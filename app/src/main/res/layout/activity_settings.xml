@@ -415,15 +415,23 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/tracker_db_title"
+                            android:text="@string/app_info_button_title"
                             android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/app_info_button_description"
+                            android:textSize="12sp"
+                            android:textColor="?android:attr/textColorSecondary" />
+
+                        <TextView
                             android:id="@+id/tvTrackerDefinitionsSummary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
 
@@ -435,6 +443,13 @@
                             android:textSize="12sp"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchAppInfoButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:contentDescription="@string/app_info_button_title" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

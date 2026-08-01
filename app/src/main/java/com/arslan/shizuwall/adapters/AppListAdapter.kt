@@ -72,6 +72,15 @@ class AppListAdapter(
         }
     }
 
+    private var infoButtonEnabled: Boolean = true
+
+    fun setInfoButtonEnabled(enabled: Boolean) {
+        if (infoButtonEnabled != enabled) {
+            infoButtonEnabled = enabled
+            notifyItemRangeChanged(0, itemCount)
+        }
+    }
+
     private var isHybridMode: Boolean = false
 
     fun setHybridModeEnabled(enabled: Boolean) {
@@ -151,6 +160,7 @@ class AppListAdapter(
                 profileBadge.visibility = View.GONE
             }
 
+            appInfoButton.visibility = if (infoButtonEnabled) View.VISIBLE else View.GONE
             appInfoButton.setOnClickListener { onAppIconClick(appInfo) }
             appInfoButton.contentDescription = itemView.context.getString(
                 R.string.app_info_icon_content_description, appInfo.appName

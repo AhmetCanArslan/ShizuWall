@@ -179,16 +179,6 @@
     <string name="loading_apps">Načítání aplikací</string>
 
     <string name="shizuku_setup_guide">Shizuku příručka nastavení</string>
-    <string name="shizuku_step_1">Nejprve musíte povolit možnosti pro vývojáře. Poté otevřete aplikaci Shizuku a stiskněte tlačítko Párování.</string>
-    <string name="shizuku_step_2">Stiskněte tlačítko možností vývojáře, které vás tam přesměruje.</string>
-    <string name="shizuku_step_3">Zde vyhledejte možnost Bezdrátové ladění a stiskněte toto tlačítko. Otevře se stránka bezdrátového ladění.</string>
-    <string name="shizuku_step_4">Vyberte párované zařízení a zadejte párovací kód.</string>
-    <string name="shizuku_step_5">Po otevření dialogového okna se zobrazí oznámení od Shizuku, které vám umožní zadat párovací kód.</string>
-    <string name="shizuku_step_6">Po potvrzení párovacího kódu se vraťte zpět do aplikace Shizuku a stiskněte tlačítko Start.</string>
-    <string name="shizuku_step_7">Počkejte, až bude služba aktivní.</string>
-    <string name="shizuku_step_8">Otevřete ShizuWall a zkuste povolit bránu firewall.</string>
-    <string name="shizuku_step_9">Povolte Shizuku oprávnění, aktivujte firewall. Shizuku by měla být spuštěno, když zapínáte nebo vypínáte firewall. Po zapnutí firewallu zůstane firewall aktivní, i když se Shizuku zastaví, dokud Shizuku znovu nespustíte a ručně nevypnete.</string>
-    <string name="shizuku_step_10">Párování je nutné provést pouze jednou. Po restartování zařízení je nutné Shizuku znovu aktivovat. Pro zapnutí a vypnutí firewallu je nutné Shizuku aktivovat. Pokud chcete Shizuku používat bez Wi-Fi (předtím je nutné jej spustit přes Wi-Fi), povolte ladění přes USB, aby Shizuku zůstalo zapnuté až do restartu.</string>
     <string name="shizuku_prompt_title">Zobrazit průvodce nastavením Shizuku?</string>
     <string name="shizuku_prompt_message">Chcete si nyní prohlédnout prezentaci o nastavení Shizuku? Můžete ji kdykoli otevřít později z nabídky pomocí tří teček v nastavení.</string>
     <string name="shizuku_prompt_do_not_show">Znovu nezobrazovat</string>
@@ -453,17 +443,12 @@
     <string name="app_info_trackers_count">Nalezeno sledovačů: %1$d</string>
     <string name="app_info_trackers_failed">Tuto aplikaci se nepodařilo prohlédnout</string>
     <string name="app_info_trackers_note">Nalezeno analýzou kódu aplikace. ShizuWall nepoužívá VPN a nezkoumá provoz. Tyto sledovače jsou odstřiženy, dokud je aplikace blokována.</string>
-    <string name="tracker_db_title">Definice sledovačů</string>
     <string name="tracker_db_description">%1$d podpisů sledovačů, součást aplikace. Detekce běží zcela offline.</string>
     <string name="tracker_data_attribution">Data o sledovačích: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Zobrazit aplikace z jiných profilů</string>
     <string name="show_other_profiles_description">Pracovní profil, soukromý prostor, Secure Folder a klonované aplikace. Když je vypnuto, zablokování aplikace zablokuje i všechny její kopie; zaškrtnutím budete každou kopii ovládat zvlášť.</string>
     <string name="show_other_profiles_uncheck_confirm">Všechny vybrané aplikace z jiných profilů budou odznačeny a vráceny do výchozího stavu. Od této chvíle zablokování aplikace zablokuje i všechny její kopie v jiných profilech. Chcete zrušit zaškrtnutí?</string>
 
-    <string name="onboarding_how_title">Bez VPN, bez rootu</string>
-    <string name="onboarding_how_message">ShizuWall blokuje aplikace na úrovni systému přes privilegovaný shell – Shizuku, bezdrátové ADB nebo root. Nikdy neobsazuje slot pro VPN, takže vaše skutečná VPN dál funguje. Vše zůstává v tomto zařízení: žádný účet, žádná analytika, žádný přístup k internetu.</string>
-    <string name="onboarding_experimental_title">Berte to jako experimentální</string>
-    <string name="onboarding_experimental_message">Blokování využívá skryté příkazy Androidu a ROM každého výrobce se chová trochu jinak. Některé režimy na vašem zařízení nemusí fungovat, pravidla mohou po restartu nebo aktualizaci systému zmizet a několik aplikací může chvíli dál zobrazovat obsah z cache. Než se na režim spolehnete, vyzkoušejte ho, a pokud něco nevypadá správně, zkontrolujte protokoly v Nastavení.</string>
-    <string name="onboarding_battery_title">Baterii si změřte sami</string>
-    <string name="onboarding_battery_message">Výchozí režim nespotřebuje téměř žádnou baterii navíc. Režimy sledující popředí (Smart Foreground, Hybridní, Sledování zaměření) kontrolují aktivní aplikaci asi jednou za sekundu, takže mohou spotřebovat výrazně více – kolik, závisí zcela na vašem zařízení. Vyzkoušejte jeden režim po celý den, podívejte se na spotřebu baterie v nastavení systému a nechte si ten, který vám dá nejlepší kompromis.</string>
+    <string name="app_info_button_title">Tlačítko informací o aplikaci</string>
+    <string name="app_info_button_description">Zobrazí u každé aplikace ikonu informací; klepnutím zobrazíte podrobnosti a offline sken trackerů.</string>
 </resources>

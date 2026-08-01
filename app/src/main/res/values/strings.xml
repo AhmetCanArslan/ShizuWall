@@ -183,16 +183,6 @@
     <string name="loading_apps">Loading apps</string>
 
     <string name="shizuku_setup_guide">Shizuku Setup Guide</string>
-    <string name="shizuku_step_1">First of all you have to enable developer options. Afterwards open Shizuku app and press Pairing</string>
-    <string name="shizuku_step_2">Press developer options button, it\'ll redirect you there.</string>
-    <string name="shizuku_step_3">In here search for Wireless debugging and press that button, wireless debugging page will open.</string>
-    <string name="shizuku_step_4">Press pair device will pairing code.</string>
-    <string name="shizuku_step_5">When dialog opens, a notification will appear from Shizuku to allow you to enter the pairing code.</string>
-    <string name="shizuku_step_6">After confirming pairing code, return back to Shizuku and press start.</string>
-    <string name="shizuku_step_7">Wait until the service is active.</string>
-    <string name="shizuku_step_8">Open ShizuWall and try to enable Firewall.</string>
-    <string name="shizuku_step_9">Allow Shizuku permission, firewall be activated. Shizuku should be running when you enable or disable firewall toggle. After enabling firewall once, even if shizuku stops, firewall will remain active until you activate shizuku and disable it manually.</string>
-    <string name="shizuku_step_10">Pairing is required only once. Shizuku has to be activated again when device is rebooted. To enable and disable firewall, Shizuku has to be activated. If you want to use Shizuku without Wi-Fi (it has to be started via wifi before), enable USB debugging so Shizuku stays on until you reboot.</string>
     <string name="shizuku_prompt_title">Show Shizuku setup guide?</string>
     <string name="shizuku_prompt_message">Would you like to view the Shizuku setup slides now? You can always open them later from the three-dot menu in Settings.</string>
     <string name="shizuku_prompt_do_not_show">Do not show again</string>
@@ -452,17 +442,12 @@
     <string name="app_info_trackers_count">%1$d trackers found</string>
     <string name="app_info_trackers_failed">This app could not be scanned</string>
     <string name="app_info_trackers_note">Found by scanning the app\'s code. ShizuWall uses no VPN and never inspects traffic. These trackers are cut off while this app is blocked.</string>
-    <string name="tracker_db_title">Tracker definitions</string>
     <string name="tracker_db_description">%1$d tracker signatures, bundled with the app. Detection runs entirely offline.</string>
     <string name="tracker_data_attribution">Tracker data: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Show apps in other profiles</string>
     <string name="show_other_profiles_description">Work profile, private space, Secure Folder and cloned apps. When off, blocking an app also blocks all of its copies; check this to control each copy separately.</string>
     <string name="show_other_profiles_uncheck_confirm">Any selected app from another profile will be unselected and reset to its default state. From now on, blocking an app will also block every copy of it in other profiles. Do you want to un-check it?</string>
 
-    <string name="onboarding_how_title">No VPN, no root needed</string>
-    <string name="onboarding_how_message">ShizuWall blocks apps at the system level through a privileged shell — Shizuku, wireless ADB or root. It never occupies the VPN slot, so your real VPN keeps working. Everything stays on this device: no account, no analytics, no internet access.</string>
-    <string name="onboarding_experimental_title">Treat it as experimental</string>
-    <string name="onboarding_experimental_message">Blocking uses hidden Android commands, and every manufacturer\'s ROM behaves a little differently. Some modes may not work on your device, rules can be dropped after a reboot or a system update, and a few apps keep serving cached content for a while. Test a mode before you rely on it, and check the logs in Settings if something looks wrong.</string>
-    <string name="onboarding_battery_title">Measure battery yourself</string>
-    <string name="onboarding_battery_message">Default mode costs practically no extra battery. The foreground-aware modes (Smart Foreground, Hybrid, Focus Tracker) check the active app about once a second, so they can drain noticeably more — how much depends entirely on your device. Run one mode for a day, look at Battery usage in system settings, and keep the mode that gives you the best balance.</string>
+    <string name="app_info_button_title">App info button</string>
+    <string name="app_info_button_description">Shows an info icon on each app; tap it for app details and an offline tracker scan.</string>
 </resources>

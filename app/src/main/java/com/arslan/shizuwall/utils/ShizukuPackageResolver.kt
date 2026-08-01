@@ -159,17 +159,6 @@ object ShizukuPackageResolver {
     }
     
     /**
-     * Gets the primary Shizuku package name (first resolved or first fallback).
-     *
-     * @param context Application context
-     * @return Primary Shizuku package name
-     */
-    fun getPrimaryShizukuPackage(context: Context): String {
-        return resolveShizukuPackages(context).firstOrNull() 
-            ?: FALLBACK_PACKAGES.first()
-    }
-    
-    /**
      * Gets all known Shizuku package names for launching purposes.
      * Returns resolved packages first, then fallback packages.
      *

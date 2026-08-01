@@ -204,20 +204,6 @@ class PersistentDaemonManager(private val context: Context) {
         }
     }
     
-    /**
-     * Check if daemon is healthy and responding to commands.
-     */
-    suspend fun healthCheck(): Boolean = withContext(Dispatchers.IO) {
-        if (!isDaemonRunning()) return@withContext false
-        try {
-            val result = executeCommand("ping")
-            return@withContext result.trim() == "pong"
-        } catch (e: Exception) {
-            Log.w(TAG, "Health check failed", e)
-            return@withContext false
-        }
-    }
-
     suspend fun readRecentDaemonLogs(maxLines: Int = 20): String? = withContext(Dispatchers.IO) {
         val ladb = LadbManager.getInstance(context)
         if (!ladb.isConnected()) {

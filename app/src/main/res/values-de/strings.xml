@@ -226,16 +226,6 @@
     <string name="daemon_status_running">Daemon: Läuft</string>
     <string name="daemon_status_stopped">Daemon: Gestoppt</string>
     <string name="daemon_start">Daemon starten</string>
-    <string name="shizuku_step_1">Zuerst Entwickleroptionen aktivieren. Dann die Shizuku-App öffnen und Pairing drücken.</string>
-    <string name="shizuku_step_2">Drücken Sie die Schaltfläche Entwickleroptionen, Sie werden dorthin weitergeleitet.</string>
-    <string name="shizuku_step_3">Suchen Sie nach Wireless debugging und drücken Sie die Schaltfläche, um die Wireless-Debugging-Seite zu öffnen.</string>
-    <string name="shizuku_step_4">Drücken Sie Pair device; ein Pairing-Code wird angezeigt.</string>
-    <string name="shizuku_step_5">Wenn der Dialog geöffnet wird, erscheint eine Benachrichtigung von Shizuku, um den Pairing-Code einzugeben.</string>
-    <string name="shizuku_step_6">Nachdem Sie den Pairing-Code bestätigt haben, kehren Sie zu Shizuku zurück und drücken Sie Start.</string>
-    <string name="shizuku_step_7">Warten Sie, bis der Dienst aktiv ist.</string>
-    <string name="shizuku_step_8">Öffnen Sie ShizuWall und versuchen Sie, die Firewall zu aktivieren.</string>
-    <string name="shizuku_step_9">Erteilen Sie Shizuku die Berechtigung, um die Firewall zu aktivieren. Shizuku muss ausgeführt werden, wenn Sie die Firewall ein- oder ausschalten. Sobald die Firewall aktiviert ist, bleibt sie auch dann aktiv, wenn Shizuku stoppt, bis Sie Shizuku starten und die Firewall manuell deaktivieren.</string>
-    <string name="shizuku_step_10">Das Pairing ist nur einmal erforderlich. Shizuku muss nach einem Neustart des Geräts erneut aktiviert werden. Um die Firewall zu aktivieren/deaktivieren, muss Shizuku aktiviert sein. Wenn Sie Shizuku ohne WLAN verwenden möchten (es muss zuvor über WLAN gestartet werden), aktivieren Sie USB-Debugging, damit Shizuku bis zum Neustart aktiv bleibt.</string>
     <string name="shizuku_prompt_title">Shizuku-Anleitung anzeigen?</string>
     <string name="shizuku_prompt_message">Möchten Sie jetzt die Shizuku-Setup-Folien ansehen? Sie können sie später jederzeit über das Drei-Punkte-Menü in den Einstellungen öffnen.</string>
     <string name="shizuku_prompt_do_not_show">Nicht erneut anzeigen</string>
@@ -446,17 +436,12 @@
     <string name="app_info_trackers_count">%1$d Tracker gefunden</string>
     <string name="app_info_trackers_failed">Diese App konnte nicht geprüft werden</string>
     <string name="app_info_trackers_note">Durch Analyse des App-Codes gefunden. ShizuWall nutzt kein VPN und untersucht keinen Datenverkehr. Diese Tracker sind abgeschnitten, solange die App blockiert ist.</string>
-    <string name="tracker_db_title">Tracker-Definitionen</string>
     <string name="tracker_db_description">%1$d Tracker-Signaturen, in der App enthalten. Die Erkennung läuft vollständig offline.</string>
     <string name="tracker_data_attribution">Tracker-Daten: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Apps in anderen Profilen anzeigen</string>
     <string name="show_other_profiles_description">Arbeitsprofil, privater Bereich, Secure Folder und geklonte Apps. Wenn deaktiviert, blockiert das Sperren einer App auch alle ihre Kopien; aktivieren Sie dies, um jede Kopie einzeln zu steuern.</string>
     <string name="show_other_profiles_uncheck_confirm">Alle ausgewählten Apps aus anderen Profilen werden abgewählt und auf ihren Standardzustand zurückgesetzt. Ab jetzt blockiert das Sperren einer App auch jede ihrer Kopien in anderen Profilen. Möchten Sie das Häkchen entfernen?</string>
 
-    <string name="onboarding_how_title">Kein VPN, kein Root nötig</string>
-    <string name="onboarding_how_message">ShizuWall blockiert Apps auf Systemebene über eine privilegierte Shell – Shizuku, drahtloses ADB oder Root. Der VPN-Slot wird nie belegt, Ihr echtes VPN läuft also weiter. Alles bleibt auf diesem Gerät: kein Konto, keine Analytik, kein Internetzugriff.</string>
-    <string name="onboarding_experimental_title">Betrachten Sie es als experimentell</string>
-    <string name="onboarding_experimental_message">Das Blockieren nutzt versteckte Android-Befehle, und die ROM jedes Herstellers verhält sich etwas anders. Manche Modi funktionieren auf Ihrem Gerät möglicherweise nicht, Regeln können nach einem Neustart oder Systemupdate verloren gehen, und einige Apps liefern eine Weile weiter Inhalte aus dem Cache. Testen Sie einen Modus, bevor Sie sich darauf verlassen, und prüfen Sie die Protokolle in den Einstellungen, wenn etwas nicht stimmt.</string>
-    <string name="onboarding_battery_title">Messen Sie den Akkuverbrauch selbst</string>
-    <string name="onboarding_battery_message">Der Standardmodus kostet praktisch keinen zusätzlichen Akku. Die vordergrundabhängigen Modi (Smart Foreground, Hybrid, Fokus-Tracker) prüfen die aktive App etwa einmal pro Sekunde und können daher deutlich mehr verbrauchen – wie viel, hängt ganz von Ihrem Gerät ab. Nutzen Sie einen Modus einen Tag lang, sehen Sie sich den Akkuverbrauch in den Systemeinstellungen an und behalten Sie den Modus mit dem besten Verhältnis.</string>
+    <string name="app_info_button_title">Info-Schaltfläche der App</string>
+    <string name="app_info_button_description">Zeigt bei jeder App ein Info-Symbol; tippe darauf für App-Details und einen Offline-Tracker-Scan.</string>
 </resources>

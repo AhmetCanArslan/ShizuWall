@@ -226,16 +226,6 @@
     <string name="daemon_status_running">Daemon: Çalışıyor</string>
     <string name="daemon_status_stopped">Daemon: Durduruldu</string>
     <string name="daemon_start">Daemon\'ı Başlat</string>
-    <string name="shizuku_step_1">Öncelikle geliştirici seçeneklerini etkinleştirmeniz gerekiyor. Ardından Shizuku uygulamasını açın ve \'Pairing\'e basın.</string>
-    <string name="shizuku_step_2">Geliştirici seçenekleri düğmesine basın, sizi oraya yönlendirecektir.</string>
-    <string name="shizuku_step_3">Burada \'Wireless debugging\'i arayın ve o düğmeye basın, kablosuz hata ayıklama sayfası açılacaktır.</string>
-    <string name="shizuku_step_4">Pair device\'a basın, eşleştirme kodu görünecektir.</string>
-    <string name="shizuku_step_5">İletişim kutusu açıldığında, Shizuku\'dan eşleştirme kodunu girmenize izin veren bir bildirim görünecektir.</string>
-    <string name="shizuku_step_6">Eşleştirme kodunu onayladıktan sonra Shizuku\'ya geri dönün ve \'Start\'a basın.</string>
-    <string name="shizuku_step_7">Servisin aktif olmasını bekleyin.</string>
-    <string name="shizuku_step_8">ShizuWall\'u açın ve Güvenlik Duvarını etkinleştirmeyi deneyin.</string>
-    <string name="shizuku_step_9">Shizuku iznini verin, güvenlik duvarı etkinleşsin. Güvenlik duvarını açıp kapatırken Shizuku çalışıyor olmalıdır. Güvenlik duvarı bir kez etkinleştirildiğinde, Shizuku dursa bile, siz Shizuku\'yu başlatıp manuel olarak devre dışı bırakana kadar etkin kalacaktır.</string>
-    <string name="shizuku_step_10">Eşleştirme yalnızca bir kez gereklidir. Cihaz yeniden başlatıldığında Shizuku\'nun tekrar etkinleştirilmesi gerekir. Güvenlik duvarını etkinleştirmek/devre dışı bırakmak için Shizuku etkin olmalıdır. Shizuku\'yu Wi-Fi olmadan kullanmak istiyorsanız (önceden Wi-Fi üzerinden başlatılmalıdır), Shizuku\'nun yeniden başlatılana kadar açık kalması için USB hata ayıklamayı etkinleştirin.</string>
     <string name="shizuku_prompt_title">Shizuku kurulum kılavuzunu göster?</string>
     <string name="shizuku_prompt_message">Shizuku kurulum slaytlarını şimdi görüntülemek ister misiniz? Daha sonra Ayarlar\'daki üç nokta menüsünden her zaman açabilirsiniz.</string>
     <string name="shizuku_prompt_do_not_show">Bir daha gösterme</string>
@@ -447,17 +437,12 @@
     <string name="app_info_trackers_count">%1$d izleyici bulundu</string>
     <string name="app_info_trackers_failed">Bu uygulama taranamadı</string>
     <string name="app_info_trackers_note">Uygulamanın kodu taranarak bulundu. ShizuWall VPN kullanmaz ve trafiği incelemez. Bu uygulama engellendiğinde bu izleyiciler de kesilir.</string>
-    <string name="tracker_db_title">İzleyici tanımları</string>
     <string name="tracker_db_description">%1$d izleyici imzası, uygulamayla birlikte gelir. Tespit tamamen çevrimdışı çalışır.</string>
     <string name="tracker_data_attribution">İzleyici verisi: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Diğer profillerdeki uygulamalar</string>
     <string name="show_other_profiles_description">İş profili, gizli alan, Güvenli Klasör ve klonlanmış uygulamalar. Kapalıyken bir uygulamayı engellemek tüm kopyalarını da engeller; her kopyayı ayrı yönetmek için işaretleyin.</string>
     <string name="show_other_profiles_uncheck_confirm">Diğer profillerden seçili tüm uygulamaların seçimi kaldırılacak ve varsayılan durumuna sıfırlanacak. Bundan sonra bir uygulamayı engellediğinizde diğer profillerdeki tüm kopyaları da engellenecek. İşareti kaldırmak istiyor musunuz?</string>
 
-    <string name="onboarding_how_title">VPN ve root gerekmez</string>
-    <string name="onboarding_how_message">ShizuWall uygulamaları sistem düzeyinde, ayrıcalıklı bir kabuk üzerinden engeller: Shizuku, kablosuz ADB veya root. VPN yuvasını hiç kullanmaz, bu yüzden asıl VPN\'iniz çalışmaya devam eder. Her şey bu cihazda kalır: hesap yok, analitik yok, internet erişimi yok.</string>
-    <string name="onboarding_experimental_title">Deneysel olduğunu unutmayın</string>
-    <string name="onboarding_experimental_message">Engelleme, Android\'in gizli komutlarını kullanır ve her üreticinin ROM\'u biraz farklı davranır. Bazı modlar cihazınızda çalışmayabilir, kurallar yeniden başlatma veya sistem güncellemesinden sonra düşebilir ve bazı uygulamalar bir süre önbellekten içerik sunmayı sürdürebilir. Bir moda güvenmeden önce deneyin; bir şey ters görünürse Ayarlar\'daki günlüklere bakın.</string>
-    <string name="onboarding_battery_title">Bataryayı kendiniz ölçün</string>
-    <string name="onboarding_battery_message">Varsayılan mod neredeyse hiç ek batarya harcamaz. Ön plan tabanlı modlar (Akıllı Ön Plan, Hibrit, Odak Takibi) etkin uygulamayı saniyede bir kez kontrol eder; bu yüzden gözle görülür şekilde daha fazla tüketebilir ve miktarı tamamen cihazınıza bağlıdır. Bir modu bir gün kullanın, sistem ayarlarındaki batarya kullanımına bakın ve size en iyi dengeyi veren modda kalın.</string>
+    <string name="app_info_button_title">Uygulama bilgisi düğmesi</string>
+    <string name="app_info_button_description">Her uygulamada bir bilgi simgesi gösterir; dokununca uygulama ayrıntıları ve çevrimdışı izleyici taraması açılır.</string>
 </resources>

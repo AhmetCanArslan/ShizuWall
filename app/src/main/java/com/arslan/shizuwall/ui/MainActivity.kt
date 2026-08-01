@@ -84,7 +84,6 @@ class MainActivity : BaseActivity() {
         const val KEY_ACTIVE_PACKAGES = "active_packages"
         const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed" // made public
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
-        const val KEY_ONBOARDING_DONE = "onboarding_done"
         private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
         const val KEY_SKIP_ERROR_DIALOG = "skip_error_dialog"
@@ -92,6 +91,7 @@ class MainActivity : BaseActivity() {
         const val KEY_KEEP_ERROR_APPS_SELECTED = "keep_error_apps_selected"
         const val KEY_SHOW_SYSTEM_APPS = "show_system_apps"
         const val KEY_SHOW_OTHER_PROFILES = "show_other_profiles"
+        const val KEY_SHOW_APP_INFO_BUTTON = "show_app_info_button"
         const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
         const val KEY_SELECTED_FONT = "selected_font"
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
@@ -454,7 +454,6 @@ class MainActivity : BaseActivity() {
                         applyListInteractionState()
 
                         updateSelectedCount()
-                        updateSelectAllCheckbox()
                         updateInteractiveViews()
                     }
                 }
@@ -612,6 +611,9 @@ class MainActivity : BaseActivity() {
             suppressToggleListener = false
         }
         appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
+        appListAdapter.setInfoButtonEnabled(
+            sharedPreferences.getBoolean(KEY_SHOW_APP_INFO_BUTTON, true)
+        )
         loadInstalledApps()
         
         // If firewall is ON and mode needs foreground detection, ensure the service runs
@@ -1234,7 +1236,6 @@ class MainActivity : BaseActivity() {
                 it.packageName.lowercase().contains(searchQuery)
             })
         }
-        updateSelectAllCheckbox()
         // Removed submitList from here; handled in callers
     }
 
@@ -1396,7 +1397,6 @@ class MainActivity : BaseActivity() {
                 }
 
                 updateSelectedCount()
-                updateSelectAllCheckbox()
 
                 if (animate || smoothTransition) {
                     val fadeInDelay = if (smoothTransition) 0L else 400L
@@ -1670,7 +1670,6 @@ class MainActivity : BaseActivity() {
             firewallToggle.isEnabled = (isFirewallEnabled || count > 0 || firewallMode.allowsDynamicSelection()) && !isFirewallProcessRunning
         }
         
-        updateSelectAllCheckbox()
         updateInteractiveViews()
     }
 
@@ -1681,10 +1680,6 @@ class MainActivity : BaseActivity() {
             selectedCountText.isEnabled = !isFirewallEnabled || firewallMode.allowsDynamicSelection()
             selectedCountText.alpha = if (selectedCountText.isEnabled) 1.0f else 0.4f
         }
-    }
-
-    private fun updateSelectAllCheckbox() {
-        // Badge visual is driven by selectedCountText.text; no extra state needed.
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -2764,7 +2759,6 @@ class MainActivity : BaseActivity() {
         appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
         updateSelectedCount()
         updateCategoryChips()
-        updateSelectAllCheckbox()
 
         if (!isFirewallEnabled) {
             profilesBottomSheet?.notifyActivated(profile.id)

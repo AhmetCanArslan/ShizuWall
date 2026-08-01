@@ -110,6 +110,18 @@ class SettingsActivity : BaseActivity() {
             openDocumentLauncher.launch(arrayOf("application/json", "text/*", "*/*"))
         }
 
+        val infoButtonSwitch =
+            findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.switchAppInfoButton)
+        infoButtonSwitch.isChecked =
+            sharedPreferences.getBoolean(MainActivity.KEY_SHOW_APP_INFO_BUTTON, true)
+        infoButtonSwitch.setOnCheckedChangeListener { _, checked ->
+            sharedPreferences.edit()
+                .putBoolean(MainActivity.KEY_SHOW_APP_INFO_BUTTON, checked)
+                .apply()
+        }
+        findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardTrackerDefinitions)
+            .setOnClickListener { infoButtonSwitch.toggle() }
+
         val trackerSummary = findViewById<TextView>(R.id.tvTrackerDefinitionsSummary)
         lifecycleScope.launch {
             val count = withContext(Dispatchers.IO) {

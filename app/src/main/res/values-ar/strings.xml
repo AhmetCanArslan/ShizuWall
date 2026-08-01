@@ -173,16 +173,6 @@
     <string name="loading_apps">جاري تحميل التطبيقات</string>
 
     <string name="shizuku_setup_guide">دليل إعداد Shizuku</string>
-    <string name="shizuku_step_1">أولاً وقبل كل شيء، عليك تفعيل خيارات المطور. بعد ذلك، افتح تطبيق Shizuku واضغط على الاقتران (Pairing)</string>
-    <string name="shizuku_step_2">اضغط على زر خيارات المطور، وسيقوم بإعادة توجيهك إلى هناك.</string>
-    <string name="shizuku_step_3">ابحث هنا عن "تصحيح أخطاء اللاسلكي" واضغط على ذلك الزر، ستفتح صفحة تصحيح أخطاء اللاسلكي.</string>
-    <string name="shizuku_step_4">اضغط على "إقران الجهاز باستخدام رمز إقران".</string>
-    <string name="shizuku_step_5">عند فتح الحوار، سيظهر إشعار من Shizuku ليتيح لك إدخال رمز الإقران.</string>
-    <string name="shizuku_step_6">بعد تأكيد رمز الإقران، عد إلى Shizuku واضغط على ابدأ (start).</string>
-    <string name="shizuku_step_7">انتظر حتى تصبح الخدمة نشطة.</string>
-    <string name="shizuku_step_8">افتح ShizuWall وحاول تفعيل الجدار الناري.</string>
-    <string name="shizuku_step_9">امنح إذن Shizuku، وسيتم تفعيل الجدار الناري. يجب أن يكون Shizuku قيد التشغيل عند تفعيل أو تعطيل مفتاح الجدار الناري. بعد تفعيل الجدار الناري مرة واحدة، حتى إذا توقف Shizuku، سيبقى الجدار الناري نشطًا حتى تقوم بتنشيط Shizuku وتعطيله يدويًا.</string>
-    <string name="shizuku_step_10">الإقران مطلوب مرة واحدة فقط. يجب تنشيط Shizuku مرة أخرى عند إعادة تشغيل الجهاز. لتفعيل وتعطيل الجدار الناري، يجب تنشيط Shizuku. إذا كنت ترغب في استخدام Shizuku بدون شبكة Wi-Fi (يجب أن يكون قد بدأ عبر Wi-Fi من قبل)، فقم بتفعيل تصحيح أخطاء USB حتى يظل Shizuku قيد التشغيل حتى تقوم بإعادة التشغيل.</string>
     <string name="shizuku_prompt_title">هل تريد عرض دليل إعداد Shizuku؟</string>
     <string name="shizuku_prompt_message">هل تود عرض شرائح إعداد Shizuku الآن؟ يمكنك دائمًا فتحها لاحقًا من القائمة ذات الثلاث نقاط في الإعدادات.</string>
     <string name="shizuku_prompt_do_not_show">عدم الإظهار مرة أخرى</string>
@@ -455,17 +445,12 @@
     <string name="app_info_trackers_count">تم العثور على %1$d متتبع</string>
     <string name="app_info_trackers_failed">تعذر فحص هذا التطبيق</string>
     <string name="app_info_trackers_note">تم اكتشافها بفحص شفرة التطبيق. لا يستخدم ShizuWall شبكة VPN ولا يفحص الحركة. تُقطع هذه المتتبعات طالما التطبيق محظور.</string>
-    <string name="tracker_db_title">تعريفات المتتبعات</string>
     <string name="tracker_db_description">%1$d توقيع متتبع، مضمّنة مع التطبيق. يعمل الكشف دون اتصال بالإنترنت تمامًا.</string>
     <string name="tracker_data_attribution">بيانات المتتبعات: Exodus Privacy، ODbL 1.0</string>
     <string name="show_other_profiles">إظهار التطبيقات في الملفات الشخصية الأخرى</string>
     <string name="show_other_profiles_description">ملف العمل والمساحة الخاصة و Secure Folder والتطبيقات المستنسخة. عند إيقافه، يؤدي حظر تطبيق إلى حظر جميع نسخه أيضًا؛ فعّل هذا الخيار للتحكم في كل نسخة على حدة.</string>
     <string name="show_other_profiles_uncheck_confirm">سيتم إلغاء تحديد أي تطبيق محدد من ملف شخصي آخر وإعادته إلى حالته الافتراضية. ومن الآن فصاعدًا، سيؤدي حظر تطبيق إلى حظر جميع نسخه في الملفات الشخصية الأخرى. هل تريد إلغاء التحديد؟</string>
 
-    <string name="onboarding_how_title">بدون VPN وبدون روت</string>
-    <string name="onboarding_how_message">يحجب ShizuWall التطبيقات على مستوى النظام من خلال صدفة ذات صلاحيات: Shizuku أو ADB اللاسلكي أو الروت. لا يشغل خانة VPN أبدًا، لذا يبقى VPN الحقيقي لديك يعمل. كل شيء يبقى على هذا الجهاز: لا حساب ولا تحليلات ولا اتصال بالإنترنت.</string>
-    <string name="onboarding_experimental_title">اعتبره تجريبيًا</string>
-    <string name="onboarding_experimental_message">يعتمد الحجب على أوامر مخفية في أندرويد، وسلوك كل نظام من الشركات المصنعة يختلف قليلًا. قد لا تعمل بعض الأوضاع على جهازك، وقد تُفقد القواعد بعد إعادة التشغيل أو تحديث النظام، وقد تستمر بعض التطبيقات في تقديم محتوى مخزَّن مؤقتًا لبعض الوقت. اختبر الوضع قبل الاعتماد عليه، وراجع السجلات في الإعدادات إذا بدا شيء خاطئًا.</string>
-    <string name="onboarding_battery_title">قِس البطارية بنفسك</string>
-    <string name="onboarding_battery_message">الوضع الافتراضي لا يستهلك بطارية إضافية تقريبًا. الأوضاع المعتمدة على التطبيق في المقدمة (الواجهة الذكية، المختلط، تتبّع التركيز) تتحقق من التطبيق النشط مرة كل ثانية تقريبًا، لذا قد تستهلك أكثر بشكل ملحوظ، والمقدار يعتمد كليًا على جهازك. استخدم وضعًا واحدًا ليوم كامل، وراجع استهلاك البطارية في إعدادات النظام، ثم أبقِ على الوضع الذي يمنحك أفضل توازن.</string>
+    <string name="app_info_button_title">زر معلومات التطبيق</string>
+    <string name="app_info_button_description">يعرض أيقونة معلومات على كل تطبيق؛ اضغط عليها لعرض تفاصيل التطبيق وفحص المتعقبات دون اتصال.</string>
 </resources>

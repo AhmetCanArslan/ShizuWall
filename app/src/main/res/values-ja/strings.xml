@@ -171,16 +171,6 @@
     <string name="loading_apps">アプリを読み込み中</string>
 
     <string name="shizuku_setup_guide">Shizuku セットアップガイド</string>
-    <string name="shizuku_step_1">まず、開発者向けオプションを有効にする必要があります。その後、Shizuku アプリを開いて「ペアリング」を押してください。</string>
-    <string name="shizuku_step_2">「開発者向けオプション」ボタンを押すと、そのページにリダイレクトされます。</string>
-    <string name="shizuku_step_3">そこで「ワイヤレスデバッグ」を探してそのボタンを押し、ワイヤレスデバッグのページを開きます。</string>
-    <string name="shizuku_step_4">「ペアリングコードでデバイスをペアリング」を押します。</string>
-    <string name="shizuku_step_5">ダイアログが開くと、ペアリングコードを入力できるように Shizuku から通知が表示されます。</string>
-    <string name="shizuku_step_6">ペアリングコードを確認した後、Shizuku に戻って「開始」を押します。</string>
-    <string name="shizuku_step_7">サービスがアクティブになるまで待ちます。</string>
-    <string name="shizuku_step_8">ShizuWall を開き、ファイアウォールを有効にしてみてください。</string>
-    <string name="shizuku_step_9">Shizuku の権限を許可すると、ファイアウォールがアクティブになります。ファイアウォールのスイッチを切り替えるときは、Shizuku が実行中である必要があります。一度ファイアウォールを有効にすると、Shizuku が停止しても、手動で Shizuku を起動して無効にするまで、ファイアウォールはアクティブなままになります。</string>
-    <string name="shizuku_step_10">ペアリングが必要なのは一度だけです。デバイスを再起動したときは、Shizuku を再度アクティブにする必要があります。ファイアウォールの有効化・無効化には Shizuku の起動が必要です。Wi-Fi なしで Shizuku を使いたい場合（あらかじめ Wi-Fi 経由で開始する必要があります）は、USB デバッグを有効にすると、再起動するまで Shizuku が維持されます。</string>
     <string name="shizuku_prompt_title">Shizuku セットアップガイドを表示しますか？</string>
     <string name="shizuku_prompt_message">Shizuku セットアップのスライドを今すぐ表示しますか？設定の 3 点メニューから後でいつでも開くことができます。</string>
     <string name="shizuku_prompt_do_not_show">次回から表示しない</string>
@@ -449,17 +439,12 @@
     <string name="app_info_trackers_count">%1$d 件のトラッカーを検出</string>
     <string name="app_info_trackers_failed">このアプリはスキャンできませんでした</string>
     <string name="app_info_trackers_note">アプリのコードを調べて検出しました。ShizuWall は VPN を使わず通信を見ません。このアプリをブロックする間、これらのトラッカーも遮断されます。</string>
-    <string name="tracker_db_title">トラッカー定義</string>
     <string name="tracker_db_description">%1$d 件のトラッカー署名がアプリに同梱されています。検出は完全にオフラインで動作します。</string>
     <string name="tracker_data_attribution">トラッカーデータ: Exodus Privacy、ODbL 1.0</string>
     <string name="show_other_profiles">他のプロファイルのアプリを表示</string>
     <string name="show_other_profiles_description">仕事用プロファイル、プライベートスペース、Secure Folder、クローンアプリ。オフの場合、アプリをブロックするとそのすべてのコピーもブロックされます。コピーごとに個別に管理するにはオンにしてください。</string>
     <string name="show_other_profiles_uncheck_confirm">他のプロファイルで選択されているアプリはすべて選択解除され、既定の状態に戻ります。以降、アプリをブロックすると他のプロファイルにあるそのコピーもすべてブロックされます。チェックを外しますか？</string>
 
-    <string name="onboarding_how_title">VPN も root も不要</string>
-    <string name="onboarding_how_message">ShizuWall は特権シェル（Shizuku、ワイヤレス ADB、root）を通じてシステムレベルでアプリをブロックします。VPN スロットを占有しないため、本来の VPN はそのまま使えます。すべての情報はこの端末内に留まります。アカウント不要、解析なし、インターネット接続も不要です。</string>
-    <string name="onboarding_experimental_title">実験的な機能として扱ってください</string>
-    <string name="onboarding_experimental_message">ブロックは Android の隠しコマンドを利用しており、メーカーごとの ROM で動作が少し異なります。一部のモードはお使いの端末で動作しないことがあり、再起動やシステム更新後にルールが失われる場合もあります。また一部のアプリはしばらくキャッシュから表示を続けます。頼りにする前に必ず試し、おかしいと感じたら設定内のログを確認してください。</string>
-    <string name="onboarding_battery_title">バッテリーは自分で測定してください</string>
-    <string name="onboarding_battery_message">デフォルトモードの追加消費はほぼありません。フォアグラウンド連動モード（スマートフォアグラウンド、ハイブリッド、フォーカストラッカー）は約 1 秒ごとに実行中のアプリを確認するため、消費が目に見えて増えることがあります。その量は端末によって大きく異なります。1 つのモードを 1 日使い、システム設定のバッテリー使用量を確認して、最もバランスの良いモードを選んでください。</string>
+    <string name="app_info_button_title">アプリ情報ボタン</string>
+    <string name="app_info_button_description">各アプリに情報アイコンを表示します。タップするとアプリの詳細とオフラインのトラッカー検査が開きます。</string>
 </resources>

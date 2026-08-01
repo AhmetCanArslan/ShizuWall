@@ -171,16 +171,6 @@
     <string name="loading_apps">Cargando aplicaciones</string>
 
     <string name="shizuku_setup_guide">Guía de configuración de Shizuku</string>
-    <string name="shizuku_step_1">Primero debes activar las opciones de desarrollador. Luego abre Shizuku y presiona Vincular.</string>
-    <string name="shizuku_step_2">Presiona el botón de opciones de desarrollador para ir allí.</string>
-    <string name="shizuku_step_3">Busca Depuración inalámbrica y presiónalo para abrir su página.</string>
-    <string name="shizuku_step_4">Presiona Vincular dispositivo con código de vinculación.</string>
-    <string name="shizuku_step_5">Al abrirse el diálogo, aparecerá una notificación de Shizuku para ingresar el código.</string>
-    <string name="shizuku_step_6">Tras confirmar el código, regresa a Shizuku y presiona Iniciar.</string>
-    <string name="shizuku_step_7">Espera hasta que el servicio esté activo.</string>
-    <string name="shizuku_step_8">Abre ShizuWall e intenta activar el Firewall.</string>
-    <string name="shizuku_step_9">Permite Shizuku y el firewall se activará. Shizuku debe estar en ejecución al cambiar el estado del firewall. Una vez activo, seguirá así aunque Shizuku se detenga, hasta que lo desactives manualmente con Shizuku activo.</string>
-    <string name="shizuku_step_10">La vinculación es solo una vez. Shizuku debe activarse tras reiniciar. Para cambiar el firewall, Shizuku debe estar activo. Para usar Shizuku sin Wi-Fi (debe iniciarse con Wi-Fi primero), activa Depuración USB para que Shizuku resista el reinicio.</string>
     <string name="shizuku_prompt_title">¿Mostrar guía de Shizuku?</string>
     <string name="shizuku_prompt_message">¿Quieres ver los pasos de configuración de Shizuku ahora? Puedes abrirlos después desde el menú de Ajustes.</string>
     <string name="shizuku_prompt_do_not_show">No volver a mostrar</string>
@@ -450,17 +440,12 @@
     <string name="app_info_trackers_count">%1$d rastreadores encontrados</string>
     <string name="app_info_trackers_failed">No se pudo analizar esta app</string>
     <string name="app_info_trackers_note">Detectados analizando el código de la app. ShizuWall no usa VPN ni inspecciona el tráfico: estos rastreadores quedan cortados mientras la app esté bloqueada.</string>
-    <string name="tracker_db_title">Definiciones de rastreadores</string>
     <string name="tracker_db_description">%1$d firmas de rastreadores, incluidas en la app. La detección funciona totalmente sin conexión.</string>
     <string name="tracker_data_attribution">Datos de rastreadores: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Mostrar apps de otros perfiles</string>
     <string name="show_other_profiles_description">Perfil de trabajo, espacio privado, Secure Folder y apps clonadas. Si está desactivado, bloquear una app también bloquea todas sus copias; márcalo para controlar cada copia por separado.</string>
     <string name="show_other_profiles_uncheck_confirm">Cualquier app seleccionada de otro perfil se deseleccionará y volverá a su estado predeterminado. A partir de ahora, bloquear una app también bloqueará todas sus copias en otros perfiles. ¿Quieres desmarcarlo?</string>
 
-    <string name="onboarding_how_title">Sin VPN ni root</string>
-    <string name="onboarding_how_message">ShizuWall bloquea apps a nivel de sistema mediante un shell privilegiado: Shizuku, ADB inalámbrico o root. Nunca ocupa la ranura de VPN, así que tu VPN real sigue funcionando. Todo se queda en este dispositivo: sin cuenta, sin analíticas, sin acceso a internet.</string>
-    <string name="onboarding_experimental_title">Considéralo experimental</string>
-    <string name="onboarding_experimental_message">El bloqueo usa comandos ocultos de Android y la ROM de cada fabricante se comporta de forma algo distinta. Algunos modos pueden no funcionar en tu dispositivo, las reglas pueden perderse tras un reinicio o una actualización del sistema, y unas pocas apps siguen sirviendo contenido en caché un rato. Prueba un modo antes de depender de él y revisa los registros en Ajustes si algo no cuadra.</string>
-    <string name="onboarding_battery_title">Mide la batería tú mismo</string>
-    <string name="onboarding_battery_message">El modo predeterminado casi no consume batería extra. Los modos basados en primer plano (Primer plano inteligente, Híbrido, Seguimiento de foco) comprueban la app activa una vez por segundo, así que pueden consumir bastante más; cuánto depende por completo de tu dispositivo. Usa un modo durante un día, mira el consumo de batería en los ajustes del sistema y quédate con el modo que te dé el mejor equilibrio.</string>
+    <string name="app_info_button_title">Botón de información de la aplicación</string>
+    <string name="app_info_button_description">Muestra un icono de información en cada aplicación; tócalo para ver detalles y un análisis de rastreadores sin conexión.</string>
 </resources>
