@@ -6,7 +6,7 @@
     android:label="@string/widget_profile_label"
     android:minHeight="40dp"
     android:minWidth="40dp"
-    android:previewLayout="@layout/widget_profile"
+    android:previewLayout="@layout/widget_profile_preview"
     android:resizeMode="horizontal|vertical"
     android:targetCellHeight="1"
     android:targetCellWidth="1"

@@ -155,7 +155,6 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, context.getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
                     }
-                    pending.finish()
                     return@launch
                 }
 
@@ -189,9 +188,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            if (automationEvent) {
-                                context.getString(R.string.screen_lock_mode_operation_failed)
-                            } else if (mode == "LADB") {
+                            if (mode == "LADB") {
                                 context.getString(R.string.daemon_not_running)
                             } else if (mode == "ROOT") {
                                 context.getString(R.string.root_not_found_message)
@@ -201,7 +198,6 @@ class FirewallControlReceiver : BroadcastReceiver() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                    pending.finish()
                     return@launch
                 }
 
@@ -343,8 +339,15 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 }
 
                 if (automationEvent && hadCommandFailure) {
+                    val failureMessage = if (firewallMode == FirewallMode.SCREEN_LOCK_MODE) {
+                        context.getString(R.string.screen_lock_mode_operation_failed)
+                    } else if (enabled) {
+                        context.getString(R.string.failed_to_enable_firewall)
+                    } else {
+                        context.getString(R.string.failed_to_disable_firewall)
+                    }
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, context.getString(R.string.screen_lock_mode_operation_failed), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, failureMessage, Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -359,7 +362,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     Toast.makeText(context, context.getString(R.string.error_format, t.message), Toast.LENGTH_SHORT).show()
                 }
             } finally {
-                pending.finish()
+                runCatching { pending.finish() }
             }
         }
     }

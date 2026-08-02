@@ -16,9 +16,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="20dp"
+            android:paddingStart="@dimen/widget_config_h_padding"
             android:paddingTop="28dp"
-            android:paddingEnd="20dp"
+            android:paddingEnd="@dimen/widget_config_h_padding"
             android:paddingBottom="16dp">
 
             <TextView
@@ -47,8 +47,9 @@
                 <FrameLayout
                     android:id="@+id/widgetPreviewContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:padding="24dp" />
+                    android:layout_height="@dimen/widget_preview_card_height"
+                    android:background="@drawable/widget_preview_backdrop"
+                    android:padding="@dimen/widget_preview_card_padding" />
 
             </com.google.android.material.card.MaterialCardView>
 
@@ -91,9 +92,9 @@
         android:layout_height="wrap_content"
         android:gravity="end"
         android:orientation="horizontal"
-        android:paddingStart="20dp"
+        android:paddingStart="@dimen/widget_config_h_padding"
         android:paddingTop="8dp"
-        android:paddingEnd="20dp"
+        android:paddingEnd="@dimen/widget_config_h_padding"
         android:paddingBottom="20dp">
 
         <com.google.android.material.button.MaterialButton

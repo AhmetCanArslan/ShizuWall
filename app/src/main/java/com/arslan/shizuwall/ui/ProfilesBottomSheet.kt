@@ -302,6 +302,7 @@ class ProfilesBottomSheet(
             .setMessage(context.getString(R.string.profile_delete_confirm, profile.name))
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(R.string.profile_delete) { _, _ ->
+                ProfileTileSlots.releaseSlot(context, profile)
                 ProfilesStore.delete(context, profile.id)
                 refresh(playLayoutAnim = false)
                 listener.onProfilesChanged()

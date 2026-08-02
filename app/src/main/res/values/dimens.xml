@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="widget_preview_size">96dp</dimen>
+    <dimen name="widget_preview_card_height">150dp</dimen>
+    <dimen name="widget_preview_card_padding">24dp</dimen>
+    <dimen name="widget_config_h_padding">20dp</dimen>
 </resources>
