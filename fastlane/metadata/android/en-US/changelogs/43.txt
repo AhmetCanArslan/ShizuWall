@@ -1,0 +1,11 @@
+Multi-user support: per-UID firewall rules for work profiles and secondary users #126
+App info dialog with offline tracker detection #120
+Profile icons: pick a custom icon for each profile
+Profile Quick Settings tiles: activate a profile from the notification shade (up to 5)
+Profile home screen widget with a configurable widget setup screen
+Auto-enable firewall when a profile is activated #119
+Active profile name shown in the firewall status notification #121
+Firewall mode details dialog explaining what each mode does #124
+Profiles and sorting now use direct buttons instead of popup menus
+Smoother app list sorting and filtering transitions
+Removed the "include restored apps" option #114
