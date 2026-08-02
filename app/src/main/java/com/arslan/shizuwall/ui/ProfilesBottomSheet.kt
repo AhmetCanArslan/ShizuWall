@@ -1,12 +1,14 @@
 package com.arslan.shizuwall.ui
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arslan.shizuwall.R
@@ -16,6 +18,7 @@ import com.arslan.shizuwall.profiles.ProfileTileSlots
 import com.arslan.shizuwall.profiles.ProfilesStore
 import com.arslan.shizuwall.widgets.ProfileWidgetProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -120,6 +123,17 @@ class ProfilesBottomSheet(
         try {
             popup.setForceShowIcon(true)
         } catch (_: Throwable) {
+        }
+        val iconTint = MaterialColors.getColor(
+            anchor,
+            androidx.appcompat.R.attr.colorControlNormal,
+            Color.BLACK
+        )
+        for (i in 0 until popup.menu.size()) {
+            val icon = popup.menu.getItem(i).icon ?: continue
+            val wrapped = DrawableCompat.wrap(icon.mutate())
+            DrawableCompat.setTint(wrapped, iconTint)
+            popup.menu.getItem(i).icon = wrapped
         }
         val hasTile = profile.tileSlot >= 0
         popup.menu.findItem(R.id.action_profile_tile)?.isVisible = !hasTile
