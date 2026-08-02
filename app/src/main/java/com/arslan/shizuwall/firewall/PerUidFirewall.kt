@@ -1,21 +1,18 @@
 package com.arslan.shizuwall.firewall
 
 import android.content.Context
-import android.os.IBinder
 import android.util.Log
 import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.daemon.PersistentDaemonManager
 import com.arslan.shizuwall.shell.RootShellExecutor
+import com.arslan.shizuwall.shizuku.ShizukuUserServiceManager
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.MultiUserApps
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.lsposed.hiddenapibypass.HiddenApiBypass
 import rikka.shizuku.Shizuku
-import rikka.shizuku.ShizukuBinderWrapper
-import rikka.shizuku.SystemServiceHelper
 
 object PerUidFirewall {
 
@@ -27,9 +24,6 @@ object PerUidFirewall {
     private const val DAEMON_COMMAND = "fw-uid-rule"
     private const val DAEMON_ASSET_NAME = "daemon.bin"
     private const val DAEMON_DEX_NAME = "daemon.dex"
-
-    @Volatile
-    private var hiddenApisUnlocked = false
 
     suspend fun setRule(context: Context, key: String, rule: Int): Boolean = withContext(Dispatchers.IO) {
         val uid = resolveUid(context, key) ?: return@withContext false
@@ -54,22 +48,11 @@ object PerUidFirewall {
         }
     }
 
-    private fun applyViaShizuku(uid: Int, rule: Int): Boolean {
+    private suspend fun applyViaShizuku(uid: Int, rule: Int): Boolean {
         return try {
             if (!Shizuku.pingBinder()) return false
-            unlockHiddenApis()
-            val binder: IBinder = SystemServiceHelper.getSystemService("connectivity") ?: return false
-            val service = Class.forName("android.net.IConnectivityManager\$Stub")
-                .getMethod("asInterface", IBinder::class.java)
-                .invoke(null, ShizukuBinderWrapper(binder))
-                ?: return false
-            service.javaClass.getMethod(
-                "setUidFirewallRule",
-                Int::class.javaPrimitiveType,
-                Int::class.javaPrimitiveType,
-                Int::class.javaPrimitiveType
-            ).invoke(service, CHAIN_OEM_DENY_3, uid, rule)
-            true
+            val service = ShizukuUserServiceManager.obtain() ?: return false
+            service.setUidFirewallRule(CHAIN_OEM_DENY_3, uid, rule)
         } catch (t: Throwable) {
             Log.w(TAG, "Per-uid rule $rule via Shizuku failed for uid $uid", t)
             false
@@ -114,16 +97,5 @@ object PerUidFirewall {
             Log.w(TAG, "Per-uid rule $rule via root failed for uid $uid", t)
             false
         }
-    }
-
-    // IConnectivityManager is non-SDK, unreachable by reflection without this.
-    private fun unlockHiddenApis() {
-        if (hiddenApisUnlocked) return
-        try {
-            HiddenApiBypass.addHiddenApiExemptions("Landroid/net/")
-        } catch (t: Throwable) {
-            Log.w(TAG, "Could not lift hidden API restrictions", t)
-        }
-        hiddenApisUnlocked = true
     }
 }

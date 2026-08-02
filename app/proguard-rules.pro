@@ -124,6 +124,10 @@
 -keepclassmembers class rikka.shizuku.** { *; }
 -dontwarn rikka.shizuku.**
 
+-keep class com.arslan.shizuwall.shizuku.ShizuWallUserService { *; }
+-keep interface com.arslan.shizuwall.shizuku.IShizuWallUserService { *; }
+-keep class com.arslan.shizuwall.shizuku.IShizuWallUserService$* { *; }
+
 #===============================================================================
 # JSR305 annotations
 #===============================================================================
