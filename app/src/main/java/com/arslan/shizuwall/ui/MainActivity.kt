@@ -394,15 +394,6 @@ class MainActivity : BaseActivity() {
                 .show()
         }
 
-        val openGithub = {
-            val url = getString(R.string.github_url)
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            startActivity(intent)
-        }
-
-        val appTitle: TextView = findViewById(R.id.appTitle)
-        appTitle.setOnClickListener { openGithub() }
-
         val settingsButton: View? = findViewById(R.id.settingsButton)
         settingsButton?.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)

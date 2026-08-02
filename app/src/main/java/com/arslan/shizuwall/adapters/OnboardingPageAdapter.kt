@@ -9,11 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arslan.shizuwall.R
 import com.google.android.material.button.MaterialButton
 import com.arslan.shizuwall.ui.OnboardingPage
-import com.arslan.shizuwall.ui.OnboardingActivity
 
 class OnboardingPageAdapter(
-    private val pages: List<OnboardingPage>,
-    private val activity: OnboardingActivity
+    private val pages: List<OnboardingPage>
 ) : RecyclerView.Adapter<OnboardingPageAdapter.PageViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageViewHolder {

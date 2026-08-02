@@ -390,7 +390,6 @@
     <string name="profiles">Perfis</string>
     <string name="profiles_subtitle">Alterne contextos de firewall com um toque</string>
     <string name="profile_auto_enable_firewall">Ligar o firewall ao ativar um perfil</string>
-    <string name="profile_auto_enable_firewall_desc">Tocar num perfil também ativa o firewall se estiver desligado</string>
     <string name="profiles_empty_title">Ainda não há perfis</string>
     <string name="profiles_empty_message">Selecione os apps que deseja bloquear no firewall e salve-os como um perfil para alternar entre configurações instantaneamente.</string>
     <string name="profile_active">Ativo</string>
@@ -408,7 +407,6 @@
     <string name="profile_add_tile">Adicionar bloco rápido</string>
     <string name="profile_remove_tile">Remover bloco das Configurações rápidas</string>
     <string name="profile_tile_removed">Bloco de “%1$s” removido.</string>
-    <string name="profile_tile_label">Bloco de perfil</string>
     <string name="profile_tile_label_1">Bloco de perfil 1</string>
     <string name="profile_tile_label_2">Bloco de perfil 2</string>
     <string name="profile_tile_label_3">Bloco de perfil 3</string>
@@ -418,7 +416,6 @@
     <string name="profile_tile_unassigned">Nenhum perfil atribuído</string>
     <string name="profile_tile_no_slot">Todos os %1$d blocos de perfil estão em uso</string>
     <string name="profile_tile_add_manually">Bloco pronto. Adicione “%1$s” nas Configurações rápidas.</string>
-    <string name="profile_widget_pick">Escolha um perfil</string>
     <string name="profile_widget_no_profiles">Crie um perfil primeiro</string>
     <string name="profile_switched_firewall_on">%1$s ativado · Firewall ligado</string>
     <string name="profile_update_to_current">Atualizar para a seleção atual</string>

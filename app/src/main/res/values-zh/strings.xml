@@ -391,7 +391,6 @@
     <string name="profiles">配置文件</string>
     <string name="profiles_subtitle">一键切换防火墙场景</string>
     <string name="profile_auto_enable_firewall">启用配置时自动开启防火墙</string>
-    <string name="profile_auto_enable_firewall_desc">点击配置时，若防火墙已关闭则自动开启</string>
     <string name="profiles_empty_title">暂无配置文件</string>
     <string name="profiles_empty_message">选择要用防火墙拦截的应用，然后保存为配置文件，即可在不同设置间即时切换。</string>
     <string name="profile_active">已启用</string>
@@ -408,7 +407,6 @@
     <string name="profile_add_tile">添加快捷开关</string>
     <string name="profile_remove_tile">移除快捷设置磁贴</string>
     <string name="profile_tile_removed">已移除“%1$s”的磁贴。</string>
-    <string name="profile_tile_label">配置文块</string>
     <string name="profile_tile_label_1">配置文件磁贴 1</string>
     <string name="profile_tile_label_2">配置文件磁贴 2</string>
     <string name="profile_tile_label_3">配置文件磁贴 3</string>
@@ -418,7 +416,6 @@
     <string name="profile_tile_unassigned">未分配配置文件</string>
     <string name="profile_tile_no_slot">%1$d 个配置文块均已使用</string>
     <string name="profile_tile_add_manually">磁贴已就绪。请在快捷设置编辑页面添加“%1$s”。</string>
-    <string name="profile_widget_pick">选择配置文件</string>
     <string name="profile_widget_no_profiles">请先创建配置文件</string>
     <string name="profile_switched_firewall_on">%1$s 已启用 · 防火墙已开启</string>
     <string name="profile_update_to_current">更新为当前选择</string>

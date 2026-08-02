@@ -390,7 +390,6 @@
     <string name="profiles">Profile</string>
     <string name="profiles_subtitle">Firewall-Kontexte mit einem Tippen wechseln</string>
     <string name="profile_auto_enable_firewall">Firewall beim Aktivieren eines Profils einschalten</string>
-    <string name="profile_auto_enable_firewall_desc">Ein Tippen auf ein Profil aktiviert auch die Firewall, wenn sie aus ist</string>
     <string name="profiles_empty_title">Noch keine Profile</string>
     <string name="profiles_empty_message">Wähle die Apps aus, die du per Firewall sperren möchtest, und speichere sie als Profil, um sofort zwischen Setups zu wechseln.</string>
     <string name="profile_active">Aktiv</string>
@@ -408,7 +407,6 @@
     <string name="profile_add_tile">Schnelleinstellung hinzufügen</string>
     <string name="profile_remove_tile">Schnelleinstellungs-Kachel entfernen</string>
     <string name="profile_tile_removed">Kachel für „%1$s“ entfernt.</string>
-    <string name="profile_tile_label">Profil-Kachel</string>
     <string name="profile_tile_label_1">Profil-Kachel 1</string>
     <string name="profile_tile_label_2">Profil-Kachel 2</string>
     <string name="profile_tile_label_3">Profil-Kachel 3</string>
@@ -418,7 +416,6 @@
     <string name="profile_tile_unassigned">Kein Profil zugewiesen</string>
     <string name="profile_tile_no_slot">Alle %1$d Profil-Kacheln sind belegt</string>
     <string name="profile_tile_add_manually">Kachel bereit. Füge „%1$s“ über die Schnelleinstellungen hinzu.</string>
-    <string name="profile_widget_pick">Profil auswählen</string>
     <string name="profile_widget_no_profiles">Erstelle zuerst ein Profil</string>
     <string name="profile_switched_firewall_on">%1$s aktiviert · Firewall an</string>
     <string name="profile_update_to_current">Auf aktuelle Auswahl aktualisieren</string>

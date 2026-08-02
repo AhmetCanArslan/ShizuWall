@@ -395,7 +395,6 @@
     <string name="profiles">Profiles</string>
     <string name="profiles_subtitle">Switch firewall contexts in one tap</string>
     <string name="profile_auto_enable_firewall">Turn on firewall when activating a profile</string>
-    <string name="profile_auto_enable_firewall_desc">Tapping a profile also enables the firewall if it is off</string>
     <string name="profiles_empty_title">No profiles yet</string>
     <string name="profiles_empty_message">Select the apps you want to firewall, then save them as a profile to switch between setups instantly.</string>
     <string name="profile_active">Active</string>
@@ -413,7 +412,6 @@
     <string name="profile_add_tile">Add quick tile</string>
     <string name="profile_remove_tile">Remove Quick Settings tile</string>
     <string name="profile_tile_removed">Tile for “%1$s” removed.</string>
-    <string name="profile_tile_label">Profile tile</string>
     <string name="profile_tile_label_1">Profile tile 1</string>
     <string name="profile_tile_label_2">Profile tile 2</string>
     <string name="profile_tile_label_3">Profile tile 3</string>
@@ -423,7 +421,6 @@
     <string name="profile_tile_unassigned">No profile assigned</string>
     <string name="profile_tile_no_slot">All %1$d profile tiles are in use</string>
     <string name="profile_tile_add_manually">Tile ready. Add “%1$s” from the Quick Settings edit screen.</string>
-    <string name="profile_widget_pick">Pick a profile</string>
     <string name="profile_widget_no_profiles">Create a profile first</string>
     <string name="profile_switched_firewall_on">%1$s activated · Firewall on</string>
     <string name="profile_update_to_current">Update to current selection</string>

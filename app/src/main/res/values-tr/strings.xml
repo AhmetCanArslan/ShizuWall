@@ -391,7 +391,6 @@
     <string name="profiles">Profiller</string>
     <string name="profiles_subtitle">Güvenlik duvarı bağlamlarını tek dokunuşla değiştirin</string>
     <string name="profile_auto_enable_firewall">Profil etkinleştirilince güvenlik duvarını aç</string>
-    <string name="profile_auto_enable_firewall_desc">Bir profile dokunmak, kapalıysa güvenlik duvarını da açar</string>
     <string name="profiles_empty_title">Henüz profil yok</string>
     <string name="profiles_empty_message">Güvenlik duvarına almak istediğiniz uygulamaları seçin, ardından kurulumlar arasında anında geçiş yapmak için bunları profil olarak kaydedin.</string>
     <string name="profile_active">Etkin</string>
@@ -409,7 +408,6 @@
     <string name="profile_add_tile">Hızlı ayar ekle</string>
     <string name="profile_remove_tile">Hızlı Ayarlar kutucuğunu kaldır</string>
     <string name="profile_tile_removed">“%1$s” kutucuğu kaldırıldı.</string>
-    <string name="profile_tile_label">Profil kartı</string>
     <string name="profile_tile_label_1">Profil kutucuğu 1</string>
     <string name="profile_tile_label_2">Profil kutucuğu 2</string>
     <string name="profile_tile_label_3">Profil kutucuğu 3</string>
@@ -419,7 +417,6 @@
     <string name="profile_tile_unassigned">Profil atanmadı</string>
     <string name="profile_tile_no_slot">%1$d profil kartının tamamı kullanımda</string>
     <string name="profile_tile_add_manually">Kart hazır. “%1$s” kartını Hızlı Ayarlar düzenleme ekranından ekleyin.</string>
-    <string name="profile_widget_pick">Bir profil seçin</string>
     <string name="profile_widget_no_profiles">Önce bir profil oluşturun</string>
     <string name="profile_switched_firewall_on">%1$s etkin · Güvenlik duvarı açık</string>
     <string name="profile_update_to_current">Geçerli seçimle güncelle</string>

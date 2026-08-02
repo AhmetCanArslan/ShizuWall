@@ -36,7 +36,7 @@ class OnboardingActivity : BaseActivity() {
         viewPager = findViewById(R.id.viewPager)
 
         setupPages()
-        viewPager.adapter = OnboardingPageAdapter(pages, this) // use the renamed adapter class
+        viewPager.adapter = OnboardingPageAdapter(pages)
     }
 
     private fun setupPages() {

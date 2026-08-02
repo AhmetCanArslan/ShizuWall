@@ -393,7 +393,6 @@
     <string name="profiles">プロファイル</string>
     <string name="profiles_subtitle">ワンタップでファイアウォールのコンテキストを切り替え</string>
     <string name="profile_auto_enable_firewall">プロファイル適用時にファイアウォールを有効化</string>
-    <string name="profile_auto_enable_firewall_desc">プロファイルをタップすると、オフのファイアウォールも有効になります</string>
     <string name="profiles_empty_title">プロファイルがありません</string>
     <string name="profiles_empty_message">ファイアウォールで制限したいアプリを選択し、プロファイルとして保存すると、設定を瞬時に切り替えられます。</string>
     <string name="profile_active">有効</string>
@@ -410,7 +409,6 @@
     <string name="profile_add_tile">クイックタイルを追加</string>
     <string name="profile_remove_tile">クイック設定タイルを削除</string>
     <string name="profile_tile_removed">「%1$s」のタイルを削除しました。</string>
-    <string name="profile_tile_label">プロファイル タイル</string>
     <string name="profile_tile_label_1">プロファイルタイル 1</string>
     <string name="profile_tile_label_2">プロファイルタイル 2</string>
     <string name="profile_tile_label_3">プロファイルタイル 3</string>
@@ -420,7 +418,6 @@
     <string name="profile_tile_unassigned">プロファイル未割当</string>
     <string name="profile_tile_no_slot">%1$d 個のプロファイル タイルはすべて使用中です</string>
     <string name="profile_tile_add_manually">タイルの準備ができました。クイック設定の編集画面から「%1$s」を追加してください。</string>
-    <string name="profile_widget_pick">プロファイルを選択</string>
     <string name="profile_widget_no_profiles">先にプロファイルを作成してください</string>
     <string name="profile_switched_firewall_on">%1$s を適用 · ファイアウォールオン</string>
     <string name="profile_update_to_current">現在の選択で更新</string>

@@ -393,7 +393,6 @@
     <string name="profiles">Perfiles</string>
     <string name="profiles_subtitle">Cambia de contexto de firewall con un toque</string>
     <string name="profile_auto_enable_firewall">Activar el firewall al activar un perfil</string>
-    <string name="profile_auto_enable_firewall_desc">Tocar un perfil también activa el firewall si está apagado</string>
     <string name="profiles_empty_title">Aún no hay perfiles</string>
     <string name="profiles_empty_message">Selecciona las apps que quieres bloquear con el firewall y guárdalas como un perfil para cambiar de configuración al instante.</string>
     <string name="profile_active">Activo</string>
@@ -411,7 +410,6 @@
     <string name="profile_add_tile">Añadir mosaico rápido</string>
     <string name="profile_remove_tile">Quitar mosaico de Ajustes rápidos</string>
     <string name="profile_tile_removed">Se quitó el mosaico de «%1$s».</string>
-    <string name="profile_tile_label">Mosaico de perfil</string>
     <string name="profile_tile_label_1">Mosaico de perfil 1</string>
     <string name="profile_tile_label_2">Mosaico de perfil 2</string>
     <string name="profile_tile_label_3">Mosaico de perfil 3</string>
@@ -421,7 +419,6 @@
     <string name="profile_tile_unassigned">Sin perfil asignado</string>
     <string name="profile_tile_no_slot">Los %1$d mosaicos de perfil están en uso</string>
     <string name="profile_tile_add_manually">Mosaico listo. Añade “%1$s” desde los Ajustes rápidos.</string>
-    <string name="profile_widget_pick">Elige un perfil</string>
     <string name="profile_widget_no_profiles">Crea un perfil primero</string>
     <string name="profile_switched_firewall_on">%1$s activado · Cortafuegos activo</string>
     <string name="profile_update_to_current">Actualizar con la selección actual</string>

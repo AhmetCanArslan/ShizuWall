@@ -394,7 +394,6 @@
     <string name="profiles">ملفات التعريف</string>
     <string name="profiles_subtitle">بدّل سياقات جدار الحماية بنقرة واحدة</string>
     <string name="profile_auto_enable_firewall">تشغيل جدار الحماية عند تفعيل ملف تعريف</string>
-    <string name="profile_auto_enable_firewall_desc">النقر على ملف تعريف يشغّل جدار الحماية أيضًا إذا كان متوقفًا</string>
     <string name="profiles_empty_title">لا توجد ملفات تعريف بعد</string>
     <string name="profiles_empty_message">حدد التطبيقات التي تريد حظرها بجدار الحماية، ثم احفظها كملف تعريف للتبديل بين الإعدادات فورًا.</string>
     <string name="profile_active">نشط</string>
@@ -416,7 +415,6 @@
     <string name="profile_add_tile">إضافة مربع سريع</string>
     <string name="profile_remove_tile">إزالة مربع الإعدادات السريعة</string>
     <string name="profile_tile_removed">تمت إزالة المربع الخاص بـ ”%1$s“.</string>
-    <string name="profile_tile_label">مربع الملف</string>
     <string name="profile_tile_label_1">مربع الملف الشخصي 1</string>
     <string name="profile_tile_label_2">مربع الملف الشخصي 2</string>
     <string name="profile_tile_label_3">مربع الملف الشخصي 3</string>
@@ -426,7 +424,6 @@
     <string name="profile_tile_unassigned">لم يُعيّن ملف</string>
     <string name="profile_tile_no_slot">جميع مربعات الملفات %1$d قيد الاستخدام</string>
     <string name="profile_tile_add_manually">المربع جاهز. أضف «%1$s» من الإعدادات السريعة.</string>
-    <string name="profile_widget_pick">اختر ملفًا</string>
     <string name="profile_widget_no_profiles">أنشئ ملفًا أولاً</string>
     <string name="profile_switched_firewall_on">%1$s مُفعّل · الجدار الناري يعمل</string>
     <string name="profile_update_to_current">التحديث إلى التحديد الحالي</string>
