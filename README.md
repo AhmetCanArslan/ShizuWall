@@ -6,6 +6,20 @@
   <strong>Android firewall without VPN.</strong><br/>
   Privacy-first, local-only, powered by Shizuku / local ADB daemon / Root.
 </div>
+
+<p align="center">
+  <b>English</b> ·
+  <a href="docs/README.tr.md">Türkçe</a> ·
+  <a href="docs/README.de.md">Deutsch</a> ·
+  <a href="docs/README.it.md">Italiano</a> ·
+  <a href="docs/README.pt.md">Português</a> ·
+  <a href="docs/README.cs.md">Čeština</a> ·
+  <a href="docs/README.ru.md">Русский</a> ·
+  <a href="docs/README.ar.md">العربية</a> ·
+  <a href="docs/README.hi.md">हिन्दी</a> ·
+  <a href="docs/README.zh.md">中文</a> ·
+  <a href="docs/README.ja.md">日本語</a>
+</p>
 <div style="height: 20px;">&nbsp;</div>
 <p align="center">
   <img alt="Last commit" src="https://img.shields.io/github/last-commit/AhmetCanArslan/ShizuWall?style=flat-square" />
@@ -33,15 +47,6 @@
   </a>
 </p>
 
-## Star History
-
-<a href="https://www.star-history.com/?repos=AhmetCanArslan%2FShizuWall&type=date&legend=top-left">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=AhmetCanArslan/ShizuWall&type=date&theme=dark&legend=top-left" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=AhmetCanArslan/ShizuWall&type=date&legend=top-left" />
-    <img alt="Star History Chart" src="https://api.star-history.com/image?repos=AhmetCanArslan/ShizuWall&type=date&legend=top-left" />
-  </picture>
-</a>
 
 ## Why ShizuWall
 
