@@ -35,11 +35,23 @@ object MultiUserApps {
     fun isEnabled(context: Context): Boolean =
         prefs(context).getBoolean(MainActivity.KEY_SHOW_OTHER_PROFILES, false)
 
+    private const val SCAN_TTL_MS = 60_000L
+
+    @Volatile
+    private var memoryCache: Snapshot? = null
+
+    @Volatile
+    private var lastScanAt = 0L
+
     suspend fun snapshot(context: Context): Snapshot {
         val cached = readCache(context)
+        if (cached != null && System.currentTimeMillis() - lastScanAt < SCAN_TTL_MS) {
+            return cached
+        }
         val scanned = scan(context)
         return when {
             scanned != null -> {
+                lastScanAt = System.currentTimeMillis()
                 writeCache(context, scanned)
                 scanned
             }
@@ -131,12 +143,14 @@ object MultiUserApps {
             put("users", users)
             put("apps", apps)
         }
+        memoryCache = snapshot
         prefs(context).edit()
             .putString(KEY_CACHE, root.toString())
             .apply()
     }
 
     private fun readCache(context: Context): Snapshot? {
+        memoryCache?.let { return it }
         val json = prefs(context).getString(KEY_CACHE, null) ?: return null
         return try {
             val root = JSONObject(json)
@@ -153,7 +167,7 @@ object MultiUserApps {
                 if (pkg.isBlank()) continue
                 apps.add(SecondaryApp(obj.optInt("u"), pkg, obj.optInt("uid")))
             }
-            Snapshot(apps, userNames)
+            Snapshot(apps, userNames).also { memoryCache = it }
         } catch (t: Throwable) {
             Log.w(TAG, "Corrupt secondary-user cache", t)
             null
@@ -161,6 +175,8 @@ object MultiUserApps {
     }
 
     fun clearCache(context: Context) {
+        memoryCache = null
+        lastScanAt = 0L
         prefs(context).edit().remove(KEY_CACHE).apply()
     }
 }

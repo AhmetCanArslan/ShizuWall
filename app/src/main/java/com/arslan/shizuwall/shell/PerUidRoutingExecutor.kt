@@ -29,10 +29,14 @@ class PerUidRoutingExecutor(
     }
 
     private suspend fun block(key: String, command: String): ShellResult {
-        val result = when {
-            PerUidFirewall.setRule(context, key, PerUidFirewall.RULE_DENY) -> PER_UID_SUCCESS
-            AppKey.isSecondary(key) -> unresolved(key)
-            else -> delegate.exec(command)
+        val result = if (AppKey.isSecondary(key)) {
+            if (PerUidFirewall.setRule(context, key, PerUidFirewall.RULE_DENY)) {
+                PER_UID_SUCCESS
+            } else {
+                unresolved(key)
+            }
+        } else {
+            delegate.exec(command)
         }
         if (result.isEffectivelySuccess) mirrorToClones(key, PerUidFirewall.RULE_DENY)
         return result
