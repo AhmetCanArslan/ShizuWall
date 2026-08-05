@@ -63,7 +63,7 @@ class FloatingButtonService : Service() {
     private var sizePx = 0
     private var iconSizePx = 0
     private var fadeDelayMs = DEFAULT_FADE_DELAY * 1000L
-    private var edgeSnap = false
+    private var hideAtEdge = false
     private var disableDim = false
 
     private var snappedRight = true   
@@ -115,7 +115,7 @@ class FloatingButtonService : Service() {
         iconSizePx = dp((sizeDp * 0.5f).toInt())
         val delay = sharedPreferences.getInt(KEY_FLOATING_FADE_DELAY, DEFAULT_FADE_DELAY).coerceIn(1, 30)
         fadeDelayMs = delay * 1000L
-        edgeSnap = sharedPreferences.getBoolean(KEY_FLOATING_EDGE_SNAP, false)
+        hideAtEdge = sharedPreferences.getBoolean(KEY_FLOATING_EDGE_SNAP, false)
         disableDim = sharedPreferences.getBoolean(KEY_FLOATING_DISABLE_DIM, false)
     }
 
@@ -215,7 +215,7 @@ class FloatingButtonService : Service() {
                     fabIcon?.alpha = 1.0f
                     // If hidden at the edge, the first touch only reveals it (no toggle).
                     wasTucked = isTucked
-                    if (edgeSnap && isTucked) untuckFromEdge()
+                    if (hideAtEdge && isTucked) untuckFromEdge()
 
                     initialX = params.x
                     initialY = params.y
@@ -249,7 +249,7 @@ class FloatingButtonService : Service() {
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     v.alpha = 1.0f
                     if (moved) {
-                        if (edgeSnap) snapToEdge()
+                        snapToEdge()
                     } else if (event.action == MotionEvent.ACTION_UP && !wasTucked) {
 
                         onFabClicked()
@@ -288,7 +288,7 @@ class FloatingButtonService : Service() {
         floatingView?.background?.alpha = 255
         fabIcon?.animate()?.cancel()
         fabIcon?.alpha = 1.0f
-        if (disableDim && !edgeSnap) return
+        if (disableDim && !hideAtEdge) return
         inactivityJob = scope.launch {
             delay(fadeDelayMs)
             if (!disableDim) {
@@ -301,7 +301,7 @@ class FloatingButtonService : Service() {
                 animator.start()
                 fabIcon?.animate()?.alpha(idleOpacityFraction)?.setDuration(300)?.start()
             }
-            if (edgeSnap) tuckToEdge()
+            if (hideAtEdge) tuckToEdge()
         }
     }
 
@@ -311,14 +311,7 @@ class FloatingButtonService : Service() {
         params.width = sizePx
         params.height = sizePx
         fabIcon?.layoutParams = FrameLayout.LayoutParams(iconSizePx, iconSizePx, Gravity.CENTER)
-        if (edgeSnap) {
-            snapToEdge()
-        } else {
-            isTucked = false
-            val screenWidth = resources.displayMetrics.widthPixels
-            params.x = params.x.coerceIn(0, screenWidth - params.width)
-            try { windowManager?.updateViewLayout(floatingView, params) } catch (_: Exception) {}
-        }
+        snapToEdge()
         resetInactivityTimer()
     }
 
