@@ -131,6 +131,9 @@ class BackendSettingsActivity : BaseActivity() {
             }
 
             sharedPreferences.edit().putString(MainActivity.KEY_WORKING_MODE, mode.name).apply()
+            if (mode != WorkingMode.ROOT) {
+                com.arslan.shizuwall.shell.RootShellExecutor.shutdown()
+            }
             setResult(RESULT_OK)
 
             TransitionManager.beginDelayedTransition(rootView, AutoTransition())
