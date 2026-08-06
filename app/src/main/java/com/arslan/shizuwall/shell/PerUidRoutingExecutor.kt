@@ -28,6 +28,68 @@ class PerUidRoutingExecutor(
         return delegate.exec(command)
     }
 
+    override suspend fun execBatch(commands: List<String>): List<ShellResult> {
+        if (commands.isEmpty()) return emptyList()
+        if (commands.any { command ->
+                val trimmed = command.trim()
+                !BLOCK_COMMAND.matches(trimmed) &&
+                    !UNBLOCK_COMMAND.matches(trimmed)
+            }) {
+            return commands.map { exec(it) }
+        }
+
+        val results = arrayOfNulls<ShellResult>(commands.size)
+        val primaryIndexes = mutableListOf<Int>()
+        val primaryCommands = mutableListOf<String>()
+        val uidRules = mutableListOf<Pair<String, Int>>()
+        val uidIndexes = mutableListOf<Int>()
+
+        commands.forEachIndexed { index, command ->
+            val trimmed = command.trim()
+            val blockMatch = BLOCK_COMMAND.matchEntire(trimmed)
+            val unblockMatch = UNBLOCK_COMMAND.matchEntire(trimmed)
+            val key = blockMatch?.groupValues?.get(1) ?: unblockMatch!!.groupValues[1]
+            val rule = if (blockMatch != null) PerUidFirewall.RULE_DENY else PerUidFirewall.RULE_DEFAULT
+            if (AppKey.isSecondary(key)) {
+                uidRules += key to rule
+                uidIndexes += index
+            } else {
+                primaryIndexes += index
+                primaryCommands += command
+            }
+        }
+
+        val primaryResults = delegate.execBatch(primaryCommands)
+        primaryIndexes.forEachIndexed { index, commandIndex ->
+            results[commandIndex] = primaryResults[index]
+        }
+
+        val uidResults = PerUidFirewall.setRules(context, uidRules)
+        uidIndexes.forEachIndexed { index, commandIndex ->
+            results[commandIndex] = if (uidResults[index]) PER_UID_SUCCESS else unresolved(uidRules[index].first)
+        }
+
+        val mirroredRules = mutableListOf<Pair<String, Int>>()
+        primaryIndexes.forEachIndexed { index, commandIndex ->
+            val result = primaryResults[index]
+            if (!result.isEffectivelySuccess) return@forEachIndexed
+            val command = primaryCommands[index].trim()
+            val key = BLOCK_COMMAND.matchEntire(command)?.groupValues?.get(1)
+                ?: UNBLOCK_COMMAND.matchEntire(command)!!.groupValues[1]
+            val rule = if (BLOCK_COMMAND.matches(command)) PerUidFirewall.RULE_DENY else PerUidFirewall.RULE_DEFAULT
+            if (mirroringClones()) {
+                mirroredRules += cloneKeysOf(AppKey.packageOf(key)).map { it to rule }
+            } else if (rule == PerUidFirewall.RULE_DEFAULT) {
+                mirroredRules += activeSecondaryKeys()
+                    .filter { AppKey.packageOf(it) == AppKey.packageOf(key) }
+                    .map { it to PerUidFirewall.RULE_DENY }
+            }
+        }
+        PerUidFirewall.setRules(context, mirroredRules)
+
+        return results.map { it!! }
+    }
+
     private suspend fun block(key: String, command: String): ShellResult {
         val result = if (AppKey.isSecondary(key)) {
             if (PerUidFirewall.setRule(context, key, PerUidFirewall.RULE_DENY)) {

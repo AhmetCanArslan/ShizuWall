@@ -14,4 +14,7 @@ data class ShellResult(val exitCode: Int, val stdout: String, val stderr: String
 
 interface ShellExecutor {
     suspend fun exec(command: String): ShellResult
+
+    suspend fun execBatch(commands: List<String>): List<ShellResult> =
+        commands.map { exec(it) }
 }

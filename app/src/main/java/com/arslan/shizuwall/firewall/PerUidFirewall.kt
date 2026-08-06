@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.daemon.PersistentDaemonManager
-import com.arslan.shizuwall.shell.RootShellExecutor
+import com.arslan.shizuwall.shell.RootUidFirewallSession
 import com.arslan.shizuwall.shizuku.ShizukuUserServiceManager
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.AppKey
@@ -26,12 +26,21 @@ object PerUidFirewall {
     private const val DAEMON_DEX_NAME = "daemon.dex"
 
     suspend fun setRule(context: Context, key: String, rule: Int): Boolean = withContext(Dispatchers.IO) {
-        val uid = resolveUid(context, key) ?: return@withContext false
+        setRules(context, listOf(key to rule)).first()
+    }
+
+    suspend fun setRules(context: Context, rules: List<Pair<String, Int>>): List<Boolean> = withContext(Dispatchers.IO) {
+        if (rules.isEmpty()) return@withContext emptyList()
+        val resolved = rules.map { (key, rule) -> resolveUid(context, key)?.let { UidRule(it, rule) } }
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
-            WorkingMode.SHIZUKU -> applyViaShizuku(uid, rule)
-            WorkingMode.LADB -> applyViaDaemon(context, uid, rule)
-            WorkingMode.ROOT -> applyViaRoot(context, uid, rule)
+        val applied = when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
+            WorkingMode.SHIZUKU -> applyViaShizuku(resolved)
+            WorkingMode.LADB -> applyViaDaemon(context, resolved)
+            WorkingMode.ROOT -> applyViaRoot(context, resolved)
+        }
+        var appliedIndex = 0
+        resolved.map { rule ->
+            if (rule == null) false else applied[appliedIndex++]
         }
     }
 
@@ -48,35 +57,43 @@ object PerUidFirewall {
         }
     }
 
-    private suspend fun applyViaShizuku(uid: Int, rule: Int): Boolean {
+    private suspend fun applyViaShizuku(rules: List<UidRule?>): List<Boolean> {
         return try {
-            if (!Shizuku.pingBinder()) return false
-            val service = ShizukuUserServiceManager.obtain() ?: return false
-            service.setUidFirewallRule(CHAIN_OEM_DENY_3, uid, rule)
-        } catch (t: Throwable) {
-            Log.w(TAG, "Per-uid rule $rule via Shizuku failed for uid $uid", t)
-            false
-        }
-    }
-
-    private suspend fun applyViaDaemon(context: Context, uid: Int, rule: Int): Boolean {
-        return try {
-            val response = PersistentDaemonManager(context)
-                .executeCommand("$DAEMON_COMMAND $uid $rule")
-                .trim()
-            if (!response.startsWith("OK")) {
-                Log.w(TAG, "Daemon rejected per-uid rule $rule for $uid: $response")
-                return false
+            if (!Shizuku.pingBinder()) return rules.map { false }
+            val service = ShizukuUserServiceManager.obtain() ?: return rules.map { false }
+            rules.map { rule ->
+                rule?.let { service.setUidFirewallRule(CHAIN_OEM_DENY_3, it.uid, it.rule) } ?: false
             }
-            true
         } catch (t: Throwable) {
-            Log.w(TAG, "Per-uid rule $rule via daemon failed for uid $uid", t)
-            false
+            Log.w(TAG, "Per-uid rules via Shizuku failed", t)
+            rules.map { false }
         }
     }
 
-    // Root has no privileged process to talk to, so run the daemon class for this one rule.
-    private suspend fun applyViaRoot(context: Context, uid: Int, rule: Int): Boolean {
+    private suspend fun applyViaDaemon(context: Context, rules: List<UidRule?>): List<Boolean> {
+        return try {
+            rules.map { rule ->
+                if (rule == null) {
+                    false
+                } else {
+                    val response = PersistentDaemonManager(context)
+                        .executeCommand("$DAEMON_COMMAND ${rule.uid} ${rule.rule}")
+                        .trim()
+                    if (!response.startsWith("OK")) {
+                        Log.w(TAG, "Daemon rejected per-uid rule ${rule.rule} for ${rule.uid}: $response")
+                    }
+                    response.startsWith("OK")
+                }
+            }
+        } catch (t: Throwable) {
+            Log.w(TAG, "Per-uid rules via daemon failed", t)
+            rules.map { false }
+        }
+    }
+
+    private suspend fun applyViaRoot(context: Context, rules: List<UidRule?>): List<Boolean> {
+        val validRules = rules.filterNotNull()
+        if (validRules.isEmpty()) return rules.map { false }
         return try {
             val dex = File(context.cacheDir, DAEMON_DEX_NAME)
             if (!dex.exists()) {
@@ -84,18 +101,25 @@ object PerUidFirewall {
                     dex.outputStream().use { output -> input.copyTo(output) }
                 }
             }
-            val result = RootShellExecutor().exec(
-                "CLASSPATH=${dex.absolutePath} app_process / " +
-                    "com.arslan.shizuwall.daemon.SystemDaemon $DAEMON_COMMAND $uid $rule"
+            val encodedRules = validRules.joinToString(",") { "${it.uid}:${it.rule}" }
+            val response = RootUidFirewallSession.execute(
+                dex.absolutePath,
+                "fw-uid-rules $encodedRules"
             )
-            val ok = result.success && result.stdout.trim().startsWith("OK")
-            if (!ok) {
-                Log.w(TAG, "Root rejected per-uid rule $rule for $uid: ${result.stdout}${result.stderr}")
+            val responses = response?.split(';')?.filter { it.trim().startsWith("OK") }.orEmpty()
+            val validResults = validRules.mapIndexed { index, rule ->
+                responses.getOrNull(index)?.trim() == "OK ${rule.uid} ${rule.rule}"
             }
-            ok
+            if (validResults.any { !it }) {
+                Log.w(TAG, "Root rejected per-uid rules: ${response ?: "helper unavailable"}")
+            }
+            var validIndex = 0
+            rules.map { rule -> if (rule == null) false else validResults[validIndex++] }
         } catch (t: Throwable) {
-            Log.w(TAG, "Per-uid rule $rule via root failed for uid $uid", t)
-            false
+            Log.w(TAG, "Per-uid rules via root failed", t)
+            rules.map { false }
         }
     }
+
+    private data class UidRule(val uid: Int, val rule: Int)
 }

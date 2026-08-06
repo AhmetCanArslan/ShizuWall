@@ -42,6 +42,7 @@ class RootShellExecutor : ShellExecutor {
         fun shutdown() {
             session?.close()
             session = null
+            RootUidFirewallSession.shutdown()
         }
 
         private fun execOneShot(command: String): ShellResult {
@@ -71,6 +72,22 @@ class RootShellExecutor : ShellExecutor {
             execOneShot(command)
         }
     }
+
+    override suspend fun execBatch(commands: List<String>): List<ShellResult> =
+        withContext(Dispatchers.IO) {
+            if (commands.isEmpty()) return@withContext emptyList()
+            lock.withLock {
+                val active = session?.takeIf { it.isAlive } ?: Session.open()?.also { session = it }
+                if (active == null) return@withLock commands.map(::execOneShot)
+
+                val result = active.runBatch(commands)
+                if (result != null) return@withLock result
+
+                active.close()
+                session = null
+                commands.map(::execOneShot)
+            }
+        }
 
     private class Session(
         private val process: Process,
@@ -119,6 +136,60 @@ class RootShellExecutor : ShellExecutor {
 
             return ShellResult(exitCode, out.toString(), err.toString())
         }
+
+        fun runBatch(commands: List<String>): List<ShellResult>? {
+            val marker = "$token-b-${sequence++}"
+            stdout.clear()
+            stderr.clear()
+            try {
+                commands.forEachIndexed { index, command ->
+                    stdin.write(command)
+                    stdin.write("\nprintf '\\n%s %d %d\\n' '$marker' $index \$?\n")
+                    stdin.write("printf '\\n%s %d %d\\n' '$marker' $index \$? 1>&2\n")
+                }
+                stdin.flush()
+            } catch (_: Exception) {
+                return null
+            }
+
+            val deadline = System.currentTimeMillis() + COMMAND_TIMEOUT_MS
+            val output = readBatch(stdout, marker, commands.size, deadline) ?: return null
+            val errors = readBatch(stderr, marker, commands.size, deadline) ?: return null
+            return commands.indices.map { index ->
+                ShellResult(
+                    output.exitCodes[index],
+                    output.text[index].toString(),
+                    errors.text[index].toString()
+                )
+            }
+        }
+
+        private fun readBatch(
+            queue: LinkedBlockingQueue<String>,
+            marker: String,
+            count: Int,
+            deadline: Long
+        ): BatchOutput? {
+            val text = Array(count) { StringBuilder() }
+            val exitCodes = IntArray(count) { -1 }
+            var next = 0
+            while (next < count) {
+                val line = poll(queue, deadline) ?: return null
+                val parts = line.split(' ')
+                if (parts.size == 3 && parts[0] == marker && parts[1].toIntOrNull() == next) {
+                    exitCodes[next] = parts[2].toIntOrNull() ?: -1
+                    next++
+                } else {
+                    text[next].append(line).append('\n')
+                }
+            }
+            return BatchOutput(text, exitCodes)
+        }
+
+        private data class BatchOutput(
+            val text: Array<StringBuilder>,
+            val exitCodes: IntArray
+        )
 
         private fun poll(queue: LinkedBlockingQueue<String>, deadline: Long): String? {
             while (true) {

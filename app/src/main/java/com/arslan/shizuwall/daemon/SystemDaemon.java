@@ -29,6 +29,8 @@ public class SystemDaemon {
     private static final int COMMAND_TIMEOUT_SECONDS = 30;
     private static final int MAX_COMMAND_LENGTH = 4096;
     private static final String FW_UID_RULE_COMMAND = "fw-uid-rule";
+    private static final String FW_UID_RULES_COMMAND = "fw-uid-rules";
+    private static final String FW_UID_SERVER_COMMAND = "fw-uid-server";
     private static final int FIREWALL_CHAIN_OEM_DENY_3 = 9;
     
     // Blocked dangerous commands
@@ -62,9 +64,16 @@ public class SystemDaemon {
     }
     
     public static void main(String[] args) {
-        // One-shot mode for root: apply a single firewall rule and exit, no server, no token.
+        if (args != null && args.length == 1 && FW_UID_SERVER_COMMAND.equals(args[0])) {
+            runUidRuleServer();
+            return;
+        }
         if (args != null && args.length == 3 && FW_UID_RULE_COMMAND.equals(args[0])) {
             System.out.println(setUidFirewallRule(args[0] + " " + args[1] + " " + args[2]));
+            return;
+        }
+        if (args != null && args.length == 2 && FW_UID_RULES_COMMAND.equals(args[0])) {
+            System.out.println(setUidFirewallRules(args[1]));
             return;
         }
 
@@ -307,6 +316,46 @@ public class SystemDaemon {
             Throwable cause = (t.getCause() != null) ? t.getCause() : t;
             logE("setUidFirewallRule failed for uid " + uid, cause);
             return "Error (code 1): " + cause;
+        }
+    }
+
+    private static String setUidFirewallRules(String encodedRules) {
+        StringBuilder result = new StringBuilder();
+        String[] rules = encodedRules.split(",");
+        for (String encodedRule : rules) {
+            String[] values = encodedRule.split(":");
+            if (values.length != 2) {
+                result.append("Error (code 22): invalid uid rule");
+                break;
+            }
+            String response = setUidFirewallRule(
+                    FW_UID_RULE_COMMAND + " " + values[0] + " " + values[1]
+            );
+            if (!response.startsWith("OK")) {
+                result.append(response);
+                break;
+            }
+            if (result.length() > 0) result.append(';');
+            result.append(response);
+        }
+        return result.toString();
+    }
+
+    private static void runUidRuleServer() {
+        try (
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)), true)
+        ) {
+            writer.println("READY");
+            String command;
+            while ((command = reader.readLine()) != null) {
+                if ("exit".equals(command)) return;
+                String result = command.startsWith(FW_UID_RULES_COMMAND + " ")
+                        ? setUidFirewallRules(command.substring(FW_UID_RULES_COMMAND.length() + 1))
+                        : "Error (code 22): unsupported command";
+                writer.println(result);
+            }
+        } catch (Exception ignored) {
         }
     }
 

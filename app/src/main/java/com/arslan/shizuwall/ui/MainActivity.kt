@@ -2299,9 +2299,11 @@ class MainActivity : BaseActivity() {
             return Pair(successful, failed)
         }
 
-        for (packageName in packageNames) {
-            val cmd = "cmd connectivity set-package-networking-enabled false $packageName"
-            val res = runCommandDetailed(cmd)
+        val blockResults = runCommandsDetailed(
+            packageNames.map { "cmd connectivity set-package-networking-enabled false $it" }
+        )
+        for ((index, packageName) in packageNames.withIndex()) {
+            val res = blockResults[index]
             if (res.isEffectivelySuccess) {
                 successful.add(packageName)
             } else {
@@ -2310,9 +2312,9 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        for (packageName in whitelistAllowApps) {
-            runCommandDetailed("cmd connectivity set-package-networking-enabled true $packageName")
-        }
+        runCommandsDetailed(
+            whitelistAllowApps.map { "cmd connectivity set-package-networking-enabled true $it" }
+        )
 
         return Pair(successful, failed)
     }
@@ -2330,11 +2332,11 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        for (packageName in toUnblock) {
-            // disableFirewall is called with activeFirewallPackages. 
-            // In any mode, these are apps that were explicitly BLOCKED by us. 
-            // When disabling the firewall, we must restore them to TRUE (unblocked).
-            val res = runCommandDetailed("cmd connectivity set-package-networking-enabled true $packageName")
+        val restoreResults = runCommandsDetailed(
+            toUnblock.map { "cmd connectivity set-package-networking-enabled true $it" }
+        )
+        for ((index, packageName) in toUnblock.withIndex()) {
+            val res = restoreResults[index]
             if (res.isEffectivelySuccess) {
                 successful.add(packageName)
             } else {
@@ -2356,6 +2358,11 @@ class MainActivity : BaseActivity() {
 
     private suspend fun runCommandDetailed(command: String): com.arslan.shizuwall.shell.ShellResult {
         return ShellExecutorProvider.forContext(this).exec(command)
+    }
+
+    private suspend fun runCommandsDetailed(commands: List<String>): List<com.arslan.shizuwall.shell.ShellResult> {
+        return if (commands.isEmpty()) emptyList()
+        else ShellExecutorProvider.forContext(this).execBatch(commands)
     }
 
     // dim only the RecyclerView and disable its interactions
@@ -2830,9 +2837,9 @@ class MainActivity : BaseActivity() {
                 val toUnblock = oldActive.filterNot { effectiveTarget.contains(it) }
 
                 val successful = withContext(Dispatchers.IO) {
-                    for (pkg in toUnblock) {
-                        runCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
-                    }
+                    runCommandsDetailed(
+                        toUnblock.map { "cmd connectivity set-package-networking-enabled true $it" }
+                    )
                     val (ok, _) = enableFirewall(effectiveTarget, whitelistAllow)
                     ok
                 }
