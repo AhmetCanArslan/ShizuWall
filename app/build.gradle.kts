@@ -32,10 +32,13 @@ android {
             )
             // keep debuggable off in release
             isDebuggable = false
+            manifestPlaceholders["appLabel"] = "@string/app_name"
         }
         getByName("debug") {
             isMinifyEnabled = false
             isShrinkResources = false
+            applicationIdSuffix = ".debug"
+            manifestPlaceholders["appLabel"] = "ShizuWall Debug"
         }
     }
 

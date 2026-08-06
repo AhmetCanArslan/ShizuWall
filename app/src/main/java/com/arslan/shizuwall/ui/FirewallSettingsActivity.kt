@@ -371,7 +371,7 @@ class FirewallSettingsActivity : BaseActivity() {
     }
 
     private fun showAdbBroadcastDialog() {
-        val pkg = "com.arslan.shizuwall"
+        val pkg = packageName
         val action = MainActivity.ACTION_FIREWALL_CONTROL
         val extraEnabled = MainActivity.EXTRA_FIREWALL_ENABLED
         val extraCsv = MainActivity.EXTRA_PACKAGES_CSV
