@@ -19,6 +19,7 @@ import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.ForegroundDetectionService
 import com.arslan.shizuwall.shell.RootShellExecutor
+import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import kotlinx.coroutines.CoroutineScope
@@ -110,7 +111,7 @@ class BootReceiver : BroadcastReceiver() {
 
         if (shouldAttemptRootReapply) {
             val activePackages = loadActivePackages(context, dpPrefs, normalPrefs, context.packageName)
-            val reapplied = reapplyRootFirewallRules(activePackages)
+            val reapplied = reapplyRootFirewallRules(context, activePackages)
             if (reapplied) {
                 val elapsed = SystemClock.elapsedRealtime()
                 updateFirewallStateAfterReapply(dpPrefs, elapsed)
@@ -229,30 +230,28 @@ class BootReceiver : BroadcastReceiver() {
             .distinct()
     }
 
-    private suspend fun reapplyRootFirewallRules(activePackages: List<String>): Boolean {
+    private suspend fun reapplyRootFirewallRules(context: Context, activePackages: List<String>): Boolean {
         if (!RootShellExecutor.hasRootAccess()) {
             Log.w(TAG, "Root access not available during reboot re-apply")
             return false
         }
 
-        val rootExecutor = RootShellExecutor()
-        val chainEnabled = rootExecutor.exec("cmd connectivity set-chain3-enabled true").success
+        val executor = ShellExecutorProvider.forContext(context)
+        val chainEnabled = executor.exec("cmd connectivity set-chain3-enabled true").success
         if (!chainEnabled) {
             Log.w(TAG, "Failed to enable chain3 during reboot re-apply")
             return false
         }
 
-        val applied = mutableListOf<String>()
-        for (pkg in activePackages) {
-            val success = rootExecutor.exec("cmd connectivity set-package-networking-enabled false $pkg").success
-            if (success) {
-                applied.add(pkg)
-                continue
+        val blockResults = executor.execBatch(
+            activePackages.map { "cmd connectivity set-package-networking-enabled false $it" }
+        )
+        for ((index, pkg) in activePackages.withIndex()) {
+            if (!blockResults[index].isEffectivelySuccess) {
+                executor.exec("cmd connectivity set-chain3-enabled false")
+                Log.w(TAG, "Failed to apply package rule during reboot re-apply: $pkg")
+                return false
             }
-
-            rootExecutor.exec("cmd connectivity set-chain3-enabled false")
-            Log.w(TAG, "Failed to apply package rule during reboot re-apply: $pkg")
-            return false
         }
 
         return true
