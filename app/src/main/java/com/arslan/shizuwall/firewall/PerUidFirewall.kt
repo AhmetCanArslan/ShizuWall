@@ -44,10 +44,6 @@ object PerUidFirewall {
         }
     }
 
-    suspend fun blockPackage(context: Context, packageName: String): Boolean =
-        setRule(context, packageName, RULE_DENY)
-
-
     private fun resolveUid(context: Context, key: String): Int? {
         if (AppKey.isSecondary(key)) return MultiUserApps.cachedUid(context, key)
         return try {

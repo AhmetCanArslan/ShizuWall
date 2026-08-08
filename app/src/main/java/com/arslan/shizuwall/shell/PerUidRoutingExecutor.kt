@@ -14,154 +14,74 @@ class PerUidRoutingExecutor(
 
     override suspend fun exec(command: String): ShellResult {
         val trimmed = command.trim()
-
-        BLOCK_COMMAND.matchEntire(trimmed)?.let { match ->
-            return block(match.groupValues[1], command)
-        }
-        UNBLOCK_COMMAND.matchEntire(trimmed)?.let { match ->
-            return unblock(match.groupValues[1], command)
-        }
         if (trimmed == CHAIN3_DISABLE) {
             val result = delegate.exec(command)
             clearSecondaryRules()
             return result
         }
-        return delegate.exec(command)
+        if (!isFirewallCommand(trimmed)) return delegate.exec(command)
+        return execBatch(listOf(command)).first()
     }
 
     override suspend fun execBatch(commands: List<String>): List<ShellResult> {
         if (commands.isEmpty()) return emptyList()
-        if (commands.any { command ->
-                val trimmed = command.trim()
-                !BLOCK_COMMAND.matches(trimmed) &&
-                    !UNBLOCK_COMMAND.matches(trimmed)
-            }) {
-            return commands.map { exec(it) }
+        if (commands.any { !isFirewallCommand(it.trim()) }) return commands.map { exec(it) }
+
+        val requested = commands.map { parse(it.trim()) }
+        val mirroring = mirroringClones()
+        val rootMode = isRootMode()
+        val activeSecondary = if (mirroring) emptySet() else activeSecondaryKeys().toSet()
+
+        val effective = LinkedHashMap<String, Int>()
+        requested.forEach { (key, rule) ->
+            derivedCloneRules(key, rule, mirroring, rootMode, activeSecondary)
+                .forEach { (cloneKey, cloneRule) -> effective.putIfAbsent(cloneKey, cloneRule) }
         }
+        requested.forEach { (key, rule) -> effective[key] = rule }
 
-        val results = arrayOfNulls<ShellResult>(commands.size)
-        val primaryIndexes = mutableListOf<Int>()
-        val primaryCommands = mutableListOf<String>()
-        val uidRules = mutableListOf<Pair<String, Int>>()
-        val uidIndexes = mutableListOf<Int>()
+        // In root mode `cmd connectivity` is very slow per invocation (each spawns a
+        // full app_process). Route every rule through the batched per-uid daemon instead,
+        // which applies IConnectivityManager.setUidFirewallRule on the same chain.
+        val (shellRules, uidRules) = effective.toList()
+            .partition { !AppKey.isSecondary(it.first) && !rootMode }
 
-        commands.forEachIndexed { index, command ->
-            val trimmed = command.trim()
-            val blockMatch = BLOCK_COMMAND.matchEntire(trimmed)
-            val unblockMatch = UNBLOCK_COMMAND.matchEntire(trimmed)
-            val key = blockMatch?.groupValues?.get(1) ?: unblockMatch!!.groupValues[1]
-            val rule = if (blockMatch != null) PerUidFirewall.RULE_DENY else PerUidFirewall.RULE_DEFAULT
-            // In root mode `cmd connectivity` is very slow per invocation (each spawns a
-            // full app_process). Route every rule through the batched per-uid daemon instead,
-            // which applies IConnectivityManager.setUidFirewallRule on the same chain.
-            if (AppKey.isSecondary(key) || isRootMode()) {
-                uidRules += key to rule
-                uidIndexes += index
-            } else {
-                primaryIndexes += index
-                primaryCommands += command
-            }
-        }
-
-        val primaryResults = if (primaryCommands.isNotEmpty()) {
-            delegate.execBatch(primaryCommands)
-        } else {
+        val shellResults = if (shellRules.isEmpty()) {
             emptyList()
-        }
-        primaryIndexes.forEachIndexed { index, commandIndex ->
-            results[commandIndex] = primaryResults[index]
-        }
-
-        val uidResults = PerUidFirewall.setRules(context, uidRules)
-        uidIndexes.forEachIndexed { index, commandIndex ->
-            results[commandIndex] = if (uidResults[index]) PER_UID_SUCCESS else unresolved(uidRules[index].first)
-        }
-
-        val mirroredRules = mutableListOf<Pair<String, Int>>()
-        primaryIndexes.forEachIndexed { index, commandIndex ->
-            val result = primaryResults[index]
-            if (!result.isEffectivelySuccess) return@forEachIndexed
-            val command = primaryCommands[index].trim()
-            val key = BLOCK_COMMAND.matchEntire(command)?.groupValues?.get(1)
-                ?: UNBLOCK_COMMAND.matchEntire(command)!!.groupValues[1]
-            val rule = if (BLOCK_COMMAND.matches(command)) PerUidFirewall.RULE_DENY else PerUidFirewall.RULE_DEFAULT
-            if (mirroringClones()) {
-                mirroredRules += cloneKeysOf(AppKey.packageOf(key)).map { it to rule }
-            } else if (rule == PerUidFirewall.RULE_DEFAULT) {
-                mirroredRules += activeSecondaryKeys()
-                    .filter { AppKey.packageOf(it) == AppKey.packageOf(key) }
-                    .map { it to PerUidFirewall.RULE_DENY }
-            }
-        }
-        uidIndexes.forEachIndexed { index, commandIndex ->
-            val (key, rule) = uidRules[index]
-            if (AppKey.isSecondary(key) || !uidResults[index]) return@forEachIndexed
-            val targetRule = if (mirroringClones()) rule else PerUidFirewall.RULE_DENY
-            mirroredRules += cloneKeysOf(AppKey.packageOf(key)).map { it to targetRule }
-        }
-        if (mirroredRules.isNotEmpty()) PerUidFirewall.setRules(context, mirroredRules)
-
-        return results.map { it!! }
-    }
-
-    private suspend fun block(key: String, command: String): ShellResult {
-        val usePerUid = AppKey.isSecondary(key) || isRootMode()
-        val result = if (usePerUid) {
-            if (PerUidFirewall.setRule(context, key, PerUidFirewall.RULE_DENY)) {
-                PER_UID_SUCCESS
-            } else {
-                unresolved(key)
-            }
         } else {
-            delegate.exec(command)
+            delegate.execBatch(shellRules.map { (key, rule) -> commandFor(key, rule) })
         }
-        if (result.isEffectivelySuccess) {
-            if (usePerUid) mirrorPrimaryRule(key, PerUidFirewall.RULE_DENY)
-            else mirrorToClones(key, PerUidFirewall.RULE_DENY)
+        val uidResults = PerUidFirewall.setRules(context, uidRules)
+
+        val resultsByKey = HashMap<String, ShellResult>(effective.size)
+        shellRules.forEachIndexed { index, (key, _) -> resultsByKey[key] = shellResults[index] }
+        uidRules.forEachIndexed { index, (key, _) ->
+            resultsByKey[key] = if (uidResults[index]) PER_UID_SUCCESS else unresolved(key)
         }
-        return result
+        return requested.map { resultsByKey.getValue(it.first) }
     }
 
-    private suspend fun unblock(key: String, command: String): ShellResult {
-        val usePerUid = AppKey.isSecondary(key) || isRootMode()
-        if (usePerUid) {
-            if (!PerUidFirewall.setRule(context, key, PerUidFirewall.RULE_DEFAULT)) {
-                return unresolved(key)
-            }
-            mirrorPrimaryRule(key, PerUidFirewall.RULE_DEFAULT)
-            return PER_UID_SUCCESS
+    private fun derivedCloneRules(
+        key: String,
+        rule: Int,
+        mirroring: Boolean,
+        rootMode: Boolean,
+        activeSecondary: Set<String>
+    ): List<Pair<String, Int>> {
+        if (AppKey.isSecondary(key)) return emptyList()
+        val clones = cloneKeysOf(AppKey.packageOf(key))
+        if (clones.isEmpty()) return emptyList()
+        if (mirroring) return clones.map { it to rule }
+        if (rootMode) return emptyList()
+        return if (rule == PerUidFirewall.RULE_DEFAULT) {
+            clones.filter { it in activeSecondary }.map { it to PerUidFirewall.RULE_DENY }
+        } else {
+            clones.filterNot { it in activeSecondary }.map { it to PerUidFirewall.RULE_DEFAULT }
         }
-
-        val result = delegate.exec(command)
-        if (result.isEffectivelySuccess) {
-            if (mirroringClones()) {
-                mirrorToClones(key, PerUidFirewall.RULE_DEFAULT)
-            } else {
-                restoreSecondaryRules(AppKey.packageOf(key))
-            }
-        }
-        return result
     }
 
     private fun isRootMode(): Boolean {
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         return WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null)) == WorkingMode.ROOT
-    }
-
-
-    private suspend fun mirrorToClones(key: String, rule: Int) {
-        if (!mirroringClones() || AppKey.isSecondary(key)) return
-        for (cloneKey in cloneKeysOf(AppKey.packageOf(key))) {
-            PerUidFirewall.setRule(context, cloneKey, rule)
-        }
-    }
-
-    private suspend fun mirrorPrimaryRule(key: String, rule: Int) {
-        if (AppKey.isSecondary(key)) return
-        val clones = cloneKeysOf(AppKey.packageOf(key))
-        if (clones.isEmpty()) return
-        val targetRule = if (mirroringClones()) rule else PerUidFirewall.RULE_DENY
-        PerUidFirewall.setRules(context, clones.map { it to targetRule })
     }
 
     private fun mirroringClones(): Boolean = !MultiUserApps.isEnabled(context)
@@ -170,14 +90,6 @@ class PerUidRoutingExecutor(
         MultiUserApps.cachedSnapshot(context).apps
             .filter { it.packageName == packageName }
             .map { it.key }
-
-    private suspend fun restoreSecondaryRules(packageName: String) {
-        for (key in activeSecondaryKeys()) {
-            if (AppKey.packageOf(key) == packageName) {
-                PerUidFirewall.setRule(context, key, PerUidFirewall.RULE_DENY)
-            }
-        }
-    }
 
     private suspend fun clearSecondaryRules() {
         for (key in activeSecondaryKeys()) {
@@ -212,5 +124,18 @@ class PerUidRoutingExecutor(
         const val CHAIN3_DISABLE = "cmd connectivity set-chain3-enabled false"
 
         val PER_UID_SUCCESS = ShellResult(exitCode = 0, stdout = "per-uid rule applied", stderr = "")
+
+        fun isFirewallCommand(trimmed: String): Boolean =
+            BLOCK_COMMAND.matches(trimmed) || UNBLOCK_COMMAND.matches(trimmed)
+
+        fun parse(trimmed: String): Pair<String, Int> {
+            BLOCK_COMMAND.matchEntire(trimmed)?.let { return it.groupValues[1] to PerUidFirewall.RULE_DENY }
+            return UNBLOCK_COMMAND.matchEntire(trimmed)!!.groupValues[1] to PerUidFirewall.RULE_DEFAULT
+        }
+
+        fun commandFor(key: String, rule: Int): String {
+            val enabled = rule == PerUidFirewall.RULE_DEFAULT
+            return "cmd connectivity set-package-networking-enabled $enabled $key"
+        }
     }
 }

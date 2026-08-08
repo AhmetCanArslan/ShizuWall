@@ -2272,7 +2272,11 @@ class MainActivity : BaseActivity() {
         return Pair(installed, missing)
     }
 
-    private suspend fun enableFirewall(packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()): Pair<List<String>, List<String>> {
+    private suspend fun enableFirewall(
+        packageNames: List<String>,
+        whitelistAllowApps: List<String> = emptyList(),
+        preUnblockApps: List<String> = emptyList()
+    ): Pair<List<String>, List<String>> {
         val successful = mutableListOf<String>()
         val failed = mutableListOf<String>()
         lastOperationErrorDetails.clear()
@@ -2280,6 +2284,9 @@ class MainActivity : BaseActivity() {
         val chain3Result = runCommandDetailed("cmd connectivity set-chain3-enabled true")
         if (!chain3Result.success) {
             val msg = chain3Result.stderr.ifEmpty { chain3Result.stdout }
+            runCommandsDetailed(
+                preUnblockApps.map { "cmd connectivity set-package-networking-enabled true $it" }
+            )
             if (packageNames.isEmpty() && whitelistAllowApps.isEmpty()) {
                 lastOperationErrorDetails["_chain3"] = msg
                 return Pair(successful, failed)
@@ -2291,19 +2298,17 @@ class MainActivity : BaseActivity() {
             return Pair(successful, failed)
         }
 
-        if (packageNames.isEmpty()) {
-            return Pair(successful, failed)
-        }
+        val skipBlocking = firewallMode == FirewallMode.SMART_FOREGROUND ||
+            firewallMode == FirewallMode.FOCUS_TRACKER
+        val toBlock = if (skipBlocking) emptyList() else packageNames
+        val allowCommands = (preUnblockApps + whitelistAllowApps)
+            .map { "cmd connectivity set-package-networking-enabled true $it" }
+        val commands = allowCommands + toBlock.map { "cmd connectivity set-package-networking-enabled false $it" }
+        if (commands.isEmpty()) return Pair(successful, failed)
 
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
-            return Pair(successful, failed)
-        }
-
-        val blockResults = runCommandsDetailed(
-            packageNames.map { "cmd connectivity set-package-networking-enabled false $it" }
-        )
-        for ((index, packageName) in packageNames.withIndex()) {
-            val res = blockResults[index]
+        val results = runCommandsDetailed(commands)
+        for ((index, packageName) in toBlock.withIndex()) {
+            val res = results[allowCommands.size + index]
             if (res.isEffectivelySuccess) {
                 successful.add(packageName)
             } else {
@@ -2311,10 +2316,6 @@ class MainActivity : BaseActivity() {
                 lastOperationErrorDetails[packageName] = res.stderr.ifEmpty { res.stdout }
             }
         }
-
-        runCommandsDetailed(
-            whitelistAllowApps.map { "cmd connectivity set-package-networking-enabled true $it" }
-        )
 
         return Pair(successful, failed)
     }
@@ -2837,10 +2838,7 @@ class MainActivity : BaseActivity() {
                 val toUnblock = oldActive.filterNot { effectiveTarget.contains(it) }
 
                 val successful = withContext(Dispatchers.IO) {
-                    runCommandsDetailed(
-                        toUnblock.map { "cmd connectivity set-package-networking-enabled true $it" }
-                    )
-                    val (ok, _) = enableFirewall(effectiveTarget, whitelistAllow)
+                    val (ok, _) = enableFirewall(effectiveTarget, whitelistAllow, toUnblock)
                     ok
                 }
 
