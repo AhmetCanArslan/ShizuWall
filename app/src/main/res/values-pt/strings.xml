@@ -471,4 +471,13 @@
     <string name="widget_theme_light">Claro</string>
     <string name="widget_theme_dark">Escuro</string>
     <string name="widget_theme_transparent">Transparente</string>
+    <string name="ladb_adb_method_title">Iniciar com ADB (PC)</string>
+    <string name="ladb_adb_method_description">Conecte o telefone a um computador com a depuração USB ativada e execute este comando uma vez.</string>
+    <string name="ladb_adb_command_label">Comando</string>
+    <string name="ladb_adb_command_preparing">Preparando…</string>
+    <string name="ladb_copy_command">Copiar comando</string>
+    <string name="ladb_command_copied">Comando copiado</string>
+    <string name="ladb_share_command">Compartilhar comando</string>
+    <string name="ladb_adb_method_steps">1. Ative a depuração USB nas Opções do desenvolvedor\n2. Conecte o telefone ao computador e aceite o aviso\n3. Cole o comando em um terminal\n\nExecute novamente após cada reinicialização.</string>
+    <string name="ladb_command_prepare_failed">Não foi possível preparar o comando ADB: %1$s</string>
 </resources>

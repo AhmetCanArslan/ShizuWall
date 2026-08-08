@@ -474,4 +474,13 @@
     <string name="widget_theme_light">ライト</string>
     <string name="widget_theme_dark">ダーク</string>
     <string name="widget_theme_transparent">透明</string>
+    <string name="ladb_adb_method_title">ADB で開始（PC）</string>
+    <string name="ladb_adb_method_description">USB デバッグを有効にして PC に接続し、このコマンドを 1 回実行してください。</string>
+    <string name="ladb_adb_command_label">コマンド</string>
+    <string name="ladb_adb_command_preparing">準備中…</string>
+    <string name="ladb_copy_command">コマンドをコピー</string>
+    <string name="ladb_command_copied">コマンドをコピーしました</string>
+    <string name="ladb_share_command">コマンドを共有</string>
+    <string name="ladb_adb_method_steps">1. 開発者オプションで USB デバッグを有効にする\n2. PC に接続して許可ダイアログを承認する\n3. ターミナルにコマンドを貼り付ける\n\n再起動のたびに実行してください。</string>
+    <string name="ladb_command_prepare_failed">ADB コマンドを準備できませんでした: %1$s</string>
 </resources>

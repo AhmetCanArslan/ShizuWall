@@ -472,4 +472,13 @@
     <string name="widget_theme_light">Açık</string>
     <string name="widget_theme_dark">Koyu</string>
     <string name="widget_theme_transparent">Saydam</string>
+    <string name="ladb_adb_method_title">ADB ile başlat (PC)</string>
+    <string name="ladb_adb_method_description">Telefonu USB hata ayıklama açıkken bilgisayara bağlayın ve bu komutu bir kez çalıştırın.</string>
+    <string name="ladb_adb_command_label">Komut</string>
+    <string name="ladb_adb_command_preparing">Hazırlanıyor…</string>
+    <string name="ladb_copy_command">Komutu kopyala</string>
+    <string name="ladb_command_copied">Komut kopyalandı</string>
+    <string name="ladb_share_command">Komutu paylaş</string>
+    <string name="ladb_adb_method_steps">1. Geliştirici seçeneklerinden USB hata ayıklamayı açın\n2. Telefonu bilgisayara bağlayın ve izin isteme penceresini onaylayın\n3. Komutu bir terminale yapıştırın\n\nHer yeniden başlatmadan sonra tekrar çalıştırın.</string>
+    <string name="ladb_command_prepare_failed">ADB komutu hazırlanamadı: %1$s</string>
 </resources>

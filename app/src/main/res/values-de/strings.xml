@@ -471,4 +471,13 @@
     <string name="widget_theme_light">Hell</string>
     <string name="widget_theme_dark">Dunkel</string>
     <string name="widget_theme_transparent">Transparent</string>
+    <string name="ladb_adb_method_title">Mit ADB starten (PC)</string>
+    <string name="ladb_adb_method_description">Verbinde das Telefon bei aktiviertem USB-Debugging mit einem Computer und führe diesen Befehl einmal aus.</string>
+    <string name="ladb_adb_command_label">Befehl</string>
+    <string name="ladb_adb_command_preparing">Wird vorbereitet…</string>
+    <string name="ladb_copy_command">Befehl kopieren</string>
+    <string name="ladb_command_copied">Befehl kopiert</string>
+    <string name="ladb_share_command">Befehl teilen</string>
+    <string name="ladb_adb_method_steps">1. USB-Debugging in den Entwickleroptionen aktivieren\n2. Telefon mit dem Computer verbinden und die Abfrage bestätigen\n3. Befehl in ein Terminal einfügen\n\nNach jedem Neustart erneut ausführen.</string>
+    <string name="ladb_command_prepare_failed">ADB-Befehl konnte nicht vorbereitet werden: %1$s</string>
 </resources>

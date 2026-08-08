@@ -476,4 +476,13 @@
     <string name="widget_theme_light">Светлое</string>
     <string name="widget_theme_dark">Тёмное</string>
     <string name="widget_theme_transparent">Прозрачное</string>
+    <string name="ladb_adb_method_title">Запуск через ADB (ПК)</string>
+    <string name="ladb_adb_method_description">Подключите телефон к компьютеру с включённой отладкой по USB и выполните эту команду один раз.</string>
+    <string name="ladb_adb_command_label">Команда</string>
+    <string name="ladb_adb_command_preparing">Подготовка…</string>
+    <string name="ladb_copy_command">Копировать команду</string>
+    <string name="ladb_command_copied">Команда скопирована</string>
+    <string name="ladb_share_command">Поделиться командой</string>
+    <string name="ladb_adb_method_steps">1. Включите отладку по USB в параметрах разработчика\n2. Подключите телефон к компьютеру и подтвердите запрос\n3. Вставьте команду в терминал\n\nПовторяйте после каждой перезагрузки.</string>
+    <string name="ladb_command_prepare_failed">Не удалось подготовить команду ADB: %1$s</string>
 </resources>

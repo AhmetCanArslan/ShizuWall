@@ -477,4 +477,13 @@
     <string name="widget_theme_light">हल्का</string>
     <string name="widget_theme_dark">गहरा</string>
     <string name="widget_theme_transparent">पारदर्शी</string>
+    <string name="ladb_adb_method_title">ADB से शुरू करें (PC)</string>
+    <string name="ladb_adb_method_description">USB डिबगिंग चालू करके फ़ोन को कंप्यूटर से जोड़ें और यह कमांड एक बार चलाएँ।</string>
+    <string name="ladb_adb_command_label">कमांड</string>
+    <string name="ladb_adb_command_preparing">तैयार हो रहा है…</string>
+    <string name="ladb_copy_command">कमांड कॉपी करें</string>
+    <string name="ladb_command_copied">कमांड कॉपी हो गया</string>
+    <string name="ladb_share_command">कमांड साझा करें</string>
+    <string name="ladb_adb_method_steps">1. डेवलपर विकल्पों में USB डिबगिंग चालू करें\n2. फ़ोन को कंप्यूटर से जोड़ें और संकेत स्वीकार करें\n3. कमांड को टर्मिनल में पेस्ट करें\n\nहर रीबूट के बाद फिर से चलाएँ।</string>
+    <string name="ladb_command_prepare_failed">ADB कमांड तैयार नहीं हो सका: %1$s</string>
 </resources>

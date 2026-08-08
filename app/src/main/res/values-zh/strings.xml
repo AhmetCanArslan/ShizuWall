@@ -471,4 +471,13 @@
     <string name="widget_theme_light">浅色</string>
     <string name="widget_theme_dark">深色</string>
     <string name="widget_theme_transparent">透明</string>
+    <string name="ladb_adb_method_title">使用 ADB 启动（电脑）</string>
+    <string name="ladb_adb_method_description">开启 USB 调试后将手机连接到电脑，然后运行一次此命令。</string>
+    <string name="ladb_adb_command_label">命令</string>
+    <string name="ladb_adb_command_preparing">准备中…</string>
+    <string name="ladb_copy_command">复制命令</string>
+    <string name="ladb_command_copied">命令已复制</string>
+    <string name="ladb_share_command">分享命令</string>
+    <string name="ladb_adb_method_steps">1. 在开发者选项中开启 USB 调试\n2. 将手机连接到电脑并允许弹窗\n3. 将命令粘贴到终端中\n\n每次重启后需要重新运行。</string>
+    <string name="ladb_command_prepare_failed">无法准备 ADB 命令：%1$s</string>
 </resources>

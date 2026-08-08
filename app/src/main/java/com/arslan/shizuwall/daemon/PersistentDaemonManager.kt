@@ -32,6 +32,8 @@ class PersistentDaemonManager(private val context: Context) {
     
     private val daemonPort = DAEMON_PORT
 
+    fun currentToken(): String = getOrGenerateToken()
+
     private fun getOrGenerateToken(): String {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         var token = prefs.getString(KEY_TOKEN, null)

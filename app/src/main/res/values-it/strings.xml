@@ -477,4 +477,13 @@
     <string name="widget_theme_light">Chiaro</string>
     <string name="widget_theme_dark">Scuro</string>
     <string name="widget_theme_transparent">Trasparente</string>
+    <string name="ladb_adb_method_title">Avvia con ADB (PC)</string>
+    <string name="ladb_adb_method_description">Collega il telefono a un computer con il debug USB attivo ed esegui questo comando una volta.</string>
+    <string name="ladb_adb_command_label">Comando</string>
+    <string name="ladb_adb_command_preparing">Preparazione…</string>
+    <string name="ladb_copy_command">Copia comando</string>
+    <string name="ladb_command_copied">Comando copiato</string>
+    <string name="ladb_share_command">Condividi comando</string>
+    <string name="ladb_adb_method_steps">1. Attiva il debug USB nelle Opzioni sviluppatore\n2. Collega il telefono al computer e accetta la richiesta\n3. Incolla il comando in un terminale\n\nRipetilo dopo ogni riavvio.</string>
+    <string name="ladb_command_prepare_failed">Impossibile preparare il comando ADB: %1$s</string>
 </resources>

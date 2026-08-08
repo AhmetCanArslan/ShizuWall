@@ -477,4 +477,13 @@
     <string name="widget_theme_light">Light</string>
     <string name="widget_theme_dark">Dark</string>
     <string name="widget_theme_transparent">Transparent</string>
+    <string name="ladb_adb_method_title">Start with ADB (PC)</string>
+    <string name="ladb_adb_method_description">Connect the phone to a computer with USB debugging enabled, then run this command once.</string>
+    <string name="ladb_adb_command_label">Command</string>
+    <string name="ladb_adb_command_preparing">Preparing…</string>
+    <string name="ladb_copy_command">Copy command</string>
+    <string name="ladb_command_copied">Command copied</string>
+    <string name="ladb_share_command">Share command</string>
+    <string name="ladb_adb_method_steps">1. Enable USB debugging in Developer options\n2. Connect the phone to a computer and allow the prompt\n3. Paste the command into a terminal\n\nRun it again after every reboot.</string>
+    <string name="ladb_command_prepare_failed">Could not prepare the ADB command: %1$s</string>
 </resources>

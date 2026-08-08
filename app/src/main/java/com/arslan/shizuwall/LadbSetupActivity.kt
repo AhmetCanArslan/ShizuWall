@@ -44,6 +44,7 @@ import android.os.Looper
 import android.graphics.Color
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import com.arslan.shizuwall.daemon.AdbDaemonBootstrap
 import com.arslan.shizuwall.daemon.PersistentDaemonManager
 import kotlinx.coroutines.delay
 
@@ -60,6 +61,10 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     private lateinit var switchAdvancedMode: com.google.android.material.materialswitch.MaterialSwitch
     private lateinit var logsContainer: LinearLayout
     private lateinit var simpleSetupContainer: LinearLayout
+    private lateinit var tvAdbCommand: TextView
+    private lateinit var btnCopyAdbCommand: MaterialButton
+    private lateinit var btnShareAdbCommand: MaterialButton
+    private var adbCommand: String? = null
     private lateinit var advancedSetupContainer: LinearLayout
 
     // Daemon UI
@@ -82,6 +87,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
     private lateinit var ladbManager: LadbManager
     private lateinit var daemonManager: PersistentDaemonManager
+    private lateinit var adbBootstrap: AdbDaemonBootstrap
     private var adbPortFinder: AdbPortFinder? = null
     private var localIp: String? = null
     private val detectedConnectPorts = mutableListOf<Pair<String, Int>>()
@@ -496,6 +502,32 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
         ladbManager = LadbManager.getInstance(this)
         daemonManager = PersistentDaemonManager(this)
+        adbBootstrap = AdbDaemonBootstrap(this)
+
+        tvAdbCommand = findViewById(R.id.tvAdbCommand)
+        btnCopyAdbCommand = findViewById(R.id.btnCopyAdbCommand)
+        btnShareAdbCommand = findViewById(R.id.btnShareAdbCommand)
+        prepareAdbCommand()
+
+        btnCopyAdbCommand.setOnClickListener {
+            val command = adbCommand
+            if (command == null) {
+                prepareAdbCommand()
+                return@setOnClickListener
+            }
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            clipboard.setPrimaryClip(android.content.ClipData.newPlainText("shizuwall_adb", command))
+            Snackbar.make(rootView, R.string.ladb_command_copied, Snackbar.LENGTH_SHORT).show()
+        }
+
+        btnShareAdbCommand.setOnClickListener {
+            val command = adbCommand ?: return@setOnClickListener
+            val share = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, command)
+            }
+            startActivity(Intent.createChooser(share, getString(R.string.ladb_share_command)))
+        }
 
         ladbManager.getSavedHost()?.let { etManualHost.setText(it) }
         ladbManager.getSavedConnectPort().takeIf { it > 0 }?.let { etManualPort.setText(it.toString()) }
@@ -1005,6 +1037,22 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             btnPairSimple.isEnabled = true
             connectProgressSimple.visibility = View.GONE
             updateStatus()
+        }
+    }
+
+    private fun prepareAdbCommand() {
+        lifecycleScope.launch {
+            val command = try {
+                adbBootstrap.stage()
+            } catch (e: Exception) {
+                appendLog("Failed to stage ADB command: ${e.message}")
+                tvAdbCommand.text = getString(R.string.ladb_command_prepare_failed, e.message ?: "")
+                null
+            }
+            if (command != null) {
+                adbCommand = command
+                tvAdbCommand.text = command
+            }
         }
     }
 

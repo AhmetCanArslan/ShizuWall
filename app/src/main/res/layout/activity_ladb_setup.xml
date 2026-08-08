@@ -546,6 +546,142 @@
 
             </LinearLayout>
 
+            <!-- Direct ADB start (visible in both simple and advanced mode) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAdbDirectStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/ic_picon_usb"
+                            android:contentDescription="@null"
+                            app:tint="?attr/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/ladb_adb_method_title"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?android:attr/textColorPrimary" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_adb_method_description"
+                        android:textSize="13sp"
+                        android:lineSpacingExtra="3dp"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:layout_marginTop="10dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_adb_command_label"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.05"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginTop="18dp"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+                        app:strokeWidth="0dp">
+
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="none"
+                            android:padding="14dp">
+
+                            <TextView
+                                android:id="@+id/tvAdbCommand"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textIsSelectable="true"
+                                android:textSize="12sp"
+                                android:lineSpacingExtra="2dp"
+                                android:fontFamily="monospace"
+                                android:typeface="monospace"
+                                android:textColor="?android:attr/textColorPrimary"
+                                android:text="@string/ladb_adb_command_preparing" />
+                        </HorizontalScrollView>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            style="@style/Widget.MaterialComponents.Button"
+                            android:id="@+id/btnCopyAdbCommand"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/ladb_copy_command"
+                            app:icon="@drawable/content_copy_24px"
+                            app:backgroundTint="?attr/colorPrimaryContainer"
+                            android:textColor="?attr/colorOnPrimaryContainer"
+                            app:iconTint="?attr/colorOnPrimaryContainer" />
+
+                        <com.google.android.material.button.MaterialButton
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:id="@+id/btnShareAdbCommand"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="@string/ladb_share_command" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="18dp"
+                        android:layout_marginBottom="14dp"
+                        android:background="?attr/colorOutlineVariant" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_adb_method_steps"
+                        android:textSize="13sp"
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="?android:attr/textColorSecondary" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>
