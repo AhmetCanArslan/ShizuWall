@@ -39,9 +39,6 @@ class PerUidRoutingExecutor(
         }
         requested.forEach { (key, rule) -> effective[key] = rule }
 
-        // In root mode `cmd connectivity` is very slow per invocation (each spawns a
-        // full app_process). Route every rule through the batched per-uid daemon instead,
-        // which applies IConnectivityManager.setUidFirewallRule on the same chain.
         val (shellRules, uidRules) = effective.toList()
             .partition { !AppKey.isSecondary(it.first) && !rootMode }
 
@@ -92,16 +89,15 @@ class PerUidRoutingExecutor(
             .map { it.key }
 
     private suspend fun clearSecondaryRules() {
-        for (key in activeSecondaryKeys()) {
-            PerUidFirewall.setRule(context, key, PerUidFirewall.RULE_DEFAULT)
+        val keys = LinkedHashSet<String>(activeSecondaryKeys())
+        if (mirroringClones()) {
+            val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+            FirewallUtils.loadActivePackages(prefs)
+                .filterNot { AppKey.isSecondary(it) }
+                .forEach { keys.addAll(cloneKeysOf(it)) }
         }
-        if (!mirroringClones()) return
-        val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        for (key in FirewallUtils.loadActivePackages(prefs).filterNot { AppKey.isSecondary(it) }) {
-            for (cloneKey in cloneKeysOf(key)) {
-                PerUidFirewall.setRule(context, cloneKey, PerUidFirewall.RULE_DEFAULT)
-            }
-        }
+        if (keys.isEmpty()) return
+        PerUidFirewall.setRules(context, keys.map { it to PerUidFirewall.RULE_DEFAULT })
     }
 
     private fun activeSecondaryKeys(): List<String> {

@@ -1,7 +1,6 @@
 package com.arslan.shizuwall.services
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
@@ -13,7 +12,6 @@ import com.arslan.shizuwall.shell.ShellExecutorBlocking
 import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.*
-import com.arslan.shizuwall.widgets.FirewallWidgetProvider
 import com.arslan.shizuwall.utils.FirewallUtils
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.utils.WhitelistFilter
@@ -186,17 +184,21 @@ class FirewallTileService : TileService() {
         }
 
         val selfPkg = packageName
-        for (pkg in packageNames) {
-            if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
-            if (ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled false $pkg")) {
-                successful.add(pkg)
-            }
+        val toBlock = packageNames.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
+        val toAllow = whitelistAllowApps.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
+
+        val blockResults = ShellExecutorBlocking.execBatchBlocking(
+            this,
+            toBlock.map { "cmd connectivity set-package-networking-enabled false $it" }
+        )
+        toBlock.forEachIndexed { index, pkg ->
+            if (blockResults[index].isEffectivelySuccess) successful.add(pkg)
         }
 
-        for (pkg in whitelistAllowApps) {
-            if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
-            ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")
-        }
+        ShellExecutorBlocking.execBatchBlocking(
+            this,
+            toAllow.map { "cmd connectivity set-package-networking-enabled true $it" }
+        )
 
         return successful
     }
@@ -217,13 +219,13 @@ class FirewallTileService : TileService() {
             }
         }
 
-        for (pkg in toUnblock) {
-            // never target the app itself or Shizuku
-            if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
-            if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")) {
-                allSuccessful = false
-            }
-        }
+        // never target the app itself or Shizuku
+        val unblockTargets = toUnblock.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
+        val unblockResults = ShellExecutorBlocking.execBatchBlocking(
+            this,
+            unblockTargets.map { "cmd connectivity set-package-networking-enabled true $it" }
+        )
+        if (unblockResults.any { !it.isEffectivelySuccess }) allSuccessful = false
         if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled false")) {
             allSuccessful = false
         }

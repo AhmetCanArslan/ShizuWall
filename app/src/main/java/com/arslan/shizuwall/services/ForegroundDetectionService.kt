@@ -672,10 +672,11 @@ class ForegroundDetectionService : Service() {
         val pkgs = selectedPackages.toList()
         val shouldEnableNetworking = isFocused
 
-        // Run commands sequentially to avoid race conditions on the shell executor
-        for (pkg in pkgs) {
-            if (pkg == packageName || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
-            executor.exec("cmd connectivity set-package-networking-enabled $shouldEnableNetworking $pkg")
+        val targets = pkgs.filterNot { it == packageName || ShizukuPackageResolver.isShizukuPackage(this, it) }
+        if (targets.isNotEmpty()) {
+            executor.execBatch(
+                targets.map { "cmd connectivity set-package-networking-enabled $shouldEnableNetworking $it" }
+            )
         }
 
         val activePkgs = if (!isFocused) selectedPackages else emptySet()

@@ -58,12 +58,11 @@ class ProfileControlReceiver : BroadcastReceiver() {
                 val forceEnable = intent.getBooleanExtra(EXTRA_FORCE_ENABLE, false)
 
                 if (wasEnabled || autoEnable || forceEnable) {
-                    val executor = ShellExecutorProvider.forContext(context)
-                    for (pkg in oldActive) {
-                        try {
-                            executor.exec("cmd connectivity set-package-networking-enabled true $pkg")
-                        } catch (_: Throwable) {
-                        }
+                    try {
+                        ShellExecutorProvider.forContext(context).execBatch(
+                            oldActive.map { "cmd connectivity set-package-networking-enabled true $it" }
+                        )
+                    } catch (_: Throwable) {
                     }
 
                     val enableIntent = Intent(context, FirewallControlReceiver::class.java).apply {

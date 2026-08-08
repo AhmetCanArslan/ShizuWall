@@ -941,11 +941,15 @@ class MainActivity : BaseActivity() {
                                     val successful = mutableListOf<String>()
                                     val failed = mutableListOf<String>()
                                     lastOperationErrorDetails.clear()
-                                    for (pkg in previouslySelected) {
-                                        val shouldBlock = firewallMode == FirewallMode.WHITELIST
-                                        val cmd = if (shouldBlock) "cmd connectivity set-package-networking-enabled false $pkg"
-                                                  else "cmd connectivity set-package-networking-enabled true $pkg"
-                                        val res = runCommandDetailed(cmd)
+                                    val shouldBlock = firewallMode == FirewallMode.WHITELIST
+                                    val enabledFlag = if (shouldBlock) "false" else "true"
+                                    val results = runCommandsDetailed(
+                                        previouslySelected.map {
+                                            "cmd connectivity set-package-networking-enabled $enabledFlag $it"
+                                        }
+                                    )
+                                    previouslySelected.forEachIndexed { index, pkg ->
+                                        val res = results[index]
                                         if (res.isEffectivelySuccess) successful.add(pkg)
                                         else {
                                             failed.add(pkg)
@@ -1108,14 +1112,15 @@ class MainActivity : BaseActivity() {
                             val successful = mutableListOf<String>()
                             val failed = mutableListOf<String>()
                             lastOperationErrorDetails.clear()
-                            for (pkg in packagesToUpdate) {
-                                val shouldBlock = if (firewallMode == FirewallMode.WHITELIST) !isChecked else isChecked
-                                val cmd = if (shouldBlock) {
-                                    "cmd connectivity set-package-networking-enabled false $pkg"
-                                } else {
-                                    "cmd connectivity set-package-networking-enabled true $pkg"
+                            val shouldBlock = if (firewallMode == FirewallMode.WHITELIST) !isChecked else isChecked
+                            val enabledFlag = if (shouldBlock) "false" else "true"
+                            val results = runCommandsDetailed(
+                                packagesToUpdate.map {
+                                    "cmd connectivity set-package-networking-enabled $enabledFlag $it"
                                 }
-                                val res = runCommandDetailed(cmd)
+                            )
+                            packagesToUpdate.forEachIndexed { index, pkg ->
+                                val res = results[index]
                                 if (res.isEffectivelySuccess) successful.add(pkg)
                                 else {
                                     failed.add(pkg)

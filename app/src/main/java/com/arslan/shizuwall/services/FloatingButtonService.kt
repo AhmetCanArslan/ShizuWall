@@ -18,7 +18,6 @@ import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.FirewallUtils
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.utils.WhitelistFilter
-import com.arslan.shizuwall.widgets.FirewallWidgetProvider
 import kotlinx.coroutines.*
 
 class FloatingButtonService : Service() {
@@ -496,17 +495,21 @@ class FloatingButtonService : Service() {
         }
 
         val selfPkg = packageName
-        for (pkg in packageNames) {
-            if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
-            if (ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled false $pkg")) {
-                successful.add(pkg)
-            }
+        val toBlock = packageNames.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
+        val toAllow = whitelistAllowApps.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
+
+        val blockResults = ShellExecutorBlocking.execBatchBlocking(
+            this,
+            toBlock.map { "cmd connectivity set-package-networking-enabled false $it" }
+        )
+        toBlock.forEachIndexed { index, pkg ->
+            if (blockResults[index].isEffectivelySuccess) successful.add(pkg)
         }
 
-        for (pkg in whitelistAllowApps) {
-            if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
-            ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")
-        }
+        ShellExecutorBlocking.execBatchBlocking(
+            this,
+            toAllow.map { "cmd connectivity set-package-networking-enabled true $it" }
+        )
 
         return successful
     }
@@ -527,11 +530,12 @@ class FloatingButtonService : Service() {
             }
         }
 
-        for (pkg in toUnblock) {
-            if (pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, pkg)) continue
-            // Ignore per-package unblock failures here; global chain disable is the source of truth.
-            ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-package-networking-enabled true $pkg")
-        }
+        // Ignore per-package unblock failures here; global chain disable is the source of truth.
+        ShellExecutorBlocking.execBatchBlocking(
+            this,
+            toUnblock.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
+                .map { "cmd connectivity set-package-networking-enabled true $it" }
+        )
         chainDisabled = ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled false")
 
         if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {

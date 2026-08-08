@@ -18,4 +18,11 @@ object ShellExecutorBlocking {
     fun runBlockingSuccess(context: Context, command: String): Boolean {
         return execBlocking(context, command).isEffectivelySuccess
     }
+
+    fun execBatchBlocking(context: Context, commands: List<String>): List<ShellResult> {
+        if (commands.isEmpty()) return emptyList()
+        return runBlocking(Dispatchers.IO) {
+            ShellExecutorProvider.forContext(context).execBatch(commands)
+        }
+    }
 }

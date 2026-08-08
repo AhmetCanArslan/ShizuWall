@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 object RootUidFirewallSession {
 
     private const val COMMAND_TIMEOUT_MS = 20_000L
+    private const val OPEN_TIMEOUT_MS = 5_000L
     private const val SERVER_COMMAND = "fw-uid-server"
 
     private val lock = Mutex()
@@ -49,6 +50,7 @@ object RootUidFirewallSession {
         val isAlive: Boolean get() = process.isAlive
 
         fun execute(command: String): String? {
+            output.clear()
             try {
                 stdin.write(command)
                 stdin.write('\n'.code)
@@ -69,8 +71,8 @@ object RootUidFirewallSession {
             process.destroy()
         }
 
-        private fun poll(): String? {
-            val deadline = System.currentTimeMillis() + COMMAND_TIMEOUT_MS
+        private fun poll(timeoutMs: Long = COMMAND_TIMEOUT_MS): String? {
+            val deadline = System.currentTimeMillis() + timeoutMs
             while (true) {
                 val remaining = deadline - System.currentTimeMillis()
                 if (remaining <= 0) return null
@@ -97,7 +99,7 @@ object RootUidFirewallSession {
                             "com.arslan.shizuwall.daemon.SystemDaemon $SERVER_COMMAND\n"
                     )
                     session.stdin.flush()
-                    if (session.poll() != "READY") {
+                    if (session.poll(OPEN_TIMEOUT_MS) != "READY") {
                         session.close()
                         null
                     } else {

@@ -236,9 +236,9 @@ class SettingsActivity : BaseActivity() {
             val executor = ShellExecutorProvider.forContext(this)
             val chainResult = executor.exec("cmd connectivity set-chain3-enabled false")
 
-            for (pkg in allPackages) {
-                executor.exec("cmd connectivity set-package-networking-enabled true $pkg")
-            }
+            executor.execBatch(
+                allPackages.map { "cmd connectivity set-package-networking-enabled true $it" }
+            )
 
             if (mode == "LADB") {
                 executor.exec("kill \\$(cat /data/local/tmp/daemon.pid 2>/dev/null) 2>/dev/null; pkill -f 'com.arslan.shizuwall.daemon.SystemDaemon' 2>/dev/null || true")

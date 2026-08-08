@@ -28,7 +28,6 @@ public class SystemDaemon {
     private static final int MAX_CONCURRENT_COMMANDS = 4;
     private static final int COMMAND_TIMEOUT_SECONDS = 30;
     private static final int MAX_COMMAND_LENGTH = 4096;
-    private static final String FW_UID_RULE_COMMAND = "fw-uid-rule";
     private static final String FW_UID_RULES_COMMAND = "fw-uid-rules";
     private static final String FW_UID_SERVER_COMMAND = "fw-uid-server";
     private static final int FIREWALL_CHAIN_OEM_DENY_3 = 9;
@@ -68,15 +67,6 @@ public class SystemDaemon {
             runUidRuleServer();
             return;
         }
-        if (args != null && args.length == 3 && FW_UID_RULE_COMMAND.equals(args[0])) {
-            System.out.println(setUidFirewallRule(args[0] + " " + args[1] + " " + args[2]));
-            return;
-        }
-        if (args != null && args.length == 2 && FW_UID_RULES_COMMAND.equals(args[0])) {
-            System.out.println(setUidFirewallRules(args[1]));
-            return;
-        }
-
         // Setup shutdown hook for graceful termination
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("SystemDaemon: Shutdown signal received");
@@ -235,8 +225,10 @@ public class SystemDaemon {
             String result;
             if (command.trim().equalsIgnoreCase("ping")) {
                 result = "pong";
-            } else if (command.trim().startsWith(FW_UID_RULE_COMMAND)) {
-                result = setUidFirewallRule(command.trim());
+            } else if (command.trim().startsWith(FW_UID_RULES_COMMAND + " ")) {
+                result = setUidFirewallRules(
+                        command.trim().substring(FW_UID_RULES_COMMAND.length() + 1)
+                );
             } else if (command.trim().equalsIgnoreCase("status")) {
                 result = "active:" + activeConnections.get() + ",uptime:" + 
                          (System.currentTimeMillis() / 1000);
@@ -277,24 +269,7 @@ public class SystemDaemon {
         }
     }
 
-    /**
-     * Handles "fw-uid-rule &lt;uid&gt; &lt;rule&gt;". Unlike the shell command, the binder API takes
-     * a uid, so a block does not follow the appId into other users. Callable here because the
-     * process runs as shell and app_process leaves non-SDK interfaces reachable.
-     */
-    private static String setUidFirewallRule(String command) {
-        String[] parts = command.split("\\s+");
-        if (parts.length != 3) {
-            return "Error (code 22): usage: " + FW_UID_RULE_COMMAND + " <uid> <rule>";
-        }
-        final int uid;
-        final int rule;
-        try {
-            uid = Integer.parseInt(parts[1]);
-            rule = Integer.parseInt(parts[2]);
-        } catch (NumberFormatException e) {
-            return "Error (code 22): uid and rule must be integers";
-        }
+    private static String setUidFirewallRule(int uid, int rule) {
         try {
             Object binder = Class.forName("android.os.ServiceManager")
                     .getMethod("getService", String.class)
@@ -323,20 +298,22 @@ public class SystemDaemon {
         StringBuilder result = new StringBuilder();
         String[] rules = encodedRules.split(",");
         for (String encodedRule : rules) {
+            String response;
             String[] values = encodedRule.split(":");
             if (values.length != 2) {
-                result.append("Error (code 22): invalid uid rule");
-                break;
-            }
-            String response = setUidFirewallRule(
-                    FW_UID_RULE_COMMAND + " " + values[0] + " " + values[1]
-            );
-            if (!response.startsWith("OK")) {
-                result.append(response);
-                break;
+                response = "Error (code 22): invalid uid rule";
+            } else {
+                try {
+                    response = setUidFirewallRule(
+                            Integer.parseInt(values[0].trim()),
+                            Integer.parseInt(values[1].trim())
+                    );
+                } catch (NumberFormatException e) {
+                    response = "Error (code 22): uid and rule must be integers";
+                }
             }
             if (result.length() > 0) result.append(';');
-            result.append(response);
+            result.append(response.replace(';', ',').replace('\n', ' ').replace('\r', ' '));
         }
         return result.toString();
     }

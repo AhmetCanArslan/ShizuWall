@@ -20,27 +20,19 @@ object PerUidFirewall {
     private const val CHAIN_OEM_DENY_3 = 9
     const val RULE_DEFAULT = 0
     const val RULE_DENY = 2
-    // Keep in sync with SystemDaemon.FW_UID_RULE_COMMAND.
-    private const val DAEMON_COMMAND = "fw-uid-rule"
+    // Keep in sync with SystemDaemon.FW_UID_RULES_COMMAND.
+    private const val DAEMON_BATCH_COMMAND = "fw-uid-rules"
     private const val DAEMON_ASSET_NAME = "daemon.bin"
     private const val DAEMON_DEX_NAME = "daemon.dex"
-
-    suspend fun setRule(context: Context, key: String, rule: Int): Boolean = withContext(Dispatchers.IO) {
-        setRules(context, listOf(key to rule)).first()
-    }
 
     suspend fun setRules(context: Context, rules: List<Pair<String, Int>>): List<Boolean> = withContext(Dispatchers.IO) {
         if (rules.isEmpty()) return@withContext emptyList()
         val resolved = rules.map { (key, rule) -> resolveUid(context, key)?.let { UidRule(it, rule) } }
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        val applied = when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
+        when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
             WorkingMode.SHIZUKU -> applyViaShizuku(resolved)
             WorkingMode.LADB -> applyViaDaemon(context, resolved)
             WorkingMode.ROOT -> applyViaRoot(context, resolved)
-        }
-        var appliedIndex = 0
-        resolved.map { rule ->
-            if (rule == null) false else applied[appliedIndex++]
         }
     }
 
@@ -67,20 +59,12 @@ object PerUidFirewall {
     }
 
     private suspend fun applyViaDaemon(context: Context, rules: List<UidRule?>): List<Boolean> {
+        val validRules = rules.filterNotNull()
+        if (validRules.isEmpty()) return rules.map { false }
         return try {
-            rules.map { rule ->
-                if (rule == null) {
-                    false
-                } else {
-                    val response = PersistentDaemonManager(context)
-                        .executeCommand("$DAEMON_COMMAND ${rule.uid} ${rule.rule}")
-                        .trim()
-                    if (!response.startsWith("OK")) {
-                        Log.w(TAG, "Daemon rejected per-uid rule ${rule.rule} for ${rule.uid}: $response")
-                    }
-                    response.startsWith("OK")
-                }
-            }
+            val response = PersistentDaemonManager(context)
+                .executeCommand("$DAEMON_BATCH_COMMAND ${encode(validRules)}")
+            spread(rules, validRules, parseBatchResponse(response, validRules, "Daemon"))
         } catch (t: Throwable) {
             Log.w(TAG, "Per-uid rules via daemon failed", t)
             rules.map { false }
@@ -97,23 +81,43 @@ object PerUidFirewall {
                     dex.outputStream().use { output -> input.copyTo(output) }
                 }
             }
-            val encodedRules = validRules.joinToString(",") { "${it.uid}:${it.rule}" }
             val response = RootUidFirewallSession.execute(
                 dex.absolutePath,
-                "fw-uid-rules $encodedRules"
+                "$DAEMON_BATCH_COMMAND ${encode(validRules)}"
             )
-            val responses = response?.split(';')?.filter { it.trim().startsWith("OK") }.orEmpty()
-            val validResults = validRules.mapIndexed { index, rule ->
-                responses.getOrNull(index)?.trim() == "OK ${rule.uid} ${rule.rule}"
-            }
-            if (validResults.any { !it }) {
-                Log.w(TAG, "Root rejected per-uid rules: ${response ?: "helper unavailable"}")
-            }
-            var validIndex = 0
-            rules.map { rule -> if (rule == null) false else validResults[validIndex++] }
+            spread(rules, validRules, parseBatchResponse(response, validRules, "Root"))
         } catch (t: Throwable) {
             Log.w(TAG, "Per-uid rules via root failed", t)
             rules.map { false }
+        }
+    }
+
+    private fun encode(rules: List<UidRule>): String =
+        rules.joinToString(",") { "${it.uid}:${it.rule}" }
+
+    private fun parseBatchResponse(
+        response: String?,
+        rules: List<UidRule>,
+        backend: String
+    ): List<Boolean> {
+        val entries = response?.trim()?.split(';').orEmpty()
+        val results = rules.mapIndexed { index, rule ->
+            entries.getOrNull(index)?.trim() == "OK ${rule.uid} ${rule.rule}"
+        }
+        if (results.any { !it }) {
+            Log.w(TAG, "$backend rejected per-uid rules: ${response ?: "helper unavailable"}")
+        }
+        return results
+    }
+
+    private fun spread(
+        rules: List<UidRule?>,
+        validRules: List<UidRule>,
+        validResults: List<Boolean>
+    ): List<Boolean> {
+        var validIndex = 0
+        return rules.map { rule ->
+            if (rule == null) false else validResults.getOrElse(validIndex++) { false }
         }
     }
 
