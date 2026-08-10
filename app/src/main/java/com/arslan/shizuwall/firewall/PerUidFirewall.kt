@@ -77,14 +77,25 @@ object PerUidFirewall {
         null
     }
 
+    suspend fun shizukuBatchReady(): Boolean = withContext(Dispatchers.IO) {
+        runCatching { Shizuku.pingBinder() && ShizukuUserServiceManager.obtain() != null }
+            .getOrDefault(false)
+    }
+
     private suspend fun applyViaShizuku(rules: List<UidRule>): List<RuleOutcome> {
         return try {
             if (!Shizuku.pingBinder()) return rules.map { RuleOutcome(false, "Shizuku is not running") }
             val service = ShizukuUserServiceManager.obtain()
                 ?: return rules.map { RuleOutcome(false, "Shizuku user service is unavailable") }
-            rules.map { rule ->
-                val error = service.setUidFirewallRule(CHAIN_OEM_DENY_3, rule.uid, rule.rule)
-                if (error.isNullOrBlank()) OK else RuleOutcome(false, error)
+            val uids = IntArray(rules.size) { rules[it].uid }
+            val values = IntArray(rules.size) { rules[it].rule }
+            val errors = service.setUidFirewallRules(CHAIN_OEM_DENY_3, uids, values)
+            rules.mapIndexed { index, _ ->
+                when {
+                    index >= errors.size -> RuleOutcome(false, NO_RESULT_ERROR)
+                    errors[index].isNullOrBlank() -> OK
+                    else -> RuleOutcome(false, errors[index])
+                }
             }
         } catch (t: Throwable) {
             Log.w(TAG, "Per-uid rules via Shizuku failed", t)
