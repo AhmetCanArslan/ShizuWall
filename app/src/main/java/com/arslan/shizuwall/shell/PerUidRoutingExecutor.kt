@@ -29,18 +29,18 @@ class PerUidRoutingExecutor(
 
         val requested = commands.map { parse(it.trim()) }
         val mirroring = mirroringClones()
-        val rootMode = isRootMode()
+        val uidBatchMode = usesBatchedUidRules()
         val activeSecondary = if (mirroring) emptySet() else activeSecondaryKeys().toSet()
 
         val effective = LinkedHashMap<String, Int>()
         requested.forEach { (key, rule) ->
-            derivedCloneRules(key, rule, mirroring, rootMode, activeSecondary)
+            derivedCloneRules(key, rule, mirroring, uidBatchMode, activeSecondary)
                 .forEach { (cloneKey, cloneRule) -> effective.putIfAbsent(cloneKey, cloneRule) }
         }
         requested.forEach { (key, rule) -> effective[key] = rule }
 
         val (shellRules, uidRules) = effective.toList()
-            .partition { !AppKey.isSecondary(it.first) && !rootMode }
+            .partition { !AppKey.isSecondary(it.first) && !uidBatchMode }
 
         val shellResults = if (shellRules.isEmpty()) {
             emptyList()
@@ -61,14 +61,14 @@ class PerUidRoutingExecutor(
         key: String,
         rule: Int,
         mirroring: Boolean,
-        rootMode: Boolean,
+        uidBatchMode: Boolean,
         activeSecondary: Set<String>
     ): List<Pair<String, Int>> {
         if (AppKey.isSecondary(key)) return emptyList()
         val clones = cloneKeysOf(AppKey.packageOf(key))
         if (clones.isEmpty()) return emptyList()
         if (mirroring) return clones.map { it to rule }
-        if (rootMode) return emptyList()
+        if (uidBatchMode) return emptyList()
         return if (rule == PerUidFirewall.RULE_DEFAULT) {
             clones.filter { it in activeSecondary }.map { it to PerUidFirewall.RULE_DENY }
         } else {
@@ -76,9 +76,12 @@ class PerUidRoutingExecutor(
         }
     }
 
-    private fun isRootMode(): Boolean {
+    private fun usesBatchedUidRules(): Boolean {
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        return WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null)) == WorkingMode.ROOT
+        return when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
+            WorkingMode.ROOT, WorkingMode.LADB -> true
+            WorkingMode.SHIZUKU -> false
+        }
     }
 
     private fun mirroringClones(): Boolean = !MultiUserApps.isEnabled(context)

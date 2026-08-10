@@ -2,6 +2,7 @@ package com.arslan.shizuwall.shizuku
 
 import android.os.IBinder
 import android.util.Log
+import com.arslan.shizuwall.shell.ShellResult
 import kotlin.system.exitProcess
 
 class ShizuWallUserService : IShizuWallUserService.Stub {
@@ -29,6 +30,9 @@ class ShizuWallUserService : IShizuWallUserService.Stub {
             true
         } catch (t: Throwable) {
             val cause = t.cause ?: t
+            if (cause.toString().lowercase().contains(ShellResult.UID_OWNER_MAP_MISSING)) {
+                return true
+            }
             Log.w(TAG, "setUidFirewallRule failed for uid $uid", cause)
             false
         }

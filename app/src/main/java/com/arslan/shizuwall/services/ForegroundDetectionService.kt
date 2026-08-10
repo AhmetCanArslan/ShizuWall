@@ -726,15 +726,28 @@ class ForegroundDetectionService : Service() {
         try {
             val executor = getShellExecutor()
             val remaining = blocked.toMutableSet()
-            for (pkg in stale) {
-                val result = execWithRetry(executor, "cmd connectivity set-package-networking-enabled true $pkg")
-                if (result.isEffectivelySuccess) {
-                    remaining.remove(pkg)
-                    Log.d(TAG, "Cleared stale blocked package: $pkg")
-                } else {
-                    val err = result.stderr.ifEmpty { result.stdout }
-                    Log.w(TAG, "Failed to clear stale blocked package $pkg: $err")
+            var pending = stale.toList()
+            repeat(2) { attempt ->
+                if (pending.isEmpty()) return@repeat
+                if (attempt > 0) delay(RETRY_DELAY_MS)
+                val results = executor.execBatch(
+                    pending.map { "cmd connectivity set-package-networking-enabled true $it" }
+                )
+                val failed = mutableListOf<String>()
+                pending.forEachIndexed { index, pkg ->
+                    val result = results[index]
+                    if (result.isEffectivelySuccess) {
+                        remaining.remove(pkg)
+                        Log.d(TAG, "Cleared stale blocked package: $pkg")
+                    } else {
+                        failed.add(pkg)
+                        if (attempt > 0) {
+                            val err = result.stderr.ifEmpty { result.stdout }
+                            Log.w(TAG, "Failed to clear stale blocked package $pkg: $err")
+                        }
+                    }
                 }
+                pending = failed
             }
             sharedPreferences.edit()
                 .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, remaining)

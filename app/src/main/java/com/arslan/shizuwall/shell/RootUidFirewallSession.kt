@@ -1,5 +1,6 @@
 package com.arslan.shizuwall.shell
 
+import android.util.Log
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
@@ -12,8 +13,9 @@ import kotlinx.coroutines.withContext
 
 object RootUidFirewallSession {
 
+    private const val TAG = "RootUidFirewall"
     private const val COMMAND_TIMEOUT_MS = 20_000L
-    private const val OPEN_TIMEOUT_MS = 5_000L
+    private const val OPEN_TIMEOUT_MS = 20_000L
     private const val SERVER_COMMAND = "fw-uid-server"
 
     private val lock = Mutex()
@@ -23,7 +25,7 @@ object RootUidFirewallSession {
 
     suspend fun execute(dexPath: String, command: String): String? = withContext(Dispatchers.IO) {
         lock.withLock {
-            val active = session?.takeIf { it.isAlive } ?: Session.open(dexPath)?.also { session = it }
+            val active = session?.takeIf { it.isAlive } ?: open(dexPath)?.also { session = it }
             if (active == null) return@withLock null
 
             val response = active.execute(command)
@@ -31,11 +33,16 @@ object RootUidFirewallSession {
 
             active.close()
             session = null
-            val replacement = Session.open(dexPath) ?: return@withLock null
+            val replacement = open(dexPath) ?: return@withLock null
             session = replacement
             replacement.execute(command)
         }
     }
+
+    private fun open(dexPath: String): Session? =
+        Session.open(dexPath) ?: Session.open(dexPath).also {
+            if (it == null) Log.w(TAG, "root uid helper did not report READY within ${OPEN_TIMEOUT_MS}ms")
+        }
 
     fun shutdown() {
         session?.close()

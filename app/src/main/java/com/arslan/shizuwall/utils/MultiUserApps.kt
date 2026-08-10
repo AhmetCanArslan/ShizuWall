@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -40,24 +42,28 @@ object MultiUserApps {
     @Volatile
     private var memoryCache: Snapshot? = null
 
-    @Volatile
-    private var lastScanAt = 0L
+    private val scanMutex = Mutex()
 
     suspend fun snapshot(context: Context): Snapshot {
-        val cached = readCache(context)
-        if (cached != null && System.currentTimeMillis() - lastScanAt < SCAN_TTL_MS) {
-            return cached
-        }
-        val scanned = scan(context)
-        return when {
-            scanned != null -> {
-                lastScanAt = System.currentTimeMillis()
-                writeCache(context, scanned)
-                scanned
+        freshCache(context)?.let { return it }
+        return scanMutex.withLock {
+            freshCache(context)?.let { return@withLock it }
+            val scanned = scan(context)
+            when {
+                scanned != null -> {
+                    writeCache(context, scanned)
+                    scanned
+                }
+                else -> readCache(context) ?: Snapshot.EMPTY
             }
-            cached != null -> cached
-            else -> Snapshot.EMPTY
         }
+    }
+
+    private fun freshCache(context: Context): Snapshot? {
+        val cached = readCache(context) ?: return null
+        val scannedAt = prefs(context).getLong(KEY_CACHE_AT, 0L)
+        val now = System.currentTimeMillis()
+        return cached.takeIf { scannedAt in (now - SCAN_TTL_MS)..now }
     }
 
     fun cachedUid(context: Context, key: String): Int? {
@@ -96,6 +102,7 @@ object MultiUserApps {
         }
         if (userNames.isEmpty()) return Snapshot(emptyList(), emptyMap())
 
+        val known = readCache(context)?.apps.orEmpty().groupBy { it.userId }
         val apps = mutableListOf<SecondaryApp>()
         for (userId in userNames.keys) {
 
@@ -103,10 +110,14 @@ object MultiUserApps {
                 executor.exec("pm list packages -3 -U --user $userId")
             } catch (t: Throwable) {
                 Log.w(TAG, "Could not list packages for user $userId", t)
+                known[userId]?.let { apps.addAll(it) }
                 continue
             }
 
-            if (!listResult.isEffectivelySuccess) continue
+            if (!listResult.isEffectivelySuccess) {
+                known[userId]?.let { apps.addAll(it) }
+                continue
+            }
 
             listResult.stdout.lineSequence().forEach { line ->
                 val match = PACKAGE_LINE.matchEntire(line.trim()) ?: return@forEach
@@ -122,6 +133,7 @@ object MultiUserApps {
     }
 
     private const val KEY_CACHE = "secondary_user_apps_cache"
+    private const val KEY_CACHE_AT = "secondary_user_apps_cache_at"
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
@@ -146,6 +158,7 @@ object MultiUserApps {
         memoryCache = snapshot
         prefs(context).edit()
             .putString(KEY_CACHE, root.toString())
+            .putLong(KEY_CACHE_AT, System.currentTimeMillis())
             .apply()
     }
 
@@ -176,7 +189,9 @@ object MultiUserApps {
 
     fun clearCache(context: Context) {
         memoryCache = null
-        lastScanAt = 0L
-        prefs(context).edit().remove(KEY_CACHE).apply()
+        prefs(context).edit()
+            .remove(KEY_CACHE)
+            .remove(KEY_CACHE_AT)
+            .apply()
     }
 }

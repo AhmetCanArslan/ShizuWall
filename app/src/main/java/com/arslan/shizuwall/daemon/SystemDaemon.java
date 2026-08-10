@@ -7,11 +7,13 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,6 +33,7 @@ public class SystemDaemon {
     private static final String FW_UID_RULES_COMMAND = "fw-uid-rules";
     private static final String FW_UID_SERVER_COMMAND = "fw-uid-server";
     private static final int FIREWALL_CHAIN_OEM_DENY_3 = 9;
+    private static final String UID_OWNER_MAP_MISSING = "suidownermap does not have entry for uid";
     
     // Blocked dangerous commands
     private static final Set<String> BLOCKED_PATTERNS = new HashSet<>(Arrays.asList(
@@ -269,47 +272,70 @@ public class SystemDaemon {
         }
     }
 
-    private static String setUidFirewallRule(int uid, int rule) {
-        try {
-            Object binder = Class.forName("android.os.ServiceManager")
-                    .getMethod("getService", String.class)
-                    .invoke(null, "connectivity");
-            if (binder == null) {
-                return "Error (code 1): connectivity service unavailable";
-            }
-            Object service = Class.forName("android.net.IConnectivityManager$Stub")
-                    .getMethod("asInterface", Class.forName("android.os.IBinder"))
-                    .invoke(null, binder);
-            if (service == null) {
-                return "Error (code 1): could not bind IConnectivityManager";
-            }
-            service.getClass()
-                    .getMethod("setUidFirewallRule", int.class, int.class, int.class)
-                    .invoke(service, FIREWALL_CHAIN_OEM_DENY_3, uid, rule);
-            return "OK " + uid + " " + rule;
-        } catch (Throwable t) {
-            Throwable cause = (t.getCause() != null) ? t.getCause() : t;
-            logE("setUidFirewallRule failed for uid " + uid, cause);
-            return "Error (code 1): " + cause;
+    private static Object connectivityService() throws Exception {
+        Object binder = Class.forName("android.os.ServiceManager")
+                .getMethod("getService", String.class)
+                .invoke(null, "connectivity");
+        if (binder == null) {
+            return null;
         }
+        return Class.forName("android.net.IConnectivityManager$Stub")
+                .getMethod("asInterface", Class.forName("android.os.IBinder"))
+                .invoke(null, binder);
     }
 
     private static String setUidFirewallRules(String encodedRules) {
+        Object service = null;
+        Method setter = null;
+        String setupError = null;
+        try {
+            service = connectivityService();
+            if (service == null) {
+                setupError = "Error (code 1): connectivity service unavailable";
+            } else {
+                setter = service.getClass()
+                        .getMethod("setUidFirewallRule", int.class, int.class, int.class);
+            }
+        } catch (Throwable t) {
+            Throwable cause = (t.getCause() != null) ? t.getCause() : t;
+            logE("could not bind IConnectivityManager", cause);
+            setupError = "Error (code 1): " + cause;
+        }
+
         StringBuilder result = new StringBuilder();
-        String[] rules = encodedRules.split(",");
-        for (String encodedRule : rules) {
+        for (String encodedRule : encodedRules.split(",")) {
             String response;
             String[] values = encodedRule.split(":");
-            if (values.length != 2) {
+            if (setupError != null) {
+                response = setupError;
+            } else if (values.length != 2) {
                 response = "Error (code 22): invalid uid rule";
             } else {
+                int uid = 0;
+                int rule = 0;
+                boolean parsed;
                 try {
-                    response = setUidFirewallRule(
-                            Integer.parseInt(values[0].trim()),
-                            Integer.parseInt(values[1].trim())
-                    );
+                    uid = Integer.parseInt(values[0].trim());
+                    rule = Integer.parseInt(values[1].trim());
+                    parsed = true;
                 } catch (NumberFormatException e) {
+                    parsed = false;
+                }
+                if (!parsed) {
                     response = "Error (code 22): uid and rule must be integers";
+                } else {
+                    try {
+                        setter.invoke(service, FIREWALL_CHAIN_OEM_DENY_3, uid, rule);
+                        response = "OK " + uid + " " + rule;
+                    } catch (Throwable t) {
+                        Throwable cause = (t.getCause() != null) ? t.getCause() : t;
+                        if (cause.toString().toLowerCase(Locale.ROOT).contains(UID_OWNER_MAP_MISSING)) {
+                            response = "OK " + uid + " " + rule;
+                        } else {
+                            logE("setUidFirewallRule failed for uid " + uid, cause);
+                            response = "Error (code 1): " + cause;
+                        }
+                    }
                 }
             }
             if (result.length() > 0) result.append(';');

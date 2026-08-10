@@ -2706,11 +2706,16 @@ class MainActivity : BaseActivity() {
         messageView.text = getString(R.string.operation_failed_message, failedApps.size)
 
         val list = failedApps.map { ai ->
-            val err = errorDetails[ai.packageName]
+            val err = errorDetails[ai.key]
                 ?: errorDetails["_chain3"]
                 ?: errorDetails["_daemon_log"]
                 ?: getString(R.string.no_error_details)
-            ErrorEntry(ai.appName, ai.packageName, err)
+            val name = if (ai.userId != 0) {
+                "${ai.appName} \u00b7 ${MultiUserApps.userLabel(this, ai.userId)}"
+            } else {
+                ai.appName
+            }
+            ErrorEntry(name, ai.packageName, err)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
