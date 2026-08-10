@@ -13,28 +13,30 @@ class ShizuWallUserService : IShizuWallUserService.Stub {
         exitProcess(0)
     }
 
-    override fun setUidFirewallRule(chain: Int, uid: Int, rule: Int): Boolean {
+    override fun setUidFirewallRule(chain: Int, uid: Int, rule: Int): String? {
         return try {
             val binder = Class.forName("android.os.ServiceManager")
                 .getMethod("getService", String::class.java)
-                .invoke(null, "connectivity") as? IBinder ?: return false
+                .invoke(null, "connectivity") as? IBinder
+                ?: return "connectivity service is unavailable"
             val service = Class.forName("android.net.IConnectivityManager\$Stub")
                 .getMethod("asInterface", IBinder::class.java)
-                .invoke(null, binder) ?: return false
+                .invoke(null, binder)
+                ?: return "IConnectivityManager is unavailable"
             service.javaClass.getMethod(
                 "setUidFirewallRule",
                 Int::class.javaPrimitiveType,
                 Int::class.javaPrimitiveType,
                 Int::class.javaPrimitiveType
             ).invoke(service, chain, uid, rule)
-            true
+            null
         } catch (t: Throwable) {
             val cause = t.cause ?: t
             if (cause.toString().lowercase().contains(ShellResult.UID_OWNER_MAP_MISSING)) {
-                return true
+                return null
             }
             Log.w(TAG, "setUidFirewallRule failed for uid $uid", cause)
-            false
+            cause.toString()
         }
     }
 

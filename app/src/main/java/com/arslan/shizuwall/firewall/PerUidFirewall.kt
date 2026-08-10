@@ -30,13 +30,21 @@ object PerUidFirewall {
     private const val DAEMON_STAMP_NAME = "daemon.dex.version"
     private const val PER_USER_RANGE = 100_000
 
-    suspend fun setRules(context: Context, rules: List<Pair<String, Int>>): List<Boolean> = withContext(Dispatchers.IO) {
+    const val UNRESOLVED_UID_ERROR = "unresolved-uid"
+    private const val NO_RESULT_ERROR = "helper returned no result"
+
+    data class RuleOutcome(val success: Boolean, val error: String)
+
+    private val OK = RuleOutcome(true, "")
+    private val UNRESOLVED = RuleOutcome(false, UNRESOLVED_UID_ERROR)
+
+    suspend fun setRules(context: Context, rules: List<Pair<String, Int>>): List<RuleOutcome> = withContext(Dispatchers.IO) {
         if (rules.isEmpty()) return@withContext emptyList()
         val resolved = rules.map { (key, rule) -> resolveUid(context, key)?.let { UidRule(it, rule) } }
 
         val lastRulePerUid = LinkedHashMap<Int, Int>()
         resolved.forEach { if (it != null) lastRulePerUid[it.uid] = it.rule }
-        if (lastRulePerUid.isEmpty()) return@withContext resolved.map { false }
+        if (lastRulePerUid.isEmpty()) return@withContext resolved.map { UNRESOLVED }
         val batch = lastRulePerUid.map { (uid, rule) -> UidRule(uid, rule) }
 
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
@@ -46,9 +54,14 @@ object PerUidFirewall {
             WorkingMode.ROOT -> applyViaRoot(context, batch)
         }
 
-        val resultPerUid = HashMap<Int, Boolean>(batch.size)
-        batch.forEachIndexed { index, rule -> resultPerUid[rule.uid] = applied.getOrElse(index) { false } }
-        resolved.map { it != null && resultPerUid[it.uid] == true }
+        val resultPerUid = HashMap<Int, RuleOutcome>(batch.size)
+        batch.forEachIndexed { index, rule ->
+            resultPerUid[rule.uid] = applied.getOrElse(index) { RuleOutcome(false, NO_RESULT_ERROR) }
+        }
+        resolved.map { rule ->
+            if (rule == null) UNRESOLVED
+            else resultPerUid[rule.uid] ?: RuleOutcome(false, NO_RESULT_ERROR)
+        }
     }
 
     private fun resolveUid(context: Context, key: String): Int? {
@@ -64,36 +77,42 @@ object PerUidFirewall {
         null
     }
 
-    private suspend fun applyViaShizuku(rules: List<UidRule>): List<Boolean> {
+    private suspend fun applyViaShizuku(rules: List<UidRule>): List<RuleOutcome> {
         return try {
-            if (!Shizuku.pingBinder()) return rules.map { false }
-            val service = ShizukuUserServiceManager.obtain() ?: return rules.map { false }
-            rules.map { service.setUidFirewallRule(CHAIN_OEM_DENY_3, it.uid, it.rule) }
+            if (!Shizuku.pingBinder()) return rules.map { RuleOutcome(false, "Shizuku is not running") }
+            val service = ShizukuUserServiceManager.obtain()
+                ?: return rules.map { RuleOutcome(false, "Shizuku user service is unavailable") }
+            rules.map { rule ->
+                val error = service.setUidFirewallRule(CHAIN_OEM_DENY_3, rule.uid, rule.rule)
+                if (error.isNullOrBlank()) OK else RuleOutcome(false, error)
+            }
         } catch (t: Throwable) {
             Log.w(TAG, "Per-uid rules via Shizuku failed", t)
-            rules.map { false }
+            rules.map { RuleOutcome(false, failureText(t)) }
         }
     }
 
-    private suspend fun applyViaDaemon(context: Context, rules: List<UidRule>): List<Boolean> {
+    private suspend fun applyViaDaemon(context: Context, rules: List<UidRule>): List<RuleOutcome> {
         return try {
             val manager = PersistentDaemonManager(context)
             applyBatched(rules, "Daemon") { manager.executeCommand(it) }
         } catch (t: Throwable) {
             Log.w(TAG, "Per-uid rules via daemon failed", t)
-            rules.map { false }
+            rules.map { RuleOutcome(false, failureText(t)) }
         }
     }
 
-    private suspend fun applyViaRoot(context: Context, rules: List<UidRule>): List<Boolean> {
+    private suspend fun applyViaRoot(context: Context, rules: List<UidRule>): List<RuleOutcome> {
         return try {
             val dex = extractHelperDex(context)
             applyBatched(rules, "Root") { RootUidFirewallSession.execute(dex.absolutePath, it) }
         } catch (t: Throwable) {
             Log.w(TAG, "Per-uid rules via root failed", t)
-            rules.map { false }
+            rules.map { RuleOutcome(false, failureText(t)) }
         }
     }
+
+    private fun failureText(t: Throwable): String = t.message?.takeIf { it.isNotBlank() } ?: t.toString()
 
     private fun extractHelperDex(context: Context): File {
         val dex = File(context.filesDir, DAEMON_DEX_NAME)
@@ -114,8 +133,8 @@ object PerUidFirewall {
         rules: List<UidRule>,
         backend: String,
         send: suspend (String) -> String?
-    ): List<Boolean> {
-        val results = ArrayList<Boolean>(rules.size)
+    ): List<RuleOutcome> {
+        val results = ArrayList<RuleOutcome>(rules.size)
         for (chunk in chunkRules(rules)) {
             val response = send("$DAEMON_BATCH_COMMAND ${encode(chunk)}")
             results += parseBatchResponse(response, chunk, backend)
@@ -152,12 +171,17 @@ object PerUidFirewall {
         response: String?,
         rules: List<UidRule>,
         backend: String
-    ): List<Boolean> {
+    ): List<RuleOutcome> {
         val entries = response?.trim()?.split(';').orEmpty()
         val results = rules.mapIndexed { index, rule ->
-            entries.getOrNull(index)?.trim() == "OK ${rule.uid} ${rule.rule}"
+            val entry = entries.getOrNull(index)?.trim()
+            when {
+                entry == "OK ${rule.uid} ${rule.rule}" -> OK
+                entry.isNullOrEmpty() -> RuleOutcome(false, "$backend helper returned no result")
+                else -> RuleOutcome(false, entry)
+            }
         }
-        if (results.any { !it }) {
+        if (results.any { !it.success }) {
             Log.w(TAG, "$backend rejected per-uid rules: ${response ?: "helper unavailable"}")
         }
         return results

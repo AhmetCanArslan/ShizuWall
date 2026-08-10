@@ -18,6 +18,9 @@ object ShizukuUserServiceManager {
     private const val TAG = "ShizukuUserService"
     private const val BIND_TIMEOUT_MS = 10_000L
 
+    private const val SERVICE_REVISION = 1
+    private val SERVICE_VERSION = BuildConfig.VERSION_CODE * 100 + SERVICE_REVISION
+
     private val lock = Mutex()
 
     @Volatile
@@ -33,7 +36,7 @@ object ShizukuUserServiceManager {
             .daemon(true)
             .processNameSuffix("uidfw")
             .debuggable(BuildConfig.DEBUG)
-            .version(BuildConfig.VERSION_CODE)
+            .version(SERVICE_VERSION)
     }
 
     suspend fun obtain(): IShizuWallUserService? {

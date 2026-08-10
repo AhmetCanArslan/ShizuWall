@@ -39,7 +39,10 @@ class PerUidRoutingExecutor(
         }
         requested.forEach { (key, rule) -> effective[key] = rule }
 
+        val coveredByParent = clonesCoveredByParent(effective, uidBatchMode)
+
         val (shellRules, uidRules) = effective.toList()
+            .filterNot { it.first in coveredByParent }
             .partition { !AppKey.isSecondary(it.first) && !uidBatchMode }
 
         val shellResults = if (shellRules.isEmpty()) {
@@ -52,9 +55,26 @@ class PerUidRoutingExecutor(
         val resultsByKey = HashMap<String, ShellResult>(effective.size)
         shellRules.forEachIndexed { index, (key, _) -> resultsByKey[key] = shellResults[index] }
         uidRules.forEachIndexed { index, (key, _) ->
-            resultsByKey[key] = if (uidResults[index]) PER_UID_SUCCESS else unresolved(key)
+            resultsByKey[key] = resultFor(key, uidResults[index])
+        }
+        coveredByParent.forEach { (cloneKey, parentKey) ->
+            resultsByKey[cloneKey] = resultsByKey.getValue(parentKey)
         }
         return requested.map { resultsByKey.getValue(it.first) }
+    }
+
+    private fun clonesCoveredByParent(
+        effective: Map<String, Int>,
+        uidBatchMode: Boolean
+    ): Map<String, String> {
+        if (uidBatchMode) return emptyMap()
+        val covered = LinkedHashMap<String, String>()
+        for ((key, rule) in effective) {
+            if (!AppKey.isSecondary(key)) continue
+            val parentKey = AppKey.packageOf(key)
+            if (effective[parentKey] == rule) covered[key] = parentKey
+        }
+        return covered
     }
 
     private fun derivedCloneRules(
@@ -106,6 +126,12 @@ class PerUidRoutingExecutor(
     private fun activeSecondaryKeys(): List<String> {
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         return FirewallUtils.loadActivePackages(prefs).filter { AppKey.isSecondary(it) }
+    }
+
+    private fun resultFor(key: String, outcome: PerUidFirewall.RuleOutcome): ShellResult = when {
+        outcome.success -> PER_UID_SUCCESS
+        outcome.error == PerUidFirewall.UNRESOLVED_UID_ERROR -> unresolved(key)
+        else -> ShellResult(exitCode = 1, stdout = "", stderr = outcome.error)
     }
 
     private fun unresolved(key: String) = ShellResult(
