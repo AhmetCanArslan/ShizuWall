@@ -444,6 +444,8 @@ class MainActivity : BaseActivity() {
                             suppressToggleListener = false
                         }
 
+                        syncSelectionFromState(state)
+
                         appListAdapter.setSelectionEnabled(!state.enabled || firewallMode.allowsDynamicSelection())
                         applyListInteractionState()
 
@@ -1660,6 +1662,42 @@ class MainActivity : BaseActivity() {
         dialog.show()
     }
 
+    private fun syncSelectionFromState(state: com.arslan.shizuwall.repo.FirewallState) {
+        if (isFirewallProcessRunning) return
+
+        val stateMode = FirewallMode.fromName(state.firewallMode)
+        var structureChanged = false
+
+        if (firewallMode != stateMode) {
+            firewallMode = stateMode
+            appListAdapter.setHybridModeEnabled(stateMode == FirewallMode.HYBRID)
+            structureChanged = true
+        }
+        if (showSystemApps != state.showSystemApps) {
+            showSystemApps = state.showSystemApps
+            structureChanged = true
+        }
+
+        val modes = try { JSONObject(state.appModesJson) } catch (e: Exception) { JSONObject() }
+        var selectionChanged = false
+        for (i in appList.indices) {
+            val info = appList[i]
+            val selected = state.selectedApps.contains(info.key)
+            val mode = modes.optInt(info.key, 0)
+            if (info.isSelected != selected || info.appFirewallMode != mode) {
+                appList[i] = info.copy(isSelected = selected, appFirewallMode = mode)
+                selectionChanged = true
+            }
+        }
+
+        if (!selectionChanged && !structureChanged) return
+
+        updateProfileButtonIcon()
+        profilesBottomSheet?.notifyActivated(state.activeProfileId)
+        updateCategoryChips()
+        sortAndFilterApps(preserveScrollPosition = true)
+    }
+
     private fun updateSelectedCount() {
         val count = appList.count { it.isSelected }
         selectedCountText.text = count.toString()
@@ -2780,8 +2818,8 @@ class MainActivity : BaseActivity() {
         val appModes = try { JSONObject(profile.appModesJson) } catch (e: Exception) { JSONObject() }
         for (i in appList.indices) {
             val info = appList[i]
-            val selected = profile.packages.contains(info.packageName)
-            val mode = appModes.optInt(info.packageName, 0)
+            val selected = profile.packages.contains(info.key)
+            val mode = appModes.optInt(info.key, 0)
             if (info.isSelected != selected || info.appFirewallMode != mode) {
                 appList[i] = info.copy(isSelected = selected, appFirewallMode = mode)
             }

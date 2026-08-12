@@ -246,7 +246,7 @@ class ProfilesBottomSheet(
 
     private fun showAutomationDialog(profile: Profile) {
         val action = MainActivity.ACTION_PROFILE_CONTROL
-        val component = "com.arslan.shizuwall/.receivers.ProfileControlReceiver"
+        val component = "${context.packageName}/${com.arslan.shizuwall.receivers.ProfileControlReceiver::class.java.name}"
         val extra = "${MainActivity.EXTRA_PROFILE_NAME}=${profile.name}"
         val adbCmd = "adb shell am broadcast -a $action -n $component " +
             "--es ${MainActivity.EXTRA_PROFILE_NAME} \"${profile.name}\""

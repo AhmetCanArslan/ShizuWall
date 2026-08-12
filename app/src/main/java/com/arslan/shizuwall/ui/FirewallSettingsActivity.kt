@@ -375,7 +375,7 @@ class FirewallSettingsActivity : BaseActivity() {
         val action = MainActivity.ACTION_FIREWALL_CONTROL
         val extraEnabled = MainActivity.EXTRA_FIREWALL_ENABLED
         val extraCsv = MainActivity.EXTRA_PACKAGES_CSV
-        val component = "$pkg/.receivers.FirewallControlReceiver"
+        val component = "$pkg/${com.arslan.shizuwall.receivers.FirewallControlReceiver::class.java.name}"
 
         val cmdEnableSelected = "adb shell am broadcast -a $action -n $component --ez $extraEnabled true"
         val cmdDisableSelected = "adb shell am broadcast -a $action -n $component --ez $extraEnabled false"
