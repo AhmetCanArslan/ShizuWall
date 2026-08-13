@@ -1,0 +1,10 @@
+New "Remember deleted apps" option: keeps the block state of removed or disabled apps and restores it when they come back #133
+Much faster profile switches and firewall toggles in Root and LADB modes: rules are sent as one batched call #131
+Shizuku mode now uses a dedicated user service instead of an in-process hidden API bypass
+Root mode keeps a persistent shell session instead of spawning su per command
+Multi-user app scans are cached, so startup no longer rescans every launch
+Floating button snaps to the screen edge by default #129
+Italian and Hindi translations
+Debug builds install side by side with the release build
+Rule failures now report the real per-rule error
+Fixed control broadcasts not reaching debug builds
