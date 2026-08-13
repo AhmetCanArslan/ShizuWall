@@ -124,6 +124,7 @@ class MainActivity : BaseActivity() {
         const val KEY_ACTIVE_PROFILE_ID = "active_profile_id"
         const val KEY_AUTO_ENABLE_ON_PROFILE_ACTIVATE = "auto_enable_on_profile_activate"
         const val KEY_TILE_COLLAPSE_SHADE = "tile_collapse_shade"
+        const val KEY_REMEMBER_DISABLED_APPS = "remember_disabled_apps"
         private const val KEY_APPS_CACHE_JSON = "apps_cache_json_v1"
 
         const val ACTION_PROFILE_CONTROL = "shizuwall.PROFILE"
@@ -1729,7 +1730,15 @@ class MainActivity : BaseActivity() {
 
             val result = withContext(Dispatchers.IO) {
                 val pm = packageManager
-                val packages = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+                val rememberDisabled = sharedPreferences.getBoolean(KEY_REMEMBER_DISABLED_APPS, true)
+                val queryFlags = if (rememberDisabled) {
+                    PackageManager.GET_PERMISSIONS or
+                        PackageManager.MATCH_DISABLED_COMPONENTS or
+                        PackageManager.MATCH_DISABLED_UNTIL_USED_COMPONENTS
+                } else {
+                    PackageManager.GET_PERMISSIONS
+                }
+                val packages = pm.getInstalledPackages(queryFlags)
 
                 val scannedSecondary = MultiUserApps.snapshot(this@MainActivity)
                 val secondarySnapshot = if (MultiUserApps.isEnabled(this@MainActivity)) {
@@ -1757,7 +1766,7 @@ class MainActivity : BaseActivity() {
                 }
 
                 val savedSelected = loadSelectedApps().toMutableSet()
-                val selectedToRemove = savedSelected.filterNot(isKnown)
+                val selectedToRemove = if (rememberDisabled) emptyList() else savedSelected.filterNot(isKnown)
                 // Remove this app itself from saved selected apps if present
                 val selfPkg = this@MainActivity.packageName
                 var selectedChanged = false
@@ -2095,6 +2104,13 @@ class MainActivity : BaseActivity() {
 
     private fun applyFirewallState(enable: Boolean, packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()) {
         if (enable && packageNames.isEmpty() && !firewallMode.allowsDynamicSelection()) return
+
+        @Suppress("NAME_SHADOWING")
+        val packageNames = if (sharedPreferences.getBoolean(KEY_REMEMBER_DISABLED_APPS, true)) {
+            packageNames.filter { isPackageInstalledIncludingDisabled(AppKey.packageOf(it)) }
+        } else {
+            packageNames
+        }
 
         val effectivePackageNames = if (enable) {
             if (firewallMode == FirewallMode.SCREEN_LOCK_MODE && !ScreenLockModeReceiver.isDeviceLocked(this)) {
@@ -2463,17 +2479,21 @@ class MainActivity : BaseActivity() {
                 // update filtered list and UI
                 filteredAppList.removeAll { it.userId == 0 && it.packageName == pkg }
 
-                // Remove from active firewall set and persist
-                activeFirewallPackages.remove(pkg)
-                saveActivePackages(activeFirewallPackages)
+                val keepSelection = sharedPreferences.getBoolean(KEY_REMEMBER_DISABLED_APPS, true)
 
-                // Remove from selected set and persist
-                val currentSelected = sharedPreferences.getStringSet(KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
-                if (currentSelected.remove(pkg)) {
-                    sharedPreferences.edit().apply {
-                        putStringSet(KEY_SELECTED_APPS, currentSelected)
-                        putInt(KEY_SELECTED_COUNT, currentSelected.size)
-                        apply()
+                if (!isPackageInstalledIncludingDisabled(pkg)) {
+                    activeFirewallPackages.remove(pkg)
+                    saveActivePackages(activeFirewallPackages)
+                }
+
+                if (!keepSelection) {
+                    val currentSelected = sharedPreferences.getStringSet(KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
+                    if (currentSelected.remove(pkg)) {
+                        sharedPreferences.edit().apply {
+                            putStringSet(KEY_SELECTED_APPS, currentSelected)
+                            putInt(KEY_SELECTED_COUNT, currentSelected.size)
+                            apply()
+                        }
                     }
                 }
 
@@ -2481,6 +2501,16 @@ class MainActivity : BaseActivity() {
                 sortAndFilterApps(preserveScrollPosition = false)
             }
         }
+    }
+
+    private fun isPackageInstalledIncludingDisabled(pkg: String): Boolean = try {
+        packageManager.getApplicationInfo(
+            pkg,
+            PackageManager.MATCH_DISABLED_COMPONENTS or PackageManager.MATCH_DISABLED_UNTIL_USED_COMPONENTS
+        )
+        true
+    } catch (e: Exception) {
+        false
     }
 
     // Called by packageBroadcastReceiver when a package is added/updated.

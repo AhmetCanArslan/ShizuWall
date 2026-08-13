@@ -484,4 +484,6 @@
     <string name="ladb_share_command">Compartir comando</string>
     <string name="ladb_adb_method_steps">1. Activa la depuración USB en Opciones de desarrollador\n2. Conecta el teléfono al ordenador y acepta el aviso\n3. Pega el comando en una terminal\n\nEjecútalo de nuevo tras cada reinicio.</string>
     <string name="ladb_command_prepare_failed">No se pudo preparar el comando ADB: %1$s</string>
+    <string name="remember_deleted_apps">Recordar apps eliminadas</string>
+    <string name="remember_deleted_apps_description">Conservar el estado de bloqueo de las apps eliminadas o desactivadas y restaurarlo cuando vuelvan</string>
 </resources>

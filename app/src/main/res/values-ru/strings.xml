@@ -485,4 +485,6 @@
     <string name="ladb_share_command">Поделиться командой</string>
     <string name="ladb_adb_method_steps">1. Включите отладку по USB в параметрах разработчика\n2. Подключите телефон к компьютеру и подтвердите запрос\n3. Вставьте команду в терминал\n\nПовторяйте после каждой перезагрузки.</string>
     <string name="ladb_command_prepare_failed">Не удалось подготовить команду ADB: %1$s</string>
+    <string name="remember_deleted_apps">Запоминать удалённые приложения</string>
+    <string name="remember_deleted_apps_description">Сохранять состояние блокировки удалённых или отключённых приложений и восстанавливать его при возврате</string>
 </resources>

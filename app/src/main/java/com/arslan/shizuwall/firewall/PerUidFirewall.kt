@@ -72,7 +72,11 @@ object PerUidFirewall {
     }
 
     private fun appIdOf(context: Context, packageName: String): Int? = try {
-        context.packageManager.getApplicationInfo(packageName, 0).uid
+        context.packageManager.getApplicationInfo(
+            packageName,
+            android.content.pm.PackageManager.MATCH_DISABLED_COMPONENTS or
+                android.content.pm.PackageManager.MATCH_DISABLED_UNTIL_USED_COMPONENTS
+        ).uid
     } catch (_: Exception) {
         null
     }

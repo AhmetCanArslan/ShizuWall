@@ -486,4 +486,6 @@
     <string name="ladb_share_command">Share command</string>
     <string name="ladb_adb_method_steps">1. Enable USB debugging in Developer options\n2. Connect the phone to a computer and allow the prompt\n3. Paste the command into a terminal\n\nRun it again after every reboot.</string>
     <string name="ladb_command_prepare_failed">Could not prepare the ADB command: %1$s</string>
+    <string name="remember_deleted_apps">Remember deleted apps</string>
+    <string name="remember_deleted_apps_description">Keep the block state of removed or disabled apps and restore it when they come back</string>
 </resources>

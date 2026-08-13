@@ -34,6 +34,7 @@ class FirewallSettingsActivity : BaseActivity() {
     private lateinit var switchSkipErrorDialog: androidx.appcompat.widget.SwitchCompat
     private lateinit var cardKeepErrorApps: com.google.android.material.card.MaterialCardView
     private lateinit var switchKeepErrorAppsSelected: androidx.appcompat.widget.SwitchCompat
+    private lateinit var switchRememberDeletedApps: androidx.appcompat.widget.SwitchCompat
     private lateinit var cardSkipConfirm: com.google.android.material.card.MaterialCardView
     private var suppressFirewallModeListener = false
 
@@ -97,6 +98,7 @@ class FirewallSettingsActivity : BaseActivity() {
         switchSkipErrorDialog = findViewById(R.id.switchSkipErrorDialog)
         cardKeepErrorApps = findViewById(R.id.cardKeepErrorApps)
         switchKeepErrorAppsSelected = findViewById(R.id.switchKeepErrorAppsSelected)
+        switchRememberDeletedApps = findViewById(R.id.switchRememberDeletedApps)
         layoutAdbBroadcastUsage = findViewById(R.id.layoutAdbBroadcastUsage)
 
         radioGroupFirewallMode = findViewById(R.id.radioGroupFirewallMode)
@@ -144,6 +146,7 @@ class FirewallSettingsActivity : BaseActivity() {
         switchSkipConfirm.isChecked = sharedPreferences.getBoolean("skip_enable_confirm", false)
         switchSkipErrorDialog.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, false)
         switchKeepErrorAppsSelected.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false)
+        switchRememberDeletedApps.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_REMEMBER_DISABLED_APPS, true)
         cardKeepErrorApps.visibility = if (switchSkipErrorDialog.isChecked) View.VISIBLE else View.GONE
 
         migrateAdaptiveModeToFirewallMode(sharedPreferences)
@@ -279,6 +282,10 @@ class FirewallSettingsActivity : BaseActivity() {
             }
         }
 
+        switchRememberDeletedApps.setOnCheckedChangeListener { _, isChecked ->
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_REMEMBER_DISABLED_APPS, isChecked).apply()
+        }
+
         switchKeepErrorAppsSelected.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit().putBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, isChecked).apply()
         }
@@ -289,6 +296,7 @@ class FirewallSettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchSkipConfirm)
         makeCardClickableForSwitch(switchSkipErrorDialog)
         makeCardClickableForSwitch(switchKeepErrorAppsSelected)
+        makeCardClickableForSwitch(switchRememberDeletedApps)
     }
 
     private fun makeCardClickableForSwitch(switch: androidx.appcompat.widget.SwitchCompat) {

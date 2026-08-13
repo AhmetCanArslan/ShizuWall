@@ -489,4 +489,6 @@
     <string name="ladb_share_command">مشاركة الأمر</string>
     <string name="ladb_adb_method_steps">1. فعّل تصحيح USB من خيارات المطور\n2. وصّل الهاتف بالحاسوب ووافق على الطلب\n3. الصق الأمر في الطرفية\n\nأعد تنفيذه بعد كل إعادة تشغيل.</string>
     <string name="ladb_command_prepare_failed">تعذر تحضير أمر ADB: %1$s</string>
+    <string name="remember_deleted_apps">تذكّر التطبيقات المحذوفة</string>
+    <string name="remember_deleted_apps_description">احتفظ بحالة الحظر للتطبيقات المحذوفة أو المعطّلة واستعدها عند عودتها</string>
 </resources>

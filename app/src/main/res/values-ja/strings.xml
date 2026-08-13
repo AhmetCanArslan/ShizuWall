@@ -483,4 +483,6 @@
     <string name="ladb_share_command">コマンドを共有</string>
     <string name="ladb_adb_method_steps">1. 開発者オプションで USB デバッグを有効にする\n2. PC に接続して許可ダイアログを承認する\n3. ターミナルにコマンドを貼り付ける\n\n再起動のたびに実行してください。</string>
     <string name="ladb_command_prepare_failed">ADB コマンドを準備できませんでした: %1$s</string>
+    <string name="remember_deleted_apps">削除したアプリを記憶</string>
+    <string name="remember_deleted_apps_description">削除・無効化したアプリのブロック状態を保持し、復帰時に復元します</string>
 </resources>

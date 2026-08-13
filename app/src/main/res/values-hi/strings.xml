@@ -486,4 +486,6 @@
     <string name="ladb_share_command">कमांड साझा करें</string>
     <string name="ladb_adb_method_steps">1. डेवलपर विकल्पों में USB डिबगिंग चालू करें\n2. फ़ोन को कंप्यूटर से जोड़ें और संकेत स्वीकार करें\n3. कमांड को टर्मिनल में पेस्ट करें\n\nहर रीबूट के बाद फिर से चलाएँ।</string>
     <string name="ladb_command_prepare_failed">ADB कमांड तैयार नहीं हो सका: %1$s</string>
+    <string name="remember_deleted_apps">हटाए गए ऐप्स याद रखें</string>
+    <string name="remember_deleted_apps_description">हटाए या अक्षम किए गए ऐप्स की ब्लॉक स्थिति सहेजें और लौटने पर बहाल करें</string>
 </resources>

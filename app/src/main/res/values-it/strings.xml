@@ -486,4 +486,6 @@
     <string name="ladb_share_command">Condividi comando</string>
     <string name="ladb_adb_method_steps">1. Attiva il debug USB nelle Opzioni sviluppatore\n2. Collega il telefono al computer e accetta la richiesta\n3. Incolla il comando in un terminale\n\nRipetilo dopo ogni riavvio.</string>
     <string name="ladb_command_prepare_failed">Impossibile preparare il comando ADB: %1$s</string>
+    <string name="remember_deleted_apps">Ricorda app eliminate</string>
+    <string name="remember_deleted_apps_description">Mantieni lo stato di blocco delle app rimosse o disattivate e ripristinalo al loro ritorno</string>
 </resources>
