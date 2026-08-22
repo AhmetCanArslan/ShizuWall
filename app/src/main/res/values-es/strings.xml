@@ -453,7 +453,7 @@
     <string name="tracker_db_description">%1$d firmas de rastreadores, incluidas en la app. La detección funciona totalmente sin conexión.</string>
     <string name="tracker_data_attribution">Datos de rastreadores: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Mostrar apps de otros perfiles</string>
-    <string name="show_other_profiles_description">Perfil de trabajo, espacio privado, Secure Folder y apps clonadas. Si está desactivado, bloquear una app también bloquea todas sus copias; márcalo para controlar cada copia por separado.</string>
+    <string name="show_other_profiles_description">Perfil de trabajo, espacio privado, Secure Folder y apps clonadas. Si está desactivado, bloquear una app también bloquea todas sus copias; márcalo para controlar cada copia por separado. Requiere un servicio backend en ejecución (Root, Shizuku o LADB) con los permisos concedidos.</string>
     <string name="show_other_profiles_uncheck_confirm">Cualquier app seleccionada de otro perfil se deseleccionará y volverá a su estado predeterminado. A partir de ahora, bloquear una app también bloqueará todas sus copias en otros perfiles. ¿Quieres desmarcarlo?</string>
 
     <string name="app_info_button_title">Botón de información de la aplicación</string>

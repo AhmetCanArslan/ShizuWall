@@ -455,7 +455,7 @@
     <string name="tracker_db_description">%1$d ट्रैकर सिग्नेचर, ऐप के साथ शामिल। पहचान पूरी तरह ऑफ़लाइन होती है।</string>
     <string name="tracker_data_attribution">ट्रैकर डेटा: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">अन्य प्रोफ़ाइलों के ऐप्स दिखाएँ</string>
-    <string name="show_other_profiles_description">वर्क प्रोफ़ाइल, प्राइवेट स्पेस, Secure Folder और क्लोन किए गए ऐप्स। बंद होने पर किसी ऐप को ब्लॉक करने से उसकी सभी प्रतियाँ भी ब्लॉक होती हैं; हर प्रति को अलग-अलग नियंत्रित करने के लिए इसे चालू करें।</string>
+    <string name="show_other_profiles_description">वर्क प्रोफ़ाइल, प्राइवेट स्पेस, Secure Folder और क्लोन किए गए ऐप्स। बंद होने पर किसी ऐप को ब्लॉक करने से उसकी सभी प्रतियाँ भी ब्लॉक होती हैं; हर प्रति को अलग-अलग नियंत्रित करने के लिए इसे चालू करें। चालू बैकएंड सेवा (Root, Shizuku या LADB) और दी गई अनुमतियाँ आवश्यक हैं।</string>
     <string name="show_other_profiles_uncheck_confirm">किसी अन्य प्रोफ़ाइल का कोई भी चयनित ऐप अचयनित होकर अपनी डिफ़ॉल्ट स्थिति में लौट आएगा। अब से किसी ऐप को ब्लॉक करने पर अन्य प्रोफ़ाइलों में उसकी हर प्रति भी ब्लॉक होगी। क्या आप इसे बंद करना चाहते हैं?</string>
 
     <string name="app_info_button_title">ऐप जानकारी बटन</string>

@@ -456,7 +456,7 @@
     <string name="tracker_db_description">%1$d podpisů sledovačů, součást aplikace. Detekce běží zcela offline.</string>
     <string name="tracker_data_attribution">Data o sledovačích: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Zobrazit aplikace z jiných profilů</string>
-    <string name="show_other_profiles_description">Pracovní profil, soukromý prostor, Secure Folder a klonované aplikace. Když je vypnuto, zablokování aplikace zablokuje i všechny její kopie; zaškrtnutím budete každou kopii ovládat zvlášť.</string>
+    <string name="show_other_profiles_description">Pracovní profil, soukromý prostor, Secure Folder a klonované aplikace. Když je vypnuto, zablokování aplikace zablokuje i všechny její kopie; zaškrtnutím budete každou kopii ovládat zvlášť. Vyžaduje běžící backendovou službu (Root, Shizuku nebo LADB) s udělenými oprávněními.</string>
     <string name="show_other_profiles_uncheck_confirm">Všechny vybrané aplikace z jiných profilů budou odznačeny a vráceny do výchozího stavu. Od této chvíle zablokování aplikace zablokuje i všechny její kopie v jiných profilech. Chcete zrušit zaškrtnutí?</string>
 
     <string name="app_info_button_title">Tlačítko informací o aplikaci</string>

@@ -455,7 +455,7 @@
     <string name="tracker_db_description">%1$d firme di tracker, incluse nell\'app. Il rilevamento avviene completamente offline.</string>
     <string name="tracker_data_attribution">Dati sui tracker: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Mostra le app di altri profili</string>
-    <string name="show_other_profiles_description">Profilo di lavoro, spazio privato, Secure Folder e app clonate. Se disattivato, bloccare un\'app blocca anche tutte le sue copie; attivalo per controllare ogni copia separatamente.</string>
+    <string name="show_other_profiles_description">Profilo di lavoro, spazio privato, Secure Folder e app clonate. Se disattivato, bloccare un\'app blocca anche tutte le sue copie; attivalo per controllare ogni copia separatamente. Richiede un servizio backend in esecuzione (Root, Shizuku o LADB) con i permessi concessi.</string>
     <string name="show_other_profiles_uncheck_confirm">Ogni app selezionata di un altro profilo verrà deselezionata e riportata allo stato predefinito. D\'ora in poi, bloccare un\'app bloccherà anche ogni sua copia negli altri profili. Vuoi disattivare questa opzione?</string>
 
     <string name="app_info_button_title">Pulsante info app</string>

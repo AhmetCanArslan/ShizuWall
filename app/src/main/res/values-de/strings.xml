@@ -449,7 +449,7 @@
     <string name="tracker_db_description">%1$d Tracker-Signaturen, in der App enthalten. Die Erkennung läuft vollständig offline.</string>
     <string name="tracker_data_attribution">Tracker-Daten: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Apps in anderen Profilen anzeigen</string>
-    <string name="show_other_profiles_description">Arbeitsprofil, privater Bereich, Secure Folder und geklonte Apps. Wenn deaktiviert, blockiert das Sperren einer App auch alle ihre Kopien; aktivieren Sie dies, um jede Kopie einzeln zu steuern.</string>
+    <string name="show_other_profiles_description">Arbeitsprofil, privater Bereich, Secure Folder und geklonte Apps. Wenn deaktiviert, blockiert das Sperren einer App auch alle ihre Kopien; aktivieren Sie dies, um jede Kopie einzeln zu steuern. Erfordert einen laufenden Backend-Dienst (Root, Shizuku oder LADB) mit erteilten Berechtigungen.</string>
     <string name="show_other_profiles_uncheck_confirm">Alle ausgewählten Apps aus anderen Profilen werden abgewählt und auf ihren Standardzustand zurückgesetzt. Ab jetzt blockiert das Sperren einer App auch jede ihrer Kopien in anderen Profilen. Möchten Sie das Häkchen entfernen?</string>
 
     <string name="app_info_button_title">Info-Schaltfläche der App</string>

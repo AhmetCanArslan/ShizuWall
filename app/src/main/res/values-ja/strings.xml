@@ -452,7 +452,7 @@
     <string name="tracker_db_description">%1$d 件のトラッカー署名がアプリに同梱されています。検出は完全にオフラインで動作します。</string>
     <string name="tracker_data_attribution">トラッカーデータ: Exodus Privacy、ODbL 1.0</string>
     <string name="show_other_profiles">他のプロファイルのアプリを表示</string>
-    <string name="show_other_profiles_description">仕事用プロファイル、プライベートスペース、Secure Folder、クローンアプリ。オフの場合、アプリをブロックするとそのすべてのコピーもブロックされます。コピーごとに個別に管理するにはオンにしてください。</string>
+    <string name="show_other_profiles_description">仕事用プロファイル、プライベートスペース、Secure Folder、クローンアプリ。オフの場合、アプリをブロックするとそのすべてのコピーもブロックされます。コピーごとに個別に管理するにはオンにしてください。 実行中のバックエンドサービス（Root、Shizuku または LADB）と権限の付与が必要です。</string>
     <string name="show_other_profiles_uncheck_confirm">他のプロファイルで選択されているアプリはすべて選択解除され、既定の状態に戻ります。以降、アプリをブロックすると他のプロファイルにあるそのコピーもすべてブロックされます。チェックを外しますか？</string>
 
     <string name="app_info_button_title">アプリ情報ボタン</string>

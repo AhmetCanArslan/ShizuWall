@@ -450,7 +450,7 @@
     <string name="tracker_db_description">%1$d izleyici imzası, uygulamayla birlikte gelir. Tespit tamamen çevrimdışı çalışır.</string>
     <string name="tracker_data_attribution">İzleyici verisi: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Diğer profillerdeki uygulamalar</string>
-    <string name="show_other_profiles_description">İş profili, gizli alan, Güvenli Klasör ve klonlanmış uygulamalar. Kapalıyken bir uygulamayı engellemek tüm kopyalarını da engeller; her kopyayı ayrı yönetmek için işaretleyin.</string>
+    <string name="show_other_profiles_description">İş profili, gizli alan, Güvenli Klasör ve klonlanmış uygulamalar. Kapalıyken bir uygulamayı engellemek tüm kopyalarını da engeller; her kopyayı ayrı yönetmek için işaretleyin. Çalışan bir arka uç servisi (Root, Shizuku veya LADB) ve verilmiş izinler gerektirir.</string>
     <string name="show_other_profiles_uncheck_confirm">Diğer profillerden seçili tüm uygulamaların seçimi kaldırılacak ve varsayılan durumuna sıfırlanacak. Bundan sonra bir uygulamayı engellediğinizde diğer profillerdeki tüm kopyaları da engellenecek. İşareti kaldırmak istiyor musunuz?</string>
 
     <string name="app_info_button_title">Uygulama bilgisi düğmesi</string>
