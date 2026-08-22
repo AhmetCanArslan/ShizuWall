@@ -1728,6 +1728,12 @@ class MainActivity : BaseActivity() {
                 setAppListLoadingVisible(true)
             }
 
+            if (!MultiUserApps.isEnabled(this@MainActivity)) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    MultiUserApps.snapshot(this@MainActivity)
+                }
+            }
+
             val result = withContext(Dispatchers.IO) {
                 val pm = packageManager
                 val rememberDisabled = sharedPreferences.getBoolean(KEY_REMEMBER_DISABLED_APPS, true)
@@ -1740,9 +1746,8 @@ class MainActivity : BaseActivity() {
                 }
                 val packages = pm.getInstalledPackages(queryFlags)
 
-                val scannedSecondary = MultiUserApps.snapshot(this@MainActivity)
                 val secondarySnapshot = if (MultiUserApps.isEnabled(this@MainActivity)) {
-                    scannedSecondary
+                    MultiUserApps.snapshot(this@MainActivity)
                 } else {
                     MultiUserApps.Snapshot.EMPTY
                 }
