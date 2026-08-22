@@ -34,7 +34,8 @@ object MultiUserApps {
     data class SecondaryApp(
         val userId: Int,
         val packageName: String,
-        val uid: Int
+        val uid: Int,
+        val isSystem: Boolean = false
     ) {
         val key: String get() = AppKey.of(userId, packageName)
     }
@@ -126,30 +127,39 @@ object MultiUserApps {
         val empty = mutableListOf<Int>()
         for (userId in userNames.keys) {
 
-            val listResult = try {
-                executor.exec("pm list packages -3 -U --user $userId")
+            val results = try {
+                executor.execBatch(
+                    listOf(
+                        "pm list packages -3 -U --user $userId",
+                        "pm list packages -s -U --user $userId"
+                    )
+                )
             } catch (t: Throwable) {
                 Log.w(TAG, "Could not list packages for user $userId", t)
                 blocked.add(userId)
                 continue
             }
 
-            if (!listResult.isEffectivelySuccess) {
+            if (results.none { it.isEffectivelySuccess }) {
                 Log.w(TAG, "pm list packages failed for user $userId, falling back to dumpsys")
                 blocked.add(userId)
                 continue
             }
 
             var found = 0
-            listResult.stdout.lineSequence().forEach { line ->
-                val match = PACKAGE_LINE.matchEntire(line.trim()) ?: return@forEach
-                val pkg = match.groupValues[1]
-                val uid = match.groupValues[2].toIntOrNull() ?: return@forEach
+            results.forEachIndexed { index, listResult ->
+                if (!listResult.isEffectivelySuccess) return@forEachIndexed
+                val isSystem = index == 1
+                listResult.stdout.lineSequence().forEach inner@{ line ->
+                    val match = PACKAGE_LINE.matchEntire(line.trim()) ?: return@inner
+                    val pkg = match.groupValues[1]
+                    val uid = match.groupValues[2].toIntOrNull() ?: return@inner
 
-                found++
-                if (pkg == selfPkg) return@forEach
-                if (ShizukuPackageResolver.isShizukuPackage(context, pkg)) return@forEach
-                apps.add(SecondaryApp(userId, pkg, uid))
+                    found++
+                    if (pkg == selfPkg) return@inner
+                    if (ShizukuPackageResolver.isShizukuPackage(context, pkg)) return@inner
+                    apps.add(SecondaryApp(userId, pkg, uid, isSystem))
+                }
             }
             if (found == 0) empty.add(userId)
         }
@@ -202,6 +212,7 @@ object MultiUserApps {
         var pkg: String? = null
         var appId = -1
         var skip = false
+        var isSystem = false
         var pendingUser = -1
 
         output.lineSequence().forEach { raw ->
@@ -215,6 +226,7 @@ object MultiUserApps {
                 val name = match.groupValues[1]
                 pkg = name
                 appId = -1
+                isSystem = false
                 pendingUser = -1
                 skip = !seen.add(name) || exclude(name)
                 return@forEach
@@ -228,7 +240,7 @@ object MultiUserApps {
                 return@forEach
             }
             DUMPSYS_FLAGS_TOKEN.matchEntire(token)?.let { match ->
-                if (match.groupValues[1].split(" ").contains("SYSTEM")) skip = true
+                isSystem = match.groupValues[1].split(" ").contains("SYSTEM")
                 pendingUser = -1
                 return@forEach
             }
@@ -249,7 +261,8 @@ object MultiUserApps {
                 if (match.groupValues[1] != "true") return@forEach
                 if (userId !in userIds) return@forEach
                 val uid = userId * PER_USER_RANGE + appId % PER_USER_RANGE
-                byUser.getOrPut(userId) { mutableListOf() }.add(SecondaryApp(userId, current, uid))
+                byUser.getOrPut(userId) { mutableListOf() }
+                    .add(SecondaryApp(userId, current, uid, isSystem))
             }
         }
         return byUser
@@ -264,6 +277,7 @@ object MultiUserApps {
                     put("u", app.userId)
                     put("p", app.packageName)
                     put("uid", app.uid)
+                    put("s", app.isSystem)
                 }
             )
         }
@@ -276,7 +290,9 @@ object MultiUserApps {
             val obj = arr.optJSONObject(i) ?: continue
             val pkg = obj.optString("p")
             if (pkg.isBlank()) continue
-            apps.add(SecondaryApp(obj.optInt("u"), pkg, obj.optInt("uid")))
+            apps.add(
+                SecondaryApp(obj.optInt("u"), pkg, obj.optInt("uid"), obj.optBoolean("s", false))
+            )
         }
         return apps
     }

@@ -1829,9 +1829,16 @@ class MainActivity : BaseActivity() {
                     }
                 }.awaitAll().flatten()
 
+                val internetPackages = packages.asSequence()
+                    .filter { it.requestedPermissions?.contains(Manifest.permission.INTERNET) == true }
+                    .mapTo(HashSet()) { it.packageName }
+                val primaryPackageNames = packages.mapTo(HashSet(packages.size)) { it.packageName }
+
                 val secondaryApps = buildSecondaryAppList(
                     snapshot = secondarySnapshot,
                     primaryApps = results,
+                    internetPackages = internetPackages,
+                    primaryPackageNames = primaryPackageNames,
                     savedSelected = savedSelected,
                     favoritePackages = favoritePackages,
                     modesJson = modesJson
@@ -1886,6 +1893,8 @@ class MainActivity : BaseActivity() {
     private fun buildSecondaryAppList(
         snapshot: MultiUserApps.Snapshot,
         primaryApps: List<AppInfo>,
+        internetPackages: Set<String>,
+        primaryPackageNames: Set<String>,
         savedSelected: Set<String>,
         favoritePackages: Set<String>,
         modesJson: JSONObject
@@ -1893,14 +1902,16 @@ class MainActivity : BaseActivity() {
         if (snapshot.apps.isEmpty()) return emptyList()
         val primaryByPackage = primaryApps.associateBy { it.packageName }
 
-        return snapshot.apps.map { app ->
+        return snapshot.apps.filter { app ->
+            app.packageName in internetPackages || app.packageName !in primaryPackageNames
+        }.map { app ->
             val base = primaryByPackage[app.packageName]
             val key = app.key
             AppInfo(
                 appName = base?.appName ?: app.packageName,
                 packageName = app.packageName,
                 isSelected = savedSelected.contains(key),
-                isSystem = base?.isSystem ?: false,
+                isSystem = app.isSystem,
                 isFavorite = favoritePackages.contains(key),
                 installTime = base?.installTime ?: 0L,
                 appFirewallMode = modesJson.optInt(key, 0),
