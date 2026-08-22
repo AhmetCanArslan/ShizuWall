@@ -262,8 +262,10 @@ class MainActivity : BaseActivity() {
     private val activeFirewallPackages = mutableSetOf<String>()
     // store the last operation and its console output per package so we can show details dialogs
     private val lastOperationErrorDetails = mutableMapOf<String, String>()
-    private enum class Category { NONE, FAVORITES, SYSTEM, SELECTED, UNSELECTED, USER }
+    private enum class Category { NONE, FAVORITES, SYSTEM, SELECTED, UNSELECTED, USER, PROFILE }
     private var currentCategory: Category = Category.NONE
+    private var currentProfileUserId: Int = -1
+    private val profileChipIds = LinkedHashMap<Int, Int>()
     
     // Track if we're waiting for Shizuku permission due to toggle attempt
     private var pendingToggleEnable = false
@@ -482,7 +484,15 @@ class MainActivity : BaseActivity() {
                 R.id.chip_unselected -> Category.UNSELECTED
                 R.id.chip_user -> Category.USER
                 -1 -> Category.NONE
-                else -> Category.NONE
+                else -> {
+                    val userId = profileChipIds.entries.firstOrNull { it.value == checkedId }?.key
+                    if (userId != null) {
+                        currentProfileUserId = userId
+                        Category.PROFILE
+                    } else {
+                        Category.NONE
+                    }
+                }
             }
             sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true)
         }
@@ -1229,6 +1239,7 @@ class MainActivity : BaseActivity() {
             Category.USER -> appList.filter { !it.isSystem }
             Category.SELECTED -> appList.filter { it.isSelected }
             Category.UNSELECTED -> appList.filter { !it.isSelected }
+            Category.PROFILE -> appList.filter { it.userId == currentProfileUserId }
         }.filter { app ->
             if (currentCategory == Category.SYSTEM) true
             else showSystemApps || !app.isSystem
@@ -1880,6 +1891,7 @@ class MainActivity : BaseActivity() {
                 appList.addAll(builtList)
                 sortAndFilterApps(preserveScrollPosition = false)
             }
+            updateCategoryChips()
 
             saveAppsCache(builtList)
 
@@ -1964,6 +1976,7 @@ class MainActivity : BaseActivity() {
 
         appList.clear()
         appList.addAll(cachedList)
+        updateCategoryChips()
         sortAndFilterApps(preserveScrollPosition = false)
         return true
     }
@@ -2582,6 +2595,8 @@ class MainActivity : BaseActivity() {
 
         chipSelected?.visibility = if (moveSelectedTop) View.GONE else View.VISIBLE
 
+        syncProfileChips(categoryGroup)
+
         // if we hid the system/user chip and it was selected, clear the selection (do NOT switch to a removed default)
         if (!showSystemApps && (categoryGroup.checkedChipId == R.id.chip_system || categoryGroup.checkedChipId == R.id.chip_user)) {
             categoryGroup.clearCheck()
@@ -2591,6 +2606,55 @@ class MainActivity : BaseActivity() {
         if (moveSelectedTop && (categoryGroup.checkedChipId == R.id.chip_selected || categoryGroup.checkedChipId == R.id.chip_unselected)) {
             categoryGroup.clearCheck()
             currentCategory = Category.NONE
+            sortAndFilterApps(preserveScrollPosition = false)
+        }
+    }
+
+    private fun syncProfileChips(categoryGroup: ChipGroup) {
+        val userIds = if (showOtherProfiles) {
+            appList.asSequence()
+                .map { it.userId }
+                .filter { it != 0 }
+                .distinct()
+                .sorted()
+                .toList()
+        } else {
+            emptyList()
+        }
+
+        if (userIds == profileChipIds.keys.toList()) {
+            profileChipIds.forEach { (userId, chipId) ->
+                categoryGroup.findViewById<Chip?>(chipId)?.text =
+                    MultiUserApps.userLabel(this, userId)
+            }
+            return
+        }
+
+        val checkedUserId = profileChipIds.entries
+            .firstOrNull { it.value == categoryGroup.checkedChipId }?.key
+
+        profileChipIds.values.forEach { chipId ->
+            categoryGroup.findViewById<Chip?>(chipId)?.let { categoryGroup.removeView(it) }
+        }
+        profileChipIds.clear()
+
+        userIds.forEach { userId ->
+            val chip = Chip(categoryGroup.context).apply {
+                id = View.generateViewId()
+                isCheckable = true
+                text = MultiUserApps.userLabel(this@MainActivity, userId)
+            }
+            categoryGroup.addView(chip)
+            profileChipIds[userId] = chip.id
+        }
+
+        val restoreId = checkedUserId?.let { profileChipIds[it] }
+        if (restoreId != null) {
+            categoryGroup.check(restoreId)
+        } else if (currentCategory == Category.PROFILE) {
+            categoryGroup.clearCheck()
+            currentCategory = Category.NONE
+            currentProfileUserId = -1
             sortAndFilterApps(preserveScrollPosition = false)
         }
     }
