@@ -1297,6 +1297,9 @@ class MainActivity : BaseActivity() {
                     .setNegativeButton(android.R.string.cancel) { _, _ ->
                         checkboxShowOtherProfiles.isChecked = true
                     }
+                    .setOnCancelListener {
+                        checkboxShowOtherProfiles.isChecked = true
+                    }
                     .show()
             }
         }
@@ -1313,6 +1316,9 @@ class MainActivity : BaseActivity() {
                     .setMessage(R.string.show_system_apps_uncheck_confirm)
                     .setPositiveButton(android.R.string.ok, null)
                     .setNegativeButton(android.R.string.cancel) { _, _ ->
+                        checkboxShowSystem.isChecked = true
+                    }
+                    .setOnCancelListener {
                         checkboxShowSystem.isChecked = true
                     }
                     .show()
