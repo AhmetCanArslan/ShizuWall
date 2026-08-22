@@ -143,9 +143,7 @@
     <string name="firewall_status_notification">Notificación de estado del cortafuegos</string>
     <string name="firewall_status_notification_description">Mostrar una notificación permanente con el estado actual del cortafuegos</string>
     <string name="firewall_status_notification_enabled_title">Cortafuegos activado</string>
-    <string name="firewall_status_notification_enabled_text">Se está controlando el acceso a la red de las apps</string>
     <string name="firewall_status_notification_disabled_title">Cortafuegos desactivado</string>
-    <string name="firewall_status_notification_disabled_text">No se está controlando el acceso a la red de las apps</string>
     <string name="new_app_installed">Nueva app instalada: %s</string>
     <string name="firewall_app">App de firewall</string>
     <string name="allow_app">Permitir</string>
@@ -299,7 +297,6 @@
     <string name="smart_foreground_notification_channel_name">Primer Plano Inteligente (Servicio)</string>
     <string name="smart_foreground_notification_channel_description">Servicio en segundo plano para monitorear la app en primer plano</string>
     <string name="smart_foreground_active">Primer Plano Inteligente Activo</string>
-    <string name="smart_foreground_active_description">Solo la app en primer plano tiene acceso a la red</string>
     
     <string name="focus_tracker_active">Seguimiento de enfoque: Active</string>
     <string name="focus_tracker_paused">Seguimiento de enfoque: Inactivo</string>
@@ -337,8 +334,8 @@
     <string name="floating_button_description">Mostrar un botón superpuesto arrastrable para activar el firewall desde cualquier lugar</string>
     <string name="floating_button_notification_channel_name">Botón flotante (Servicio)</string>
     <string name="floating_button_notification_channel_description">Servicio en segundo plano para el botón de firewall flotante</string>
+    <string name="notification_hold_to_disable">Mantén pulsado para desactivar esta notificación</string>
     <string name="floating_button_notification_title">Botón flotante de firewall</string>
-    <string name="floating_button_notification_text">Toque el botón flotante para activar el firewall</string>
     <string name="floating_button_content_description">Activar firewall</string>
     <string name="overlay_permission_required">Se requiere permiso de superposición para el botón flotante</string>
     <string name="scroll_to_top">Desplazarse arriba</string>
@@ -364,7 +361,6 @@
     <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">Modo de bloqueo de pantalla (Servicio)</string>
     <string name="screen_lock_delay_title">Retraso de bloqueo</string>
-    <string name="screen_lock_mode_notification_text">Supervisando bloqueo/desbloqueo para aplicar reglas de firewall</string>
     <string name="firewall_mode_screen_lock_description">Bloquear aplicaciones seleccionadas al bloquear, desbloquear al desbloquear</string>
     <string name="screen_lock_delay_value">Habilitar después de %1$d segundos de bloqueo</string>
     <string name="firewall_mode_screen_lock">Modo de bloqueo de pantalla</string>

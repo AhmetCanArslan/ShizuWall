@@ -154,9 +154,7 @@
     <string name="firewall_status_notification">Firewall Status Notification</string>
     <string name="firewall_status_notification_description">Show a permanent notification with the current firewall status</string>
     <string name="firewall_status_notification_enabled_title">Firewall enabled</string>
-    <string name="firewall_status_notification_enabled_text">App networking is being controlled</string>
     <string name="firewall_status_notification_disabled_title">Firewall disabled</string>
-    <string name="firewall_status_notification_disabled_text">App networking is not being controlled</string>
     <string name="new_app_installed">New app installed: %s</string>
     <string name="firewall_app">Firewall App</string>
     <string name="allow_app">Allow</string>
@@ -340,7 +338,6 @@
     <string name="smart_foreground_notification_channel_name">Smart Foreground (Service)</string>
     <string name="smart_foreground_notification_channel_description">Background service for monitoring foreground app</string>
     <string name="smart_foreground_active">Smart Foreground Active</string>
-    <string name="smart_foreground_active_description">Only the foreground app has network access</string>
     
     <string name="focus_tracker_active">Focus Tracker: Active</string>
     <string name="focus_tracker_paused">Focus Tracker: Inactive</string>
@@ -360,15 +357,15 @@
     <string name="screen_lock_mode_notification_channel_name">Screen Lock Mode (Service)</string>
     <string name="screen_lock_mode_notification_channel_description">Background service for screen lock automation</string>
     <string name="screen_lock_mode_notification_title">Screen Lock Mode</string>
-    <string name="screen_lock_mode_notification_text">Monitoring lock/unlock to apply firewall rules</string>
 
     <!-- Floating Firewall Button -->
     <string name="floating_button">Floating Firewall Button</string>
     <string name="floating_button_description">Show a draggable overlay button to toggle firewall from anywhere</string>
     <string name="floating_button_notification_channel_name">Floating Button (Service)</string>
     <string name="floating_button_notification_channel_description">Background service for the floating firewall button</string>
+    <string name="notification_hold_to_disable">Press and hold to turn this notification off</string>
+    <string name="notification_body_with_hint" translatable="false">%1$s · %2$s</string>
     <string name="floating_button_notification_title">Floating Firewall Button</string>
-    <string name="floating_button_notification_text">Tap the floating button to toggle firewall</string>
     <string name="floating_button_content_description">Toggle firewall</string>
     <string name="overlay_permission_required">Overlay permission is required for the floating button</string>
 

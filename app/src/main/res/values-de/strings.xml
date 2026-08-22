@@ -138,9 +138,7 @@
     <string name="firewall_status_notification">Firewall-Status-Benachrichtigung</string>
     <string name="firewall_status_notification_description">Eine dauerhafte Benachrichtigung mit dem aktuellen Firewall-Status anzeigen</string>
     <string name="firewall_status_notification_enabled_title">Firewall aktiviert</string>
-    <string name="firewall_status_notification_enabled_text">Der Netzwerkzugriff der Apps wird gesteuert</string>
     <string name="firewall_status_notification_disabled_title">Firewall deaktiviert</string>
-    <string name="firewall_status_notification_disabled_text">Der Netzwerkzugriff der Apps wird nicht gesteuert</string>
     <string name="new_app_installed">Neue App installiert: %s</string>
     <string name="firewall_app">App blockieren</string>
     <string name="allow_app">Erlauben</string>
@@ -297,7 +295,6 @@
     <string name="smart_foreground_notification_channel_name">Smart Vordergrund (Dienst)</string>
     <string name="smart_foreground_notification_channel_description">Hintergrunddienst zur Überwachung der Vordergrund-App</string>
     <string name="smart_foreground_active">Smart Vordergrund Aktiv</string>
-    <string name="smart_foreground_active_description">Nur die Vordergrund-App hat Netzwerkzugriff</string>
     
     <string name="focus_tracker_active">Fokus-Tracker: Aktiv</string>
     <string name="focus_tracker_paused">Focus Tracker: Inaktiv</string>
@@ -335,8 +332,8 @@
     <string name="floating_button_description">Zeigt eine schwebende Schaltfläche an, um die Firewall von überall aus zu schalten</string>
     <string name="floating_button_notification_channel_name">Schwebende Schaltfläche (Dienst)</string>
     <string name="floating_button_notification_channel_description">Hintergrunddienst für die schwebende Firewall-Schaltfläche</string>
+    <string name="notification_hold_to_disable">Zum Deaktivieren dieser Benachrichtigung gedrückt halten</string>
     <string name="floating_button_notification_title">Schwebende Firewall-Schaltfläche</string>
-    <string name="floating_button_notification_text">Tippen Sie auf die schwebende Schaltfläche, um die Firewall umzuschalten</string>
     <string name="floating_button_content_description">Firewall umschalten</string>
     <string name="overlay_permission_required">Überlagerungsberechtigung ist für die schwebende Schaltfläche erforderlich</string>
     <string name="scroll_to_top">Nach oben scrollen</string>
@@ -362,7 +359,6 @@
     <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">Bildschirmsperre-Modus (Dienst)</string>
     <string name="screen_lock_delay_title">Sperrverzögerung</string>
-    <string name="screen_lock_mode_notification_text">Überwachung von Sperren/Entsperren zur Anwendung von Firewall-Regeln</string>
     <string name="firewall_mode_screen_lock_description">Ausgewählte Apps bei Sperrung blockieren, bei Entsperrung freigeben</string>
     <string name="screen_lock_delay_value">Nach %1$d Sekunden Sperre aktivieren</string>
     <string name="firewall_mode_screen_lock">Bildschirmsperre-Modus</string>

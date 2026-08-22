@@ -138,9 +138,7 @@
     <string name="firewall_status_notification">Notificação de status do firewall</string>
     <string name="firewall_status_notification_description">Mostrar uma notificação permanente com o status atual do firewall</string>
     <string name="firewall_status_notification_enabled_title">Firewall ativado</string>
-    <string name="firewall_status_notification_enabled_text">O acesso à rede dos apps está sendo controlado</string>
     <string name="firewall_status_notification_disabled_title">Firewall desativado</string>
-    <string name="firewall_status_notification_disabled_text">O acesso à rede dos apps não está sendo controlado</string>
     <string name="new_app_installed">Novo app instalado: %s</string>
     <string name="firewall_app">Bloquear App</string>
     <string name="allow_app">Permitir</string>
@@ -297,7 +295,6 @@
     <string name="smart_foreground_notification_channel_name">Primeiro Plano Inteligente (Serviço)</string>
     <string name="smart_foreground_notification_channel_description">Serviço em segundo plano para monitorar o app em primeiro plano</string>
     <string name="smart_foreground_active">Primeiro Plano Inteligente Ativo</string>
-    <string name="smart_foreground_active_description">Apenas o app em primeiro plano tem acesso à rede</string>
     
     <string name="focus_tracker_active">Monitor de Foco: Ativo</string>
     <string name="focus_tracker_paused">Monitor de Foco: Inativo</string>
@@ -335,8 +332,8 @@
     <string name="floating_button_description">Mostrar um botão de sobreposição arrastável para alternar o firewall de qualquer lugar</string>
     <string name="floating_button_notification_channel_name">Botão Flutuante (Serviço)</string>
     <string name="floating_button_notification_channel_description">Serviço em segundo plano para o botão flutuante de firewall</string>
+    <string name="notification_hold_to_disable">Mantenha pressionado para desativar esta notificação</string>
     <string name="floating_button_notification_title">Botão Flutuante de Firewall</string>
-    <string name="floating_button_notification_text">Toque no botão flutuante para alternar o firewall</string>
     <string name="floating_button_content_description">Alternar firewall</string>
     <string name="overlay_permission_required">A permissão de sobreposição é necessária para o botão flutuante</string>
     <string name="scroll_to_top">Rolar para o topo</string>
@@ -362,7 +359,6 @@
     <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">Modo de bloqueio de tela (Serviço)</string>
     <string name="screen_lock_delay_title">Atraso de bloqueio</string>
-    <string name="screen_lock_mode_notification_text">Monitorando bloqueio/desbloqueio para regras</string>
     <string name="firewall_mode_screen_lock_description">Bloquear apps selecionados no bloqueio de tela</string>
     <string name="screen_lock_delay_value">Ativar após %1$d segundos de bloqueio</string>
     <string name="firewall_mode_screen_lock">Modo de bloqueio de tela</string>

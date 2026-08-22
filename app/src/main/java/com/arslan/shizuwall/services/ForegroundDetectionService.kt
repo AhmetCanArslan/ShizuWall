@@ -688,7 +688,7 @@ class ForegroundDetectionService : Service() {
             val title = if (!isFocused) getString(R.string.focus_tracker_active) else getString(R.string.focus_tracker_paused)
             val notification = NotificationCompat.Builder(this@ForegroundDetectionService, CHANNEL_ID)
                 .setContentTitle(title)
-                .setContentText(getString(R.string.firewall_mode_focus_tracker_description))
+                .setContentText(getString(R.string.notification_hold_to_disable))
                 .setSmallIcon(R.drawable.ic_quick_tile)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -862,9 +862,13 @@ class ForegroundDetectionService : Service() {
             } catch (_: Exception) {
                 activePackage
             }
-            getString(R.string.smart_foreground_active_app, appLabel)
+            getString(
+                R.string.notification_body_with_hint,
+                getString(R.string.smart_foreground_active_app, appLabel),
+                getString(R.string.notification_hold_to_disable)
+            )
         } else {
-            getString(R.string.smart_foreground_active_description)
+            getString(R.string.notification_hold_to_disable)
         }
 
         return NotificationCompat.Builder(this, CHANNEL_ID)

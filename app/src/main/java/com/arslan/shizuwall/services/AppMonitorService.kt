@@ -112,31 +112,31 @@ class AppMonitorService : Service() {
         val showFirewallStatus = prefs.getBoolean(MainActivity.KEY_SHOW_FIREWALL_STATUS_NOTIFICATION, false)
         val profileName = ProfilesStore.activeProfileId(this)
             ?.let { ProfilesStore.getById(this, it)?.name }
-        val (title, text) = if (showFirewallStatus) {
-            val firewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
-            if (firewallEnabled) {
-                getString(R.string.firewall_status_notification_enabled_title) to
-                    buildStatusText(getString(R.string.firewall_status_notification_enabled_text), profileName)
+        val title = if (showFirewallStatus) {
+            if (prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)) {
+                getString(R.string.firewall_status_notification_enabled_title)
             } else {
-                getString(R.string.firewall_status_notification_disabled_title) to
-                    buildStatusText(getString(R.string.firewall_status_notification_disabled_text), profileName)
+                getString(R.string.firewall_status_notification_disabled_title)
             }
         } else {
-            getString(R.string.app_monitor_service) to getString(R.string.app_monitor_service_description)
+            getString(R.string.app_monitor_service)
+        }
+
+        val hint = getString(R.string.notification_hold_to_disable)
+        val body = if (showFirewallStatus && profileName != null) {
+            getString(R.string.notification_body_with_hint, profileName, hint)
+        } else {
+            hint
         }
 
         return NotificationCompat.Builder(this, CHANNEL_ID_SILENT)
             .setContentTitle(title)
-            .setContentText(text)
+            .setContentText(body)
             .setSmallIcon(R.drawable.ic_quick_tile)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
-    }
-
-    private fun buildStatusText(baseText: String, profileName: String?): String {
-        return profileName ?: baseText
     }
 
     private fun updateForegroundNotification() {

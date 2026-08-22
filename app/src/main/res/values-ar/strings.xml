@@ -145,9 +145,7 @@
     <string name="firewall_status_notification">إشعار حالة الجدار الناري</string>
     <string name="firewall_status_notification_description">إظهار إشعار دائم بحالة الجدار الناري الحالية</string>
     <string name="firewall_status_notification_enabled_title">الجدار الناري مُفعّل</string>
-    <string name="firewall_status_notification_enabled_text">يتم التحكم في اتصال التطبيقات بالشبكة</string>
     <string name="firewall_status_notification_disabled_title">الجدار الناري معطّل</string>
-    <string name="firewall_status_notification_disabled_text">لا يتم التحكم في اتصال التطبيقات بالشبكة</string>
     <string name="new_app_installed">تم تثبيت تطبيق جديد: %s</string>
     <string name="firewall_app">تطبيق الجدار الناري</string>
     <string name="allow_app">سماح</string>
@@ -319,7 +317,6 @@
     <string name="smart_foreground_notification_channel_name">واجهة ذكية (خدمة)</string>
     <string name="smart_foreground_notification_channel_description">خدمة خلفية لمراقبة التطبيقات في الواجهة</string>
     <string name="smart_foreground_active">الواجهة الذكية نشطة</string>
-    <string name="smart_foreground_active_description">التطبيق الموجود في الواجهة فقط يملك وصولاً للشبكة</string>
     
     <string name="focus_tracker_active">متتبع التركيز: نشط</string>
     <string name="focus_tracker_paused">متتبع التركيز: غير نشط</string>
@@ -338,8 +335,8 @@
     <string name="floating_button_description">إظهار زر عائم قابل للسحب لتغيير حالة الجدار الناري من أي مكان</string>
     <string name="floating_button_notification_channel_name">الزر العائم (خدمة)</string>
     <string name="floating_button_notification_channel_description">خدمة خلفية لزر الجدار الناري العائم</string>
+    <string name="notification_hold_to_disable">اضغط مطولاً لإيقاف هذا الإشعار</string>
     <string name="floating_button_notification_title">زر الجدار الناري العائم</string>
-    <string name="floating_button_notification_text">اضغط على الزر العائم لتغيير حالة الجدار الناري</string>
     <string name="floating_button_content_description">تغيير حالة الجدار الناري</string>
     <string name="overlay_permission_required">إذن العرض فوق التطبيقات الأخرى مطلوب للزر العائم</string>
     <string name="scroll_to_top">التمرير إلى الأعلى</string>
@@ -365,7 +362,6 @@
     <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">وضع قفل الشاشة (خدمة)</string>
     <string name="screen_lock_delay_title">تأخير القفل</string>
-    <string name="screen_lock_mode_notification_text">مراقبة القفل لتطبيق قواعد جدار الحماية</string>
     <string name="firewall_mode_screen_lock_description">حظر التطبيقات المحددة عند قفل الشاشة</string>
     <string name="screen_lock_delay_value">تفعيل بعد %1$d ثانية من القفل</string>
     <string name="firewall_mode_screen_lock">وضع قفل الشاشة</string>

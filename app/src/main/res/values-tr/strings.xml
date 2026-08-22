@@ -138,9 +138,7 @@
     <string name="firewall_status_notification">Güvenlik Duvarı Durumu Bildirimi</string>
     <string name="firewall_status_notification_description">Geçerli güvenlik duvarı durumunu kalıcı bir bildirimde göster</string>
     <string name="firewall_status_notification_enabled_title">Güvenlik duvarı etkin</string>
-    <string name="firewall_status_notification_enabled_text">Uygulama ağ erişimi denetleniyor</string>
     <string name="firewall_status_notification_disabled_title">Güvenlik duvarı devre dışı</string>
-    <string name="firewall_status_notification_disabled_text">Uygulama ağ erişimi denetlenmiyor</string>
     <string name="new_app_installed">Yeni uygulama yüklendi: %s</string>
     <string name="firewall_app">Uygulamayı Engelle</string>
     <string name="allow_app">İzin Ver</string>
@@ -297,7 +295,6 @@
     <string name="smart_foreground_notification_channel_name">Akıllı Ön Plan (Servis)</string>
     <string name="smart_foreground_notification_channel_description">Ön plan uygulamasını izlemek için arka plan servisi</string>
     <string name="smart_foreground_active">Akıllı Ön Plan Aktif</string>
-    <string name="smart_foreground_active_description">Yalnızca ön plandaki uygulamanın ağ erişimi var</string>
     
     <string name="focus_tracker_active">Odak Takipçisi: Etkin</string>
     <string name="focus_tracker_paused">Odak Takipçisi: Etkin değil</string>
@@ -335,8 +332,8 @@
     <string name="floating_button_description">Güvenlik duvarını her yerden değiştirmek için sürüklenebilir bir yer paylaşımı butonu gösterin</string>
     <string name="floating_button_notification_channel_name">Yüzen Buton (Servis)</string>
     <string name="floating_button_notification_channel_description">Yüzen güvenlik duvarı butonu için arka plan servisi</string>
+    <string name="notification_hold_to_disable">Bu bildirimi kapatmak için basılı tutun</string>
     <string name="floating_button_notification_title">Yüzen Güvenlik Duvarı Butonu</string>
-    <string name="floating_button_notification_text">Güvenlik duvarını değiştirmek için yüzen butona dokunun</string>
     <string name="floating_button_content_description">Güvenlik duvarını değiştir</string>
     <string name="overlay_permission_required">Yüzen buton için üzerine yazma izni gereklidir</string>
     <string name="scroll_to_top">Yukarı kaydır</string>
@@ -361,7 +358,6 @@
     <string name="notification_permission_background_request">Arka planda aktif kalması için izin verin.</string>
 
     <string name="screen_lock_delay_value">Kilitten %1$d saniye sonra etkinleştir</string>
-    <string name="screen_lock_mode_notification_text">Güvenlik duvarı kurallarını uygulamak için kilit durumunu izler</string>
     <string name="screen_lock_mode_notification_channel_name">Ekran Kilidi Modu (Servis)</string>
     <string name="firewall_mode_screen_lock_description">Cihaz kilitlendiğinde seçili uygulamaları engeller</string>
     <string name="screen_lock_mode_operation_failed">Ekran Kilidi Modu işlemi başarısız oldu</string>

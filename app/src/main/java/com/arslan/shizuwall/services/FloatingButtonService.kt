@@ -151,7 +151,7 @@ class FloatingButtonService : Service() {
         )
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.floating_button_notification_title))
-            .setContentText(getString(R.string.floating_button_notification_text))
+            .setContentText(getString(R.string.notification_hold_to_disable))
             .setSmallIcon(R.drawable.ic_quick_tile)
             .setContentIntent(pi)
             .setOngoing(true)

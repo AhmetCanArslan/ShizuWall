@@ -151,9 +151,7 @@
     <string name="firewall_status_notification">Oznámení o stavu firewallu</string>
     <string name="firewall_status_notification_description">Zobrazit trvalé oznámení s aktuálním stavem firewallu</string>
     <string name="firewall_status_notification_enabled_title">Firewall zapnut</string>
-    <string name="firewall_status_notification_enabled_text">Síťový provoz aplikací je řízen</string>
     <string name="firewall_status_notification_disabled_title">Firewall vypnut</string>
-    <string name="firewall_status_notification_disabled_text">Síťový provoz aplikací není řízen</string>
     <string name="new_app_installed">Nová aplikace nainstalována: %s</string>
     <string name="firewall_app">Firewall aplikace</string>
     <string name="allow_app">Povolit</string>
@@ -336,7 +334,6 @@
     <string name="smart_foreground_notification_channel_name">Inteligentní popředí (služba)</string>
     <string name="smart_foreground_notification_channel_description">Služba na pozadí pro monitorování aplikace na popředí</string>
     <string name="smart_foreground_active">Inteligentní aktivní popředí</string>
-    <string name="smart_foreground_active_description">Přístup k síti má pouze aplikace v popředí</string>
     
     <string name="focus_tracker_active">Focus Tracker: Aktivní</string>
     <string name="focus_tracker_paused">Focus Tracker: Neaktivní</string>
@@ -355,8 +352,8 @@
     <string name="floating_button_description">Zobrazit přetahovatelné překryvné tlačítko pro přepínání firewallu odkudkoli</string>
     <string name="floating_button_notification_channel_name">Plovoucí tlačítko (Služba)</string>
     <string name="floating_button_notification_channel_description">Služba na pozadí pro plovoucí tlačítko firewallu</string>
+    <string name="notification_hold_to_disable">Podržením vypnete toto oznámení</string>
     <string name="floating_button_notification_title">Plovoucí tlačítko firewallu</string>
-    <string name="floating_button_notification_text">Klepnutím na plovoucí tlačítko přepnete firewall</string>
     <string name="floating_button_content_description">Přepnout firewall</string>
     <string name="overlay_permission_required">Pro plovoucí tlačítko je vyžadováno oprávnění k překrytí</string>
     <string name="select">Vybrat</string>
@@ -369,7 +366,6 @@
     <string name="screen_lock_mode_notification_channel_name">Režim uzamčení obrazovky (Služba)</string>
     <string name="screen_lock_mode_notification_channel_description">Služba na pozadí pro automatizaci uzamčení</string>
     <string name="screen_lock_mode_notification_title">Režim uzamčení obrazovky</string>
-    <string name="screen_lock_mode_notification_text">Sledování uzamčení/odemčení pro aplikaci pravidel</string>
     <string name="notification_permission_background_request">Udělte prosím oprávnění k běhu na pozadí.</string>
 
     <!-- Auto-added missing translations (English fallback) -->

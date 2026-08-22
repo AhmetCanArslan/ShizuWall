@@ -154,9 +154,7 @@
     <string name="firewall_status_notification">फ़ायरवॉल स्थिति सूचना</string>
     <string name="firewall_status_notification_description">वर्तमान फ़ायरवॉल स्थिति के साथ स्थायी सूचना दिखाएँ</string>
     <string name="firewall_status_notification_enabled_title">फ़ायरवॉल चालू</string>
-    <string name="firewall_status_notification_enabled_text">ऐप्स के नेटवर्क को नियंत्रित किया जा रहा है</string>
     <string name="firewall_status_notification_disabled_title">फ़ायरवॉल बंद</string>
-    <string name="firewall_status_notification_disabled_text">ऐप्स के नेटवर्क को नियंत्रित नहीं किया जा रहा है</string>
     <string name="new_app_installed">नया ऐप इंस्टॉल हुआ: %s</string>
     <string name="firewall_app">ऐप को फ़ायरवॉल करें</string>
     <string name="allow_app">अनुमति दें</string>
@@ -340,7 +338,6 @@
     <string name="smart_foreground_notification_channel_name">स्मार्ट फ़ोरग्राउंड (सेवा)</string>
     <string name="smart_foreground_notification_channel_description">फ़ोरग्राउंड ऐप की निगरानी के लिए बैकग्राउंड सेवा</string>
     <string name="smart_foreground_active">स्मार्ट फ़ोरग्राउंड सक्रिय</string>
-    <string name="smart_foreground_active_description">केवल फ़ोरग्राउंड ऐप को नेटवर्क पहुँच है</string>
 
     <string name="focus_tracker_active">फ़ोकस ट्रैकर: सक्रिय</string>
     <string name="focus_tracker_paused">फ़ोकस ट्रैकर: निष्क्रिय</string>
@@ -360,15 +357,14 @@
     <string name="screen_lock_mode_notification_channel_name">स्क्रीन लॉक मोड (सेवा)</string>
     <string name="screen_lock_mode_notification_channel_description">स्क्रीन लॉक ऑटोमेशन के लिए बैकग्राउंड सेवा</string>
     <string name="screen_lock_mode_notification_title">स्क्रीन लॉक मोड</string>
-    <string name="screen_lock_mode_notification_text">फ़ायरवॉल नियम लागू करने हेतु लॉक/अनलॉक की निगरानी</string>
 
     <!-- Floating Firewall Button -->
     <string name="floating_button">फ़्लोटिंग फ़ायरवॉल बटन</string>
     <string name="floating_button_description">कहीं से भी फ़ायरवॉल टॉगल करने के लिए खींचने योग्य ओवरले बटन दिखाएँ</string>
     <string name="floating_button_notification_channel_name">फ़्लोटिंग बटन (सेवा)</string>
     <string name="floating_button_notification_channel_description">फ़्लोटिंग फ़ायरवॉल बटन के लिए बैकग्राउंड सेवा</string>
+    <string name="notification_hold_to_disable">इस सूचना को बंद करने के लिए दबाकर रखें</string>
     <string name="floating_button_notification_title">फ़्लोटिंग फ़ायरवॉल बटन</string>
-    <string name="floating_button_notification_text">फ़ायरवॉल टॉगल करने के लिए फ़्लोटिंग बटन पर टैप करें</string>
     <string name="floating_button_content_description">फ़ायरवॉल टॉगल करें</string>
     <string name="overlay_permission_required">फ़्लोटिंग बटन के लिए ओवरले अनुमति आवश्यक है</string>
 

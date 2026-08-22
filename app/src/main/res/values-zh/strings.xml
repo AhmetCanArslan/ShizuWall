@@ -138,9 +138,7 @@
     <string name="firewall_status_notification">防火墙状态通知</string>
     <string name="firewall_status_notification_description">显示带有当前防火墙状态的常驻通知</string>
     <string name="firewall_status_notification_enabled_title">防火墙已启用</string>
-    <string name="firewall_status_notification_enabled_text">正在控制应用的网络访问</string>
     <string name="firewall_status_notification_disabled_title">防火墙已禁用</string>
-    <string name="firewall_status_notification_disabled_text">未控制应用的网络访问</string>
     <string name="new_app_installed">新应用已安装：%s</string>
     <string name="firewall_app">防火墙应用</string>
     <string name="allow_app">允许</string>
@@ -297,7 +295,6 @@
     <string name="smart_foreground_notification_channel_name">智能前台 (服务)</string>
     <string name="smart_foreground_notification_channel_description">用于监控前台应用的后台服务</string>
     <string name="smart_foreground_active">智能前台已激活</string>
-    <string name="smart_foreground_active_description">仅前台应用可访问网络</string>
     
     <string name="focus_tracker_active">焦点追踪器：已启用</string>
     <string name="focus_tracker_paused">焦点追踪器：未激活</string>
@@ -335,8 +332,8 @@
     <string name="floating_button_description">显示一个可拖动的悬浮按钮，随时随地切换防火墙</string>
     <string name="floating_button_notification_channel_name">悬浮按钮 (服务)</string>
     <string name="floating_button_notification_channel_description">悬浮防火墙按钮的后台服务</string>
+    <string name="notification_hold_to_disable">长按可关闭此通知</string>
     <string name="floating_button_notification_title">悬浮防火墙按钮</string>
-    <string name="floating_button_notification_text">点击悬浮按钮切换防火墙</string>
     <string name="floating_button_content_description">切换防火墙</string>
     <string name="overlay_permission_required">悬浮按钮需要悬浮窗权限</string>
     <string name="scroll_to_top">滚动到顶部</string>
@@ -362,7 +359,6 @@
     <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">锁屏模式 (服务)</string>
     <string name="screen_lock_delay_title">锁定延迟</string>
-    <string name="screen_lock_mode_notification_text">监控锁定以应用防火墙规则</string>
     <string name="firewall_mode_screen_lock_description">锁定屏幕时阻止选定的应用</string>
     <string name="screen_lock_delay_value">锁定 %1$d 秒后启用</string>
     <string name="firewall_mode_screen_lock">锁屏模式</string>
