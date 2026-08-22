@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.arslan.shizuwall.model.AppInfo
+import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.UiUtils
 
 class SelectedAppsAdapter(
@@ -22,6 +23,7 @@ class SelectedAppsAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val appIcon: ImageView = itemView.findViewById(R.id.appIcon)
         val appName: TextView = itemView.findViewById(R.id.appName)
+        val profileBadge: TextView = itemView.findViewById(R.id.profileBadge)
 
         fun bind(appInfo: AppInfo) {
             val pkg = appInfo.packageName
@@ -44,6 +46,13 @@ class SelectedAppsAdapter(
             }
 
             appName.text = appInfo.appName
+
+            if (appInfo.userId != 0) {
+                profileBadge.visibility = View.VISIBLE
+                profileBadge.text = MultiUserApps.userLabel(itemView.context, appInfo.userId)
+            } else {
+                profileBadge.visibility = View.GONE
+            }
         }
     }
 

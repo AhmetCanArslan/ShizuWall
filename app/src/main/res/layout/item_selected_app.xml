@@ -21,4 +21,18 @@
         android:textSize="14sp"
         android:textColor="?attr/colorOnSurface" />
 
+    <TextView
+        android:id="@+id/profileBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="2dp"
+        android:background="@drawable/bg_profile_badge"
+        android:importantForAccessibility="no"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:textColor="?attr/colorOnTertiaryContainer" />
+
 </LinearLayout>
