@@ -1383,7 +1383,7 @@ class MainActivity : BaseActivity() {
                             updateSelectedCount()
                         }
 
-                        MultiUserApps.clearCache(this)
+                        MultiUserApps.invalidate()
                     }
 
                     loadInstalledApps(showLoadingIfListEmpty = true)

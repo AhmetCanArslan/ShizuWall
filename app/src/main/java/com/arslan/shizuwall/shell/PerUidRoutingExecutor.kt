@@ -31,10 +31,11 @@ class PerUidRoutingExecutor(
         val mirroring = mirroringClones()
         val uidBatchMode = usesBatchedUidRules()
         val activeSecondary = if (mirroring) emptySet() else activeSecondaryKeys().toSet()
+        val clones = cloneIndex()
 
         val effective = LinkedHashMap<String, Int>()
         requested.forEach { (key, rule) ->
-            derivedCloneRules(key, rule, mirroring, uidBatchMode, activeSecondary)
+            derivedCloneRules(key, rule, mirroring, uidBatchMode, activeSecondary, clones)
                 .forEach { (cloneKey, cloneRule) -> effective.putIfAbsent(cloneKey, cloneRule) }
         }
         requested.forEach { (key, rule) -> effective[key] = rule }
@@ -82,10 +83,11 @@ class PerUidRoutingExecutor(
         rule: Int,
         mirroring: Boolean,
         uidBatchMode: Boolean,
-        activeSecondary: Set<String>
+        activeSecondary: Set<String>,
+        cloneIndex: Map<String, List<String>>
     ): List<Pair<String, Int>> {
         if (AppKey.isSecondary(key)) return emptyList()
-        val clones = cloneKeysOf(AppKey.packageOf(key))
+        val clones = cloneIndex[AppKey.packageOf(key)].orEmpty()
         if (clones.isEmpty()) return emptyList()
         if (mirroring) return clones.map { it to rule }
         if (uidBatchMode) return emptyList()
@@ -106,18 +108,18 @@ class PerUidRoutingExecutor(
 
     private fun mirroringClones(): Boolean = !MultiUserApps.isEnabled(context)
 
-    private fun cloneKeysOf(packageName: String): List<String> =
-        MultiUserApps.cachedSnapshot(context).apps
-            .filter { it.packageName == packageName }
-            .map { it.key }
+    private suspend fun cloneIndex(): Map<String, List<String>> =
+        MultiUserApps.snapshot(context).apps
+            .groupBy({ it.packageName }, { it.key })
 
     private suspend fun clearSecondaryRules() {
         val keys = LinkedHashSet<String>(activeSecondaryKeys())
         if (mirroringClones()) {
             val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+            val clones = cloneIndex()
             FirewallUtils.loadActivePackages(prefs)
                 .filterNot { AppKey.isSecondary(it) }
-                .forEach { keys.addAll(cloneKeysOf(it)) }
+                .forEach { keys.addAll(clones[it].orEmpty()) }
         }
         if (keys.isEmpty()) return
         PerUidFirewall.setRules(context, keys.map { it to PerUidFirewall.RULE_DEFAULT })
