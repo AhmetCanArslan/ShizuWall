@@ -278,6 +278,8 @@ class MainActivity : BaseActivity() {
     private var pendingAutoEnableSelectedApps: List<String>? = null
 
     // receiver to handle package add/remove/replace events
+    private var appListRefreshPending = true
+
     private val packageBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent?) {
             val action = intent?.action ?: return
@@ -308,6 +310,7 @@ class MainActivity : BaseActivity() {
             moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, true)
             firewallMode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
             updateFirewallToggleThumbIcon()
+            appListRefreshPending = false
             loadInstalledApps()
             updateCategoryChips()
             
@@ -501,6 +504,7 @@ class MainActivity : BaseActivity() {
         updateCategoryChips()
 
         val hasWarmCache = restoreAppListFromCache()
+        appListRefreshPending = false
         loadInstalledApps(showLoadingIfListEmpty = !hasWarmCache)
 
         // If user enabled auto-enable and Shizuku is already present, attempt to auto-enable.
@@ -623,7 +627,10 @@ class MainActivity : BaseActivity() {
         appListAdapter.setInfoButtonEnabled(
             sharedPreferences.getBoolean(KEY_SHOW_APP_INFO_BUTTON, true)
         )
-        loadInstalledApps()
+        if (appListRefreshPending) {
+            appListRefreshPending = false
+            loadInstalledApps()
+        }
         
         // If firewall is ON and mode needs foreground detection, ensure the service runs
         if (isFirewallEnabled && firewallMode.requiresForegroundDetection()) {
@@ -631,6 +638,11 @@ class MainActivity : BaseActivity() {
         } else if (!isFirewallEnabled && firewallMode.requiresForegroundDetection()) {
             ForegroundDetectionService.stop(this)
         }
+
+    }
+
+    override fun onStart() {
+        super.onStart()
 
         // Register package change receiver so installs/uninstalls/updates immediately refresh the list.
         // Wrapped in try/catch to avoid IllegalArgumentException if already registered.
@@ -649,10 +661,11 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
 
         MultiUserApps.invalidate()
+        appListRefreshPending = true
 
         // Unregister package receiver to avoid leaks; ignore if not registered.
         try {
