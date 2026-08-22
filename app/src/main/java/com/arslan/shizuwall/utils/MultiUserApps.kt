@@ -16,6 +16,19 @@ object MultiUserApps {
 
     private val USER_LINE = Regex("""UserInfo\{(\d+):([^:]*):""")
     private val PACKAGE_LINE = Regex("""^package:(\S+)\s+uid:(\d+)$""")
+    private val DUMPSYS_PACKAGE_TOKEN = Regex("""^Package \[([^\]]+)]$""")
+    private val DUMPSYS_APP_ID_TOKEN = Regex("""^(?:appId|userId)=(\d+)$""")
+    private val DUMPSYS_FLAGS_TOKEN = Regex("""^pkgFlags=\[(.*)]$""")
+    private val DUMPSYS_PRIVATE_FLAGS_TOKEN = Regex("""^privateFlags=\[(.*)]$""")
+    private val DUMPSYS_USER_TOKEN = Regex("""^User (\d+):$""")
+    private val DUMPSYS_INSTALLED_TOKEN = Regex("""^installed=(\w+)$""")
+    private val DUMPSYS_END_TOKEN = Regex("""^Shared users:$""")
+    private val LIBRARY_FLAGS = setOf("STATIC_SHARED_LIBRARY", "SDK_LIBRARY")
+
+    private const val PER_USER_RANGE = 100_000
+    private const val DUMPSYS_COMMAND = "dumpsys package packages | grep -oE " +
+        "'Package \\[[^]]+]|appId=[0-9]+|userId=[0-9]+|pkgFlags=\\[[^]]*]|" +
+        "privateFlags=\\[[^]]*]|User [0-9]+:|installed=[a-z]+|Shared users:'"
 
     data class SecondaryApp(
         val userId: Int,
@@ -104,32 +117,137 @@ object MultiUserApps {
 
         val known = readCache(context)?.apps.orEmpty().groupBy { it.userId }
         val apps = mutableListOf<SecondaryApp>()
+        val blocked = mutableListOf<Int>()
+        val empty = mutableListOf<Int>()
         for (userId in userNames.keys) {
 
             val listResult = try {
                 executor.exec("pm list packages -3 -U --user $userId")
             } catch (t: Throwable) {
                 Log.w(TAG, "Could not list packages for user $userId", t)
-                known[userId]?.let { apps.addAll(it) }
+                blocked.add(userId)
                 continue
             }
 
             if (!listResult.isEffectivelySuccess) {
-                known[userId]?.let { apps.addAll(it) }
+                Log.w(TAG, "pm list packages failed for user $userId, falling back to dumpsys")
+                blocked.add(userId)
                 continue
             }
 
+            var found = 0
             listResult.stdout.lineSequence().forEach { line ->
                 val match = PACKAGE_LINE.matchEntire(line.trim()) ?: return@forEach
                 val pkg = match.groupValues[1]
                 val uid = match.groupValues[2].toIntOrNull() ?: return@forEach
 
+                found++
                 if (pkg == selfPkg) return@forEach
                 if (ShizukuPackageResolver.isShizukuPackage(context, pkg)) return@forEach
                 apps.add(SecondaryApp(userId, pkg, uid))
             }
+            if (found == 0) empty.add(userId)
+        }
+
+        val fallbackFor = blocked + empty
+        if (fallbackFor.isNotEmpty()) {
+            val fallback = scanViaDumpsys(context, fallbackFor.toSet())
+            fallbackFor.forEach { userId ->
+                val forUser = fallback[userId].orEmpty()
+                Log.i(TAG, "dumpsys fallback found ${forUser.size} apps for user $userId")
+                when {
+                    forUser.isNotEmpty() -> apps.addAll(forUser)
+                    userId in blocked -> known[userId]?.let { apps.addAll(it) }
+                }
+            }
         }
         return Snapshot(apps, userNames)
+    }
+
+    private suspend fun scanViaDumpsys(
+        context: Context,
+        userIds: Set<Int>
+    ): Map<Int, List<SecondaryApp>> {
+        val executor = ShellExecutorProvider.forContext(context)
+        val selfPkg = context.packageName
+
+        val result = try {
+            executor.exec(DUMPSYS_COMMAND)
+        } catch (t: Throwable) {
+            Log.w(TAG, "dumpsys package fallback failed", t)
+            return emptyMap()
+        }
+        if (!result.isEffectivelySuccess) {
+            Log.w(TAG, "dumpsys package fallback failed: ${result.stderr.ifEmpty { result.stdout }}")
+            return emptyMap()
+        }
+
+        return parseDumpsysPackages(result.stdout, userIds) { pkg ->
+            pkg == selfPkg || ShizukuPackageResolver.isShizukuPackage(context, pkg)
+        }
+    }
+
+    internal fun parseDumpsysPackages(
+        output: String,
+        userIds: Set<Int>,
+        exclude: (String) -> Boolean
+    ): Map<Int, List<SecondaryApp>> {
+        val byUser = mutableMapOf<Int, MutableList<SecondaryApp>>()
+        val seen = mutableSetOf<String>()
+        var pkg: String? = null
+        var appId = -1
+        var skip = false
+        var pendingUser = -1
+
+        output.lineSequence().forEach { raw ->
+            val token = raw.trim()
+
+            if (DUMPSYS_END_TOKEN.matches(token)) {
+                pkg = null
+                return@forEach
+            }
+            DUMPSYS_PACKAGE_TOKEN.matchEntire(token)?.let { match ->
+                val name = match.groupValues[1]
+                pkg = name
+                appId = -1
+                pendingUser = -1
+                skip = !seen.add(name) || exclude(name)
+                return@forEach
+            }
+            val current = pkg ?: return@forEach
+            if (skip) return@forEach
+
+            DUMPSYS_APP_ID_TOKEN.matchEntire(token)?.let { match ->
+                if (appId < 0) appId = match.groupValues[1].toIntOrNull() ?: -1
+                pendingUser = -1
+                return@forEach
+            }
+            DUMPSYS_FLAGS_TOKEN.matchEntire(token)?.let { match ->
+                if (match.groupValues[1].split(" ").contains("SYSTEM")) skip = true
+                pendingUser = -1
+                return@forEach
+            }
+            DUMPSYS_PRIVATE_FLAGS_TOKEN.matchEntire(token)?.let { match ->
+                val flags = match.groupValues[1].split(" ")
+                if (flags.any { flag -> LIBRARY_FLAGS.any { flag.endsWith(it) } }) skip = true
+                pendingUser = -1
+                return@forEach
+            }
+            DUMPSYS_USER_TOKEN.matchEntire(token)?.let { match ->
+                pendingUser = match.groupValues[1].toIntOrNull() ?: -1
+                return@forEach
+            }
+            DUMPSYS_INSTALLED_TOKEN.matchEntire(token)?.let { match ->
+                val userId = pendingUser
+                pendingUser = -1
+                if (userId < 0 || appId < 0) return@forEach
+                if (match.groupValues[1] != "true") return@forEach
+                if (userId !in userIds) return@forEach
+                val uid = userId * PER_USER_RANGE + appId % PER_USER_RANGE
+                byUser.getOrPut(userId) { mutableListOf() }.add(SecondaryApp(userId, current, uid))
+            }
+        }
+        return byUser
     }
 
     private const val KEY_CACHE = "secondary_user_apps_cache"
