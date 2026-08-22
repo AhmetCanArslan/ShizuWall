@@ -6,6 +6,7 @@ import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.atomic.AtomicLong
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -50,33 +51,37 @@ object MultiUserApps {
     fun isEnabled(context: Context): Boolean =
         prefs(context).getBoolean(MainActivity.KEY_SHOW_OTHER_PROFILES, false)
 
-    private const val SCAN_TTL_MS = 60_000L
-
     @Volatile
     private var memoryCache: Snapshot? = null
 
+    private val invalidations = AtomicLong(1L)
+
+    @Volatile
+    private var scannedAtGeneration = 0L
+
     private val scanMutex = Mutex()
 
+    fun invalidate() {
+        invalidations.incrementAndGet()
+    }
+
+    private fun isFresh(): Boolean = scannedAtGeneration == invalidations.get()
+
     suspend fun snapshot(context: Context): Snapshot {
-        freshCache(context)?.let { return it }
+        if (isFresh()) readCache(context)?.let { return it }
         return scanMutex.withLock {
-            freshCache(context)?.let { return@withLock it }
+            if (isFresh()) readCache(context)?.let { return@withLock it }
+            val generation = invalidations.get()
             val scanned = scan(context)
             when {
                 scanned != null -> {
                     writeCache(context, scanned)
+                    scannedAtGeneration = generation
                     scanned
                 }
                 else -> readCache(context) ?: Snapshot.EMPTY
             }
         }
-    }
-
-    private fun freshCache(context: Context): Snapshot? {
-        val cached = readCache(context) ?: return null
-        val scannedAt = prefs(context).getLong(KEY_CACHE_AT, 0L)
-        val now = System.currentTimeMillis()
-        return cached.takeIf { scannedAt in (now - SCAN_TTL_MS)..now }
     }
 
     fun cachedUid(context: Context, key: String): Int? {
@@ -251,17 +256,10 @@ object MultiUserApps {
     }
 
     private const val KEY_CACHE = "secondary_user_apps_cache"
-    private const val KEY_CACHE_AT = "secondary_user_apps_cache_at"
-
-    private fun prefs(context: Context) =
-        context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-
-    private fun writeCache(context: Context, snapshot: Snapshot) {
-        val users = JSONObject()
-        snapshot.userNames.forEach { (id, name) -> users.put(id.toString(), name) }
-        val apps = JSONArray()
-        snapshot.apps.forEach { app ->
-            apps.put(
+    private fun encodeApps(apps: List<SecondaryApp>): JSONArray {
+        val arr = JSONArray()
+        apps.forEach { app ->
+            arr.put(
                 JSONObject().apply {
                     put("u", app.userId)
                     put("p", app.packageName)
@@ -269,14 +267,33 @@ object MultiUserApps {
                 }
             )
         }
+        return arr
+    }
+
+    private fun decodeApps(arr: JSONArray): List<SecondaryApp> {
+        val apps = mutableListOf<SecondaryApp>()
+        for (i in 0 until arr.length()) {
+            val obj = arr.optJSONObject(i) ?: continue
+            val pkg = obj.optString("p")
+            if (pkg.isBlank()) continue
+            apps.add(SecondaryApp(obj.optInt("u"), pkg, obj.optInt("uid")))
+        }
+        return apps
+    }
+
+    private fun prefs(context: Context) =
+        context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+
+    private fun writeCache(context: Context, snapshot: Snapshot) {
+        val users = JSONObject()
+        snapshot.userNames.forEach { (id, name) -> users.put(id.toString(), name) }
         val root = JSONObject().apply {
             put("users", users)
-            put("apps", apps)
+            put("apps", encodeApps(snapshot.apps))
         }
         memoryCache = snapshot
         prefs(context).edit()
             .putString(KEY_CACHE, root.toString())
-            .putLong(KEY_CACHE_AT, System.currentTimeMillis())
             .apply()
     }
 
@@ -290,14 +307,7 @@ object MultiUserApps {
             users.keys().forEach { key ->
                 key.toIntOrNull()?.let { userNames[it] = users.optString(key) }
             }
-            val arr = root.optJSONArray("apps") ?: JSONArray()
-            val apps = mutableListOf<SecondaryApp>()
-            for (i in 0 until arr.length()) {
-                val obj = arr.optJSONObject(i) ?: continue
-                val pkg = obj.optString("p")
-                if (pkg.isBlank()) continue
-                apps.add(SecondaryApp(obj.optInt("u"), pkg, obj.optInt("uid")))
-            }
+            val apps = decodeApps(root.optJSONArray("apps") ?: JSONArray())
             Snapshot(apps, userNames).also { memoryCache = it }
         } catch (t: Throwable) {
             Log.w(TAG, "Corrupt secondary-user cache", t)
@@ -307,9 +317,10 @@ object MultiUserApps {
 
     fun clearCache(context: Context) {
         memoryCache = null
+        invalidate()
         prefs(context).edit()
             .remove(KEY_CACHE)
-            .remove(KEY_CACHE_AT)
+            .remove("secondary_user_apps_cache_at")
             .apply()
     }
 }

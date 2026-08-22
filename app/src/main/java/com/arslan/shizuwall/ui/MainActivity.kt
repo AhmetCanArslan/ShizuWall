@@ -640,6 +640,9 @@ class MainActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
+
+        MultiUserApps.invalidate()
+
         // Unregister package receiver to avoid leaks; ignore if not registered.
         try {
             unregisterReceiver(packageBroadcastReceiver)
