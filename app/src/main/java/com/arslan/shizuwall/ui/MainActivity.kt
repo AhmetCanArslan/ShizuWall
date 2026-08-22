@@ -69,6 +69,7 @@ import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.utils.ForegroundAppResolver
 import com.arslan.shizuwall.utils.AppKey
+import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.MultiUserApps
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONArray
@@ -1082,7 +1083,7 @@ class MainActivity : BaseActivity() {
                 toggleFavorite(appInfo)
             },
             onAppIconClick = { appInfo ->
-                AppInfoDialog.show(this, this, appInfo.packageName, appInfo.appName)
+                AppInfoDialog.show(this, this, appInfo.packageName, appInfo.appName, appInfo.userId)
             }
         )
         appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
@@ -1908,7 +1909,9 @@ class MainActivity : BaseActivity() {
             val base = primaryByPackage[app.packageName]
             val key = app.key
             AppInfo(
-                appName = base?.appName ?: app.packageName,
+                appName = base?.appName
+                    ?: CrossUserAppInfo.label(this, app.packageName, app.userId)
+                    ?: app.packageName,
                 packageName = app.packageName,
                 isSelected = savedSelected.contains(key),
                 isSystem = app.isSystem,
@@ -2802,7 +2805,7 @@ class MainActivity : BaseActivity() {
             } else {
                 ai.appName
             }
-            ErrorEntry(name, ai.packageName, err)
+            ErrorEntry(name, ai.packageName, err, ai.userId)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)

@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.arslan.shizuwall.model.AppInfo
+import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.UiUtils
 
@@ -27,16 +29,19 @@ class SelectedAppsAdapter(
 
         fun bind(appInfo: AppInfo) {
             val pkg = appInfo.packageName
-            appIcon.tag = pkg
+            val iconKey = appInfo.key
+            appIcon.tag = iconKey
             appIcon.setImageDrawable(null)
 
             UiUtils.getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
                 try {
-                    val pm = itemView.context.packageManager
-                    val drawable = pm.getApplicationIcon(pkg)
+                    val context = itemView.context
+                    val drawable = CrossUserAppInfo.icon(context, pkg, appInfo.userId)
+                        ?: ContextCompat.getDrawable(context, android.R.drawable.sym_def_app_icon)
+                        ?: return@launch
                     val bitmap = UiUtils.drawableToBitmap(drawable)
                     withContext(Dispatchers.Main) {
-                        if (appIcon.tag == pkg) {
+                        if (appIcon.tag == iconKey) {
                             appIcon.setImageBitmap(bitmap)
                         }
                     }

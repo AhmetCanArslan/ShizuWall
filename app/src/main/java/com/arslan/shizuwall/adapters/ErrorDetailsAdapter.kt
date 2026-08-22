@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -12,12 +13,14 @@ import com.arslan.shizuwall.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.UiUtils
 
 data class ErrorEntry(
     val appName: String,
     val packageName: String,
-    val errorText: String
+    val errorText: String,
+    val userId: Int = 0
 )
 
 class ErrorDetailsAdapter(
@@ -31,18 +34,21 @@ class ErrorDetailsAdapter(
 
         fun bind(entry: ErrorEntry) {
             val pkg = entry.packageName
-            appIcon.tag = pkg
+            val iconKey = "${entry.userId}:$pkg"
+            appIcon.tag = iconKey
             appIcon.setImageDrawable(null)
             appName.text = entry.appName
             errorText.text = entry.errorText
 
             UiUtils.getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
                 try {
-                    val pm = itemView.context.packageManager
-                    val drawable = pm.getApplicationIcon(pkg)
+                    val context = itemView.context
+                    val drawable = CrossUserAppInfo.icon(context, pkg, entry.userId)
+                        ?: ContextCompat.getDrawable(context, android.R.drawable.sym_def_app_icon)
+                        ?: return@launch
                     val bitmap = UiUtils.drawableToBitmap(drawable)
                     withContext(Dispatchers.Main) {
-                        if (appIcon.tag == pkg) appIcon.setImageBitmap(bitmap)
+                        if (appIcon.tag == iconKey) appIcon.setImageBitmap(bitmap)
                     }
                 } catch (_: Exception) {
                     // ignore

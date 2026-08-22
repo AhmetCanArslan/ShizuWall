@@ -14,6 +14,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.trackers.TrackerScanner
+import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import java.text.DateFormat
@@ -21,7 +22,7 @@ import java.util.Date
 
 object AppInfoDialog {
 
-    fun show(context: Context, owner: LifecycleOwner, packageName: String, appName: String) {
+    fun show(context: Context, owner: LifecycleOwner, packageName: String, appName: String, userId: Int = 0) {
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_app_info, null)
 
         val iconView = view.findViewById<ImageView>(R.id.infoAppIcon)
@@ -42,11 +43,7 @@ object AppInfoDialog {
 
         nameView.text = appName
         packageView.text = packageName
-        try {
-            iconView.setImageDrawable(pm.getApplicationIcon(packageName))
-        } catch (_: Exception) {
-            iconView.setImageDrawable(null)
-        }
+        iconView.setImageDrawable(CrossUserAppInfo.icon(context, packageName, userId))
         metaView.text = buildMeta(context, packageInfo)
 
         // On a repeat open the scan result comes back from cache almost instantly, so

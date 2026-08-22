@@ -25,6 +25,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.UiUtils
 
@@ -122,21 +123,24 @@ class AppListAdapter(
 
         fun bind(appInfo: AppInfo) {
             val pkg = appInfo.packageName
-            appIcon.tag = pkg
+            val iconKey = appInfo.key
+            appIcon.tag = iconKey
             appIcon.setImageDrawable(null) // Clear previous
 
-            val cached = iconCache.get(pkg)
+            val cached = iconCache.get(iconKey)
             if (cached != null) {
                 appIcon.setImageBitmap(cached)
             } else {
                 UiUtils.getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
                     try {
-                        val pm = itemView.context.packageManager
-                        val drawable = pm.getApplicationIcon(pkg)
+                        val context = itemView.context
+                        val drawable = CrossUserAppInfo.icon(context, pkg, appInfo.userId)
+                            ?: ContextCompat.getDrawable(context, android.R.drawable.sym_def_app_icon)
+                            ?: return@launch
                         val bitmap = UiUtils.drawableToBitmap(drawable)
-                        iconCache.put(pkg, bitmap)
+                        iconCache.put(iconKey, bitmap)
                         withContext(Dispatchers.Main) {
-                            if (appIcon.tag == pkg) {
+                            if (appIcon.tag == iconKey) {
                                 appIcon.setImageBitmap(bitmap)
                             }
                         }
