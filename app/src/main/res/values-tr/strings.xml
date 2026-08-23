@@ -479,4 +479,6 @@
     <string name="ladb_command_prepare_failed">ADB komutu hazırlanamadı: %1$s</string>
     <string name="remember_deleted_apps">Silinen uygulamaları hatırla</string>
     <string name="remember_deleted_apps_description">Kaldırılan veya devre dışı bırakılan uygulamaların engel durumunu koru ve geri geldiklerinde geri yükle</string>
+    <string name="foreground_detection_unavailable">Ön plan tespiti kullanılamıyor</string>
+    <string name="foreground_detection_unavailable_message">ShizuWall, ön plandaki uygulamayı bildiren ayrıcalıklı yardımcıya ulaşamadı; bu yüzden Smart Foreground, Hybrid ve Focus Tracker modları uygulamaları yönetemez. Çalışma modunun (Shizuku, LADB veya Root) kurulu ve çalışır olduğunu kontrol et.</string>
 </resources>

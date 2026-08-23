@@ -27,19 +27,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.util.Log
-import com.arslan.shizuwall.utils.ForegroundAppResolver
+import com.arslan.shizuwall.firewall.ForegroundTaskProbe
+import com.arslan.shizuwall.firewall.ForegroundTaskWatcher
+import com.arslan.shizuwall.utils.AppKey
+import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 
 /**
  * Foreground service that monitors foreground app changes for Smart Foreground mode.
  *
- * Detection polls [ForegroundAppResolver] (IActivityTaskManager.getTasks() via Shizuku,
- * UsageStats fallback) every [POLL_INTERVAL_MS]. When a new app comes to the foreground:
+ * Detection is push-based: [ForegroundTaskWatcher] delivers task changes from the
+ * privileged helper, with a [RECONCILE_INTERVAL_MS] safety pass. When a new app comes
+ * to the foreground:
  * 1. Allows the new foreground app (first, to minimize latency)
  * 2. Blocks the previously allowed app
  *
@@ -56,7 +61,7 @@ class ForegroundDetectionService : Service() {
         private const val TAG = "ForegroundDetection"
         private const val CHANNEL_ID = "smart_foreground_channel"
         private const val NOTIFICATION_ID = 4001
-        private const val POLL_INTERVAL_MS = 1000L
+        private const val RECONCILE_INTERVAL_MS = 60000L
         private const val SETTLE_RECHECK_MS = 350L
 
         private const val RETRY_DELAY_MS = 300L
@@ -284,15 +289,6 @@ class ForegroundDetectionService : Service() {
 
         serviceScope.launch(Dispatchers.IO) {
             dynamicSkipPackages = resolveDynamicSkipPackages()
-            // Usage access powers the UsageStats detection fallback (primary path in
-            // LADB/Root modes). Self-grant it through the privileged shell.
-            if (!ForegroundAppResolver.hasUsageAccess(applicationContext)) {
-                try {
-                    getShellExecutor().exec("appops set $packageName GET_USAGE_STATS allow")
-                } catch (e: Exception) {
-                    Log.w(TAG, "Usage-access self-grant failed", e)
-                }
-            }
             cleanupStaleBlockedPackages()
         }
 
@@ -319,6 +315,7 @@ class ForegroundDetectionService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
+        ForegroundTaskWatcher.stop()
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(prefListener)
         try { unregisterReceiver(packageReceiver) } catch (_: Exception) {}
         serviceScope.cancel()
@@ -329,27 +326,46 @@ class ForegroundDetectionService : Service() {
     private fun startPolling() {
         if (pollJob?.isActive == true) return
         pollJob = serviceScope.launch {
-            while (isActive) {
-                try {
-                    if (cachedFirewallEnabled && cachedFirewallMode.requiresForegroundDetection()) {
-                        val pkg = withContext(Dispatchers.IO) {
-                            ForegroundAppResolver.getForegroundPackage(applicationContext)
-                        }
-                        if (pkg != null) onForegroundSample(pkg)
+            val samples = Channel<String>(Channel.CONFLATED)
+            val consumer = launch {
+                for (key in samples) {
+                    try {
+                        onForegroundSample(key)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Foreground sample handling failed", e)
                     }
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    Log.w(TAG, "Poll iteration failed", e)
                 }
-                delay(POLL_INTERVAL_MS)
+            }
+            try {
+                while (isActive) {
+                    try {
+                        if (cachedFirewallEnabled && cachedFirewallMode.requiresForegroundDetection()) {
+                            if (!ForegroundTaskWatcher.isActive) {
+                                ForegroundTaskWatcher.start(applicationContext) { samples.trySend(it) }
+                            }
+                            val key = ForegroundTaskProbe.query(applicationContext)
+                            if (key != null) samples.trySend(key)
+                        }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Reconcile iteration failed", e)
+                    }
+                    delay(RECONCILE_INTERVAL_MS)
+                }
+            } finally {
+                consumer.cancel()
+                samples.close()
+                ForegroundTaskWatcher.stop()
             }
         }
     }
 
     private suspend fun onForegroundSample(packageName: String) {
         // Skip self for non-focus-tracker modes to avoid processing our own windows.
-        if (packageName == this.packageName && cachedFirewallMode != FirewallMode.FOCUS_TRACKER) return
+        if (AppKey.packageOf(packageName) == this.packageName && cachedFirewallMode != FirewallMode.FOCUS_TRACKER) return
         if (isTransientOverlayPackage(packageName)) return
 
         // Skip same-package samples immediately.
@@ -368,9 +384,7 @@ class ForegroundDetectionService : Service() {
         speculativelyAllowIfManaged(packageName)
 
         delay(SETTLE_RECHECK_MS)
-        val confirm = withContext(Dispatchers.IO) {
-            ForegroundAppResolver.getForegroundPackage(applicationContext)
-        }
+        val confirm = ForegroundTaskProbe.query(applicationContext)
         if (confirm != packageName) return // changed again; next poll handles it
         processPackageChange(packageName)
     }
@@ -410,7 +424,7 @@ class ForegroundDetectionService : Service() {
         val isSmartForegroundApp = mode == FirewallMode.SMART_FOREGROUND ||
                 (mode == FirewallMode.HYBRID && appMode == 1)
         if (!isSmartForegroundApp) return
-        if (!selectedPackages.contains(packageName) || shouldAlwaysSkipPackage(packageName)) return
+        if (!isPackageSelected(packageName) || shouldAlwaysSkipPackage(packageName)) return
 
         serviceScope.launch(Dispatchers.IO) {
             try {
@@ -425,7 +439,7 @@ class ForegroundDetectionService : Service() {
     private fun processFocusTracker(newPackage: String) {
         // Remove the system ui overlay ignorance feature
         currentForegroundPackage = newPackage
-        val isNowFocused = (newPackage == this.packageName)
+        val isNowFocused = (AppKey.packageOf(newPackage) == this.packageName)
         
         // Only execute when focus changes
         if (isShizuWallFocused == isNowFocused) return
@@ -449,7 +463,7 @@ class ForegroundDetectionService : Service() {
         if (newPackage == currentForegroundPackage) return
 
         val isPlatformSkip = shouldAlwaysSkipPackage(newPackage)
-        val isSelected = selectedPackages.contains(newPackage)
+        val isSelected = isPackageSelected(newPackage)
         val appMode = cachedAppModes[newPackage] ?: 0
         val isSmartForegroundApp = cachedFirewallMode == FirewallMode.SMART_FOREGROUND || (cachedFirewallMode == FirewallMode.HYBRID && appMode == 1)
         val shouldManage = isSelected && !isPlatformSkip && isSmartForegroundApp
@@ -466,9 +480,7 @@ class ForegroundDetectionService : Service() {
                 pendingBlockPackage = previous
                 delay(BLOCK_CONFIRM_DELAY_MS) // grace period before committing the block
 
-                val stillForeground = withContext(Dispatchers.IO) {
-                    ForegroundAppResolver.getForegroundPackage(applicationContext)
-                }
+                val stillForeground = ForegroundTaskProbe.query(applicationContext)
                 if (stillForeground == previous) {
                     pendingBlockPackage = null
                     currentForegroundPackage = previous
@@ -518,11 +530,22 @@ class ForegroundDetectionService : Service() {
 
     private fun shouldSkipPackage(packageName: String): Boolean {
         if (shouldAlwaysSkipPackage(packageName)) return true
-        if (!selectedPackages.contains(packageName)) return true
+        if (!isPackageSelected(packageName)) return true
         return false
     }
 
-    private fun shouldAlwaysSkipPackage(packageName: String): Boolean {
+    // When "show other profiles" is off, clones aren't individually selectable — a
+    // selected primary-user package should still be foreground-managed for its clones.
+    private fun isPackageSelected(key: String): Boolean {
+        if (selectedPackages.contains(key)) return true
+        if (AppKey.isSecondary(key) && !MultiUserApps.isEnabled(this)) {
+            return selectedPackages.contains(AppKey.packageOf(key))
+        }
+        return false
+    }
+
+    private fun shouldAlwaysSkipPackage(key: String): Boolean {
+        val packageName = AppKey.packageOf(key)
         if (packageName == this.packageName) return true
         if (SYSTEM_PACKAGES.contains(packageName)) return true
         if (INPUT_METHOD_PACKAGES.contains(packageName)) return true
@@ -562,7 +585,8 @@ class ForegroundDetectionService : Service() {
         return packages
     }
 
-    private fun isTransientOverlayPackage(packageName: String): Boolean {
+    private fun isTransientOverlayPackage(key: String): Boolean {
+        val packageName = AppKey.packageOf(key)
         if (OVERLAY_PACKAGES.contains(packageName)) return true
         if (INPUT_METHOD_PACKAGES.contains(packageName)) return true
         if (dynamicImePackages.contains(packageName)) return true
@@ -757,7 +781,7 @@ class ForegroundDetectionService : Service() {
         }
     }
 
-    
+
     private suspend fun ensureChain3Enabled(executor: ShellExecutor) {
         try {
             val checkResult = executor.exec("cmd connectivity get-chain3-enabled")
@@ -857,7 +881,7 @@ class ForegroundDetectionService : Service() {
         val contentText = if (activePackage != null) {
             val appLabel = try {
                 packageManager.getApplicationLabel(
-                    packageManager.getApplicationInfo(activePackage, 0)
+                    packageManager.getApplicationInfo(AppKey.packageOf(activePackage), 0)
                 ).toString()
             } catch (_: Exception) {
                 activePackage

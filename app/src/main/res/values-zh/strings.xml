@@ -478,4 +478,6 @@
     <string name="ladb_command_prepare_failed">无法准备 ADB 命令：%1$s</string>
     <string name="remember_deleted_apps">记住已删除的应用</string>
     <string name="remember_deleted_apps_description">保留已删除或已停用应用的拦截状态，并在其恢复时还原</string>
+    <string name="foreground_detection_unavailable">前台检测不可用</string>
+    <string name="foreground_detection_unavailable_message">ShizuWall 无法连接到报告前台应用的特权助手，因此 Smart Foreground、Hybrid 和 Focus Tracker 模式无法管理应用。请检查工作模式（Shizuku、LADB 或 Root）是否已设置并正在运行。</string>
 </resources>

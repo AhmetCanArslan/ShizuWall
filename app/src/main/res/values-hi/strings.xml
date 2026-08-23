@@ -484,4 +484,6 @@
     <string name="ladb_command_prepare_failed">ADB कमांड तैयार नहीं हो सका: %1$s</string>
     <string name="remember_deleted_apps">हटाए गए ऐप्स याद रखें</string>
     <string name="remember_deleted_apps_description">हटाए या अक्षम किए गए ऐप्स की ब्लॉक स्थिति सहेजें और लौटने पर बहाल करें</string>
+    <string name="foreground_detection_unavailable">अग्रभूमि पहचान उपलब्ध नहीं</string>
+    <string name="foreground_detection_unavailable_message">ShizuWall उस विशेषाधिकार प्राप्त हेल्पर तक नहीं पहुँच सका जो बताता है कि कौन सा ऐप अग्रभूमि में है, इसलिए Smart Foreground, Hybrid और Focus Tracker ऐप्स को प्रबंधित नहीं कर सकते। जाँचें कि आपका वर्किंग मोड (Shizuku, LADB या Root) सेट और चालू है।</string>
 </resources>

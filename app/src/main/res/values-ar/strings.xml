@@ -487,4 +487,6 @@
     <string name="ladb_command_prepare_failed">تعذر تحضير أمر ADB: %1$s</string>
     <string name="remember_deleted_apps">تذكّر التطبيقات المحذوفة</string>
     <string name="remember_deleted_apps_description">احتفظ بحالة الحظر للتطبيقات المحذوفة أو المعطّلة واستعدها عند عودتها</string>
+    <string name="foreground_detection_unavailable">تعذّر تشغيل كشف التطبيق الأمامي</string>
+    <string name="foreground_detection_unavailable_message">تعذّر على ShizuWall الوصول إلى المساعد المميّز الذي يحدد التطبيق في المقدمة، لذا لا تستطيع أوضاع Smart Foreground وHybrid وFocus Tracker إدارة التطبيقات. تأكد من إعداد وضع العمل (Shizuku أو LADB أو Root) وتشغيله.</string>
 </resources>

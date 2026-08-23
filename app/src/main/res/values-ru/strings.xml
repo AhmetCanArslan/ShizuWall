@@ -483,4 +483,6 @@
     <string name="ladb_command_prepare_failed">Не удалось подготовить команду ADB: %1$s</string>
     <string name="remember_deleted_apps">Запоминать удалённые приложения</string>
     <string name="remember_deleted_apps_description">Сохранять состояние блокировки удалённых или отключённых приложений и восстанавливать его при возврате</string>
+    <string name="foreground_detection_unavailable">Определение активного приложения недоступно</string>
+    <string name="foreground_detection_unavailable_message">ShizuWall не смог связаться с привилегированным помощником, который сообщает активное приложение, поэтому режимы Smart Foreground, Hybrid и Focus Tracker не могут управлять приложениями. Проверьте, что рабочий режим (Shizuku, LADB или Root) настроен и работает.</string>
 </resources>

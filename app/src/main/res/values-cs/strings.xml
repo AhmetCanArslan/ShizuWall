@@ -485,4 +485,6 @@
     <string name="ladb_command_prepare_failed">Příkaz ADB se nepodařilo připravit: %1$s</string>
     <string name="remember_deleted_apps">Pamatovat smazané aplikace</string>
     <string name="remember_deleted_apps_description">Zachovat stav blokování odebraných či zakázaných aplikací a obnovit jej při jejich návratu</string>
+    <string name="foreground_detection_unavailable">Detekce aplikace v popředí není dostupná</string>
+    <string name="foreground_detection_unavailable_message">ShizuWall se nedokázal spojit s privilegovaným pomocníkem, který hlásí aplikaci v popředí, takže režimy Smart Foreground, Hybrid a Focus Tracker nemohou spravovat aplikace. Zkontrolujte, že je váš pracovní režim (Shizuku, LADB nebo Root) nastavený a běží.</string>
 </resources>

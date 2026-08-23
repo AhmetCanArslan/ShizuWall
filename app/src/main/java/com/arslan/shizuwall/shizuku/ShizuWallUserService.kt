@@ -3,6 +3,7 @@ package com.arslan.shizuwall.shizuku
 import android.os.DeadObjectException
 import android.os.IBinder
 import android.util.Log
+import com.arslan.shizuwall.daemon.SystemDaemon
 import com.arslan.shizuwall.shell.ShellResult
 import java.lang.reflect.Method
 import kotlin.system.exitProcess
@@ -16,6 +17,9 @@ class ShizuWallUserService : IShizuWallUserService.Stub {
 
     @Volatile
     private var cachedMethod: Method? = null
+
+    @Volatile
+    private var watchThread: Thread? = null
 
     override fun destroy() {
         exitProcess(0)
@@ -31,6 +35,33 @@ class ShizuWallUserService : IShizuWallUserService.Stub {
             results[index] = applyRule(chain, uids[index], rules[index])
         }
         return results
+    }
+
+    override fun getForegroundTask(): String = SystemDaemon.foregroundTask()
+
+    override fun startForegroundWatch(listener: IShizuWallForegroundListener?) {
+        if (listener == null) return
+        stopForegroundWatch()
+        val thread = Thread {
+            SystemDaemon.watchForegroundTask({ value ->
+                if (Thread.currentThread() != watchThread) return@watchForegroundTask false
+                try {
+                    listener.onForegroundTask(value)
+                    true
+                } catch (t: Throwable) {
+                    Log.w(TAG, "Foreground listener is gone", t)
+                    false
+                }
+            }, false)
+        }
+        thread.isDaemon = true
+        watchThread = thread
+        thread.start()
+    }
+
+    override fun stopForegroundWatch() {
+        watchThread?.interrupt()
+        watchThread = null
     }
 
     private fun applyRule(chain: Int, uid: Int, rule: Int): String? {

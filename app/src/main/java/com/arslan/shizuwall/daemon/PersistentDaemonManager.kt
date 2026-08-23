@@ -162,6 +162,17 @@ class PersistentDaemonManager(private val context: Context) {
         }
     }
 
+    fun openStreamingCommand(command: String): Socket {
+        val socket = Socket()
+        socket.connect(InetSocketAddress("127.0.0.1", daemonPort), CONNECT_TIMEOUT_MS)
+        socket.soTimeout = 0
+        val output = socket.getOutputStream().bufferedWriter()
+        output.write("${getOrGenerateToken()}\n")
+        output.write("$command\n")
+        output.flush()
+        return socket
+    }
+
     suspend fun executeCommand(command: String): String = connectionMutex.withLock {
         withContext(Dispatchers.IO) {
             val socket = Socket()

@@ -18,7 +18,7 @@ object ShizukuUserServiceManager {
     private const val TAG = "ShizukuUserService"
     private const val BIND_TIMEOUT_MS = 10_000L
 
-    private const val SERVICE_REVISION = 2
+    private const val SERVICE_REVISION = 4
     private val SERVICE_VERSION = BuildConfig.VERSION_CODE * 100 + SERVICE_REVISION
 
     private val lock = Mutex()
@@ -45,6 +45,8 @@ object ShizukuUserServiceManager {
             alive() ?: bind()?.also { service = it }
         }
     }
+
+    fun peek(): IShizuWallUserService? = alive()
 
     private fun alive(): IShizuWallUserService? =
         service?.takeIf { runCatching { it.asBinder().pingBinder() }.getOrDefault(false) }

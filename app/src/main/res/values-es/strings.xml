@@ -482,4 +482,6 @@
     <string name="ladb_command_prepare_failed">No se pudo preparar el comando ADB: %1$s</string>
     <string name="remember_deleted_apps">Recordar apps eliminadas</string>
     <string name="remember_deleted_apps_description">Conservar el estado de bloqueo de las apps eliminadas o desactivadas y restaurarlo cuando vuelvan</string>
+    <string name="foreground_detection_unavailable">Detección de primer plano no disponible</string>
+    <string name="foreground_detection_unavailable_message">ShizuWall no pudo contactar con el asistente privilegiado que informa qué app está en primer plano, así que los modos Smart Foreground, Hybrid y Focus Tracker no pueden gestionar apps. Comprueba que tu modo de trabajo (Shizuku, LADB o Root) esté configurado y en ejecución.</string>
 </resources>

@@ -129,7 +129,7 @@ object PerUidFirewall {
 
     private fun failureText(t: Throwable): String = t.message?.takeIf { it.isNotBlank() } ?: t.toString()
 
-    private fun extractHelperDex(context: Context): File {
+    fun extractHelperDex(context: Context): File {
         val dex = File(context.filesDir, DAEMON_DEX_NAME)
         val stamp = File(context.filesDir, DAEMON_STAMP_NAME)
         val version = BuildConfig.VERSION_CODE.toString()

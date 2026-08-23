@@ -481,4 +481,6 @@
     <string name="ladb_command_prepare_failed">ADB コマンドを準備できませんでした: %1$s</string>
     <string name="remember_deleted_apps">削除したアプリを記憶</string>
     <string name="remember_deleted_apps_description">削除・無効化したアプリのブロック状態を保持し、復帰時に復元します</string>
+    <string name="foreground_detection_unavailable">フォアグラウンド検出を利用できません</string>
+    <string name="foreground_detection_unavailable_message">前面のアプリを報告する特権ヘルパーに接続できないため、Smart Foreground・Hybrid・Focus Tracker はアプリを管理できません。動作モード（Shizuku / LADB / Root）が設定され動作しているか確認してください。</string>
 </resources>

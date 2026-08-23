@@ -67,7 +67,7 @@ import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
-import com.arslan.shizuwall.utils.ForegroundAppResolver
+import com.arslan.shizuwall.firewall.ForegroundTaskProbe
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.MultiUserApps
@@ -2200,7 +2200,7 @@ class MainActivity : BaseActivity() {
             showDimOverlay(force = true)
             
             if (enable && firewallMode.requiresForegroundDetection()) {
-                promptUsageAccessIfNeeded()
+                warnIfForegroundDetectionUnavailable()
             }
             
             try {
@@ -2345,15 +2345,15 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    /**
-     * Last-resort prompt for usage access. The detection service self-grants it via the
-     * privileged shell on start; this only fires when usage access is missing.
-     */
-    private fun promptUsageAccessIfNeeded() {
-        if (ForegroundAppResolver.hasUsageAccess(this)) return
-        try {
-            startActivity(Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS))
-        } catch (_: Exception) {}
+    private suspend fun warnIfForegroundDetectionUnavailable() {
+        if (ForegroundTaskProbe.query(this) != null || ForegroundTaskProbe.isAvailable) return
+        if (isFinishing || isDestroyed) return
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.foreground_detection_unavailable))
+            .setMessage(getString(R.string.foreground_detection_unavailable_message))
+            .setPositiveButton(getString(R.string.ok), null)
+            .create()
+            .show()
     }
 
     private fun filterInstalledPackages(packageNames: List<String>): Pair<List<String>, List<String>> {

@@ -485,4 +485,6 @@
     <string name="ladb_command_prepare_failed">Could not prepare the ADB command: %1$s</string>
     <string name="remember_deleted_apps">Remember deleted apps</string>
     <string name="remember_deleted_apps_description">Keep the block state of removed or disabled apps and restore it when they come back</string>
+    <string name="foreground_detection_unavailable">Foreground detection unavailable</string>
+    <string name="foreground_detection_unavailable_message">ShizuWall could not reach the privileged helper that reports which app is in the foreground, so Smart Foreground, Hybrid and Focus Tracker cannot manage apps. Check that your working mode (Shizuku, LADB or Root) is set up and running.</string>
 </resources>
