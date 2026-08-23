@@ -39,6 +39,14 @@ object CrossUserAppInfo {
         return handle.toString().filter { it.isDigit() }.toIntOrNull() ?: -1
     }
 
+
+    private fun handleOf(userId: Int): UserHandle? = try {
+        UserHandle::class.java.getMethod("of", Int::class.javaPrimitiveType)
+            .invoke(null, userId) as? UserHandle
+    } catch (_: Exception) {
+        null
+    }
+
     fun applicationInfo(context: Context, packageName: String, userId: Int): ApplicationInfo? {
         if (userId != 0) {
             val handle = userHandle(context, userId)
@@ -74,7 +82,7 @@ object CrossUserAppInfo {
         } catch (_: Exception) {
             return null
         }
-        val handle = userHandle(context, userId) ?: return icon
+        val handle = handleOf(userId) ?: userHandle(context, userId) ?: return icon
         return try {
             pm.getUserBadgedIcon(icon, handle)
         } catch (_: Exception) {
