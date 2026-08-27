@@ -1306,6 +1306,8 @@ class AdbPortFinder(context: Context, private val listener: AdbPortListener) {
             Log.d(TAG, "Pairing service discovery started")
         }
 
+
+        @Suppress("DEPRECATION")
         override fun onServiceFound(service: NsdServiceInfo) {
             Log.d(TAG, "Pairing service found: ${service.serviceName}")
             nsdManager.resolveService(service, object : NsdManager.ResolveListener {
@@ -1345,6 +1347,8 @@ class AdbPortFinder(context: Context, private val listener: AdbPortListener) {
             Log.d(TAG, "Connect service discovery started")
         }
 
+
+        @Suppress("DEPRECATION")
         override fun onServiceFound(service: NsdServiceInfo) {
             Log.d(TAG, "Connect service found: ${service.serviceName}")
             nsdManager.resolveService(service, object : NsdManager.ResolveListener {

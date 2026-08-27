@@ -180,7 +180,7 @@ class ForegroundDetectionService : Service() {
 
                 if (!cachedFirewallEnabled) {
                     try {
-                        stopForeground(true)
+                        stopForeground(STOP_FOREGROUND_REMOVE)
                     } catch (e: Exception) {
                         Log.w(TAG, "Failed to stop foreground on disable", e)
                     }
@@ -204,7 +204,7 @@ class ForegroundDetectionService : Service() {
 
                 if (!cachedFirewallMode.requiresForegroundDetection()) {
                     try {
-                        stopForeground(true)
+                        stopForeground(STOP_FOREGROUND_REMOVE)
                     } catch (e: Exception) {
                         Log.w(TAG, "Failed to stop foreground on mode change", e)
                     }
