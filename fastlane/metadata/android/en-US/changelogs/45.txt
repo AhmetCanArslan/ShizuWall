@@ -1,0 +1,7 @@
+Foreground detection now covers work profile and cloned apps, and is pushed by the system instead of polled
+No accessibility service and no usage access needed for foreground modes anymore
+Profile category chips in the app list: filter by Work, Clone or Secure Folder
+Profile labels in the "Enable Firewall" confirmation dialog, so clones are no longer indistinguishable #139
+Knox / Secure Folder apps are enumerated through dumpsys, where pm is blocked #136
+Per-user app icons and labels, so a cloned app shows its own profile badge
+Notification texts now explain how to hide the service notification #137
