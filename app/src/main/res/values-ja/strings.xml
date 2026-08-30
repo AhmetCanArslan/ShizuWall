@@ -483,4 +483,9 @@
     <string name="remember_deleted_apps_description">削除・無効化したアプリのブロック状態を保持し、復帰時に復元します</string>
     <string name="foreground_detection_unavailable">フォアグラウンド検出を利用できません</string>
     <string name="foreground_detection_unavailable_message">前面のアプリを報告する特権ヘルパーに接続できないため、Smart Foreground・Hybrid・Focus Tracker はアプリを管理できません。動作モード（Shizuku / LADB / Root）が設定され動作しているか確認してください。</string>
+    <string name="empty_app_list_title">表示できるアプリがありません</string>
+    <string name="empty_app_list_message">ユーザーがインストールしたアプリのみ表示されます。この端末のすべてを表示するにはシステムアプリをオンにしてください。</string>
+    <string name="empty_app_list_action">システムアプリを表示</string>
+    <string name="empty_app_list_search_title">結果がありません</string>
+    <string name="empty_app_list_search_message">検索に一致するアプリがありません。</string>
 </resources>

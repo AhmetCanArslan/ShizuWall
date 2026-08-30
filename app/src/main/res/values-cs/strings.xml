@@ -487,4 +487,9 @@
     <string name="remember_deleted_apps_description">Zachovat stav blokování odebraných či zakázaných aplikací a obnovit jej při jejich návratu</string>
     <string name="foreground_detection_unavailable">Detekce aplikace v popředí není dostupná</string>
     <string name="foreground_detection_unavailable_message">ShizuWall se nedokázal spojit s privilegovaným pomocníkem, který hlásí aplikaci v popředí, takže režimy Smart Foreground, Hybrid a Focus Tracker nemohou spravovat aplikace. Zkontrolujte, že je váš pracovní režim (Shizuku, LADB nebo Root) nastavený a běží.</string>
+    <string name="empty_app_list_title">Žádné aplikace k zobrazení</string>
+    <string name="empty_app_list_message">Zobrazují se pouze uživatelem nainstalované aplikace. Zapněte systémové aplikace, abyste viděli vše na tomto zařízení.</string>
+    <string name="empty_app_list_action">Zobrazit systémové aplikace</string>
+    <string name="empty_app_list_search_title">Žádné výsledky</string>
+    <string name="empty_app_list_search_message">Vašemu hledání neodpovídá žádná aplikace.</string>
 </resources>

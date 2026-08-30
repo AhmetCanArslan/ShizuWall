@@ -487,4 +487,9 @@
     <string name="remember_deleted_apps_description">Keep the block state of removed or disabled apps and restore it when they come back</string>
     <string name="foreground_detection_unavailable">Foreground detection unavailable</string>
     <string name="foreground_detection_unavailable_message">ShizuWall could not reach the privileged helper that reports which app is in the foreground, so Smart Foreground, Hybrid and Focus Tracker cannot manage apps. Check that your working mode (Shizuku, LADB or Root) is set up and running.</string>
+    <string name="empty_app_list_title">No apps to show</string>
+    <string name="empty_app_list_message">Only user-installed apps are listed. Turn on system apps to see everything installed on this device.</string>
+    <string name="empty_app_list_action">Show system apps</string>
+    <string name="empty_app_list_search_title">No results</string>
+    <string name="empty_app_list_search_message">No app matches your search.</string>
 </resources>

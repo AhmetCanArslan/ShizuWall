@@ -254,4 +254,45 @@
             android:textSize="14sp" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/appListEmptyContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/recyclerView"
+        app:layout_constraintBottom_toBottomOf="@id/recyclerView"
+        app:layout_constraintStart_toStartOf="@id/recyclerView"
+        app:layout_constraintEnd_toEndOf="@id/recyclerView">
+
+        <TextView
+            android:id="@+id/appListEmptyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_app_list_title"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/appListEmptyMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/empty_app_list_message"
+            android:textSize="14sp"
+            android:gravity="center" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/appListEmptyAction"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/empty_app_list_action" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

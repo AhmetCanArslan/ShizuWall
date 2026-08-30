@@ -489,4 +489,9 @@
     <string name="remember_deleted_apps_description">احتفظ بحالة الحظر للتطبيقات المحذوفة أو المعطّلة واستعدها عند عودتها</string>
     <string name="foreground_detection_unavailable">تعذّر تشغيل كشف التطبيق الأمامي</string>
     <string name="foreground_detection_unavailable_message">تعذّر على ShizuWall الوصول إلى المساعد المميّز الذي يحدد التطبيق في المقدمة، لذا لا تستطيع أوضاع Smart Foreground وHybrid وFocus Tracker إدارة التطبيقات. تأكد من إعداد وضع العمل (Shizuku أو LADB أو Root) وتشغيله.</string>
+    <string name="empty_app_list_title">لا توجد تطبيقات لعرضها</string>
+    <string name="empty_app_list_message">يتم عرض التطبيقات المثبتة من قِبل المستخدم فقط. فعّل تطبيقات النظام لعرض كل ما هو مثبت على هذا الجهاز.</string>
+    <string name="empty_app_list_action">إظهار تطبيقات النظام</string>
+    <string name="empty_app_list_search_title">لا توجد نتائج</string>
+    <string name="empty_app_list_search_message">لا يوجد تطبيق يطابق بحثك.</string>
 </resources>

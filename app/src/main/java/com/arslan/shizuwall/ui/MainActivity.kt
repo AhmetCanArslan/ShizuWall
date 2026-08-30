@@ -142,6 +142,10 @@ class MainActivity : BaseActivity() {
     private lateinit var searchView: SearchView
     private lateinit var selectedCountText: TextView
     private lateinit var appListLoadingContainer: View
+    private lateinit var appListEmptyContainer: View
+    private lateinit var appListEmptyTitle: TextView
+    private lateinit var appListEmptyMessage: TextView
+    private lateinit var appListEmptyAction: com.google.android.material.button.MaterialButton
     private val appList = mutableListOf<AppInfo>()
     private val filteredAppList = mutableListOf<AppInfo>()
     private var isFirewallEnabled = false
@@ -911,6 +915,7 @@ class MainActivity : BaseActivity() {
                     if (::recyclerView.isInitialized) recyclerView.itemAnimator = defaultItemAnimator
                     updateSelectedCount()
                 }
+                updateEmptyState()
                 return true
             }
         })
@@ -1019,6 +1024,11 @@ class MainActivity : BaseActivity() {
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.recyclerView)
         appListLoadingContainer = findViewById(R.id.appListLoadingContainer)
+        appListEmptyContainer = findViewById(R.id.appListEmptyContainer)
+        appListEmptyTitle = findViewById(R.id.appListEmptyTitle)
+        appListEmptyMessage = findViewById(R.id.appListEmptyMessage)
+        appListEmptyAction = findViewById(R.id.appListEmptyAction)
+        appListEmptyAction.setOnClickListener { enableShowSystemAppsFromEmptyState() }
         recyclerView.layoutManager = LinearLayoutManager(this)
         appListAdapter = AppListAdapter(
             onAppClick = { appInfo ->
@@ -1226,6 +1236,7 @@ class MainActivity : BaseActivity() {
             
             // Force adapter to update by submitting a new list
             appListAdapter.submitList(filteredAppList.toList())
+            updateEmptyState()
         }
     }
 
@@ -1434,6 +1445,7 @@ class MainActivity : BaseActivity() {
                 }
 
                 updateSelectedCount()
+                updateEmptyState()
 
                 if (animate || smoothTransition) {
                     val fadeInDelay = if (smoothTransition) 0L else 400L
@@ -2024,6 +2036,36 @@ class MainActivity : BaseActivity() {
 
         isAppListLoadingVisible = visible
         appListLoadingContainer.visibility = if (visible) View.VISIBLE else View.GONE
+        updateEmptyState()
+    }
+
+    private fun updateEmptyState() {
+        if (!::appListEmptyContainer.isInitialized) return
+
+        val show = filteredAppList.isEmpty() && !isAppListLoadingVisible
+        appListEmptyContainer.visibility = if (show) View.VISIBLE else View.GONE
+        if (!show) return
+
+        val searching = currentQuery.isNotEmpty()
+        val offerSystemApps = !searching && !showSystemApps && currentCategory != Category.SYSTEM
+
+        appListEmptyTitle.setText(
+            if (searching) R.string.empty_app_list_search_title else R.string.empty_app_list_title
+        )
+        appListEmptyMessage.setText(
+            if (searching) R.string.empty_app_list_search_message else R.string.empty_app_list_message
+        )
+        appListEmptyMessage.visibility = if (searching || offerSystemApps) View.VISIBLE else View.GONE
+        appListEmptyAction.visibility = if (offerSystemApps) View.VISIBLE else View.GONE
+    }
+
+    private fun enableShowSystemAppsFromEmptyState() {
+        if (showSystemApps) return
+        showSystemApps = true
+        sharedPreferences.edit().putBoolean(KEY_SHOW_SYSTEM_APPS, showSystemApps).apply()
+        reconcileActiveProfile()
+        updateCategoryChips()
+        sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
     }
 
     private fun saveSelectedApps() {

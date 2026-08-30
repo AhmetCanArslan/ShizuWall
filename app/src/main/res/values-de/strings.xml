@@ -480,4 +480,9 @@
     <string name="remember_deleted_apps_description">Blockierstatus entfernter oder deaktivierter Apps behalten und bei ihrer Rückkehr wiederherstellen</string>
     <string name="foreground_detection_unavailable">Vordergrunderkennung nicht verfügbar</string>
     <string name="foreground_detection_unavailable_message">ShizuWall konnte den privilegierten Helfer, der die App im Vordergrund meldet, nicht erreichen. Smart Foreground, Hybrid und Focus Tracker können daher keine Apps verwalten. Prüfe, ob dein Arbeitsmodus (Shizuku, LADB oder Root) eingerichtet ist und läuft.</string>
+    <string name="empty_app_list_title">Keine Apps vorhanden</string>
+    <string name="empty_app_list_message">Es werden nur selbst installierte Apps aufgelistet. Aktiviere System-Apps, um alles auf diesem Gerät zu sehen.</string>
+    <string name="empty_app_list_action">System-Apps anzeigen</string>
+    <string name="empty_app_list_search_title">Keine Ergebnisse</string>
+    <string name="empty_app_list_search_message">Keine App entspricht deiner Suche.</string>
 </resources>

@@ -485,4 +485,9 @@
     <string name="remember_deleted_apps_description">Сохранять состояние блокировки удалённых или отключённых приложений и восстанавливать его при возврате</string>
     <string name="foreground_detection_unavailable">Определение активного приложения недоступно</string>
     <string name="foreground_detection_unavailable_message">ShizuWall не смог связаться с привилегированным помощником, который сообщает активное приложение, поэтому режимы Smart Foreground, Hybrid и Focus Tracker не могут управлять приложениями. Проверьте, что рабочий режим (Shizuku, LADB или Root) настроен и работает.</string>
+    <string name="empty_app_list_title">Нет приложений</string>
+    <string name="empty_app_list_message">Показаны только установленные пользователем приложения. Включите системные приложения, чтобы увидеть всё на этом устройстве.</string>
+    <string name="empty_app_list_action">Показать системные приложения</string>
+    <string name="empty_app_list_search_title">Нет результатов</string>
+    <string name="empty_app_list_search_message">Нет приложений, соответствующих запросу.</string>
 </resources>

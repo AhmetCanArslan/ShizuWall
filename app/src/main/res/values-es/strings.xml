@@ -484,4 +484,9 @@
     <string name="remember_deleted_apps_description">Conservar el estado de bloqueo de las apps eliminadas o desactivadas y restaurarlo cuando vuelvan</string>
     <string name="foreground_detection_unavailable">Detección de primer plano no disponible</string>
     <string name="foreground_detection_unavailable_message">ShizuWall no pudo contactar con el asistente privilegiado que informa qué app está en primer plano, así que los modos Smart Foreground, Hybrid y Focus Tracker no pueden gestionar apps. Comprueba que tu modo de trabajo (Shizuku, LADB o Root) esté configurado y en ejecución.</string>
+    <string name="empty_app_list_title">No hay aplicaciones</string>
+    <string name="empty_app_list_message">Solo se muestran las aplicaciones instaladas por el usuario. Activa las aplicaciones del sistema para ver todo lo instalado en este dispositivo.</string>
+    <string name="empty_app_list_action">Mostrar aplicaciones del sistema</string>
+    <string name="empty_app_list_search_title">Sin resultados</string>
+    <string name="empty_app_list_search_message">Ninguna aplicación coincide con tu búsqueda.</string>
 </resources>

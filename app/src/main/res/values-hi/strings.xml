@@ -486,4 +486,9 @@
     <string name="remember_deleted_apps_description">हटाए या अक्षम किए गए ऐप्स की ब्लॉक स्थिति सहेजें और लौटने पर बहाल करें</string>
     <string name="foreground_detection_unavailable">अग्रभूमि पहचान उपलब्ध नहीं</string>
     <string name="foreground_detection_unavailable_message">ShizuWall उस विशेषाधिकार प्राप्त हेल्पर तक नहीं पहुँच सका जो बताता है कि कौन सा ऐप अग्रभूमि में है, इसलिए Smart Foreground, Hybrid और Focus Tracker ऐप्स को प्रबंधित नहीं कर सकते। जाँचें कि आपका वर्किंग मोड (Shizuku, LADB या Root) सेट और चालू है।</string>
+    <string name="empty_app_list_title">दिखाने के लिए कोई ऐप नहीं</string>
+    <string name="empty_app_list_message">केवल उपयोगकर्ता द्वारा इंस्टॉल किए गए ऐप्स दिखाए जाते हैं। इस डिवाइस पर मौजूद सब कुछ देखने के लिए सिस्टम ऐप्स चालू करें।</string>
+    <string name="empty_app_list_action">सिस्टम ऐप्स दिखाएं</string>
+    <string name="empty_app_list_search_title">कोई परिणाम नहीं</string>
+    <string name="empty_app_list_search_message">आपकी खोज से कोई ऐप मेल नहीं खाता।</string>
 </resources>
