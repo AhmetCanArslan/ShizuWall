@@ -63,15 +63,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/app_monitor_service"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/app_monitor_service_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -120,15 +119,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/auto_firewall_new_apps"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/auto_firewall_new_apps_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -177,15 +175,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/firewall_status_notification"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/firewall_status_notification_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -234,21 +231,20 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/floating_button"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/floating_button_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnFloatingButtonSettings"
-                        style="@style/Widget.Material3.Button.IconButton"
+                        style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginEnd="4dp"

@@ -10,8 +10,7 @@
         android:id="@+id/dialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.Material3.TitleLarge.Emphasized"
         android:layout_marginBottom="16dp"
         android:textColor="?attr/colorOnSurface" />
 
@@ -19,7 +18,7 @@
         android:id="@+id/dialogMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:layout_marginBottom="16dp"
         android:textColor="?attr/colorOnSurface" />
 

@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:textSize="14sp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
         android:textColor="?attr/colorOnSurface" />
 
     <TextView
@@ -30,8 +30,7 @@
         android:paddingVertical="2dp"
         android:background="@drawable/bg_profile_badge"
         android:importantForAccessibility="no"
-        android:textSize="11sp"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.Material3.LabelSmall.Emphasized"
         android:visibility="gone"
         android:textColor="?attr/colorOnTertiaryContainer" />
 

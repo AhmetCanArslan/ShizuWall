@@ -19,8 +19,7 @@
         android:id="@+id/page_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall.Emphasized"
         android:layout_marginBottom="16dp"
         android:textColor="?attr/colorOnSurface" />
 
@@ -28,7 +27,7 @@
         android:id="@+id/page_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:gravity="center"
         android:layout_marginBottom="32dp"
         android:textColor="?attr/colorOnSurface" />
@@ -42,7 +41,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/page_button_secondary"
-        style="@style/Widget.Material3.Button.TonalButton"
+        style="@style/Widget.Material3Expressive.Button.TonalButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -51,7 +50,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/page_button_tertiary"
-        style="@style/Widget.Material3.Button.TonalButton"
+        style="@style/Widget.Material3Expressive.Button.TonalButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

@@ -68,8 +68,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="?attr/colorOnSurface"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                 tools:text="Home" />
 
             <TextView
@@ -80,7 +79,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="13sp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                 tools:text="12 apps · Default" />
 
         </LinearLayout>
@@ -96,8 +95,7 @@
             android:text="@string/profile_active"
             android:textAllCaps="true"
             android:textColor="?attr/colorOnPrimary"
-            android:textSize="10sp"
-            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall.Emphasized"
             android:visibility="gone"
             tools:visibility="visible" />
 

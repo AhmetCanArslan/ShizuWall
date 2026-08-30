@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainer"
             app:strokeWidth="0dp">
 
@@ -38,9 +38,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/adb_broadcast_field_action"
-                    android:textStyle="bold"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:textSize="13sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall.Emphasized" />
 
                 <TextView
                     android:id="@+id/tvBroadcastActionValue"
@@ -51,7 +50,7 @@
                     android:fontFamily="monospace"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textIsSelectable="true"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <ImageButton
                     android:id="@+id/btnCopyBroadcastAction"
@@ -71,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainer"
             app:strokeWidth="0dp">
 
@@ -85,9 +84,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/adb_broadcast_field_component"
-                    android:textStyle="bold"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:textSize="13sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall.Emphasized" />
 
                 <TextView
                     android:id="@+id/tvBroadcastComponentValue"
@@ -98,7 +96,7 @@
                     android:fontFamily="monospace"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textIsSelectable="true"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <ImageButton
                     android:id="@+id/btnCopyBroadcastComponent"
@@ -118,7 +116,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainer"
             app:strokeWidth="0dp">
 
@@ -132,9 +130,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/adb_broadcast_field_extras"
-                    android:textStyle="bold"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:textSize="13sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall.Emphasized" />
 
                 <TextView
                     android:id="@+id/tvBroadcastExtrasValue"
@@ -142,7 +139,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -150,16 +147,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/adb_broadcast_examples_title"
-            android:textStyle="bold"
             android:textColor="?android:attr/textColorPrimary"
-            android:textSize="14sp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall.Emphasized"
             android:paddingBottom="8dp" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainer"
             app:strokeWidth="0dp">
 
@@ -174,7 +170,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/adb_broadcast_example_enable_selected"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <TextView
                     android:id="@+id/tvCmdEnableSelected"
@@ -185,7 +181,7 @@
                     android:fontFamily="monospace"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textIsSelectable="true"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <ImageButton
                     android:id="@+id/btnCopyCmdEnableSelected"
@@ -205,7 +201,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainer"
             app:strokeWidth="0dp">
 
@@ -220,7 +216,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/adb_broadcast_example_disable_selected"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <TextView
                     android:id="@+id/tvCmdDisableSelected"
@@ -231,7 +227,7 @@
                     android:fontFamily="monospace"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textIsSelectable="true"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <ImageButton
                     android:id="@+id/btnCopyCmdDisableSelected"
@@ -251,7 +247,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainer"
             app:strokeWidth="0dp">
 
@@ -266,7 +262,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/adb_broadcast_example_enable_csv"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <TextView
                     android:id="@+id/tvCmdEnableCsv"
@@ -277,7 +273,7 @@
                     android:fontFamily="monospace"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textIsSelectable="true"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <ImageButton
                     android:id="@+id/btnCopyCmdEnableCsv"
@@ -297,7 +293,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="6dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainer"
             app:strokeWidth="0dp">
 
@@ -312,7 +308,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/adb_broadcast_example_disable_csv"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <TextView
                     android:id="@+id/tvCmdDisableCsv"
@@ -323,7 +319,7 @@
                     android:fontFamily="monospace"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textIsSelectable="true"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <ImageButton
                     android:id="@+id/btnCopyCmdDisableCsv"
@@ -344,16 +340,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="@string/adb_broadcast_developer_section_title"
-            android:textStyle="bold"
             android:textColor="?android:attr/textColorPrimary"
-            android:textSize="14sp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleSmall.Emphasized"
             android:paddingBottom="8dp" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainer"
             app:strokeWidth="0dp">
 
@@ -368,7 +363,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/adb_broadcast_dev_enable_framework"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <TextView
                     android:id="@+id/tvDevCmdEnableFramework"
@@ -380,7 +375,7 @@
                     android:text="cmd connectivity set-chain3-enabled true"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textIsSelectable="true"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <ImageButton
                     android:id="@+id/btnCopyDevCmdEnableFramework"
@@ -400,7 +395,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainer"
             app:strokeWidth="0dp">
 
@@ -415,7 +410,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/adb_broadcast_dev_block_package"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <TextView
                     android:id="@+id/tvDevCmdBlockPackage"
@@ -427,7 +422,7 @@
                     android:text="cmd connectivity set-package-networking-enabled false &lt;package.name&gt;"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textIsSelectable="true"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <ImageButton
                     android:id="@+id/btnCopyDevCmdBlockPackage"
@@ -447,7 +442,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainer"
             app:strokeWidth="0dp">
 
@@ -462,7 +457,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/adb_broadcast_dev_unblock_package"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <TextView
                     android:id="@+id/tvDevCmdUnblockPackage"
@@ -474,7 +469,7 @@
                     android:text="cmd connectivity set-package-networking-enabled true &lt;package.name&gt;"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textIsSelectable="true"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <ImageButton
                     android:id="@+id/btnCopyDevCmdUnblockPackage"
@@ -494,7 +489,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="6dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="20dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainer"
             app:strokeWidth="0dp">
 
@@ -509,7 +504,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/adb_broadcast_dev_disable_framework"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <TextView
                     android:id="@+id/tvDevCmdDisableFramework"
@@ -521,7 +516,7 @@
                     android:text="cmd connectivity set-chain3-enabled false"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textIsSelectable="true"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
                 <ImageButton
                     android:id="@+id/btnCopyDevCmdDisableFramework"

@@ -1,8 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.ShizuWall" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Choice</item>
+
+    <style name="Theme.ShizuWallBase" parent="Theme.Material3Expressive.DayNight.NoActionBar">
+        <item name="chipStyle">@style/Widget.ShizuWall.Chip</item>
+        <item name="materialCardViewStyle">@style/Widget.ShizuWall.CardView</item>
+        <item name="materialIconButtonStyle">@style/Widget.Material3Expressive.Button.IconButton.Standard</item>
+        <item name="materialIconButtonFilledStyle">@style/Widget.Material3Expressive.Button.IconButton.Filled</item>
+        <item name="materialIconButtonFilledTonalStyle">@style/Widget.Material3Expressive.Button.IconButton.Tonal</item>
+        <item name="materialIconButtonOutlinedStyle">@style/Widget.Material3Expressive.Button.IconButton.Outlined</item>
+        <item name="circularProgressIndicatorStyle">@style/Widget.Material3Expressive.CircularProgressIndicator.Wavy</item>
+        <item name="linearProgressIndicatorStyle">@style/Widget.Material3Expressive.LinearProgressIndicator.Wavy</item>
+        <item name="materialButtonGroupStyle">@style/Widget.Material3Expressive.MaterialButtonGroup</item>
+        <item name="materialButtonToggleGroupStyle">@style/Widget.Material3Expressive.MaterialButtonToggleGroup</item>
+        <item name="sliderStyle">@style/Widget.Material3Expressive.Slider.Medium</item>
+        <item name="materialSearchBarStyle">@style/Widget.Material3Expressive.SearchBar</item>
+        <item name="materialSearchViewStyle">@style/Widget.Material3Expressive.SearchView</item>
     </style>
+
+    <style name="Base.Theme.ShizuWall" parent="Theme.ShizuWallBase" />
 
     <style name="Theme.ShizuWall" parent="Base.Theme.ShizuWall" />
 
@@ -31,13 +45,19 @@
         <item name="chipStyle">@style/Widget.ShizuWall.Chip.Ndot</item>
     </style>
 
-    <style name="Widget.ShizuWall.Chip.Ndot" parent="Widget.MaterialComponents.Chip.Choice">
+    <style name="Widget.ShizuWall.Chip" parent="Widget.Material3.Chip.Filter" />
+
+    <style name="Widget.ShizuWall.CardView" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+    </style>
+
+    <style name="Widget.ShizuWall.Chip.Ndot" parent="Widget.ShizuWall.Chip">
         <item name="android:fontFamily">@font/ndot</item>
         <item name="fontFamily">@font/ndot</item>
         <item name="android:textAppearance">@style/TextAppearance.ShizuWall.Chip.Ndot</item>
     </style>
 
-    <style name="TextAppearance.ShizuWall.Chip.Ndot" parent="TextAppearance.MaterialComponents.Chip">
+    <style name="TextAppearance.ShizuWall.Chip.Ndot" parent="TextAppearance.Material3.LabelLarge">
         <item name="android:fontFamily">@font/ndot</item>
         <item name="fontFamily">@font/ndot</item>
     </style>

@@ -64,15 +64,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/skip_enable_dialog"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/skip_enable_confirmation_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -120,8 +119,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/firewall_mode_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
                     </LinearLayout>
 
@@ -137,7 +135,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/firewall_mode_default"
-                            android:textSize="15sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
@@ -146,7 +144,7 @@
                             android:layout_marginStart="32dp"
                             android:layout_marginBottom="8dp"
                             android:text="@string/firewall_mode_default_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
                         <!-- Adaptive Mode -->
@@ -155,7 +153,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/firewall_mode_adaptive"
-                            android:textSize="15sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
@@ -164,7 +162,7 @@
                             android:layout_marginStart="32dp"
                             android:layout_marginBottom="8dp"
                             android:text="@string/firewall_mode_adaptive_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
                         <!-- Whitelist Mode -->
@@ -173,7 +171,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/firewall_mode_whitelist"
-                            android:textSize="15sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
@@ -182,7 +180,7 @@
                             android:layout_marginStart="32dp"
                             android:layout_marginBottom="8dp"
                             android:text="@string/firewall_mode_whitelist_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
                         <!-- Screen Lock Mode -->
@@ -191,7 +189,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/firewall_mode_screen_lock"
-                            android:textSize="15sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
@@ -200,7 +198,7 @@
                             android:layout_marginStart="32dp"
                             android:layout_marginBottom="8dp"
                             android:text="@string/firewall_mode_screen_lock_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
                         <!-- Smart Foreground Mode -->
@@ -209,7 +207,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/firewall_mode_smart_foreground"
-                            android:textSize="15sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
@@ -218,7 +216,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
                             android:text="@string/firewall_mode_smart_foreground_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
                         <!-- Hybrid Mode -->
@@ -228,7 +226,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="@string/firewall_mode_hybrid"
-                            android:textSize="15sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
@@ -237,7 +235,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
                             android:text="@string/firewall_mode_hybrid_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
                         <com.google.android.material.radiobutton.MaterialRadioButton
@@ -245,7 +243,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/firewall_mode_focus_tracker"
-                            android:textSize="15sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
@@ -254,7 +252,7 @@
                             android:layout_marginStart="32dp"
                             android:layout_marginBottom="8dp"
                             android:text="@string/firewall_mode_focus_tracker_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
                         <TextView
@@ -263,7 +261,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="@string/firewall_mode_change_disabled"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?attr/colorError"
                             android:visibility="gone" />
 
@@ -271,7 +269,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnFirewallModeDetails"
-                        style="@style/Widget.Material3.Button.TextButton"
+                        style="@style/Widget.Material3Expressive.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
@@ -322,15 +320,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/screen_lock_delay_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:id="@+id/tvScreenLockDelayValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -385,8 +382,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/adb_broadcast_usage_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
@@ -394,7 +390,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/adb_broadcast_usage_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -437,15 +433,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/skip_error_dialog"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/skip_error_dialog_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -496,15 +491,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/keep_failed_apps_selected"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/keep_failed_apps_selected_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -555,15 +549,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/remember_deleted_apps"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/remember_deleted_apps_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 

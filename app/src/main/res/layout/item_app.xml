@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="6dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
+    android:layout_marginVertical="5dp"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="0dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
@@ -19,7 +19,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="12dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
             android:gravity="center_vertical">
 
             <ImageView
@@ -47,8 +50,7 @@
                         android:ellipsize="end"
                         android:importantForAccessibility="no"
                         android:maxLines="1"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                         android:textColor="?attr/colorOnSurface"
                         app:layout_constrainedWidth="true"
                         app:layout_constraintHorizontal_bias="0"
@@ -66,8 +68,7 @@
                         android:paddingVertical="2dp"
                         android:background="@drawable/bg_profile_badge"
                         android:importantForAccessibility="no"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelSmall.Emphasized"
                         android:visibility="gone"
                         android:textColor="?attr/colorOnTertiaryContainer"
                         app:layout_constraintStart_toEndOf="@id/appName"
@@ -85,16 +86,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:importantForAccessibility="no"
-                    android:textSize="12sp"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     android:textColor="?attr/colorOnSurfaceVariant" />
 
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/modeDropdownText"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:minWidth="0dp"
@@ -102,7 +103,6 @@
                 android:padding="0dp"
                 android:layout_marginEnd="12dp"
                 android:visibility="gone"
-                app:cornerRadius="8dp"
                 app:iconSize="22dp" />
 
             <ImageView

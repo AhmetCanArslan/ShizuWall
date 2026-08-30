@@ -23,8 +23,7 @@
             android:id="@+id/appName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textStyle="bold" />
+            android:textAppearance="?attr/textAppearanceTitleSmallEmphasized" />
 
         <TextView
             android:id="@+id/errorText"

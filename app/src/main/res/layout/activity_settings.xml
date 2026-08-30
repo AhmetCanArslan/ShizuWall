@@ -67,15 +67,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/settings_category_appearance_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/settings_category_appearance_desc"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -128,15 +127,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/settings_category_firewall_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/settings_category_firewall_desc"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -189,15 +187,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/settings_category_backend_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/settings_category_backend_desc"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -250,15 +247,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/settings_category_notifications_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/settings_category_notifications_desc"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -311,15 +307,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/export_settings"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/export_settings_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
                 </LinearLayout>
@@ -365,15 +360,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/import_settings"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/import_settings_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
                 </LinearLayout>
@@ -416,15 +410,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/app_info_button_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/app_info_button_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
                         <TextView
@@ -432,7 +425,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
                         <TextView
@@ -440,7 +433,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="@string/tracker_data_attribution"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -493,15 +486,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/donate"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/support_developer_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
                 </LinearLayout>
@@ -547,15 +539,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/github"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/github_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
                 </LinearLayout>
@@ -596,8 +587,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/shizuku_setup_guide"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                         android:textColor="?android:attr/textColorPrimary" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -637,8 +627,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/reset_app_menu"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                         android:textColor="?android:attr/textColorPrimary" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -648,7 +637,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/made_by"
-                android:textSize="12sp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                 android:textColor="?android:attr/textColorSecondary"
                 android:gravity="center"
                 android:paddingBottom="8dp"
@@ -659,7 +648,7 @@
                 android:id="@+id/tvVersion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                 android:textColor="?android:attr/textColorSecondary"
                 android:gravity="center"
                 android:paddingTop="8dp"

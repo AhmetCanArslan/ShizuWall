@@ -57,15 +57,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/advanced_mode"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/advanced_mode_description"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -106,7 +105,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/ladb_setup_guidance"
-                            android:textSize="14sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?android:attr/textColorPrimary"
                             android:paddingBottom="16dp" />
 
@@ -117,7 +116,7 @@
                             android:gravity="center_vertical">
 
                             <com.google.android.material.button.MaterialButton
-                                style="@style/Widget.MaterialComponents.Button"
+                                style="@style/Widget.Material3Expressive.Button"
                                 android:id="@+id/btnPairSimple"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -156,7 +155,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/daemon_status_stopped"
-                                android:textSize="14sp"
+                                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                                 android:textColor="?android:attr/textColorSecondary" />
                         </LinearLayout>
 
@@ -187,7 +186,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_status_unconfigured"
-                        android:textSize="14sp"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                         android:textColor="?android:attr/textColorSecondary"
                         android:padding="16dp" />
                 </com.google.android.material.card.MaterialCardView>
@@ -212,21 +211,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_auto_pairing_title"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                         android:textColor="?android:attr/textColorPrimary" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_auto_pairing_description"
-                        android:textSize="12sp"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                         android:textColor="?android:attr/textColorSecondary"
                         android:paddingTop="4dp"
                         android:paddingBottom="12dp" />
 
                     <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.MaterialComponents.Button"
+                        style="@style/Widget.Material3Expressive.Button"
                         android:id="@+id/btnPair"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -242,7 +240,7 @@
                         android:gravity="center_vertical">
 
                         <com.google.android.material.button.MaterialButton
-                            style="@style/Widget.MaterialComponents.Button"
+                            style="@style/Widget.Material3Expressive.Button"
                             android:id="@+id/btnConnect"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -263,7 +261,7 @@
                     </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.MaterialComponents.Button"
+                        style="@style/Widget.Material3Expressive.Button"
                         android:id="@+id/btnUnpair"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -296,22 +294,21 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_manual_connection_title"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                         android:textColor="?android:attr/textColorPrimary" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_manual_connection_description"
-                        android:textSize="12sp"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                         android:textColor="?android:attr/textColorSecondary"
                         android:paddingTop="4dp"
                         android:paddingBottom="12dp" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilManualHost"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/manual_host_hint">
@@ -326,7 +323,7 @@
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilManualPort"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/manual_port_hint"
@@ -348,7 +345,7 @@
                         android:gravity="center_vertical">
 
                         <com.google.android.material.button.MaterialButton
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            style="@style/Widget.Material3Expressive.Button.OutlinedButton"
                             android:id="@+id/btnCheckAndConnect"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -369,7 +366,7 @@
                         android:id="@+id/tvManualConnectStatus"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="12sp"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                         android:textColor="?android:attr/textColorSecondary"
                         android:layout_marginTop="8dp"
                         android:visibility="gone" />
@@ -412,13 +409,13 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/daemon_status_stopped"
-                            android:textSize="14sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilDaemonCommands"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Quick Commands"
@@ -432,7 +429,7 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.MaterialComponents.Button"
+                        style="@style/Widget.Material3Expressive.Button"
                         android:id="@+id/btnStartDaemon"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -442,7 +439,7 @@
                         android:textColor="?attr/colorOnPrimaryContainer" />
 
                     <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.MaterialComponents.Button"
+                        style="@style/Widget.Material3Expressive.Button"
                         android:id="@+id/btnKillDaemon"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -474,8 +471,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_logs_title"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                         android:textColor="?android:attr/textColorPrimary"
                         android:paddingBottom="8dp" />
 
@@ -507,7 +503,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/ladb_logs_empty"
-                                android:textSize="12sp"
+                                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                                 android:textColor="?android:attr/textColorSecondary"
                                 android:fontFamily="monospace"
                                 android:typeface="monospace" />
@@ -520,7 +516,7 @@
                             android:layout_marginTop="8dp">
 
                             <com.google.android.material.button.MaterialButton
-                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                style="@style/Widget.Material3Expressive.Button.OutlinedButton"
                                 android:id="@+id/btnClearLogs"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -530,7 +526,7 @@
                                />
 
                             <com.google.android.material.button.MaterialButton
-                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                style="@style/Widget.Material3Expressive.Button.OutlinedButton"
                                 android:id="@+id/btnCopyLogs"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -583,8 +579,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="@string/ladb_adb_method_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
                     </LinearLayout>
 
@@ -592,7 +587,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_adb_method_description"
-                        android:textSize="13sp"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                         android:lineSpacingExtra="3dp"
                         android:textColor="?android:attr/textColorSecondary"
                         android:layout_marginTop="10dp" />
@@ -601,8 +596,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_adb_command_label"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelMedium.Emphasized"
                         android:textAllCaps="true"
                         android:letterSpacing="0.05"
                         android:textColor="?attr/colorPrimary"
@@ -612,7 +606,7 @@
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:cardCornerRadius="14dp"
+                        app:cardCornerRadius="20dp"
                         app:cardElevation="0dp"
                         app:cardBackgroundColor="?attr/colorSurfaceVariant"
                         app:strokeWidth="0dp">
@@ -628,7 +622,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textIsSelectable="true"
-                                android:textSize="12sp"
+                                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                                 android:lineSpacingExtra="2dp"
                                 android:fontFamily="monospace"
                                 android:typeface="monospace"
@@ -644,7 +638,7 @@
                         android:layout_marginTop="12dp">
 
                         <com.google.android.material.button.MaterialButton
-                            style="@style/Widget.MaterialComponents.Button"
+                            style="@style/Widget.Material3Expressive.Button"
                             android:id="@+id/btnCopyAdbCommand"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -656,7 +650,7 @@
                             app:iconTint="?attr/colorOnPrimaryContainer" />
 
                         <com.google.android.material.button.MaterialButton
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            style="@style/Widget.Material3Expressive.Button.OutlinedButton"
                             android:id="@+id/btnShareAdbCommand"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -675,7 +669,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_adb_method_steps"
-                        android:textSize="13sp"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                         android:lineSpacingExtra="4dp"
                         android:textColor="?android:attr/textColorSecondary" />
 

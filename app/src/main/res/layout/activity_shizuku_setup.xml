@@ -38,7 +38,7 @@
         android:gravity="center"
         android:textAlignment="center"
         android:textColor="?attr/colorOnSurface"
-        android:textSize="14sp" />
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,7 +48,7 @@
         android:gravity="end">
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.MaterialComponents.Button"
+            style="@style/Widget.Material3Expressive.Button"
             app:backgroundTint="?attr/colorPrimaryContainer"
             android:textColor="?attr/colorOnPrimaryContainer"
             android:id="@+id/prevButton"
@@ -58,7 +58,7 @@
             android:layout_marginEnd="8dp" />
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.MaterialComponents.Button"
+            style="@style/Widget.Material3Expressive.Button"
             app:backgroundTint="?attr/colorPrimaryContainer"
             android:textColor="?attr/colorOnPrimaryContainer"
             android:id="@+id/nextButton"

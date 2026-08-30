@@ -3007,9 +3007,9 @@ class MainActivity : BaseActivity() {
     private var profilesBottomSheet: ProfilesBottomSheet? = null
 
     private fun updateProfileButtonIcon() {
-        val button = findViewById<android.widget.ImageView>(R.id.profileButton) ?: return
+        val button = findViewById<com.google.android.material.button.MaterialButton>(R.id.profileButton) ?: return
         val active = com.arslan.shizuwall.profiles.ProfilesStore.activeProfile(this)
-        button.setImageResource(
+        button.setIconResource(
             if (active == null) R.drawable.ic_profiles_24px
             else com.arslan.shizuwall.profiles.ProfileIcons.resFor(active.icon)
         )

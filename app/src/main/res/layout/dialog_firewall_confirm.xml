@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/enable_firewall_dialog_title"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.Material3.TitleLarge.Emphasized"
         android:layout_marginBottom="16dp"
         android:textColor="?attr/colorOnSurface" />
 
@@ -21,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/enable_firewall_dialog_message"
-        android:textSize="16sp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
         android:layout_marginBottom="16dp"
         android:textColor="?attr/colorOnSurface" /> 
 
@@ -29,8 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/selected_apps_label"
-        android:textSize="14sp"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.Material3.TitleSmall.Emphasized"
         android:layout_marginBottom="8dp"
         android:textColor="?attr/colorOnSurface" /> 
 

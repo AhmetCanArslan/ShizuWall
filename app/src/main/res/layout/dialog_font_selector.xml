@@ -9,8 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/select_font"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.Material3.TitleLarge.Emphasized"
         android:layout_marginBottom="16dp" />
 
     <RadioGroup
@@ -24,7 +23,7 @@
             android:layout_height="wrap_content"
             android:text="@string/font_default"
             android:padding="12dp"
-            android:textSize="16sp" />
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
         <RadioButton
             android:id="@+id/radio_ndot"
@@ -33,7 +32,7 @@
             android:text="@string/font_ndot"
             android:fontFamily="@font/ndot"
             android:padding="12dp"
-            android:textSize="16sp" />
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
     </RadioGroup>
 
@@ -46,7 +45,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancelFont"
-            style="@style/Widget.Material3.Button.TextButton"
+            style="@style/Widget.Material3Expressive.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel"

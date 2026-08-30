@@ -1,7 +1,5 @@
 <resources>
-    <!-- Splash screen background; the attribute exists only from API 31. -->
-    <style name="Base.Theme.ShizuWall" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.ShizuWall" parent="Theme.ShizuWallBase">
         <item name="android:windowSplashScreenBackground">@color/black</item>
-        <item name="chipStyle">@style/Widget.MaterialComponents.Chip.Choice</item>
     </style>
 </resources>

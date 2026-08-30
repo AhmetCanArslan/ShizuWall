@@ -38,8 +38,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/profiles"
                 android:textColor="?attr/colorOnSurface"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall.Emphasized" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -47,7 +46,7 @@
                 android:layout_marginTop="2dp"
                 android:text="@string/profiles_subtitle"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="13sp" />
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
         </LinearLayout>
 
     </LinearLayout>
@@ -91,8 +90,7 @@
             android:gravity="center"
             android:text="@string/profiles_empty_title"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -101,7 +99,7 @@
             android:gravity="center"
             android:text="@string/profiles_empty_message"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="13sp" />
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
     </LinearLayout>
 
     <androidx.appcompat.widget.SwitchCompat
@@ -113,7 +111,7 @@
         android:paddingVertical="8dp"
         android:text="@string/profile_auto_enable_firewall"
         android:textColor="?attr/colorOnSurface"
-        android:textSize="14sp" />
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/profileCollapseShadeSwitch"
@@ -123,7 +121,7 @@
         android:paddingVertical="8dp"
         android:text="@string/profile_tile_collapse_shade"
         android:textColor="?attr/colorOnSurface"
-        android:textSize="14sp" />
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/profileSaveCurrentButton"
@@ -133,7 +131,7 @@
         android:layout_marginTop="12dp"
         android:paddingVertical="14dp"
         android:text="@string/profile_save_current"
-        android:textSize="15sp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
         app:cornerRadius="18dp"
         app:icon="@drawable/ic_add_24px"
         app:iconGravity="textStart" />

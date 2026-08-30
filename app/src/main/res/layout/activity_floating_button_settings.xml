@@ -59,15 +59,14 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/floating_idle_opacity"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                                 android:textColor="?android:attr/textColorPrimary" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/floating_idle_opacity_desc"
-                                android:textSize="12sp"
+                                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                                 android:textColor="?android:attr/textColorSecondary" />
                         </LinearLayout>
 
@@ -76,8 +75,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall.Emphasized"
                             android:textColor="?attr/colorPrimary" />
                     </LinearLayout>
 
@@ -123,15 +121,14 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/floating_size"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                                 android:textColor="?android:attr/textColorPrimary" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/floating_size_desc"
-                                android:textSize="12sp"
+                                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                                 android:textColor="?android:attr/textColorSecondary" />
                         </LinearLayout>
 
@@ -140,8 +137,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall.Emphasized"
                             android:textColor="?attr/colorPrimary" />
                     </LinearLayout>
 
@@ -187,15 +183,14 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/floating_fade_delay"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                                 android:textColor="?android:attr/textColorPrimary" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/floating_fade_delay_desc"
-                                android:textSize="12sp"
+                                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                                 android:textColor="?android:attr/textColorSecondary" />
                         </LinearLayout>
 
@@ -204,8 +199,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall.Emphasized"
                             android:textColor="?attr/colorPrimary" />
                     </LinearLayout>
 
@@ -247,15 +241,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/floating_disable_dim"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/floating_disable_dim_desc"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
@@ -297,15 +290,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/floating_edge_snap"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                             android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/floating_edge_snap_desc"
-                            android:textSize="12sp"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 

@@ -13,8 +13,7 @@
         android:layout_height="wrap_content"
         android:text="@string/app_name"
         android:textColor="?attr/colorPrimary"
-        android:textSize="24dp"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall.Emphasized"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
         android:layout_marginStart="16dp"
@@ -23,14 +22,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/firewallProgress"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:indeterminate="true"
-        android:paddingEnd="8dp"
         android:visibility="gone"
+        app:indicatorSize="26dp"
+        app:trackThickness="3dp"
         app:layout_constraintEnd_toStartOf="@id/firewallLabel"
 
         app:layout_constraintTop_toTopOf="@id/appTitle"
@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/enable_firewall"
-        android:textSize="16dp"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
         android:paddingEnd="8dp"
         app:layout_constraintEnd_toStartOf="@id/firewallToggle"
         app:layout_constraintTop_toTopOf="@id/appTitle"
@@ -60,10 +60,12 @@
     <LinearLayout
         android:id="@+id/searchContainer"
         android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_height="56dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@drawable/search_box_outline"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
@@ -74,7 +76,7 @@
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
             android:queryHint="@string/search_app"
@@ -82,39 +84,47 @@
             app:iconifiedByDefault="false"
             app:queryBackground="@null" />
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/profileButton"
+            style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:src="@drawable/ic_profiles_24px"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
             android:contentDescription="@string/profiles"
-            android:scaleType="center"
-            android:padding="12dp"
-            app:tint="?attr/colorPrimary" />
+            app:icon="@drawable/ic_profiles_24px"
+            app:iconSize="22dp"
+            app:iconTint="?attr/colorPrimary" />
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/sortButton"
+            style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:src="@drawable/ic_sort"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
             android:contentDescription="@string/sort"
-            android:scaleType="center"
-            android:padding="12dp"
-            app:tint="?attr/colorPrimary" />
+            app:icon="@drawable/ic_sort"
+            app:iconSize="22dp"
+            app:iconTint="?attr/colorPrimary" />
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/settingsButton"
+            style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
             android:layout_width="44dp"
             android:layout_height="44dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
             android:contentDescription="@string/settings"
-            android:src="@drawable/ic_settings"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="center"
-            android:padding="13dp"
-            android:layout_marginEnd="4dp"
-            app:tint="?attr/colorPrimary" />
+            app:icon="@drawable/ic_settings"
+            app:iconSize="22dp"
+            app:iconTint="?attr/colorPrimary" />
 
     </LinearLayout>
 
@@ -143,15 +153,15 @@
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="@string/scroll_to_top"
-            app:tint="?attr/colorPrimary" />
+            app:tint="?attr/colorOnSecondaryContainer" />
 
         <TextView
             android:id="@+id/selectedCountText"
             android:layout_width="34dp"
             android:layout_height="34dp"
             android:text="@string/selected_count_zero"
-            android:textSize="13sp"
-            android:textColor="?attr/colorPrimary"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge.Emphasized"
+            android:textColor="?attr/colorOnSecondaryContainer"
             android:gravity="center"
             android:background="@drawable/selected_count_badge"
             android:clickable="true"
@@ -222,9 +232,10 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:visibility="gone"
-        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="?attr/colorTertiaryContainer"
+        app:cardCornerRadius="28dp"
         app:cardElevation="0dp"
-        app:strokeWidth="1dp"
+        app:strokeWidth="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/categoryContainer">
@@ -240,8 +251,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/backend_banner_title"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
+                android:textColor="?attr/colorOnTertiaryContainer" />
 
             <TextView
                 android:id="@+id/backendBannerMessage"
@@ -249,11 +260,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="@string/backend_banner_message_shizuku"
-                android:textSize="14sp" />
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="?attr/colorOnTertiaryContainer" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/backendBannerAction"
-                style="@style/Widget.Material3.Button.TonalButton"
+                style="@style/Widget.Material3Expressive.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -289,17 +301,19 @@
         app:layout_constraintStart_toStartOf="@id/recyclerView"
         app:layout_constraintEnd_toEndOf="@id/recyclerView">
 
-        <ProgressBar
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:indeterminate="true" />
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:indicatorSize="40dp"
+            app:trackThickness="4dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="@string/loading_apps"
-            android:textSize="14sp" />
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
     </LinearLayout>
 
     <LinearLayout
@@ -321,8 +335,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/empty_app_list_title"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge.Emphasized"
             android:gravity="center" />
 
         <TextView
@@ -331,12 +344,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/empty_app_list_message"
-            android:textSize="14sp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:gravity="center" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/appListEmptyAction"
-            style="@style/Widget.Material3.Button.TonalButton"
+            style="@style/Widget.Material3Expressive.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"

@@ -14,8 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="@string/app_filtering_note"
-        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.Material3.LabelMedium.Emphasized"
         android:textColor="@color/filtering_note" />
 
     <RadioGroup
