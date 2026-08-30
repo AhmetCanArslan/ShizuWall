@@ -485,4 +485,9 @@
     <string name="empty_app_list_action">Mostrar apps do sistema</string>
     <string name="empty_app_list_search_title">Nenhum resultado</string>
     <string name="empty_app_list_search_message">Nenhum app corresponde à sua pesquisa.</string>
+    <string name="backend_banner_title">Configuração necessária</string>
+    <string name="backend_banner_message_shizuku">O ShizuWall precisa que o Shizuku esteja em execução e com a permissão concedida antes de bloquear qualquer app.</string>
+    <string name="backend_banner_message_ladb">O ShizuWall precisa que o daemon ADB local esteja em execução antes de bloquear qualquer app. Emparelhe com a depuração sem fio para iniciá-lo.</string>
+    <string name="backend_banner_message_root">O ShizuWall precisa de acesso root antes de bloquear qualquer app.</string>
+    <string name="backend_banner_action">Configurar</string>
 </resources>

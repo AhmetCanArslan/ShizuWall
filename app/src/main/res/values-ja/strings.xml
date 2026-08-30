@@ -488,4 +488,9 @@
     <string name="empty_app_list_action">システムアプリを表示</string>
     <string name="empty_app_list_search_title">結果がありません</string>
     <string name="empty_app_list_search_message">検索に一致するアプリがありません。</string>
+    <string name="backend_banner_title">セットアップが必要です</string>
+    <string name="backend_banner_message_shizuku">アプリをブロックするには、Shizuku が実行中で権限が許可されている必要があります。</string>
+    <string name="backend_banner_message_ladb">アプリをブロックするには、ローカル ADB デーモンが実行中である必要があります。ワイヤレスデバッグでペア設定して起動してください。</string>
+    <string name="backend_banner_message_root">アプリをブロックするには root 権限が必要です。</string>
+    <string name="backend_banner_action">設定する</string>
 </resources>

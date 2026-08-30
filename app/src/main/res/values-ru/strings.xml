@@ -490,4 +490,9 @@
     <string name="empty_app_list_action">Показать системные приложения</string>
     <string name="empty_app_list_search_title">Нет результатов</string>
     <string name="empty_app_list_search_message">Нет приложений, соответствующих запросу.</string>
+    <string name="backend_banner_title">Требуется настройка</string>
+    <string name="backend_banner_message_shizuku">Чтобы блокировать приложения, ShizuWall нужен запущенный Shizuku с выданным разрешением.</string>
+    <string name="backend_banner_message_ladb">Чтобы блокировать приложения, ShizuWall нужен запущенный локальный демон ADB. Выполните сопряжение по беспроводной отладке, чтобы запустить его.</string>
+    <string name="backend_banner_message_root">Чтобы блокировать приложения, ShizuWall нужен root-доступ.</string>
+    <string name="backend_banner_action">Настроить</string>
 </resources>

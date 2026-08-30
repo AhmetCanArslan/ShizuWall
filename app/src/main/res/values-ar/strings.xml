@@ -494,4 +494,9 @@
     <string name="empty_app_list_action">إظهار تطبيقات النظام</string>
     <string name="empty_app_list_search_title">لا توجد نتائج</string>
     <string name="empty_app_list_search_message">لا يوجد تطبيق يطابق بحثك.</string>
+    <string name="backend_banner_title">الإعداد مطلوب</string>
+    <string name="backend_banner_message_shizuku">يحتاج ShizuWall إلى تشغيل Shizuku ومنحه الإذن قبل أن يتمكن من حظر أي تطبيق.</string>
+    <string name="backend_banner_message_ladb">يحتاج ShizuWall إلى تشغيل خدمة ADB المحلية قبل أن يتمكن من حظر أي تطبيق. أقرِن الجهاز عبر تصحيح الأخطاء اللاسلكي لبدء تشغيلها.</string>
+    <string name="backend_banner_message_root">يحتاج ShizuWall إلى صلاحيات الروت قبل أن يتمكن من حظر أي تطبيق.</string>
+    <string name="backend_banner_action">إعداد</string>
 </resources>

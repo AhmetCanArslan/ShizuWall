@@ -492,4 +492,9 @@
     <string name="empty_app_list_action">Show system apps</string>
     <string name="empty_app_list_search_title">No results</string>
     <string name="empty_app_list_search_message">No app matches your search.</string>
+    <string name="backend_banner_title">Setup required</string>
+    <string name="backend_banner_message_shizuku">ShizuWall needs Shizuku running and permission granted before it can block any app.</string>
+    <string name="backend_banner_message_ladb">ShizuWall needs the local ADB daemon running before it can block any app. Pair with Wireless debugging to start it.</string>
+    <string name="backend_banner_message_root">ShizuWall needs root access before it can block any app.</string>
+    <string name="backend_banner_action">Set up</string>
 </resources>

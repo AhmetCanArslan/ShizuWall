@@ -486,4 +486,9 @@
     <string name="empty_app_list_action">Sistem uygulamalarını göster</string>
     <string name="empty_app_list_search_title">Sonuç yok</string>
     <string name="empty_app_list_search_message">Aramanızla eşleşen uygulama yok.</string>
+    <string name="backend_banner_title">Kurulum gerekli</string>
+    <string name="backend_banner_message_shizuku">ShizuWall herhangi bir uygulamayı engelleyebilmek için Shizuku\'nun çalışmasına ve izin verilmesine ihtiyaç duyar.</string>
+    <string name="backend_banner_message_ladb">ShizuWall herhangi bir uygulamayı engelleyebilmek için yerel ADB arka plan servisinin çalışmasına ihtiyaç duyar. Başlatmak için Kablosuz hata ayıklama ile eşleştirin.</string>
+    <string name="backend_banner_message_root">ShizuWall herhangi bir uygulamayı engelleyebilmek için root erişimine ihtiyaç duyar.</string>
+    <string name="backend_banner_action">Kur</string>
 </resources>

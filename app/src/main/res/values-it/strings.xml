@@ -491,4 +491,9 @@
     <string name="empty_app_list_action">Mostra app di sistema</string>
     <string name="empty_app_list_search_title">Nessun risultato</string>
     <string name="empty_app_list_search_message">Nessuna app corrisponde alla tua ricerca.</string>
+    <string name="backend_banner_title">Configurazione necessaria</string>
+    <string name="backend_banner_message_shizuku">ShizuWall richiede che Shizuku sia in esecuzione e che l\'autorizzazione sia concessa prima di poter bloccare le app.</string>
+    <string name="backend_banner_message_ladb">ShizuWall richiede che il daemon ADB locale sia in esecuzione prima di poter bloccare le app. Associa il dispositivo con il debug wireless per avviarlo.</string>
+    <string name="backend_banner_message_root">ShizuWall richiede l\'accesso root prima di poter bloccare le app.</string>
+    <string name="backend_banner_action">Configura</string>
 </resources>

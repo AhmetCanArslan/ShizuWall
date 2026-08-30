@@ -492,4 +492,9 @@
     <string name="empty_app_list_action">Zobrazit systémové aplikace</string>
     <string name="empty_app_list_search_title">Žádné výsledky</string>
     <string name="empty_app_list_search_message">Vašemu hledání neodpovídá žádná aplikace.</string>
+    <string name="backend_banner_title">Vyžadováno nastavení</string>
+    <string name="backend_banner_message_shizuku">ShizuWall potřebuje spuštěné Shizuku s uděleným oprávněním, než bude moci blokovat aplikace.</string>
+    <string name="backend_banner_message_ladb">ShizuWall potřebuje spuštěného místního démona ADB, než bude moci blokovat aplikace. Spusťte jej spárováním přes bezdrátové ladění.</string>
+    <string name="backend_banner_message_root">ShizuWall potřebuje root přístup, než bude moci blokovat aplikace.</string>
+    <string name="backend_banner_action">Nastavit</string>
 </resources>

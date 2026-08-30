@@ -485,4 +485,9 @@
     <string name="empty_app_list_action">显示系统应用</string>
     <string name="empty_app_list_search_title">无结果</string>
     <string name="empty_app_list_search_message">没有与搜索匹配的应用。</string>
+    <string name="backend_banner_title">需要先完成设置</string>
+    <string name="backend_banner_message_shizuku">ShizuWall 需要 Shizuku 正在运行并已授予权限，才能拦截应用。</string>
+    <string name="backend_banner_message_ladb">ShizuWall 需要本地 ADB 守护进程正在运行，才能拦截应用。请通过无线调试配对以启动它。</string>
+    <string name="backend_banner_message_root">ShizuWall 需要 root 权限才能拦截应用。</string>
+    <string name="backend_banner_action">去设置</string>
 </resources>

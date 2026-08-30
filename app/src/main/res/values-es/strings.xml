@@ -489,4 +489,9 @@
     <string name="empty_app_list_action">Mostrar aplicaciones del sistema</string>
     <string name="empty_app_list_search_title">Sin resultados</string>
     <string name="empty_app_list_search_message">Ninguna aplicación coincide con tu búsqueda.</string>
+    <string name="backend_banner_title">Configuración necesaria</string>
+    <string name="backend_banner_message_shizuku">ShizuWall necesita que Shizuku esté en ejecución y con el permiso concedido antes de poder bloquear aplicaciones.</string>
+    <string name="backend_banner_message_ladb">ShizuWall necesita que el demonio ADB local esté en ejecución antes de poder bloquear aplicaciones. Vincula el dispositivo con la depuración inalámbrica para iniciarlo.</string>
+    <string name="backend_banner_message_root">ShizuWall necesita acceso root antes de poder bloquear aplicaciones.</string>
+    <string name="backend_banner_action">Configurar</string>
 </resources>

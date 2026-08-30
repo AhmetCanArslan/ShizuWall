@@ -491,4 +491,9 @@
     <string name="empty_app_list_action">सिस्टम ऐप्स दिखाएं</string>
     <string name="empty_app_list_search_title">कोई परिणाम नहीं</string>
     <string name="empty_app_list_search_message">आपकी खोज से कोई ऐप मेल नहीं खाता।</string>
+    <string name="backend_banner_title">सेटअप आवश्यक है</string>
+    <string name="backend_banner_message_shizuku">किसी भी ऐप को ब्लॉक करने से पहले ShizuWall को चालू Shizuku और दी गई अनुमति चाहिए।</string>
+    <string name="backend_banner_message_ladb">किसी भी ऐप को ब्लॉक करने से पहले ShizuWall को चालू लोकल ADB डेमन चाहिए। इसे शुरू करने के लिए वायरलेस डीबगिंग से पेयर करें।</string>
+    <string name="backend_banner_message_root">किसी भी ऐप को ब्लॉक करने से पहले ShizuWall को रूट एक्सेस चाहिए।</string>
+    <string name="backend_banner_action">सेटअप करें</string>
 </resources>

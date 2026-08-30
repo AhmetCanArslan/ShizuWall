@@ -146,6 +146,9 @@ class MainActivity : BaseActivity() {
     private lateinit var appListEmptyTitle: TextView
     private lateinit var appListEmptyMessage: TextView
     private lateinit var appListEmptyAction: com.google.android.material.button.MaterialButton
+    private lateinit var backendBanner: View
+    private lateinit var backendBannerMessage: TextView
+    private lateinit var backendBannerAction: com.google.android.material.button.MaterialButton
     private val appList = mutableListOf<AppInfo>()
     private val filteredAppList = mutableListOf<AppInfo>()
     private var isFirewallEnabled = false
@@ -613,6 +616,7 @@ class MainActivity : BaseActivity() {
 
         reconcileActiveProfile()
         updateProfileButtonIcon()
+        refreshBackendBanner()
 
         // Reflect current firewall state in UI
         if (!isFirewallProcessRunning) {
@@ -1029,6 +1033,10 @@ class MainActivity : BaseActivity() {
         appListEmptyMessage = findViewById(R.id.appListEmptyMessage)
         appListEmptyAction = findViewById(R.id.appListEmptyAction)
         appListEmptyAction.setOnClickListener { enableShowSystemAppsFromEmptyState() }
+        backendBanner = findViewById(R.id.backendBanner)
+        backendBannerMessage = findViewById(R.id.backendBannerMessage)
+        backendBannerAction = findViewById(R.id.backendBannerAction)
+        backendBannerAction.setOnClickListener { openBackendSetup() }
         recyclerView.layoutManager = LinearLayoutManager(this)
         appListAdapter = AppListAdapter(
             onAppClick = { appInfo ->
@@ -2037,6 +2045,44 @@ class MainActivity : BaseActivity() {
         isAppListLoadingVisible = visible
         appListLoadingContainer.visibility = if (visible) View.VISIBLE else View.GONE
         updateEmptyState()
+    }
+
+    private fun refreshBackendBanner() {
+        if (!::backendBanner.isInitialized) return
+
+        lifecycleScope.launch {
+            val ready = withContext(Dispatchers.IO) {
+                try {
+                    com.arslan.shizuwall.utils.FirewallUtils.checkBackendReady(this@MainActivity, showToast = false)
+                } catch (_: Throwable) {
+                    false
+                }
+            }
+            if (!::backendBanner.isInitialized) return@launch
+
+            backendBanner.visibility = if (ready) View.GONE else View.VISIBLE
+            if (ready) return@launch
+
+            backendBannerMessage.setText(
+                when (currentWorkingMode()) {
+                    WorkingMode.LADB -> R.string.backend_banner_message_ladb
+                    WorkingMode.ROOT -> R.string.backend_banner_message_root
+                    else -> R.string.backend_banner_message_shizuku
+                }
+            )
+        }
+    }
+
+    private fun currentWorkingMode(): WorkingMode =
+        WorkingMode.fromName(sharedPreferences.getString(KEY_WORKING_MODE, WorkingMode.SHIZUKU.name))
+
+    private fun openBackendSetup() {
+        val intent = when (currentWorkingMode()) {
+            WorkingMode.LADB -> Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java)
+            WorkingMode.ROOT -> Intent(this, BackendSettingsActivity::class.java)
+            else -> Intent(this, ShizukuSetupActivity::class.java)
+        }
+        try { startActivity(intent) } catch (_: Exception) { }
     }
 
     private fun updateEmptyState() {

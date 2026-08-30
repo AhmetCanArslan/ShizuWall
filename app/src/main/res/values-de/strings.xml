@@ -485,4 +485,9 @@
     <string name="empty_app_list_action">System-Apps anzeigen</string>
     <string name="empty_app_list_search_title">Keine Ergebnisse</string>
     <string name="empty_app_list_search_message">Keine App entspricht deiner Suche.</string>
+    <string name="backend_banner_title">Einrichtung erforderlich</string>
+    <string name="backend_banner_message_shizuku">ShizuWall benötigt ein laufendes Shizuku und die erteilte Berechtigung, bevor Apps blockiert werden können.</string>
+    <string name="backend_banner_message_ladb">ShizuWall benötigt den laufenden lokalen ADB-Dienst, bevor Apps blockiert werden können. Koppele das Gerät über Drahtloses Debugging, um ihn zu starten.</string>
+    <string name="backend_banner_message_root">ShizuWall benötigt Root-Zugriff, bevor Apps blockiert werden können.</string>
+    <string name="backend_banner_action">Einrichten</string>
 </resources>
