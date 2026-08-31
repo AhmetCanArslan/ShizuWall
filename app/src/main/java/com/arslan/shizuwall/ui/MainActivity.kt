@@ -2505,7 +2505,7 @@ class MainActivity : BaseActivity() {
         lastOperationErrorDetails.clear()
 
         val toUnblock = packageNames.sortedBy { AppKey.isSecondary(it) }.toMutableList()
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || firewallMode == FirewallMode.FOCUS_TRACKER) {
+        if (firewallMode.requiresForegroundDetection()) {
             val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
             if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
                 toUnblock.add(currentFgApp)
@@ -2524,7 +2524,7 @@ class MainActivity : BaseActivity() {
         }
         runCommandDetailed(FirewallCommands.CHAIN3_DISABLE)
 
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || firewallMode == FirewallMode.FOCUS_TRACKER) {
+        if (firewallMode.requiresForegroundDetection()) {
             sharedPreferences.edit()
                 .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                 .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())

@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
 import com.arslan.shizuwall.firewall.FirewallCommands
+import com.arslan.shizuwall.firewall.FirewallTargets
 
 /**
  * Manifest-registered receiver for ACTION_FIREWALL_CONTROL.
@@ -127,25 +128,12 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 // filter out any Shizuku packages and this app itself from incoming list
                 val requestedPackages = rawPackages.filterNot { ShizukuPackageResolver.isShizukuPackage(context, it) || it == context.packageName }
                 val packages = if (enabled) {
-                    if (firewallMode == FirewallMode.SCREEN_LOCK_MODE && !ScreenLockModeReceiver.isDeviceLocked(context)) {
-                        emptyList()
-                    } else if (firewallMode == FirewallMode.HYBRID) {
-                        val appModesStr = prefs.getString(MainActivity.KEY_APP_MODES, "{}")
-                        val appModes = try { org.json.JSONObject(appModesStr!!) } catch (e: Exception) { org.json.JSONObject() }
-                        val isLocked = ScreenLockModeReceiver.isDeviceLocked(context)
-                        requestedPackages.filter {
-                            val modeApp = appModes.optInt(it, 0)
-                            when (modeApp) {
-                                1 -> false 
-                                2 -> isLocked
-                                else -> true
-                            }
-                        }
-                    } else if (firewallMode == FirewallMode.SMART_FOREGROUND) {
-                        emptyList()
-                    } else {
-                        requestedPackages
-                    }
+                    FirewallTargets.effectiveBlockList(
+                        firewallMode,
+                        requestedPackages,
+                        ScreenLockModeReceiver.isDeviceLocked(context),
+                        FirewallTargets.parseAppModes(prefs.getString(MainActivity.KEY_APP_MODES, "{}"))
+                    )
                 } else {
                     requestedPackages
                 }

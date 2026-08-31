@@ -20,6 +20,7 @@ import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.utils.WhitelistFilter
 import kotlinx.coroutines.*
 import com.arslan.shizuwall.firewall.FirewallCommands
+import com.arslan.shizuwall.firewall.FirewallTargets
 
 class FloatingButtonService : Service() {
 
@@ -487,16 +488,15 @@ class FloatingButtonService : Service() {
         val firewallMode = FirewallMode.fromName(
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
-            return successful
-        }
-
-        if (firewallMode == FirewallMode.SCREEN_LOCK_MODE && !ScreenLockModeReceiver.isDeviceLocked(this)) {
-            return successful
-        }
+        val effectiveTargets = FirewallTargets.effectiveBlockList(
+            firewallMode,
+            packageNames,
+            ScreenLockModeReceiver.isDeviceLocked(this),
+            FirewallTargets.parseAppModes(sharedPreferences.getString(MainActivity.KEY_APP_MODES, "{}"))
+        )
 
         val selfPkg = packageName
-        val toBlock = packageNames.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
+        val toBlock = effectiveTargets.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
         val toAllow = whitelistAllowApps.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
 
         val blockResults = ShellExecutorBlocking.execBatchBlocking(
@@ -524,7 +524,7 @@ class FloatingButtonService : Service() {
         val firewallMode = FirewallMode.fromName(
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
+        if (firewallMode.requiresForegroundDetection()) {
             val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
             if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
                 toUnblock.add(currentFgApp)
@@ -539,7 +539,7 @@ class FloatingButtonService : Service() {
         )
         chainDisabled = ShellExecutorBlocking.runBlockingSuccess(this, FirewallCommands.CHAIN3_DISABLE)
 
-        if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.FOCUS_TRACKER) {
+        if (firewallMode.requiresForegroundDetection()) {
             sharedPreferences.edit()
                 .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                 .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
