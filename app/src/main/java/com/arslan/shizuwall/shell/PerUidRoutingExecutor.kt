@@ -7,6 +7,7 @@ import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.FirewallUtils
 import com.arslan.shizuwall.utils.MultiUserApps
+import com.arslan.shizuwall.firewall.FirewallCommands
 class PerUidRoutingExecutor(
     private val context: Context,
     private val delegate: ShellExecutor
@@ -148,26 +149,20 @@ class PerUidRoutingExecutor(
     )
 
     private companion object {
-        val BLOCK_COMMAND =
-            Regex("""cmd connectivity set-package-networking-enabled false (\S+)""")
-        val UNBLOCK_COMMAND =
-            Regex("""cmd connectivity set-package-networking-enabled true (\S+)""")
-
-        const val CHAIN3_DISABLE = "cmd connectivity set-chain3-enabled false"
+        const val CHAIN3_DISABLE = FirewallCommands.CHAIN3_DISABLE
 
         val PER_UID_SUCCESS = ShellResult(exitCode = 0, stdout = "per-uid rule applied", stderr = "")
 
         fun isFirewallCommand(trimmed: String): Boolean =
-            BLOCK_COMMAND.matches(trimmed) || UNBLOCK_COMMAND.matches(trimmed)
+            FirewallCommands.isNetworkingCommand(trimmed)
 
         fun parse(trimmed: String): Pair<String, Int> {
-            BLOCK_COMMAND.matchEntire(trimmed)?.let { return it.groupValues[1] to PerUidFirewall.RULE_DENY }
-            return UNBLOCK_COMMAND.matchEntire(trimmed)!!.groupValues[1] to PerUidFirewall.RULE_DEFAULT
+            val parsed = FirewallCommands.parseNetworking(trimmed)!!
+            val rule = if (parsed.networkingEnabled) PerUidFirewall.RULE_DEFAULT else PerUidFirewall.RULE_DENY
+            return parsed.key to rule
         }
 
-        fun commandFor(key: String, rule: Int): String {
-            val enabled = rule == PerUidFirewall.RULE_DEFAULT
-            return "cmd connectivity set-package-networking-enabled $enabled $key"
-        }
+        fun commandFor(key: String, rule: Int): String =
+            FirewallCommands.networking(key, rule == PerUidFirewall.RULE_DEFAULT)
     }
 }

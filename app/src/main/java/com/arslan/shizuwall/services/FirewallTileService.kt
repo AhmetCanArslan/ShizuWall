@@ -15,6 +15,7 @@ import kotlinx.coroutines.*
 import com.arslan.shizuwall.utils.FirewallUtils
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.utils.WhitelistFilter
+import com.arslan.shizuwall.firewall.FirewallCommands
 
 class FirewallTileService : TileService() {
 
@@ -170,7 +171,7 @@ class FirewallTileService : TileService() {
 
     private fun enableFirewall(packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()): List<String> {
         val successful = mutableListOf<String>()
-        if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled true")) return successful
+        if (!ShellExecutorBlocking.runBlockingSuccess(this, FirewallCommands.CHAIN3_ENABLE)) return successful
 
         val firewallMode = FirewallMode.fromName(
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
@@ -189,7 +190,7 @@ class FirewallTileService : TileService() {
 
         val blockResults = ShellExecutorBlocking.execBatchBlocking(
             this,
-            toBlock.map { "cmd connectivity set-package-networking-enabled false $it" }
+            FirewallCommands.blockAll(toBlock)
         )
         toBlock.forEachIndexed { index, pkg ->
             if (blockResults[index].isEffectivelySuccess) successful.add(pkg)
@@ -197,7 +198,7 @@ class FirewallTileService : TileService() {
 
         ShellExecutorBlocking.execBatchBlocking(
             this,
-            toAllow.map { "cmd connectivity set-package-networking-enabled true $it" }
+            FirewallCommands.unblockAll(toAllow)
         )
 
         return successful
@@ -223,10 +224,10 @@ class FirewallTileService : TileService() {
         val unblockTargets = toUnblock.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
         val unblockResults = ShellExecutorBlocking.execBatchBlocking(
             this,
-            unblockTargets.map { "cmd connectivity set-package-networking-enabled true $it" }
+            FirewallCommands.unblockAll(unblockTargets)
         )
         if (unblockResults.any { !it.isEffectivelySuccess }) allSuccessful = false
-        if (!ShellExecutorBlocking.runBlockingSuccess(this, "cmd connectivity set-chain3-enabled false")) {
+        if (!ShellExecutorBlocking.runBlockingSuccess(this, FirewallCommands.CHAIN3_DISABLE)) {
             allSuccessful = false
         }
 

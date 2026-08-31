@@ -38,6 +38,7 @@ import com.arslan.shizuwall.firewall.ForegroundTaskWatcher
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
+import com.arslan.shizuwall.firewall.FirewallCommands
 
 /**
  * Foreground service that monitors foreground app changes for Smart Foreground mode.
@@ -399,7 +400,7 @@ class ForegroundDetectionService : Service() {
             try {
                 val result = execWithRetry(
                     getShellExecutor(),
-                    "cmd connectivity set-package-networking-enabled true $packageName"
+                    FirewallCommands.unblock(packageName)
                 )
                 if (result.isEffectivelySuccess) {
                     sharedPreferences.edit()
@@ -428,7 +429,7 @@ class ForegroundDetectionService : Service() {
 
         serviceScope.launch(Dispatchers.IO) {
             try {
-                getShellExecutor().exec("cmd connectivity set-package-networking-enabled true $packageName")
+                getShellExecutor().exec(FirewallCommands.unblock(packageName))
                 Log.d(TAG, "$packageName → [speculative-allow] pre-settle")
             } catch (e: Exception) {
                 Log.d(TAG, "Speculative allow failed for $packageName", e)
@@ -635,7 +636,7 @@ class ForegroundDetectionService : Service() {
                 val executor = getShellExecutor()
                 ensureChain3Enabled(executor)
 
-                val result = execWithRetry(executor, "cmd connectivity set-package-networking-enabled false $packageName")
+                val result = execWithRetry(executor, FirewallCommands.block(packageName))
                 if (!result.success) {
                     Log.w(TAG, "Failed to block $packageName: ${result.stderr}")
                 } else {
@@ -674,7 +675,7 @@ class ForegroundDetectionService : Service() {
                 }
 
                 val executor = getShellExecutor()
-                val result = execWithRetry(executor, "cmd connectivity set-package-networking-enabled true $packageName")
+                val result = execWithRetry(executor, FirewallCommands.unblock(packageName))
                 if (result.isEffectivelySuccess) {
                     lastUnmanagedAllowedPackage = packageName
                     lastUnmanagedAllowedAtMs = now
@@ -699,7 +700,7 @@ class ForegroundDetectionService : Service() {
         val targets = pkgs.filterNot { it == packageName || ShizukuPackageResolver.isShizukuPackage(this, it) }
         if (targets.isNotEmpty()) {
             executor.execBatch(
-                targets.map { "cmd connectivity set-package-networking-enabled $shouldEnableNetworking $it" }
+                FirewallCommands.networkingAll(targets, shouldEnableNetworking)
             )
         }
 
@@ -755,7 +756,7 @@ class ForegroundDetectionService : Service() {
                 if (pending.isEmpty()) return@repeat
                 if (attempt > 0) delay(RETRY_DELAY_MS)
                 val results = executor.execBatch(
-                    pending.map { "cmd connectivity set-package-networking-enabled true $it" }
+                    FirewallCommands.unblockAll(pending)
                 )
                 val failed = mutableListOf<String>()
                 pending.forEachIndexed { index, pkg ->
@@ -788,7 +789,7 @@ class ForegroundDetectionService : Service() {
             val isEnabled = checkResult.stdout.trim().equals("true", ignoreCase = true)
             if (!isEnabled) {
                 Log.w(TAG, "chain3 was not enabled — re-enabling")
-                executor.exec("cmd connectivity set-chain3-enabled true")
+                executor.exec(FirewallCommands.CHAIN3_ENABLE)
             }
         } catch (e: CancellationException) {
             throw e
@@ -796,7 +797,7 @@ class ForegroundDetectionService : Service() {
             Log.d(TAG, "chain3 enable check/set failed (non-fatal)", e)
             // If check not supported, try to re-enable anyway.
             try {
-                executor.exec("cmd connectivity set-chain3-enabled true")
+                executor.exec(FirewallCommands.CHAIN3_ENABLE)
             } catch (e3: CancellationException) {
                 throw e3
             } catch (e2: Exception) {
@@ -812,7 +813,7 @@ class ForegroundDetectionService : Service() {
                 val executor = getShellExecutor()
 
                 ensureChain3Enabled(executor)
-                val allowResult = execWithRetry(executor, "cmd connectivity set-package-networking-enabled true $newPackage")
+                val allowResult = execWithRetry(executor, FirewallCommands.unblock(newPackage))
                 val allowOk = allowResult.isEffectivelySuccess
                 if (!allowOk) {
                     val allowErr = allowResult.stderr.ifEmpty { allowResult.stdout }
@@ -824,7 +825,7 @@ class ForegroundDetectionService : Service() {
 
                 val shouldBlockPrevious = !previousPackage.isNullOrEmpty() && previousPackage != newPackage
                 val blockResult = if (shouldBlockPrevious) {
-                    execWithRetry(executor, "cmd connectivity set-package-networking-enabled false $previousPackage")
+                    execWithRetry(executor, FirewallCommands.block(previousPackage))
                 } else {
                     null
                 }

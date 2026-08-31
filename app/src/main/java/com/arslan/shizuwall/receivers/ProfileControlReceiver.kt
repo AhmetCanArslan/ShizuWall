@@ -14,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.arslan.shizuwall.firewall.FirewallCommands
 
 class ProfileControlReceiver : BroadcastReceiver() {
 
@@ -60,7 +61,7 @@ class ProfileControlReceiver : BroadcastReceiver() {
                 if (wasEnabled || autoEnable || forceEnable) {
                     try {
                         ShellExecutorProvider.forContext(context).execBatch(
-                            oldActive.map { "cmd connectivity set-package-networking-enabled true $it" }
+                            FirewallCommands.unblockAll(oldActive)
                         )
                     } catch (_: Throwable) {
                     }

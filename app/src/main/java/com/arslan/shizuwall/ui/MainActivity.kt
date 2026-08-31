@@ -69,6 +69,7 @@ import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.firewall.ForegroundTaskProbe
+import com.arslan.shizuwall.firewall.FirewallCommands
 import com.arslan.shizuwall.firewall.FirewallTargets
 import com.arslan.shizuwall.utils.AppIds
 import com.arslan.shizuwall.utils.AppKey
@@ -984,11 +985,8 @@ class MainActivity : BaseActivity() {
                                     val failed = mutableListOf<String>()
                                     lastOperationErrorDetails.clear()
                                     val shouldBlock = FirewallTargets.shouldBlockOnToggle(firewallMode, isSelected = false)
-                                    val enabledFlag = if (shouldBlock) "false" else "true"
                                     val results = runCommandsDetailed(
-                                        previouslySelected.map {
-                                            "cmd connectivity set-package-networking-enabled $enabledFlag $it"
-                                        }
+                                        FirewallCommands.networkingAll(previouslySelected, !shouldBlock)
                                     )
                                     previouslySelected.forEachIndexed { index, pkg ->
                                         val res = results[index]
@@ -1072,13 +1070,9 @@ class MainActivity : BaseActivity() {
                     
                     lifecycleScope.launch(Dispatchers.IO) {
                         lastOperationErrorDetails.clear()
-                        
+
                         val shouldBlock = FirewallTargets.shouldBlockOnToggle(firewallMode, isSelected)
-                        val res = if (shouldBlock) {
-                            runCommandDetailed("cmd connectivity set-package-networking-enabled false $pkg")
-                        } else {
-                            runCommandDetailed("cmd connectivity set-package-networking-enabled true $pkg")
-                        }
+                        val res = runCommandDetailed(FirewallCommands.networking(pkg, !shouldBlock))
                         val success = res.isEffectivelySuccess
                         
                         withContext(Dispatchers.Main) {
@@ -1164,11 +1158,8 @@ class MainActivity : BaseActivity() {
                             val failed = mutableListOf<String>()
                             lastOperationErrorDetails.clear()
                             val shouldBlock = FirewallTargets.shouldBlockOnToggle(firewallMode, isChecked)
-                            val enabledFlag = if (shouldBlock) "false" else "true"
                             val results = runCommandsDetailed(
-                                packagesToUpdate.map {
-                                    "cmd connectivity set-package-networking-enabled $enabledFlag $it"
-                                }
+                                FirewallCommands.networkingAll(packagesToUpdate, !shouldBlock)
                             )
                             packagesToUpdate.forEachIndexed { index, pkg ->
                                 val res = results[index]
@@ -2474,12 +2465,10 @@ class MainActivity : BaseActivity() {
         val failed = mutableListOf<String>()
         lastOperationErrorDetails.clear()
 
-        val chain3Result = runCommandDetailed("cmd connectivity set-chain3-enabled true")
+        val chain3Result = runCommandDetailed(FirewallCommands.CHAIN3_ENABLE)
         if (!chain3Result.success) {
             val msg = chain3Result.stderr.ifEmpty { chain3Result.stdout }
-            runCommandsDetailed(
-                preUnblockApps.map { "cmd connectivity set-package-networking-enabled true $it" }
-            )
+            runCommandsDetailed(FirewallCommands.unblockAll(preUnblockApps))
             if (packageNames.isEmpty() && whitelistAllowApps.isEmpty()) {
                 lastOperationErrorDetails["_chain3"] = msg
                 return Pair(successful, failed)
@@ -2492,9 +2481,8 @@ class MainActivity : BaseActivity() {
         }
 
         val toBlock = if (FirewallTargets.skipsBlockingAtEnable(firewallMode)) emptyList() else packageNames
-        val allowCommands = (preUnblockApps + whitelistAllowApps)
-            .map { "cmd connectivity set-package-networking-enabled true $it" }
-        val commands = allowCommands + toBlock.map { "cmd connectivity set-package-networking-enabled false $it" }
+        val allowCommands = FirewallCommands.unblockAll(preUnblockApps + whitelistAllowApps)
+        val commands = allowCommands + FirewallCommands.blockAll(toBlock)
         if (commands.isEmpty()) return Pair(successful, failed)
 
         val results = runCommandsDetailed(commands)
@@ -2524,9 +2512,7 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        val restoreResults = runCommandsDetailed(
-            toUnblock.map { "cmd connectivity set-package-networking-enabled true $it" }
-        )
+        val restoreResults = runCommandsDetailed(FirewallCommands.unblockAll(toUnblock))
         for ((index, packageName) in toUnblock.withIndex()) {
             val res = restoreResults[index]
             if (res.isEffectivelySuccess) {
@@ -2536,7 +2522,7 @@ class MainActivity : BaseActivity() {
                 lastOperationErrorDetails[packageName] = res.stderr.ifEmpty { res.stdout }
             }
         }
-        runCommandDetailed("cmd connectivity set-chain3-enabled false")
+        runCommandDetailed(FirewallCommands.CHAIN3_DISABLE)
 
         if (firewallMode == FirewallMode.SMART_FOREGROUND || firewallMode == FirewallMode.HYBRID || firewallMode == FirewallMode.FOCUS_TRACKER) {
             sharedPreferences.edit()

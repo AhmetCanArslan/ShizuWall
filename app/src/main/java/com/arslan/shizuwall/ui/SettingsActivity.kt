@@ -38,6 +38,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import rikka.shizuku.Shizuku
 import java.io.File
+import com.arslan.shizuwall.firewall.FirewallCommands
 
 class SettingsActivity : BaseActivity() {
 
@@ -234,10 +235,10 @@ class SettingsActivity : BaseActivity() {
             if (!canPerformCleanup) return false
 
             val executor = ShellExecutorProvider.forContext(this)
-            val chainResult = executor.exec("cmd connectivity set-chain3-enabled false")
+            val chainResult = executor.exec(FirewallCommands.CHAIN3_DISABLE)
 
             executor.execBatch(
-                allPackages.map { "cmd connectivity set-package-networking-enabled true $it" }
+                FirewallCommands.unblockAll(allPackages)
             )
 
             if (mode == "LADB") {

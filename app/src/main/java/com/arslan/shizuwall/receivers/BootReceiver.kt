@@ -26,6 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import com.arslan.shizuwall.firewall.FirewallCommands
 
 class BootReceiver : BroadcastReceiver() {
 
@@ -237,18 +238,18 @@ class BootReceiver : BroadcastReceiver() {
         }
 
         val executor = ShellExecutorProvider.forContext(context)
-        val chainEnabled = executor.exec("cmd connectivity set-chain3-enabled true").success
+        val chainEnabled = executor.exec(FirewallCommands.CHAIN3_ENABLE).success
         if (!chainEnabled) {
             Log.w(TAG, "Failed to enable chain3 during reboot re-apply")
             return false
         }
 
         val blockResults = executor.execBatch(
-            activePackages.map { "cmd connectivity set-package-networking-enabled false $it" }
+            FirewallCommands.blockAll(activePackages)
         )
         for ((index, pkg) in activePackages.withIndex()) {
             if (!blockResults[index].isEffectivelySuccess) {
-                executor.exec("cmd connectivity set-chain3-enabled false")
+                executor.exec(FirewallCommands.CHAIN3_DISABLE)
                 Log.w(TAG, "Failed to apply package rule during reboot re-apply: $pkg")
                 return false
             }

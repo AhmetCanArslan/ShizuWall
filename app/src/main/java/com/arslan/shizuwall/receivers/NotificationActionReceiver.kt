@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.arslan.shizuwall.firewall.FirewallCommands
 
 class NotificationActionReceiver : BroadcastReceiver() {
 
@@ -75,7 +76,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val result = ShellExecutorProvider.forContext(context).exec("cmd connectivity set-package-networking-enabled true $packageName")
+                val result = ShellExecutorProvider.forContext(context).exec(FirewallCommands.unblock(packageName))
                 if (result.isEffectivelySuccess) {
                     val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
                     val activePkgs = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
@@ -92,7 +93,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
     private fun allowAndUnselect(context: Context, packageName: String, pending: PendingResult) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val result = ShellExecutorProvider.forContext(context).exec("cmd connectivity set-package-networking-enabled true $packageName")
+                val result = ShellExecutorProvider.forContext(context).exec(FirewallCommands.unblock(packageName))
                 if (result.isEffectivelySuccess) {
                     val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
                     val selected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()

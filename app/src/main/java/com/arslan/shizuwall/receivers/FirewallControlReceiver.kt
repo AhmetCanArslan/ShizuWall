@@ -22,6 +22,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
+import com.arslan.shizuwall.firewall.FirewallCommands
 
 /**
  * Manifest-registered receiver for ACTION_FIREWALL_CONTROL.
@@ -216,7 +217,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
 
                 if (enabled) {
                     // enable chain3
-                    val chainEnableResult = execShell("cmd connectivity set-chain3-enabled true")
+                    val chainEnableResult = execShell(FirewallCommands.CHAIN3_ENABLE)
                     globalCommandSuccess = chainEnableResult.success
                     if (!chainEnableResult.success && mode == "LADB") {
                         appendLadbFailureLog(context, "Failed to enable firewall chain", chainEnableResult)
@@ -226,7 +227,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     }
                     if (globalCommandSuccess) {
                         val blockResults = execShellBatch(
-                            packages.map { "cmd connectivity set-package-networking-enabled false $it" }
+                            FirewallCommands.blockAll(packages)
                         )
                         packages.forEachIndexed { index, pkg ->
                             val blockResult = blockResults[index]
@@ -241,7 +242,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                         }
                         // In Whitelist mode, explicitly allow whitelisted apps to ensure they have internet access
                         val allowResults = execShellBatch(
-                            whitelistAllowApps.map { "cmd connectivity set-package-networking-enabled true $it" }
+                            FirewallCommands.unblockAll(whitelistAllowApps)
                         )
                         whitelistAllowApps.forEachIndexed { index, pkg ->
                             val allowResult = allowResults[index]
@@ -252,7 +253,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     }
                 } else {
                     val unblockResults = execShellBatch(
-                        packages.map { "cmd connectivity set-package-networking-enabled true $it" }
+                        FirewallCommands.unblockAll(packages)
                     )
                     packages.forEachIndexed { index, pkg ->
                         val allowResult = unblockResults[index]
@@ -267,7 +268,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     }
                     val isGlobalDisable = csv.isNullOrBlank()
                     if (!firewallMode.allowsDynamicSelection() || isGlobalDisable) {
-                        val chainDisableResult = execShell("cmd connectivity set-chain3-enabled false")
+                        val chainDisableResult = execShell(FirewallCommands.CHAIN3_DISABLE)
                         globalCommandSuccess = chainDisableResult.success
                         if (!chainDisableResult.success && mode == "LADB") {
                             appendLadbFailureLog(context, "Failed to disable firewall chain", chainDisableResult)
