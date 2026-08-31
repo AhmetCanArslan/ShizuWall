@@ -493,4 +493,5 @@
     <string name="backend_banner_message_ladb">アプリをブロックするには、ローカル ADB デーモンが実行中である必要があります。ワイヤレスデバッグでペア設定して起動してください。</string>
     <string name="backend_banner_message_root">アプリをブロックするには root 権限が必要です。</string>
     <string name="backend_banner_action">設定する</string>
+    <string name="app_unsupported_system_uid">システム UID を共有するシステムアプリには、Android はアプリ単位のルールを許可していません。</string>
 </resources>

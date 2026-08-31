@@ -491,4 +491,5 @@
     <string name="backend_banner_message_ladb">ShizuWall herhangi bir uygulamayı engelleyebilmek için yerel ADB arka plan servisinin çalışmasına ihtiyaç duyar. Başlatmak için Kablosuz hata ayıklama ile eşleştirin.</string>
     <string name="backend_banner_message_root">ShizuWall herhangi bir uygulamayı engelleyebilmek için root erişimine ihtiyaç duyar.</string>
     <string name="backend_banner_action">Kur</string>
+    <string name="app_unsupported_system_uid">Android, sistem UID\'sini paylaşan sistem uygulamaları için uygulama bazlı kural yazılmasına izin vermiyor.</string>
 </resources>

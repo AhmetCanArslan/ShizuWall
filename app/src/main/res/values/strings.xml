@@ -497,4 +497,5 @@
     <string name="backend_banner_message_ladb">ShizuWall needs the local ADB daemon running before it can block any app. Pair with Wireless debugging to start it.</string>
     <string name="backend_banner_message_root">ShizuWall needs root access before it can block any app.</string>
     <string name="backend_banner_action">Set up</string>
+    <string name="app_unsupported_system_uid">Android does not allow per-app rules for system apps that share a system UID.</string>
 </resources>

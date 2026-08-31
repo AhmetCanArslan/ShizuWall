@@ -496,4 +496,5 @@
     <string name="backend_banner_message_ladb">ShizuWall richiede che il daemon ADB locale sia in esecuzione prima di poter bloccare le app. Associa il dispositivo con il debug wireless per avviarlo.</string>
     <string name="backend_banner_message_root">ShizuWall richiede l\'accesso root prima di poter bloccare le app.</string>
     <string name="backend_banner_action">Configura</string>
+    <string name="app_unsupported_system_uid">Android non consente regole per singola app per le app di sistema che condividono un UID di sistema.</string>
 </resources>

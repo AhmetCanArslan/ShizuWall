@@ -44,7 +44,7 @@ class PerUidRoutingExecutor(
 
         val (shellRules, uidRules) = effective.toList()
             .filterNot { it.first in coveredByParent }
-            .partition { !AppKey.isSecondary(it.first) && !uidBatchMode }
+            .partition { usesShellPath(it.first, uidBatchMode) }
 
         val shellResults = if (shellRules.isEmpty()) {
             emptyList()
@@ -62,6 +62,11 @@ class PerUidRoutingExecutor(
             resultsByKey[cloneKey] = resultsByKey.getValue(parentKey)
         }
         return requested.map { resultsByKey.getValue(it.first) }
+    }
+
+    private fun usesShellPath(key: String, uidBatchMode: Boolean): Boolean {
+        if (uidBatchMode || AppKey.isSecondary(key)) return false
+        return !PerUidFirewall.requiresUidPath(context, key)
     }
 
     private fun clonesCoveredByParent(

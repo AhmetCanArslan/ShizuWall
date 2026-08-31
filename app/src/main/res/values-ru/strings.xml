@@ -495,4 +495,5 @@
     <string name="backend_banner_message_ladb">Чтобы блокировать приложения, ShizuWall нужен запущенный локальный демон ADB. Выполните сопряжение по беспроводной отладке, чтобы запустить его.</string>
     <string name="backend_banner_message_root">Чтобы блокировать приложения, ShizuWall нужен root-доступ.</string>
     <string name="backend_banner_action">Настроить</string>
+    <string name="app_unsupported_system_uid">Android не разрешает правила для отдельных приложений, если системные приложения используют общий системный UID.</string>
 </resources>

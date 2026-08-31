@@ -490,4 +490,5 @@
     <string name="backend_banner_message_ladb">ShizuWall 需要本地 ADB 守护进程正在运行，才能拦截应用。请通过无线调试配对以启动它。</string>
     <string name="backend_banner_message_root">ShizuWall 需要 root 权限才能拦截应用。</string>
     <string name="backend_banner_action">去设置</string>
+    <string name="app_unsupported_system_uid">对于共用系统 UID 的系统应用，Android 不允许设置单个应用的规则。</string>
 </resources>

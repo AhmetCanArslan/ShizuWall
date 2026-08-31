@@ -494,4 +494,5 @@
     <string name="backend_banner_message_ladb">ShizuWall necesita que el demonio ADB local esté en ejecución antes de poder bloquear aplicaciones. Vincula el dispositivo con la depuración inalámbrica para iniciarlo.</string>
     <string name="backend_banner_message_root">ShizuWall necesita acceso root antes de poder bloquear aplicaciones.</string>
     <string name="backend_banner_action">Configurar</string>
+    <string name="app_unsupported_system_uid">Android no permite reglas por aplicación para las apps del sistema que comparten un UID del sistema.</string>
 </resources>

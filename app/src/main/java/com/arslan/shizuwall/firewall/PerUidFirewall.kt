@@ -8,6 +8,7 @@ import com.arslan.shizuwall.daemon.PersistentDaemonManager
 import com.arslan.shizuwall.shell.RootUidFirewallSession
 import com.arslan.shizuwall.shizuku.ShizukuUserServiceManager
 import com.arslan.shizuwall.ui.MainActivity
+import com.arslan.shizuwall.utils.AppIds
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.MultiUserApps
 import java.io.File
@@ -28,7 +29,6 @@ object PerUidFirewall {
     private const val DAEMON_ASSET_NAME = "daemon.bin"
     private const val DAEMON_DEX_NAME = "daemon.dex"
     private const val DAEMON_STAMP_NAME = "daemon.dex.version"
-    private const val PER_USER_RANGE = 100_000
 
     const val UNRESOLVED_UID_ERROR = "unresolved-uid"
     private const val NO_RESULT_ERROR = "helper returned no result"
@@ -40,38 +40,56 @@ object PerUidFirewall {
 
     suspend fun setRules(context: Context, rules: List<Pair<String, Int>>): List<RuleOutcome> = withContext(Dispatchers.IO) {
         if (rules.isEmpty()) return@withContext emptyList()
-        val resolved = rules.map { (key, rule) -> resolveUid(context, key)?.let { UidRule(it, rule) } }
+        val prepared = rules.map { (key, rule) -> prepare(context, key, rule) }
+        val batch = prepared.filterIsInstance<Prepared.Applicable>()
+            .associate { it.uid to it.rule }
+            .map { (uid, rule) -> UidRule(uid, rule) }
+        if (batch.isEmpty()) return@withContext prepared.map { outcomeOf(it, emptyMap()) }
 
-        val lastRulePerUid = LinkedHashMap<Int, Int>()
-        resolved.forEach { if (it != null) lastRulePerUid[it.uid] = it.rule }
-        if (lastRulePerUid.isEmpty()) return@withContext resolved.map { UNRESOLVED }
-        val batch = lastRulePerUid.map { (uid, rule) -> UidRule(uid, rule) }
+        val applied = dispatch(context, batch)
+        val resultPerUid = batch.mapIndexed { index, rule ->
+            rule.uid to applied.getOrElse(index) { RuleOutcome(false, NO_RESULT_ERROR) }
+        }.toMap()
+        prepared.map { outcomeOf(it, resultPerUid) }
+    }
 
+    fun requiresUidPath(context: Context, key: String): Boolean {
+        val uid = resolveUid(context, key) ?: return false
+        return !AppIds.isBlockable(uid)
+    }
+
+    private fun prepare(context: Context, key: String, rule: Int): Prepared {
+        val uid = resolveUid(context, key) ?: return Prepared.Skipped(UNRESOLVED)
+        if (AppIds.isBlockable(uid)) return Prepared.Applicable(uid, rule)
+        if (rule == RULE_DEFAULT) return Prepared.Skipped(OK)
+        return Prepared.Skipped(RuleOutcome(false, systemAppError(key, uid)))
+    }
+
+    private fun outcomeOf(prepared: Prepared, results: Map<Int, RuleOutcome>): RuleOutcome = when (prepared) {
+        is Prepared.Skipped -> prepared.outcome
+        is Prepared.Applicable -> results[prepared.uid] ?: RuleOutcome(false, NO_RESULT_ERROR)
+    }
+
+    private fun systemAppError(key: String, uid: Int): String =
+        "Can't set firewall rule for system app $key with appId ${AppIds.appIdOf(uid)}"
+
+    private suspend fun dispatch(context: Context, batch: List<UidRule>): List<RuleOutcome> {
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        val applied = when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
+        return when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
             WorkingMode.SHIZUKU -> applyViaShizuku(batch)
             WorkingMode.LADB -> applyViaDaemon(context, batch)
             WorkingMode.ROOT -> applyViaRoot(context, batch)
         }
-
-        val resultPerUid = HashMap<Int, RuleOutcome>(batch.size)
-        batch.forEachIndexed { index, rule ->
-            resultPerUid[rule.uid] = applied.getOrElse(index) { RuleOutcome(false, NO_RESULT_ERROR) }
-        }
-        resolved.map { rule ->
-            if (rule == null) UNRESOLVED
-            else resultPerUid[rule.uid] ?: RuleOutcome(false, NO_RESULT_ERROR)
-        }
     }
 
     private fun resolveUid(context: Context, key: String): Int? {
-        if (!AppKey.isSecondary(key)) return appIdOf(context, key)
+        if (!AppKey.isSecondary(key)) return uidOf(context, key)
         MultiUserApps.cachedUid(context, key)?.let { return it }
-        val appId = appIdOf(context, AppKey.packageOf(key)) ?: return null
-        return AppKey.userIdOf(key) * PER_USER_RANGE + appId % PER_USER_RANGE
+        val uid = uidOf(context, AppKey.packageOf(key)) ?: return null
+        return AppKey.userIdOf(key) * AppIds.PER_USER_RANGE + AppIds.appIdOf(uid)
     }
 
-    private fun appIdOf(context: Context, packageName: String): Int? = try {
+    private fun uidOf(context: Context, packageName: String): Int? = try {
         context.packageManager.getApplicationInfo(
             packageName,
             android.content.pm.PackageManager.MATCH_DISABLED_COMPONENTS or
@@ -203,4 +221,9 @@ object PerUidFirewall {
     }
 
     private data class UidRule(val uid: Int, val rule: Int)
+
+    private sealed interface Prepared {
+        data class Applicable(val uid: Int, val rule: Int) : Prepared
+        data class Skipped(val outcome: RuleOutcome) : Prepared
+    }
 }

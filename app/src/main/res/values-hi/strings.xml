@@ -496,4 +496,5 @@
     <string name="backend_banner_message_ladb">किसी भी ऐप को ब्लॉक करने से पहले ShizuWall को चालू लोकल ADB डेमन चाहिए। इसे शुरू करने के लिए वायरलेस डीबगिंग से पेयर करें।</string>
     <string name="backend_banner_message_root">किसी भी ऐप को ब्लॉक करने से पहले ShizuWall को रूट एक्सेस चाहिए।</string>
     <string name="backend_banner_action">सेटअप करें</string>
+    <string name="app_unsupported_system_uid">Android उन सिस्टम ऐप्स के लिए प्रति-ऐप नियमों की अनुमति नहीं देता जो सिस्टम UID साझा करते हैं।</string>
 </resources>

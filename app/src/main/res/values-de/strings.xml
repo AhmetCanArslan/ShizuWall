@@ -490,4 +490,5 @@
     <string name="backend_banner_message_ladb">ShizuWall benötigt den laufenden lokalen ADB-Dienst, bevor Apps blockiert werden können. Koppele das Gerät über Drahtloses Debugging, um ihn zu starten.</string>
     <string name="backend_banner_message_root">ShizuWall benötigt Root-Zugriff, bevor Apps blockiert werden können.</string>
     <string name="backend_banner_action">Einrichten</string>
+    <string name="app_unsupported_system_uid">Android erlaubt keine App-spezifischen Regeln für System-Apps, die sich eine System-UID teilen.</string>
 </resources>

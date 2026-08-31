@@ -2,6 +2,7 @@ package com.arslan.shizuwall.profiles
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.arslan.shizuwall.firewall.FirewallTargets
 import com.arslan.shizuwall.model.Profile
 import com.arslan.shizuwall.ui.MainActivity
 import org.json.JSONArray
@@ -15,8 +16,15 @@ object ProfilesStore {
 
     fun getProfiles(context: Context): List<Profile> = getProfiles(prefs(context))
 
-    fun getProfiles(prefs: SharedPreferences): List<Profile> {
-        val raw = prefs.getString(MainActivity.KEY_PROFILES, null) ?: return emptyList()
+    fun getProfiles(prefs: SharedPreferences): List<Profile> =
+        decode(prefs.getString(MainActivity.KEY_PROFILES, null))
+
+    private fun saveProfiles(prefs: SharedPreferences, profiles: List<Profile>) {
+        prefs.edit().putString(MainActivity.KEY_PROFILES, encode(profiles)).apply()
+    }
+
+    internal fun decode(raw: String?): List<Profile> {
+        if (raw.isNullOrBlank()) return emptyList()
         return try {
             val arr = JSONArray(raw)
             (0 until arr.length()).mapNotNull { i ->
@@ -27,10 +35,31 @@ object ProfilesStore {
         }
     }
 
-    private fun saveProfiles(prefs: SharedPreferences, profiles: List<Profile>) {
+    internal fun encode(profiles: List<Profile>): String {
         val arr = JSONArray()
         profiles.forEach { arr.put(it.toJson()) }
-        prefs.edit().putString(MainActivity.KEY_PROFILES, arr.toString()).apply()
+        return arr.toString()
+    }
+
+    internal fun matches(profile: Profile, config: CapturedConfig): Boolean =
+        profile.packages == config.packages &&
+            profile.firewallMode == config.firewallMode &&
+            profile.showSystemApps == config.showSystemApps &&
+            FirewallTargets.parseAppModes(profile.appModesJson) ==
+            FirewallTargets.parseAppModes(config.appModesJson)
+
+    internal fun withoutPackages(profiles: List<Profile>, keys: Set<String>): List<Profile> {
+        if (keys.isEmpty()) return profiles
+        return profiles.map { it.copy(packages = it.packages - keys) }
+    }
+
+    fun dropPackages(context: Context, keys: Set<String>) {
+        if (keys.isEmpty()) return
+        val p = prefs(context)
+        val current = getProfiles(p)
+        val scrubbed = withoutPackages(current, keys)
+        if (scrubbed == current) return
+        saveProfiles(p, scrubbed)
     }
 
     fun getById(context: Context, id: String): Profile? =

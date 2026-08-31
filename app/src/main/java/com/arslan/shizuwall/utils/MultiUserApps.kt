@@ -26,7 +26,6 @@ object MultiUserApps {
     private val DUMPSYS_END_TOKEN = Regex("""^Shared users:$""")
     private val LIBRARY_FLAGS = setOf("STATIC_SHARED_LIBRARY", "SDK_LIBRARY")
 
-    private const val PER_USER_RANGE = 100_000
     private const val DUMPSYS_COMMAND = "dumpsys package packages | grep -oE " +
         "'Package \\[[^]]+]|appId=[0-9]+|userId=[0-9]+|pkgFlags=\\[[^]]*]|" +
         "privateFlags=\\[[^]]*]|User [0-9]+:|installed=[a-z]+|Shared users:'"
@@ -260,7 +259,7 @@ object MultiUserApps {
                 if (userId < 0 || appId < 0) return@forEach
                 if (match.groupValues[1] != "true") return@forEach
                 if (userId !in userIds) return@forEach
-                val uid = userId * PER_USER_RANGE + appId % PER_USER_RANGE
+                val uid = userId * AppIds.PER_USER_RANGE + AppIds.appIdOf(appId)
                 byUser.getOrPut(userId) { mutableListOf() }
                     .add(SecondaryApp(userId, current, uid, isSystem))
             }

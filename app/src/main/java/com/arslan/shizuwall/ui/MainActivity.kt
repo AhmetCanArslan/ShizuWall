@@ -69,6 +69,8 @@ import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.firewall.ForegroundTaskProbe
+import com.arslan.shizuwall.firewall.FirewallTargets
+import com.arslan.shizuwall.utils.AppIds
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.MultiUserApps
@@ -981,7 +983,7 @@ class MainActivity : BaseActivity() {
                                     val successful = mutableListOf<String>()
                                     val failed = mutableListOf<String>()
                                     lastOperationErrorDetails.clear()
-                                    val shouldBlock = firewallMode == FirewallMode.WHITELIST
+                                    val shouldBlock = FirewallTargets.shouldBlockOnToggle(firewallMode, isSelected = false)
                                     val enabledFlag = if (shouldBlock) "false" else "true"
                                     val results = runCommandsDetailed(
                                         previouslySelected.map {
@@ -997,7 +999,7 @@ class MainActivity : BaseActivity() {
                                         }
                                     }
                                     withContext(Dispatchers.Main) {
-                                        val shouldBlockMain = firewallMode == FirewallMode.WHITELIST
+                                        val shouldBlockMain = FirewallTargets.shouldBlockOnToggle(firewallMode, isSelected = false)
                                         if (successful.isNotEmpty()) {
                                             if (shouldBlockMain) activeFirewallPackages.addAll(successful)
                                             else activeFirewallPackages.removeAll(successful)
@@ -1071,7 +1073,7 @@ class MainActivity : BaseActivity() {
                     lifecycleScope.launch(Dispatchers.IO) {
                         lastOperationErrorDetails.clear()
                         
-                        val shouldBlock = if (firewallMode == FirewallMode.WHITELIST) !isSelected else isSelected
+                        val shouldBlock = FirewallTargets.shouldBlockOnToggle(firewallMode, isSelected)
                         val res = if (shouldBlock) {
                             runCommandDetailed("cmd connectivity set-package-networking-enabled false $pkg")
                         } else {
@@ -1161,7 +1163,7 @@ class MainActivity : BaseActivity() {
                             val successful = mutableListOf<String>()
                             val failed = mutableListOf<String>()
                             lastOperationErrorDetails.clear()
-                            val shouldBlock = if (firewallMode == FirewallMode.WHITELIST) !isChecked else isChecked
+                            val shouldBlock = FirewallTargets.shouldBlockOnToggle(firewallMode, isChecked)
                             val enabledFlag = if (shouldBlock) "false" else "true"
                             val results = runCommandsDetailed(
                                 packagesToUpdate.map {
@@ -1177,7 +1179,7 @@ class MainActivity : BaseActivity() {
                                 }
                             }
                             withContext(Dispatchers.Main) {
-                                val shouldBlockMain = if (firewallMode == FirewallMode.WHITELIST) !isChecked else isChecked
+                                val shouldBlockMain = FirewallTargets.shouldBlockOnToggle(firewallMode, isChecked)
                                 if (successful.isNotEmpty()) {
                                     if (shouldBlockMain) activeFirewallPackages.addAll(successful)
                                     else activeFirewallPackages.removeAll(successful)
@@ -1878,7 +1880,7 @@ class MainActivity : BaseActivity() {
                             val installTime = packageInfo.firstInstallTime
                             val appMode = modesJson.optInt(packageName, 0)
 
-                            chunkResult.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite, installTime, appMode))
+                            chunkResult.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite, installTime, appMode, uid = appInfo.uid))
                         }
                         chunkResult
                     }
@@ -1932,6 +1934,7 @@ class MainActivity : BaseActivity() {
             if (appList != builtList) {
                 appList.clear()
                 appList.addAll(builtList)
+                dropUnsupportedSelections()
                 sortAndFilterApps(preserveScrollPosition = false)
             }
             updateCategoryChips()
@@ -2019,6 +2022,7 @@ class MainActivity : BaseActivity() {
 
         appList.clear()
         appList.addAll(cachedList)
+        dropUnsupportedSelections()
         updateCategoryChips()
         sortAndFilterApps(preserveScrollPosition = false)
         return true
@@ -2118,6 +2122,20 @@ class MainActivity : BaseActivity() {
         sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
     }
 
+    private fun dropUnsupportedSelections() {
+        val dropped = mutableSetOf<String>()
+        appList.forEachIndexed { index, app ->
+            if (app.isSelected && !AppIds.isBlockable(app.uid)) {
+                appList[index] = app.copy(isSelected = false)
+                dropped.add(app.key)
+            }
+        }
+        if (dropped.isEmpty()) return
+        com.arslan.shizuwall.profiles.ProfilesStore.dropPackages(this, dropped)
+        saveSelectedApps()
+        updateSelectedCount()
+    }
+
     private fun saveSelectedApps() {
         val selectedPackages = appList
             .filter { it.isSelected && !ShizukuPackageResolver.isShizukuPackage(this, it.packageName) }
@@ -2147,14 +2165,10 @@ class MainActivity : BaseActivity() {
             com.arslan.shizuwall.utils.FirewallUtils.notifyProfileSurfaces(this)
             return
         }
-        val currentPackages = sharedPreferences.getStringSet(KEY_SELECTED_APPS, emptySet()) ?: emptySet()
-        val currentMode = sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
-            ?: FirewallMode.DEFAULT.name
-        val currentShowSystem = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
-        val matches = profile.packages == currentPackages &&
-            profile.firewallMode == currentMode &&
-            profile.showSystemApps == currentShowSystem &&
-            parseAppModes(profile.appModesJson) == parseAppModes(sharedPreferences.getString(KEY_APP_MODES, "{}"))
+        val matches = com.arslan.shizuwall.profiles.ProfilesStore.matches(
+            profile,
+            com.arslan.shizuwall.profiles.ProfilesStore.captureCurrent(this)
+        )
         if (!matches) {
             com.arslan.shizuwall.profiles.ProfilesStore.setActiveProfileId(this, null)
             updateProfileButtonIcon()
@@ -2162,20 +2176,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun parseAppModes(json: String?): Map<String, Int> {
-        if (json.isNullOrBlank()) return emptyMap()
-        return try {
-            val obj = JSONObject(json)
-            val map = mutableMapOf<String, Int>()
-            for (key in obj.keys()) {
-                val value = obj.optInt(key, 0)
-                if (value != 0) map[key] = value
-            }
-            map
-        } catch (e: Exception) {
-            emptyMap()
-        }
-    }
+    private fun parseAppModes(json: String?): Map<String, Int> = FirewallTargets.parseAppModes(json)
 
     private fun loadSelectedApps(): Set<String> {
         return sharedPreferences.getStringSet(KEY_SELECTED_APPS, emptySet()) ?: emptySet()
@@ -2259,25 +2260,12 @@ class MainActivity : BaseActivity() {
         }
 
         val effectivePackageNames = if (enable) {
-            if (firewallMode == FirewallMode.SCREEN_LOCK_MODE && !ScreenLockModeReceiver.isDeviceLocked(this)) {
-                emptyList()
-            } else if (firewallMode == FirewallMode.HYBRID) {
-                val appModesStr = sharedPreferences.getString(KEY_APP_MODES, "{}")
-                val appModes = try { JSONObject(appModesStr!!) } catch (e: Exception) { JSONObject() }
-                val isLocked = ScreenLockModeReceiver.isDeviceLocked(this)
-                packageNames.filter {
-                    val mode = appModes.optInt(it, 0)
-                    when (mode) {
-                        1 -> false
-                        2 -> isLocked
-                        else -> true
-                    }
-                }
-            } else if (firewallMode == FirewallMode.SMART_FOREGROUND) {
-                emptyList()
-            } else {
-                packageNames
-            }
+            FirewallTargets.effectiveBlockList(
+                firewallMode,
+                packageNames,
+                ScreenLockModeReceiver.isDeviceLocked(this),
+                parseAppModes(sharedPreferences.getString(KEY_APP_MODES, "{}"))
+            )
         } else {
             packageNames
         }
@@ -2503,9 +2491,7 @@ class MainActivity : BaseActivity() {
             return Pair(successful, failed)
         }
 
-        val skipBlocking = firewallMode == FirewallMode.SMART_FOREGROUND ||
-            firewallMode == FirewallMode.FOCUS_TRACKER
-        val toBlock = if (skipBlocking) emptyList() else packageNames
+        val toBlock = if (FirewallTargets.skipsBlockingAtEnable(firewallMode)) emptyList() else packageNames
         val allowCommands = (preUnblockApps + whitelistAllowApps)
             .map { "cmd connectivity set-package-networking-enabled true $it" }
         val commands = allowCommands + toBlock.map { "cmd connectivity set-package-networking-enabled false $it" }
@@ -2675,7 +2661,7 @@ class MainActivity : BaseActivity() {
                     val isSelected = loadSelectedApps().contains(pkg)
                     val isFavorite = loadFavoriteApps().contains(pkg)
                     val installTime = pi.firstInstallTime
-                    AppInfo(appName, pkg, isSelected, isSystemApp, isFavorite, installTime)
+                    AppInfo(appName, pkg, isSelected, isSystemApp, isFavorite, installTime, uid = ai.uid)
                 } catch (e: Exception) {
                     null
                 }
@@ -3071,14 +3057,14 @@ class MainActivity : BaseActivity() {
             return
         }
 
-        reapplyForProfileSwitch(profile, oldActive, appModes)
+        reapplyForProfileSwitch(profile, oldActive, parseAppModes(profile.appModesJson))
         sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true)
     }
 
     private fun reapplyForProfileSwitch(
         profile: com.arslan.shizuwall.model.Profile,
         oldActive: List<String>,
-        appModes: JSONObject
+        appModes: Map<String, Int>
     ) {
         val selectedPkgs = profile.packages.toList()
         val target = getTargetPackagesToBlock(selectedPkgs)
@@ -3093,22 +3079,12 @@ class MainActivity : BaseActivity() {
             try {
                 val (installedTarget, _) = withContext(Dispatchers.IO) { filterInstalledPackages(target) }
 
-                val effectiveTarget = when (firewallMode) {
-                    FirewallMode.SCREEN_LOCK_MODE ->
-                        if (ScreenLockModeReceiver.isDeviceLocked(this@MainActivity)) installedTarget else emptyList()
-                    FirewallMode.HYBRID -> {
-                        val isLocked = ScreenLockModeReceiver.isDeviceLocked(this@MainActivity)
-                        installedTarget.filter {
-                            when (appModes.optInt(it, 0)) {
-                                1 -> false
-                                2 -> isLocked
-                                else -> true
-                            }
-                        }
-                    }
-                    FirewallMode.SMART_FOREGROUND, FirewallMode.FOCUS_TRACKER -> emptyList()
-                    else -> installedTarget
-                }
+                val effectiveTarget = FirewallTargets.effectiveBlockList(
+                    firewallMode,
+                    installedTarget,
+                    ScreenLockModeReceiver.isDeviceLocked(this@MainActivity),
+                    appModes
+                )
 
                 val toUnblock = oldActive.filterNot { effectiveTarget.contains(it) }
 
