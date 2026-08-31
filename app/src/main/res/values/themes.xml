@@ -61,4 +61,24 @@
         <item name="android:fontFamily">@font/ndot</item>
         <item name="fontFamily">@font/ndot</item>
     </style>
+    <style name="Widget.ShizuWall.AppLockKey" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.HeadlineSmall</item>
+        <item name="cornerRadius">32dp</item>
+    </style>
+
+    <style name="Widget.ShizuWall.AppLockKey.Secondary" parent="Widget.ShizuWall.AppLockKey">
+        <item name="backgroundTint">?attr/colorSurfaceContainerHighest</item>
+        <item name="iconTint">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="Widget.ShizuWall.AppLockKey.Confirm" parent="Widget.ShizuWall.AppLockKey">
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="iconTint">?attr/colorOnPrimary</item>
+    </style>
 </resources>

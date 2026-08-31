@@ -1,14 +1,16 @@
 package com.arslan.shizuwall.ui
 
-import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.security.AppLock
 import com.google.android.material.color.DynamicColors
 
 open class BaseActivity : AppCompatActivity() {
+    protected open val bypassAppLock = false
     private var currentFont: String? = null
     private var currentDynamicColor: Boolean = true
     private var currentAmoledBlack: Boolean = false
@@ -50,6 +52,26 @@ open class BaseActivity : AppCompatActivity() {
         if (currentDynamicColor) {
             DynamicColors.applyToActivityIfAvailable(this)
         }
+
+        if (android.os.Build.VERSION.SDK_INT >= 33 && AppLock.isEnabled(this)) {
+            setRecentsScreenshotEnabled(false)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        AppLock.onActivityStarted()
+        if (!bypassAppLock && AppLock.requiresUnlock(this)) {
+            startActivity(
+                Intent(this, AppLockActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        AppLock.onActivityStopped(isChangingConfigurations)
     }
 
     override fun onContentChanged() {
@@ -86,6 +108,7 @@ open class BaseActivity : AppCompatActivity() {
                 .setDuration(400)
                 .withEndAction {
                     shouldAnimateFadeIn = true
+                    AppLock.suppressNextRelock()
                     recreate()
                 }
                 .start()

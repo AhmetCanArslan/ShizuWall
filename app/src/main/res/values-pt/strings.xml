@@ -491,4 +491,25 @@
     <string name="backend_banner_message_root">O ShizuWall precisa de acesso root antes de bloquear qualquer app.</string>
     <string name="backend_banner_action">Configurar</string>
     <string name="app_unsupported_system_uid">O Android não permite regras por aplicativo para apps do sistema que compartilham um UID do sistema.</string>
+    <string name="settings_category_security_title">Segurança</string>
+    <string name="settings_category_security_desc">Bloqueio do app, PIN e biometria</string>
+    <string name="app_lock_title">Bloqueio do app</string>
+    <string name="app_lock_description">Exigir PIN ou biometria para abrir o ShizuWall</string>
+    <string name="app_lock_use_biometrics">Usar biometria</string>
+    <string name="app_lock_use_biometrics_description">Desbloquear com digital ou rosto em vez de digitar o PIN</string>
+    <string name="app_lock_change_pin">Alterar PIN</string>
+    <string name="app_lock_enter_pin">Digite o PIN</string>
+    <string name="app_lock_set_pin">Defina um PIN</string>
+    <string name="app_lock_confirm_pin">Confirme o PIN</string>
+    <string name="app_lock_pin_mismatch">Os PINs não coincidem</string>
+    <string name="app_lock_pin_length_required">Digite %1$d dígitos</string>
+    <string name="app_lock_pin_length">Comprimento do PIN</string>
+    <string name="app_lock_pin_not_recoverable">O PIN não pode ser recuperado. Se você esquecê-lo, a única saída é limpar os dados do app ShizuWall, o que apaga todas as configurações e perfis.</string>
+    <string name="app_lock_wrong_pin">PIN incorreto</string>
+    <string name="app_lock_locked_out">Tentativas demais. Tente em %1$d s</string>
+    <string name="app_lock_biometric_title">Desbloquear o ShizuWall</string>
+    <string name="app_lock_use_pin">Usar PIN</string>
+    <string name="app_lock_pin_saved">PIN salvo</string>
+    <string name="app_lock_delete">Apagar</string>
+    <string name="app_lock_submit">Confirmar</string>
 </resources>

@@ -20,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.ladb.LadbManager
+import com.arslan.shizuwall.security.AppLock
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.FloatingButtonService
 import com.arslan.shizuwall.services.ForegroundDetectionService
@@ -44,6 +45,7 @@ class SettingsActivity : BaseActivity() {
 
     companion object {
         private const val EXPORT_SCHEMA = "shizuwall.preferences"
+        private val APP_LOCK_KEYS = setOf(AppLock.KEY_ENABLED, AppLock.KEY_PIN, AppLock.KEY_BIOMETRIC, AppLock.KEY_PIN_LENGTH)
         private const val EXPORT_VERSION = 3
     }
 
@@ -101,6 +103,9 @@ class SettingsActivity : BaseActivity() {
         }
         findViewById<LinearLayout>(R.id.rowNotifications).setOnClickListener {
             startActivity(Intent(this, NotificationsSettingsActivity::class.java))
+        }
+        findViewById<LinearLayout>(R.id.rowSecurity).setOnClickListener {
+            startActivity(Intent(this, SecuritySettingsActivity::class.java))
         }
 
         findViewById<LinearLayout>(R.id.btnExport).setOnClickListener {
@@ -357,7 +362,11 @@ class SettingsActivity : BaseActivity() {
                                 MainActivity.KEY_ACTIVE_PACKAGES,
                                 MainActivity.KEY_FIREWALL_SAVED_ELAPSED,
                                 MainActivity.KEY_FIREWALL_UPDATE_TS,
-                                MainActivity.KEY_SMART_FOREGROUND_APP
+                                MainActivity.KEY_SMART_FOREGROUND_APP,
+                                AppLock.KEY_ENABLED,
+                                AppLock.KEY_PIN,
+                                AppLock.KEY_BIOMETRIC,
+                                AppLock.KEY_PIN_LENGTH
                             )
                         )
                     )
@@ -521,6 +530,7 @@ class SettingsActivity : BaseActivity() {
             val editor = getSharedPreferences(sharedPreferencesName, MODE_PRIVATE).edit()
             for (i in 0 until entries.length()) {
                 val entry = entries.optJSONObject(i) ?: continue
+                if (entry.optString("key") in APP_LOCK_KEYS) continue
                 applyPreferenceEntry(editor, entry)
             }
             editor.apply()
@@ -558,7 +568,7 @@ class SettingsActivity : BaseActivity() {
         val keys = obj.keys()
         while (keys.hasNext()) {
             val key = keys.next()
-            if (key in reserved) continue
+            if (key in reserved || key in APP_LOCK_KEYS) continue
 
             val value = obj.opt(key)
             when (value) {

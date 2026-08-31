@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/appLockRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="?attr/colorSurface"
+    android:paddingHorizontal="24dp">
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/lockBadge"
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        app:cardCornerRadius="44dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="?attr/colorPrimaryContainer">
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_picon_lock"
+            android:contentDescription="@null"
+            app:tint="?attr/colorOnPrimaryContainer" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvLockTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall.Emphasized"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <TextView
+        android:id="@+id/tvLockMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:minHeight="20dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textColor="?android:attr/textColorSecondary" />
+
+    <LinearLayout
+        android:id="@+id/pinDots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:minHeight="24dp"
+        android:orientation="horizontal"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tvPinLengthLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        android:text="@string/app_lock_pin_length"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        android:textColor="?android:attr/textColorSecondary" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/pinLengthGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:selectionRequired="true"
+        app:singleSelection="true" />
+
+    <TextView
+        android:id="@+id/tvLockInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/app_lock_pin_not_recoverable"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:textColor="?android:attr/textColorSecondary" />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <GridLayout
+        android:id="@+id/keypad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.ShizuWall.AppLockKey"
+            android:tag="1"
+            android:text="1" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.ShizuWall.AppLockKey"
+            android:tag="2"
+            android:text="2" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.ShizuWall.AppLockKey"
+            android:tag="3"
+            android:text="3" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.ShizuWall.AppLockKey"
+            android:tag="4"
+            android:text="4" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.ShizuWall.AppLockKey"
+            android:tag="5"
+            android:text="5" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.ShizuWall.AppLockKey"
+            android:tag="6"
+            android:text="6" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.ShizuWall.AppLockKey"
+            android:tag="7"
+            android:text="7" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.ShizuWall.AppLockKey"
+            android:tag="8"
+            android:text="8" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.ShizuWall.AppLockKey"
+            android:tag="9"
+            android:text="9" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDelete"
+            style="@style/Widget.ShizuWall.AppLockKey.Secondary"
+            android:contentDescription="@string/app_lock_delete"
+            app:icon="@drawable/ic_backspace_24px"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.ShizuWall.AppLockKey"
+            android:tag="0"
+            android:text="0" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSubmit"
+            style="@style/Widget.ShizuWall.AppLockKey.Confirm"
+            android:contentDescription="@string/app_lock_submit"
+            app:icon="@drawable/check_24px"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp" />
+    </GridLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBiometric"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/app_lock_use_biometrics"
+        app:icon="@drawable/ic_picon_fingerprint" />
+
+</LinearLayout>

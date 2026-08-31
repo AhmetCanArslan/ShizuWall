@@ -496,4 +496,25 @@
     <string name="backend_banner_message_root">Чтобы блокировать приложения, ShizuWall нужен root-доступ.</string>
     <string name="backend_banner_action">Настроить</string>
     <string name="app_unsupported_system_uid">Android не разрешает правила для отдельных приложений, если системные приложения используют общий системный UID.</string>
+    <string name="settings_category_security_title">Безопасность</string>
+    <string name="settings_category_security_desc">Блокировка приложения, PIN-код и биометрия</string>
+    <string name="app_lock_title">Блокировка приложения</string>
+    <string name="app_lock_description">Запрашивать PIN-код или биометрию при открытии ShizuWall</string>
+    <string name="app_lock_use_biometrics">Использовать биометрию</string>
+    <string name="app_lock_use_biometrics_description">Разблокировка отпечатком или лицом вместо ввода PIN-кода</string>
+    <string name="app_lock_change_pin">Изменить PIN-код</string>
+    <string name="app_lock_enter_pin">Введите PIN-код</string>
+    <string name="app_lock_set_pin">Задайте PIN-код</string>
+    <string name="app_lock_confirm_pin">Подтвердите PIN-код</string>
+    <string name="app_lock_pin_mismatch">PIN-коды не совпадают</string>
+    <string name="app_lock_pin_length_required">Введите %1$d цифр</string>
+    <string name="app_lock_pin_length">Длина PIN-кода</string>
+    <string name="app_lock_pin_not_recoverable">PIN-код нельзя восстановить. Если вы его забудете, единственный выход — очистить данные приложения ShizuWall, что удалит все настройки и профили.</string>
+    <string name="app_lock_wrong_pin">Неверный PIN-код</string>
+    <string name="app_lock_locked_out">Слишком много попыток. Повторите через %1$d с</string>
+    <string name="app_lock_biometric_title">Разблокировать ShizuWall</string>
+    <string name="app_lock_use_pin">Ввести PIN-код</string>
+    <string name="app_lock_pin_saved">PIN-код сохранён</string>
+    <string name="app_lock_delete">Удалить</string>
+    <string name="app_lock_submit">Подтвердить</string>
 </resources>
