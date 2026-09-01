@@ -520,4 +520,7 @@
     <string name="app_lock_pin_saved">PIN सेव हो गया</string>
     <string name="app_lock_delete">मिटाएँ</string>
     <string name="app_lock_submit">पुष्टि करें</string>
+    <string name="contact_developer">डेवलपर से संपर्क करें</string>
+    <string name="contact_developer_description">प्रतिक्रिया भेजें या समस्या की रिपोर्ट करें</string>
+    <string name="contact_developer_no_app">कोई ईमेल ऐप नहीं मिला</string>
 </resources>

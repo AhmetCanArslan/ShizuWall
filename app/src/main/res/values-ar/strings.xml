@@ -523,4 +523,7 @@
     <string name="app_lock_pin_saved">تم حفظ رمز PIN</string>
     <string name="app_lock_delete">حذف</string>
     <string name="app_lock_submit">تأكيد</string>
+    <string name="contact_developer">التواصل مع المطور</string>
+    <string name="contact_developer_description">أرسل ملاحظاتك أو أبلغ عن مشكلة</string>
+    <string name="contact_developer_no_app">لم يتم العثور على تطبيق بريد</string>
 </resources>

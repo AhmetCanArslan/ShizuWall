@@ -515,4 +515,7 @@
     <string name="app_lock_pin_saved">PIN kaydedildi</string>
     <string name="app_lock_delete">Sil</string>
     <string name="app_lock_submit">Onayla</string>
+    <string name="contact_developer">Geliştiriciyle iletişime geç</string>
+    <string name="contact_developer_description">Geri bildirim gönder veya sorun bildir</string>
+    <string name="contact_developer_no_app">E-posta uygulaması bulunamadı</string>
 </resources>

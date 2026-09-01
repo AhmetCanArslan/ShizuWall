@@ -517,4 +517,7 @@
     <string name="app_lock_pin_saved">PIN を保存しました</string>
     <string name="app_lock_delete">削除</string>
     <string name="app_lock_submit">確定</string>
+    <string name="contact_developer">開発者に連絡</string>
+    <string name="contact_developer_description">フィードバックの送信や問題の報告</string>
+    <string name="contact_developer_no_app">メールアプリが見つかりません</string>
 </resources>

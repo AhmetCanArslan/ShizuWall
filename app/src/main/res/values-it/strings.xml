@@ -520,4 +520,7 @@
     <string name="app_lock_pin_saved">PIN salvato</string>
     <string name="app_lock_delete">Elimina</string>
     <string name="app_lock_submit">Conferma</string>
+    <string name="contact_developer">Contatta lo sviluppatore</string>
+    <string name="contact_developer_description">Invia un feedback o segnala un problema</string>
+    <string name="contact_developer_no_app">Nessuna app email trovata</string>
 </resources>

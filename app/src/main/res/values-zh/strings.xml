@@ -514,4 +514,7 @@
     <string name="app_lock_pin_saved">PIN 码已保存</string>
     <string name="app_lock_delete">删除</string>
     <string name="app_lock_submit">确认</string>
+    <string name="contact_developer">联系开发者</string>
+    <string name="contact_developer_description">发送反馈或报告问题</string>
+    <string name="contact_developer_no_app">未找到电子邮件应用</string>
 </resources>

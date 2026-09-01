@@ -2,6 +2,7 @@ package com.arslan.shizuwall.ui
 
 import android.app.ActivityManager
 import android.app.NotificationManager
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -32,6 +33,7 @@ import com.arslan.shizuwall.trackers.TrackerRegistry
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -145,6 +147,25 @@ class SettingsActivity : BaseActivity() {
         findViewById<LinearLayout>(R.id.btnGithub).setOnClickListener {
             val url = getString(R.string.github_url)
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        }
+
+        findViewById<LinearLayout>(R.id.btnContactDeveloper).setOnClickListener {
+            val address = getString(R.string.contact_developer_email)
+            val subject = getString(R.string.contact_developer_subject)
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:$address?subject=" + Uri.encode(subject))
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(address))
+                putExtra(Intent.EXTRA_SUBJECT, subject)
+            }
+            try {
+                startActivity(intent)
+            } catch (_: ActivityNotFoundException) {
+                Snackbar.make(
+                    findViewById(R.id.settingsRoot),
+                    getString(R.string.contact_developer_no_app),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
         }
 
         findViewById<LinearLayout>(R.id.btnShizukuGuide).setOnClickListener {
