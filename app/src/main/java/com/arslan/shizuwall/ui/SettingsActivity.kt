@@ -1,5 +1,6 @@
 package com.arslan.shizuwall.ui
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.NotificationManager
 import android.content.ActivityNotFoundException
@@ -16,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -79,6 +81,7 @@ class SettingsActivity : BaseActivity() {
         }
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        setupToolbarMenu(toolbar)
         toolbar.setNavigationOnClickListener {
             if (isTaskRoot) {
                 startActivity(Intent(this, MainActivity::class.java))
@@ -109,14 +112,6 @@ class SettingsActivity : BaseActivity() {
         }
         findViewById<LinearLayout>(R.id.rowSecurity).setOnClickListener {
             startActivity(Intent(this, SecuritySettingsActivity::class.java))
-        }
-
-        findViewById<LinearLayout>(R.id.btnExport).setOnClickListener {
-            createDocumentLauncher.launch("shizuwall_settings")
-        }
-
-        findViewById<LinearLayout>(R.id.btnImport).setOnClickListener {
-            openDocumentLauncher.launch(arrayOf("application/json", "text/*", "*/*"))
         }
 
         val infoButtonSwitch =
@@ -168,17 +163,36 @@ class SettingsActivity : BaseActivity() {
             }
         }
 
-        findViewById<LinearLayout>(R.id.btnShizukuGuide).setOnClickListener {
-            startActivity(Intent(this, ShizukuSetupActivity::class.java))
-        }
-
-        findViewById<LinearLayout>(R.id.btnResetApp).setOnClickListener {
-            showResetConfirmationDialog()
-        }
-
         val tvVersion = findViewById<TextView>(R.id.tvVersion)
         val packageInfo = packageManager.getPackageInfo(packageName, 0)
         tvVersion.text = getString(R.string.version_format, packageInfo.versionName)
+    }
+
+    @SuppressLint("RestrictedApi")
+    private fun setupToolbarMenu(toolbar: MaterialToolbar) {
+        toolbar.inflateMenu(R.menu.menu_settings)
+        (toolbar.menu as? MenuBuilder)?.setOptionalIconsVisible(true)
+        toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_shizuku_guide -> {
+                    startActivity(Intent(this, ShizukuSetupActivity::class.java))
+                    true
+                }
+                R.id.action_export_settings -> {
+                    createDocumentLauncher.launch("shizuwall_settings")
+                    true
+                }
+                R.id.action_import_settings -> {
+                    openDocumentLauncher.launch(arrayOf("application/json", "text/*", "*/*"))
+                    true
+                }
+                R.id.action_reset_app -> {
+                    showResetConfirmationDialog()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun showResetConfirmationDialog() {
