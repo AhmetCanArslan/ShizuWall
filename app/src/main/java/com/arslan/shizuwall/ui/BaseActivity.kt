@@ -1,13 +1,18 @@
 package com.arslan.shizuwall.ui
 
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.ColorUtils
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.security.AppLock
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.MaterialColors
 
 open class BaseActivity : AppCompatActivity() {
     protected open val bypassAppLock = false
@@ -56,6 +61,28 @@ open class BaseActivity : AppCompatActivity() {
         if (android.os.Build.VERSION.SDK_INT >= 33 && AppLock.isEnabled(this)) {
             setRecentsScreenshotEnabled(false)
         }
+
+        applyRecentsAppearance()
+    }
+
+    private fun applyRecentsAppearance() {
+        val surface = MaterialColors.getColor(
+            this,
+            com.google.android.material.R.attr.colorSurface,
+            Color.BLACK
+        )
+        val opaque = ColorUtils.setAlphaComponent(surface, 255)
+        val description = if (android.os.Build.VERSION.SDK_INT >= 33) {
+            ActivityManager.TaskDescription.Builder()
+                .setBackgroundColor(opaque)
+                .setStatusBarColor(opaque)
+                .setNavigationBarColor(opaque)
+                .build()
+        } else {
+            @Suppress("DEPRECATION")
+            ActivityManager.TaskDescription(null, null as Bitmap?, opaque)
+        }
+        setTaskDescription(description)
     }
 
     override fun onStart() {
