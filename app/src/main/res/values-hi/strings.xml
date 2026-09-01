@@ -149,8 +149,10 @@
     <string name="root_not_found_message">रूट नहीं मिला, कृपया ShizuWall को रूट अनुमतियाँ प्रदान करें।</string>
     <string name="app_monitor_service">नए ऐप की सूचनाएँ</string>
     <string name="app_monitor_service_description">नया ऐप इंस्टॉल होने पर सूचना दिखाएँ</string>
+    <string name="app_monitor_whitelist_dependency">व्हाइटलिस्ट मोड में नए इंस्टॉल किए गए ऐप्स को भी यही सेवा ब्लॉक करती है। यदि नए ऐप की सूचनाएँ, नए ऐप्स के लिए स्वतः फ़ायरवॉल और फ़ायरवॉल स्थिति सूचना तीनों बंद हैं, तो सेवा रुक जाती है और फ़ायरवॉल बंद करके दोबारा चालू करने तक नए ऐप्स अनुमत रहते हैं।</string>
     <string name="auto_firewall_new_apps">नए ऐप्स पर स्वतः फ़ायरवॉल</string>
     <string name="auto_firewall_new_apps_description">नए इंस्टॉल किए गए ऐप्स को स्वतः ब्लॉक करें (व्हाइटलिस्ट मोड को छोड़कर)</string>
+    <string name="new_app_monitor_main_profile_only">नए ऐप की पहचान केवल मुख्य प्रोफ़ाइल के लिए होती है। वर्क प्रोफ़ाइल या क्लोन स्पेस में इंस्टॉल किए गए ऐप्स का पता नहीं चलता।</string>
     <string name="firewall_status_notification">फ़ायरवॉल स्थिति सूचना</string>
     <string name="firewall_status_notification_description">वर्तमान फ़ायरवॉल स्थिति के साथ स्थायी सूचना दिखाएँ</string>
     <string name="firewall_status_notification_enabled_title">फ़ायरवॉल चालू</string>
@@ -311,7 +313,7 @@
     <string name="firewall_mode_whitelist_description">डिफ़ॉल्ट रूप से सभी ऐप्स ब्लॉक करें, चयनित ऐप्स को अनुमति दें</string>
     <string name="firewall_mode_screen_lock">स्क्रीन लॉक मोड</string>
     <string name="firewall_mode_screen_lock_description">लॉक होने पर चयनित ऐप्स ब्लॉक करें, अनलॉक पर अनब्लॉक करें</string>
-    <string name="whitelist_info_system_apps_warning">जब "सिस्टम ऐप्स दिखाएँ" बंद हो, तो व्हाइटलिस्ट मोड में सिस्टम ऐप्स फ़ायरवॉल नहीं किए जाते।\n\nयदि आपने "सिस्टम ऐप्स दिखाएँ" चालू किया है और व्हाइटलिस्ट मोड उपयोग कर रहे हैं, तो इस संयोजन का पूरी तरह परीक्षण नहीं हुआ है। सावधानी से उपयोग करें।</string>
+    <string name="whitelist_info_system_apps_warning">जब "सिस्टम ऐप्स दिखाएँ" बंद हो, तो व्हाइटलिस्ट मोड में सिस्टम ऐप्स फ़ायरवॉल नहीं किए जाते।\n\nयदि आपने "सिस्टम ऐप्स दिखाएँ" चालू किया है और व्हाइटलिस्ट मोड उपयोग कर रहे हैं, तो इस संयोजन का पूरी तरह परीक्षण नहीं हुआ है। सावधानी से उपयोग करें।\n\nफ़ायरवॉल चालू रहते हुए वर्क प्रोफ़ाइल या क्लोन स्पेस में इंस्टॉल किए गए ऐप्स का पता नहीं चलता और फ़ायरवॉल बंद करके दोबारा चालू करने तक वे अनुमत रहते हैं।</string>
     <string name="firewall_mode_smart_foreground">स्मार्ट फ़ोरग्राउंड</string>
     <string name="firewall_mode_smart_foreground_description">केवल उस ऐप को अनुमति दें जो अभी फ़ोरग्राउंड में है</string>
 

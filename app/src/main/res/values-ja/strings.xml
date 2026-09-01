@@ -138,8 +138,10 @@
     <string name="working_mode_ladb">LADB (ベータ)</string>
     <string name="app_monitor_service">新しいアプリの通知</string>
     <string name="app_monitor_service_description">新しいアプリがインストールされたときに通知を表示する</string>
+    <string name="app_monitor_whitelist_dependency">ホワイトリストモードでは、新しくインストールされたアプリをブロックするのもこのサービスです。新しいアプリの通知、新しいアプリの自動ファイアウォール、ファイアウォール状態の通知がすべてオフの場合、サービスは停止し、ファイアウォールをオフにして再度オンにするまで新しいアプリは許可されたままになります。</string>
     <string name="auto_firewall_new_apps">新しいアプリを自動ブロック</string>
     <string name="auto_firewall_new_apps_description">新しくインストールされたアプリを自動的にブロックする（ホワイトリストモード以外）</string>
+    <string name="new_app_monitor_main_profile_only">新しいアプリの検出はメインプロファイルのみが対象です。仕事用プロファイルやクローン領域にインストールされたアプリは検出されません。</string>
     <string name="firewall_status_notification">ファイアウォール状態の通知</string>
     <string name="firewall_status_notification_description">現在のファイアウォールの状態を常時通知で表示します</string>
     <string name="firewall_status_notification_enabled_title">ファイアウォール有効</string>
@@ -311,7 +313,7 @@
 
     <string name="firewall_mode_whitelist">ホワイトリスト</string>
     <string name="firewall_mode_whitelist_description">デフォルトですべてのアプリをブロックし、選択されたアプリを許可</string>
-    <string name="whitelist_info_system_apps_warning">"システムアプリを表示"が無効の場合、ホワイトリストモードでシステムアプリはファイアウォールの対象になりません。\n\n"システムアプリを表示"を有効にしてホワイトリストモードを使用している場合、この組み合わせは十分にテストされていません。注意して使用してください。</string>
+    <string name="whitelist_info_system_apps_warning">"システムアプリを表示"が無効の場合、ホワイトリストモードでシステムアプリはファイアウォールの対象になりません。\n\n"システムアプリを表示"を有効にしてホワイトリストモードを使用している場合、この組み合わせは十分にテストされていません。注意して使用してください。\n\nファイアウォールが有効な間に仕事用プロファイルやクローン領域にインストールされたアプリは検出されず、ファイアウォールをオフにして再度オンにするまで許可されたままになります。</string>
     <string name="firewall_mode_change_disabled">ファイアウォールが有効になっている間はモードを変更できません。まずファイアウォールを無効にしてください。</string>
 
     <!-- Firewall Mode detailed explanations -->

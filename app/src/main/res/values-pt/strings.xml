@@ -133,8 +133,10 @@
     <string name="working_mode_ladb">LADB</string>
     <string name="app_monitor_service">Notificações de Novos Apps</string>
     <string name="app_monitor_service_description">Mostrar uma notificação quando um novo app é instalado</string>
+    <string name="app_monitor_whitelist_dependency">No modo lista branca, é também este serviço que bloqueia os apps recém-instalados. Se as notificações de novos apps, a firewall automática para novos apps e a notificação de estado da firewall estiverem todas desligadas, o serviço para e os novos apps continuam permitidos até desligar e voltar a ligar a firewall.</string>
     <string name="auto_firewall_new_apps">Bloquear novos apps automaticamente</string>
     <string name="auto_firewall_new_apps_description">Bloquear automaticamente apps recém-instalados (exceto no modo lista branca)</string>
+    <string name="new_app_monitor_main_profile_only">A deteção de novos apps abrange apenas o perfil principal. Apps instalados num perfil de trabalho ou espaço clonado não são detetados.</string>
     <string name="firewall_status_notification">Notificação de status do firewall</string>
     <string name="firewall_status_notification_description">Mostrar uma notificação permanente com o status atual do firewall</string>
     <string name="firewall_status_notification_enabled_title">Firewall ativado</string>
@@ -309,7 +311,7 @@
 
     <string name="firewall_mode_whitelist">Lista branca</string>
     <string name="firewall_mode_whitelist_description">Bloquear todos os apps por padrão, permitir apps selecionados</string>
-    <string name="whitelist_info_system_apps_warning">Quando "Mostrar apps do sistema" está desativado, os apps do sistema não serão bloqueados pelo firewall no modo Lista branca.\n\nSe você ativou "Mostrar apps do sistema" e está usando o modo Lista branca, esta combinação não foi totalmente testada. Use com cuidado.</string>
+    <string name="whitelist_info_system_apps_warning">Quando "Mostrar apps do sistema" está desativado, os apps do sistema não serão bloqueados pelo firewall no modo Lista branca.\n\nSe você ativou "Mostrar apps do sistema" e está usando o modo Lista branca, esta combinação não foi totalmente testada. Use com cuidado.\n\nApps instalados num perfil de trabalho ou espaço clonado com a firewall ligada não são detetados e continuam permitidos até desligar e voltar a ligar a firewall.</string>
     <string name="firewall_mode_change_disabled">Não é possível alterar o modo de firewall enquanto está ativado. Por favor, desative o firewall primeiro.</string>
 
     <!-- Firewall Mode detailed explanations -->

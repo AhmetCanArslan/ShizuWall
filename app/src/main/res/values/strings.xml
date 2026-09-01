@@ -149,8 +149,10 @@
     <string name="root_not_found_message">Root not found, please allow ShizuWall for accessing root permissions.</string>
     <string name="app_monitor_service">New App Notifications</string>
     <string name="app_monitor_service_description">Show a notification when a new app is installed</string>
+    <string name="app_monitor_whitelist_dependency">In Whitelist mode this service is also what blocks newly installed apps. If new-app notifications, auto-firewall for new apps and the firewall status notification are all off, the service stops and new apps stay allowed until the firewall is turned off and on again.</string>
     <string name="auto_firewall_new_apps">Auto-Firewall New Apps</string>
     <string name="auto_firewall_new_apps_description">Automatically block newly installed apps (except in Whitelist mode)</string>
+    <string name="new_app_monitor_main_profile_only">New app detection covers the main profile only. Apps installed in a work profile or cloned space are not detected.</string>
     <string name="firewall_status_notification">Firewall Status Notification</string>
     <string name="firewall_status_notification_description">Show a permanent notification with the current firewall status</string>
     <string name="firewall_status_notification_enabled_title">Firewall enabled</string>
@@ -311,7 +313,7 @@
     <string name="firewall_mode_whitelist_description">Block all apps by default, allow selected apps</string>
     <string name="firewall_mode_screen_lock">Screen Lock Mode</string>
     <string name="firewall_mode_screen_lock_description">Block selected apps on lock, unblock on unlock</string>
-    <string name="whitelist_info_system_apps_warning">When "Show system apps" is disabled, system apps will not be firewalled in Whitelist mode.\n\nIf you have enabled "Show system apps" and are using Whitelist mode, this combination has not been fully tested. Use with caution.</string>
+    <string name="whitelist_info_system_apps_warning">When "Show system apps" is disabled, system apps will not be firewalled in Whitelist mode.\n\nIf you have enabled "Show system apps" and are using Whitelist mode, this combination has not been fully tested. Use with caution.\n\nApps installed into a work profile or cloned space while the firewall is on are not detected, and stay allowed until you turn the firewall off and on again.</string>
     <string name="firewall_mode_smart_foreground">Smart Foreground</string>
     <string name="firewall_mode_smart_foreground_description">Only allow the app currently in foreground</string>
     

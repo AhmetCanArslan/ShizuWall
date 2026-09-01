@@ -149,8 +149,10 @@
     <string name="root_not_found_message">Root non trovato, consenti a ShizuWall di accedere ai permessi di root.</string>
     <string name="app_monitor_service">Notifiche nuove app</string>
     <string name="app_monitor_service_description">Mostra una notifica quando viene installata una nuova app</string>
+    <string name="app_monitor_whitelist_dependency">In modalità Whitelist è questo servizio a bloccare anche le app appena installate. Se le notifiche di nuove app, il firewall automatico per le nuove app e la notifica di stato del firewall sono tutti disattivati, il servizio si arresta e le nuove app restano consentite finché non spegni e riaccendi il firewall.</string>
     <string name="auto_firewall_new_apps">Firewall automatico per le nuove app</string>
     <string name="auto_firewall_new_apps_description">Blocca automaticamente le app appena installate (tranne in modalità Whitelist)</string>
+    <string name="new_app_monitor_main_profile_only">Il rilevamento di nuove app riguarda solo il profilo principale. Le app installate in un profilo di lavoro o in uno spazio clonato non vengono rilevate.</string>
     <string name="firewall_status_notification">Notifica di stato del firewall</string>
     <string name="firewall_status_notification_description">Mostra una notifica permanente con lo stato attuale del firewall</string>
     <string name="firewall_status_notification_enabled_title">Firewall attivo</string>
@@ -311,7 +313,7 @@
     <string name="firewall_mode_whitelist_description">Blocca tutte le app per impostazione predefinita, consenti quelle selezionate</string>
     <string name="firewall_mode_screen_lock">Modalità blocco schermo</string>
     <string name="firewall_mode_screen_lock_description">Blocca le app selezionate al blocco schermo, sbloccale allo sblocco</string>
-    <string name="whitelist_info_system_apps_warning">Quando "Mostra app di sistema" è disattivato, le app di sistema non vengono bloccate in modalità Whitelist.\n\nSe hai attivato "Mostra app di sistema" e usi la modalità Whitelist, questa combinazione non è stata testata a fondo. Usala con cautela.</string>
+    <string name="whitelist_info_system_apps_warning">Quando "Mostra app di sistema" è disattivato, le app di sistema non vengono bloccate in modalità Whitelist.\n\nSe hai attivato "Mostra app di sistema" e usi la modalità Whitelist, questa combinazione non è stata testata a fondo. Usala con cautela.\n\nLe app installate in un profilo di lavoro o in uno spazio clonato mentre il firewall è attivo non vengono rilevate e restano consentite finché non spegni e riaccendi il firewall.</string>
     <string name="firewall_mode_smart_foreground">Primo piano intelligente</string>
     <string name="firewall_mode_smart_foreground_description">Consenti solo l\'app attualmente in primo piano</string>
 

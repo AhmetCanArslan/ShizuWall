@@ -133,8 +133,10 @@
     <string name="working_mode_ladb">LADB</string>
     <string name="app_monitor_service">Yeni Uygulama Bildirimleri</string>
     <string name="app_monitor_service_description">Yeni bir uygulama yüklendiğinde bildirim göster</string>
+    <string name="app_monitor_whitelist_dependency">Beyaz Liste modunda yeni kurulan uygulamaları engelleyen de bu servistir. Yeni uygulama bildirimleri, yeni uygulamalar için otomatik güvenlik duvarı ve güvenlik duvarı durum bildirimi birlikte kapalıysa servis durur ve yeni uygulamalar, güvenlik duvarı kapatılıp yeniden açılana kadar izinli kalır.</string>
     <string name="auto_firewall_new_apps">Yeni Uygulamaları Otomatik Engelle</string>
     <string name="auto_firewall_new_apps_description">Yeni yüklenen uygulamaları otomatik olarak engelle (Beyaz Liste modu hariç)</string>
+    <string name="new_app_monitor_main_profile_only">Yeni uygulama algılama yalnızca ana profili kapsar. İş profiline veya klon alana kurulan uygulamalar algılanmaz.</string>
     <string name="firewall_status_notification">Güvenlik Duvarı Durumu Bildirimi</string>
     <string name="firewall_status_notification_description">Geçerli güvenlik duvarı durumunu kalıcı bir bildirimde göster</string>
     <string name="firewall_status_notification_enabled_title">Güvenlik duvarı etkin</string>
@@ -309,7 +311,7 @@
 
     <string name="firewall_mode_whitelist">Beyaz Liste</string>
     <string name="firewall_mode_whitelist_description">Varsayılan olarak tüm uygulamaları engelle, seçili uygulamalara izin ver</string>
-    <string name="whitelist_info_system_apps_warning">"Sistem uygulamalarını göster" devre dışı bırakıldığında, sistem uygulamaları Beyaz Liste modunda güvenlik duvarı tarafından engellenmez.\n\n"Sistem uygulamalarını göster" seçeneğini etkinleştirdiyseniz ve Beyaz Liste modunu kullanıyorsanız, bu kombinasyon tam olarak test edilmemiştir. Dikkatli kullanın.</string>
+    <string name="whitelist_info_system_apps_warning">"Sistem uygulamalarını göster" devre dışı bırakıldığında, sistem uygulamaları Beyaz Liste modunda güvenlik duvarı tarafından engellenmez.\n\n"Sistem uygulamalarını göster" seçeneğini etkinleştirdiyseniz ve Beyaz Liste modunu kullanıyorsanız, bu kombinasyon tam olarak test edilmemiştir. Dikkatli kullanın.\n\nFirewall açıkken iş profiline veya klon alana kurulan uygulamalar algılanmaz; firewall kapatılıp yeniden açılana kadar izinli kalırlar.</string>
     <string name="firewall_mode_change_disabled">Güvenlik duvarı etkinleştirilirken modu değiştiremezsiniz. Lütfen önce güvenlik duvarını devre dışı bırakın.</string>
 
     <!-- Firewall Mode detailed explanations -->
