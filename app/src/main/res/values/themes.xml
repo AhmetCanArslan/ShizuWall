@@ -14,6 +14,7 @@
         <item name="sliderStyle">@style/Widget.Material3Expressive.Slider.Medium</item>
         <item name="materialSearchBarStyle">@style/Widget.Material3Expressive.SearchBar</item>
         <item name="materialSearchViewStyle">@style/Widget.Material3Expressive.SearchView</item>
+        <item name="snackbarButtonStyle">@style/Widget.Material3Expressive.Button.TextButton.Snackbar</item>
     </style>
 
     <style name="Base.Theme.ShizuWall" parent="Theme.ShizuWallBase" />

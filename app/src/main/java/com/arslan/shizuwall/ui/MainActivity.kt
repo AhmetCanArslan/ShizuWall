@@ -958,7 +958,7 @@ class MainActivity : BaseActivity() {
                     && !checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)
                 ) return true
 
-                val allSelected = filteredAppList.all { it.isSelected }
+                val allSelected = selectableFilteredApps().all { it.isSelected }
                 if (allSelected) return true
 
                 // Show confirmation dialog before selecting all
@@ -1132,16 +1132,20 @@ class MainActivity : BaseActivity() {
 
     }
 
+    private fun selectableFilteredApps(): List<AppInfo> =
+        filteredAppList.filter { AppIds.isBlockable(it.uid) }
+
     private fun showSelectAllConfirmDialog() {
+        val selectable = selectableFilteredApps()
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.select_all))
-            .setMessage(getString(R.string.select_all_apps_confirm, filteredAppList.count { !it.isSelected }))
+            .setMessage(getString(R.string.select_all_apps_confirm, selectable.count { !it.isSelected }))
             .setPositiveButton(getString(R.string.select)) { _, _ ->
                 val isChecked = true
-                val changedApps = filteredAppList.filter { it.isSelected != isChecked }
+                val changedApps = selectable.filter { it.isSelected != isChecked }
                 if (changedApps.isNotEmpty()) {
                     val packagesToUpdate = changedApps.map { it.key }
-                    val filteredKeys = filteredAppList.map { it.key }.toSet()
+                    val filteredKeys = selectable.map { it.key }.toSet()
                     for (i in appList.indices) {
                         val ai = appList[i]
                         if (ai.key in filteredKeys) {

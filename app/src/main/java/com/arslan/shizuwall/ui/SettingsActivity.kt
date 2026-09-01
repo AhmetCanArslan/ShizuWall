@@ -21,6 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.ladb.LadbManager
 import com.arslan.shizuwall.security.AppLock
+import com.arslan.shizuwall.firewall.PerUidFirewall
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.FloatingButtonService
 import com.arslan.shizuwall.services.ForegroundDetectionService
@@ -633,7 +634,9 @@ class SettingsActivity : BaseActivity() {
 
     private fun sanitizeSelectedApps(sp: SharedPreferences) {
         val selected = sp.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
-        val filtered = selected.filterNot { isShizukuPackage(it) }.toSet()
+        val filtered = selected
+            .filterNot { isShizukuPackage(it) }
+            .filterTo(mutableSetOf()) { PerUidFirewall.isBlockableKey(this, it) }
         sp.edit()
             .putStringSet(MainActivity.KEY_SELECTED_APPS, filtered)
             .putInt(MainActivity.KEY_SELECTED_COUNT, filtered.size)

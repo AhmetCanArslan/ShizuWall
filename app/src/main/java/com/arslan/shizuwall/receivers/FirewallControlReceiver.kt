@@ -12,6 +12,7 @@ import com.arslan.shizuwall.R
 import com.arslan.shizuwall.ladb.LadbLogStore
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellResult
+import com.arslan.shizuwall.firewall.PerUidFirewall
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.services.ScreenLockMonitorService
 import com.arslan.shizuwall.ui.MainActivity
@@ -130,7 +131,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 val packages = if (enabled) {
                     FirewallTargets.effectiveBlockList(
                         firewallMode,
-                        requestedPackages,
+                        requestedPackages.filter { PerUidFirewall.isBlockableKey(context, it) },
                         ScreenLockModeReceiver.isDeviceLocked(context),
                         FirewallTargets.parseAppModes(prefs.getString(MainActivity.KEY_APP_MODES, "{}"))
                     )

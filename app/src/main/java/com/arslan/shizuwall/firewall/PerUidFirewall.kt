@@ -58,6 +58,11 @@ object PerUidFirewall {
         return !AppIds.isBlockable(uid)
     }
 
+    fun isBlockableKey(context: Context, key: String): Boolean {
+        val uid = resolveUid(context, key) ?: return true
+        return AppIds.isBlockable(uid)
+    }
+
     private fun prepare(context: Context, key: String, rule: Int): Prepared {
         val uid = resolveUid(context, key) ?: return Prepared.Skipped(UNRESOLVED)
         if (AppIds.isBlockable(uid)) return Prepared.Applicable(uid, rule)

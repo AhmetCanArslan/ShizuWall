@@ -3,6 +3,7 @@ package com.arslan.shizuwall.profiles
 import android.content.Context
 import android.content.SharedPreferences
 import com.arslan.shizuwall.firewall.FirewallTargets
+import com.arslan.shizuwall.firewall.PerUidFirewall
 import com.arslan.shizuwall.model.Profile
 import com.arslan.shizuwall.ui.MainActivity
 import org.json.JSONArray
@@ -127,7 +128,8 @@ object ProfilesStore {
     fun captureCurrent(context: Context): CapturedConfig {
         val p = prefs(context)
         return CapturedConfig(
-            packages = p.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet(),
+            packages = (p.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet())
+                .filterTo(mutableSetOf()) { PerUidFirewall.isBlockableKey(context, it) },
             firewallMode = p.getString(MainActivity.KEY_FIREWALL_MODE, "DEFAULT") ?: "DEFAULT",
             appModesJson = p.getString(MainActivity.KEY_APP_MODES, "{}") ?: "{}",
             showSystemApps = p.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
@@ -136,9 +138,13 @@ object ProfilesStore {
 
 
     fun writeSelectionFromProfile(context: Context, profile: Profile) {
+        val packages = profile.packages.filterTo(mutableSetOf()) {
+            PerUidFirewall.isBlockableKey(context, it)
+        }
+        if (packages != profile.packages) update(context, profile.copy(packages = packages))
         prefs(context).edit().apply {
-            putStringSet(MainActivity.KEY_SELECTED_APPS, profile.packages)
-            putInt(MainActivity.KEY_SELECTED_COUNT, profile.packages.size)
+            putStringSet(MainActivity.KEY_SELECTED_APPS, packages)
+            putInt(MainActivity.KEY_SELECTED_COUNT, packages.size)
             putString(MainActivity.KEY_FIREWALL_MODE, profile.firewallMode)
             putString(MainActivity.KEY_APP_MODES, profile.appModesJson)
             putBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, profile.showSystemApps)

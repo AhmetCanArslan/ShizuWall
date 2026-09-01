@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.google.android.material.button.MaterialButton
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.arslan.shizuwall.R
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.color.MaterialColors
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
@@ -246,11 +246,10 @@ class AppListAdapter(
             itemView.isClickable = explainUnsupported
             if (explainUnsupported) {
                 itemView.setOnClickListener {
-                    Toast.makeText(
-                        itemView.context,
-                        R.string.app_unsupported_system_uid,
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Snackbar.make(itemView, R.string.app_unsupported_system_uid, Snackbar.LENGTH_LONG)
+                        .setTextMaxLines(4)
+                        .setAction(R.string.ok) { }
+                        .show()
                 }
             } else {
                 itemView.setOnClickListener(null)
