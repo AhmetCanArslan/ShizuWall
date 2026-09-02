@@ -37,6 +37,7 @@ class AppLockActivity : BaseActivity() {
 
         private const val MAX_ATTEMPTS = 5
         private const val LOCKOUT_MS = 30_000L
+        private const val AUTO_SUBMIT_DELAY_MS = 180L
 
         private val SHAPES = intArrayOf(
             R.drawable.shape_pin_clover,
@@ -225,6 +226,13 @@ class AppLockActivity : BaseActivity() {
         entered.append(digit)
         tvMessage.text = ""
         renderDots(true)
+        if (entered.length == targetLength) {
+            setKeypadEnabled(false)
+            handler.postDelayed({
+                setKeypadEnabled(true)
+                if (entered.length == targetLength) submit()
+            }, AUTO_SUBMIT_DELAY_MS)
+        }
     }
 
     private fun delete() {
