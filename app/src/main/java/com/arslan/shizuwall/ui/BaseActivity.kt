@@ -58,11 +58,15 @@ open class BaseActivity : AppCompatActivity() {
             DynamicColors.applyToActivityIfAvailable(this)
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= 33 && AppLock.isEnabled(this)) {
-            setRecentsScreenshotEnabled(false)
-        }
+        applyRecentsPrivacy()
 
         applyRecentsAppearance()
+    }
+
+    protected fun applyRecentsPrivacy() {
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            setRecentsScreenshotEnabled(!AppLock.isEnabled(this))
+        }
     }
 
     private fun applyRecentsAppearance() {
@@ -87,6 +91,7 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        applyRecentsPrivacy()
         AppLock.onActivityStarted()
         if (!bypassAppLock && AppLock.requiresUnlock(this)) {
             startActivity(
