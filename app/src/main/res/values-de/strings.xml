@@ -520,4 +520,8 @@
     <string name="contact_developer">Entwickler kontaktieren</string>
     <string name="contact_developer_description">Feedback senden oder Problem melden</string>
     <string name="contact_developer_no_app">Keine E-Mail-App gefunden</string>
+    <string name="changelog_title">Neu in %1$s</string>
+    <string name="changelog_message">• App-Sperre: ShizuWall mit PIN oder Biometrie schützen\n• Einstellungsmenü: Konfiguration exportieren, importieren oder zurücksetzen\n• Leerzustand und Backend-Hinweise, die die nächsten Schritte erklären\n• Klarere Benachrichtigungen des App-Monitors\n• Snackbar-Rückmeldungen statt Toasts\n• Übersichtskarte folgt jetzt deinen Themenfarben\n• Karte „Entwickler kontaktieren“ in den Einstellungen</string>
+    <string name="whats_new">Neuigkeiten</string>
+    <string name="whats_new_description">Änderungen in dieser Version ansehen</string>
 </resources>

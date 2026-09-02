@@ -521,4 +521,8 @@
     <string name="contact_developer">Geliştiriciyle iletişime geç</string>
     <string name="contact_developer_description">Geri bildirim gönder veya sorun bildir</string>
     <string name="contact_developer_no_app">E-posta uygulaması bulunamadı</string>
+    <string name="changelog_title">%1$s sürümündeki yenilikler</string>
+    <string name="changelog_message">• Uygulama kilidi: ShizuWall\'u PIN veya biyometri ile koruyun\n• Ayarlar menüsü: yapılandırmayı dışa/içe aktarın veya sıfırlayın\n• Ne yapılacağını anlatan boş liste ve arka uç bilgi kartları\n• Daha anlaşılır uygulama izleyici bildirimleri\n• Toast yerine Snackbar geri bildirimi\n• Son uygulamalar kartı artık tema renklerinizi kullanıyor\n• Ayarlarda geliştiriciye ulaşma kartı</string>
+    <string name="whats_new">Yenilikler</string>
+    <string name="whats_new_description">Bu sürümdeki değişiklikleri gör</string>
 </resources>

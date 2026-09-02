@@ -529,4 +529,8 @@
     <string name="contact_developer">التواصل مع المطور</string>
     <string name="contact_developer_description">أرسل ملاحظاتك أو أبلغ عن مشكلة</string>
     <string name="contact_developer_no_app">لم يتم العثور على تطبيق بريد</string>
+    <string name="changelog_title">الجديد في %1$s</string>
+    <string name="changelog_message">• قفل التطبيق: احمِ ShizuWall برمز PIN أو البصمة\n• قائمة الإعدادات: تصدير الإعدادات أو استيرادها أو إعادة ضبطها\n• حالة فارغة ولافتات للواجهة الخلفية توضح الخطوة التالية\n• إشعارات أوضح لمراقب التطبيقات\n• Snackbar بدلاً من رسائل Toast\n• بطاقة التطبيقات الأخيرة تتبع ألوان مظهرك\n• بطاقة للتواصل مع المطوّر في الإعدادات</string>
+    <string name="whats_new">الجديد</string>
+    <string name="whats_new_description">اطّلع على تغييرات هذا الإصدار</string>
 </resources>

@@ -520,4 +520,8 @@
     <string name="contact_developer">联系开发者</string>
     <string name="contact_developer_description">发送反馈或报告问题</string>
     <string name="contact_developer_no_app">未找到电子邮件应用</string>
+    <string name="changelog_title">%1$s 更新内容</string>
+    <string name="changelog_message">• 应用锁：使用 PIN 或生物识别保护 ShizuWall\n• 设置菜单：导出、导入或重置配置\n• 空列表与后端提示横幅，说明下一步操作\n• 应用监视器通知更清晰\n• 使用 Snackbar 取代 Toast 提示\n• 最近任务卡片跟随主题配色\n• 设置中新增联系开发者卡片</string>
+    <string name="whats_new">新功能</string>
+    <string name="whats_new_description">查看此版本的更新内容</string>
 </resources>

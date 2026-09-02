@@ -527,4 +527,8 @@
     <string name="contact_developer">Kontaktovat vývojáře</string>
     <string name="contact_developer_description">Odeslat zpětnou vazbu nebo nahlásit problém</string>
     <string name="contact_developer_no_app">Nebyla nalezena žádná e-mailová aplikace</string>
+    <string name="changelog_title">Novinky ve verzi %1$s</string>
+    <string name="changelog_message">• Zámek aplikace: chraňte ShizuWall PINem nebo biometrikou\n• Nabídka nastavení: export, import nebo reset konfigurace\n• Prázdný stav a bannery backendu s dalším postupem\n• Srozumitelnější oznámení monitoru aplikací\n• Snackbar místo toastů\n• Karta v posledních aplikacích používá barvy motivu\n• Karta pro kontakt vývojáře v nastavení</string>
+    <string name="whats_new">Novinky</string>
+    <string name="whats_new_description">Zobrazit změny v této verzi</string>
 </resources>

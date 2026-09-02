@@ -153,6 +153,11 @@ class OnboardingActivity : BaseActivity() {
             .putBoolean("onboarding_complete", true)
             .apply()
 
+        getSharedPreferences(MainActivity.PREF_NAME, MODE_PRIVATE)
+            .edit()
+            .putString(MainActivity.KEY_LAST_SEEN_CHANGELOG, MainActivity.changelogId(this))
+            .apply()
+
         // Navigate to MainActivity
         startActivity(Intent(this, MainActivity::class.java))
         finish()

@@ -143,6 +143,14 @@ class SettingsActivity : BaseActivity() {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         }
 
+        findViewById<LinearLayout>(R.id.btnWhatsNew).setOnClickListener {
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.changelog_title, com.arslan.shizuwall.BuildConfig.VERSION_NAME))
+                .setMessage(getString(R.string.changelog_message))
+                .setPositiveButton(R.string.ok, null)
+                .show()
+        }
+
         findViewById<LinearLayout>(R.id.btnContactDeveloper).setOnClickListener {
             val address = getString(R.string.contact_developer_email)
             val subject = getString(R.string.contact_developer_subject)

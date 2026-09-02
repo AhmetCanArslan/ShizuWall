@@ -526,4 +526,8 @@
     <string name="contact_developer">डेवलपर से संपर्क करें</string>
     <string name="contact_developer_description">प्रतिक्रिया भेजें या समस्या की रिपोर्ट करें</string>
     <string name="contact_developer_no_app">कोई ईमेल ऐप नहीं मिला</string>
+    <string name="changelog_title">%1$s में नया क्या है</string>
+    <string name="changelog_message">• ऐप लॉक: ShizuWall को PIN या बायोमेट्रिक से सुरक्षित करें\n• सेटिंग्स मेन्यू: कॉन्फ़िगरेशन निर्यात, आयात या रीसेट करें\n• खाली सूची और बैकएंड बैनर जो अगला कदम बताते हैं\n• ऐप मॉनिटर की अधिक स्पष्ट सूचनाएँ\n• टोस्ट के बजाय Snackbar\n• हालिया ऐप्स कार्ड अब आपकी थीम के रंग अपनाता है\n• सेटिंग्स में डेवलपर से संपर्क कार्ड</string>
+    <string name="whats_new">नया क्या है</string>
+    <string name="whats_new_description">इस संस्करण के बदलाव देखें</string>
 </resources>

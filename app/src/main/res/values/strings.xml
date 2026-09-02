@@ -529,4 +529,8 @@
     <string name="contact_developer">Contact Developer</string>
     <string name="contact_developer_description">Send feedback or report a problem</string>
     <string name="contact_developer_no_app">No email app found</string>
+    <string name="changelog_title">What\'s new in %1$s</string>
+    <string name="changelog_message">• App lock: protect ShizuWall with a PIN or biometrics\n• Settings menu: export, import or reset your configuration\n• Empty state and backend banners that explain what to do next\n• Clearer app monitor notifications\n• Snackbar feedback instead of toasts\n• Recents card now follows your theme colors\n• Contact developer card in settings</string>
+    <string name="whats_new">What\'s new</string>
+    <string name="whats_new_description">See the changes in this version</string>
 </resources>

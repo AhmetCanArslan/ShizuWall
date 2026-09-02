@@ -520,4 +520,8 @@
     <string name="contact_developer">Contactar o programador</string>
     <string name="contact_developer_description">Enviar comentários ou relatar um problema</string>
     <string name="contact_developer_no_app">Nenhuma aplicação de e-mail encontrada</string>
+    <string name="changelog_title">Novidades na %1$s</string>
+    <string name="changelog_message">• Bloqueio do app: proteja o ShizuWall com PIN ou biometria\n• Menu de configurações: exportar, importar ou redefinir a configuração\n• Estado vazio e avisos de backend que explicam o que fazer\n• Notificações do monitor de apps mais claras\n• Snackbar em vez de toasts\n• O cartão de recentes segue as cores do seu tema\n• Cartão para contatar o desenvolvedor nas configurações</string>
+    <string name="whats_new">Novidades</string>
+    <string name="whats_new_description">Veja as mudanças desta versão</string>
 </resources>

@@ -131,6 +131,17 @@ class MainActivity : BaseActivity() {
         const val KEY_TILE_COLLAPSE_SHADE = "tile_collapse_shade"
         const val KEY_REMEMBER_DISABLED_APPS = "remember_disabled_apps"
         private const val KEY_APPS_CACHE_JSON = "apps_cache_json_v1"
+        const val KEY_LAST_SEEN_CHANGELOG = "last_seen_changelog"
+
+        fun changelogId(context: Context): String {
+            val config = android.content.res.Configuration(context.resources.configuration)
+            config.setLocale(java.util.Locale.ENGLISH)
+            val base = context.createConfigurationContext(config).getString(R.string.changelog_message)
+            return java.security.MessageDigest.getInstance("SHA-256")
+                .digest(base.toByteArray())
+                .joinToString("") { "%02x".format(it) }
+                .take(16)
+        }
 
         const val ACTION_PROFILE_CONTROL = "shizuwall.PROFILE"
         const val EXTRA_PROFILE_NAME = "profile"
@@ -371,6 +382,8 @@ class MainActivity : BaseActivity() {
 
         // Show Android 11 compatibility warning if needed
         showAndroid11WarningDialog()
+
+        showChangelogDialogIfNeeded()
 
         // Prompt user to view Shizuku setup slides at app start
         val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
@@ -1680,6 +1693,18 @@ class MainActivity : BaseActivity() {
         selectedAppsRecyclerView.isNestedScrollingEnabled = false
 
         dialog.show()
+    }
+
+    private fun showChangelogDialogIfNeeded() {
+        val id = changelogId(this)
+        if (sharedPreferences.getString(KEY_LAST_SEEN_CHANGELOG, null) == id) return
+        sharedPreferences.edit().putString(KEY_LAST_SEEN_CHANGELOG, id).apply()
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.changelog_title, com.arslan.shizuwall.BuildConfig.VERSION_NAME))
+            .setMessage(getString(R.string.changelog_message))
+            .setPositiveButton(R.string.ok, null)
+            .show()
     }
 
     private fun showAndroid11WarningDialog() {

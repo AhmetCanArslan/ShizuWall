@@ -525,4 +525,8 @@
     <string name="contact_developer">Связаться с разработчиком</string>
     <string name="contact_developer_description">Отправить отзыв или сообщить о проблеме</string>
     <string name="contact_developer_no_app">Приложение для почты не найдено</string>
+    <string name="changelog_title">Что нового в %1$s</string>
+    <string name="changelog_message">• Блокировка приложения: защита ShizuWall PIN-кодом или биометрией\n• Меню настроек: экспорт, импорт и сброс конфигурации\n• Пустое состояние и баннеры бэкенда с подсказками\n• Более понятные уведомления монитора приложений\n• Snackbar вместо всплывающих сообщений\n• Карточка в недавних использует цвета вашей темы\n• Карточка связи с разработчиком в настройках</string>
+    <string name="whats_new">Что нового</string>
+    <string name="whats_new_description">Посмотреть изменения в этой версии</string>
 </resources>

@@ -523,4 +523,8 @@
     <string name="contact_developer">開発者に連絡</string>
     <string name="contact_developer_description">フィードバックの送信や問題の報告</string>
     <string name="contact_developer_no_app">メールアプリが見つかりません</string>
+    <string name="changelog_title">%1$s の新機能</string>
+    <string name="changelog_message">• アプリロック: PIN または生体認証で ShizuWall を保護\n• 設定メニュー: 設定のエクスポート、インポート、リセット\n• 次の操作を示す空状態表示とバックエンドバナー\n• アプリモニター通知をより分かりやすく\n• トーストではなく Snackbar による通知\n• 履歴カードがテーマの色に追従\n• 設定に開発者への連絡カードを追加</string>
+    <string name="whats_new">新機能</string>
+    <string name="whats_new_description">このバージョンの変更点を見る</string>
 </resources>
