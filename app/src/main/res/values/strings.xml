@@ -512,6 +512,7 @@
     <string name="app_lock_pin_length_required">Enter %1$d digits</string>
     <string name="app_lock_pin_length">PIN length</string>
     <string name="app_lock_pin_not_recoverable">Your PIN can’t be recovered. If you forget it, the only way back in is to clear ShizuWall’s app data, which deletes all settings and profiles.</string>
+    <string name="app_lock_scope_warning">This lock only stops someone from opening ShizuWall. The firewall rules live in Android, so they can still be changed from macro apps, ADB broadcasts, the Quick Settings tile or the home screen widget.</string>
     <string name="app_lock_wrong_pin">Wrong PIN</string>
     <string name="app_lock_locked_out">Too many attempts. Try again in %1$d s</string>
     <string name="app_lock_biometric_title">Unlock ShizuWall</string>

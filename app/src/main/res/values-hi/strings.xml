@@ -511,6 +511,7 @@
     <string name="app_lock_pin_length_required">%1$d अंक दर्ज करें</string>
     <string name="app_lock_pin_length">PIN की लंबाई</string>
     <string name="app_lock_pin_not_recoverable">PIN वापस नहीं पाया जा सकता। भूलने पर एकमात्र रास्ता ShizuWall का ऐप डेटा मिटाना है, जिससे सभी सेटिंग और प्रोफाइल मिट जाएंगे।</string>
+    <string name="app_lock_scope_warning">यह लॉक केवल ShizuWall खोलने से रोकता है। फ़ायरवॉल नियम Android में रहते हैं, इसलिए उन्हें मैक्रो ऐप, ADB ब्रॉडकास्ट, क्विक सेटिंग्स टाइल या विजेट से बदला जा सकता है।</string>
     <string name="app_lock_wrong_pin">गलत PIN</string>
     <string name="app_lock_locked_out">बहुत ज़्यादा कोशिशें। %1$d सेकंड बाद फिर कोशिश करें</string>
     <string name="app_lock_biometric_title">ShizuWall अनलॉक करें</string>

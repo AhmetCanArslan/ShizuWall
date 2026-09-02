@@ -508,6 +508,7 @@
     <string name="app_lock_pin_length_required">%1$d 桁の PIN を入力</string>
     <string name="app_lock_pin_length">PIN の桁数</string>
     <string name="app_lock_pin_not_recoverable">PIN は復元できません。忘れた場合は ShizuWall のアプリデータを削除するしかなく、すべての設定とプロファイルが失われます。</string>
+    <string name="app_lock_scope_warning">このロックは ShizuWall を開くことを防ぐだけです。ファイアウォールのルールは Android 側にあるため、マクロアプリ、ADB ブロードキャスト、クイック設定タイル、ウィジェットから変更できます。</string>
     <string name="app_lock_wrong_pin">PIN が違います</string>
     <string name="app_lock_locked_out">試行回数が多すぎます。%1$d 秒後に再試行してください</string>
     <string name="app_lock_biometric_title">ShizuWall のロック解除</string>

@@ -512,6 +512,7 @@
     <string name="app_lock_pin_length_required">Zadejte %1$d číslic</string>
     <string name="app_lock_pin_length">Délka PINu</string>
     <string name="app_lock_pin_not_recoverable">PIN nelze obnovit. Pokud ho zapomenete, jediným řešením je vymazat data aplikace ShizuWall, čímž přijdete o všechna nastavení a profily.</string>
+    <string name="app_lock_scope_warning">Tento zámek pouze brání otevření ShizuWall. Pravidla firewallu jsou uložena v Androidu, takže je stále lze měnit z makro aplikací, ADB broadcastů, dlaždice Rychlých nastavení nebo widgetu.</string>
     <string name="app_lock_wrong_pin">Nesprávný PIN</string>
     <string name="app_lock_locked_out">Příliš mnoho pokusů. Zkuste to za %1$d s</string>
     <string name="app_lock_biometric_title">Odemknout ShizuWall</string>

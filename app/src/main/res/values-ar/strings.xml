@@ -514,6 +514,7 @@
     <string name="app_lock_pin_length_required">أدخل %1$d أرقام</string>
     <string name="app_lock_pin_length">طول رمز PIN</string>
     <string name="app_lock_pin_not_recoverable">لا يمكن استرداد رمز PIN. إذا نسيته، فالحل الوحيد هو مسح بيانات تطبيق ShizuWall، مما يحذف جميع الإعدادات والملفات الشخصية.</string>
+    <string name="app_lock_scope_warning">هذا القفل يمنع فقط فتح ShizuWall. قواعد جدار الحماية مخزّنة في نظام أندرويد، لذا لا يزال ممكنًا تغييرها من تطبيقات الماكرو أو بثّ ADB أو مربع الإعدادات السريعة أو الويدجت.</string>
     <string name="app_lock_wrong_pin">رمز PIN غير صحيح</string>
     <string name="app_lock_locked_out">محاولات كثيرة جدًا. أعد المحاولة خلال %1$d ثانية</string>
     <string name="app_lock_biometric_title">فتح ShizuWall</string>
