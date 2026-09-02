@@ -360,11 +360,7 @@ class MainActivity : BaseActivity() {
             sharedPreferences.getBoolean(KEY_AUTO_FIREWALL_NEW_APPS, false) ||
             sharedPreferences.getBoolean(KEY_SHOW_FIREWALL_STATUS_NOTIFICATION, false)) {
             val monitorIntent = Intent(this, AppMonitorService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(monitorIntent)
-            } else {
-                startService(monitorIntent)
-            }
+            startForegroundService(monitorIntent)
         }
 
         // Start Floating Button Service if enabled
@@ -2190,19 +2186,17 @@ class MainActivity : BaseActivity() {
         }
 
         // Also persist into device-protected storage so a direct-boot receiver can read it after reboot.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            try {
-                val dpCtx = createDeviceProtectedStorageContext()
-                val dpPrefs = dpCtx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                dpPrefs.edit().apply {
-                    putBoolean(KEY_FIREWALL_ENABLED, enabled)
-                    if (enabled) putLong(KEY_FIREWALL_SAVED_ELAPSED, elapsed) else remove(KEY_FIREWALL_SAVED_ELAPSED)
-                    putLong(KEY_FIREWALL_UPDATE_TS, System.currentTimeMillis()) 
-                    apply()
-                }
-            } catch (e: Exception) {
-                // ignore device-protected write failures
+        try {
+            val dpCtx = createDeviceProtectedStorageContext()
+            val dpPrefs = dpCtx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            dpPrefs.edit().apply {
+                putBoolean(KEY_FIREWALL_ENABLED, enabled)
+                if (enabled) putLong(KEY_FIREWALL_SAVED_ELAPSED, elapsed) else remove(KEY_FIREWALL_SAVED_ELAPSED)
+                putLong(KEY_FIREWALL_UPDATE_TS, System.currentTimeMillis()) 
+                apply()
             }
+        } catch (e: Exception) {
+            // ignore device-protected write failures
         }
 
         // Notify widget to update

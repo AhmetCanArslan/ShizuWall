@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_shizuku_guide"
+        android:icon="@drawable/ic_shizuku_menu"
+        android:title="@string/shizuku_setup_guide"
+        app:iconTint="?android:attr/textColorPrimary"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_export_settings"
+        android:icon="@android:drawable/stat_sys_upload"
+        android:title="@string/export_settings"
+        app:iconTint="?android:attr/textColorPrimary"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_import_settings"
+        android:icon="@android:drawable/stat_sys_download"
+        android:title="@string/import_settings"
+        app:iconTint="?android:attr/textColorPrimary"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_reset_app"
+        android:icon="@drawable/ic_picon_delete"
+        android:title="@string/reset_app_menu"
+        app:iconTint="?android:attr/textColorPrimary"
+        app:showAsAction="never" />
+
+</menu>

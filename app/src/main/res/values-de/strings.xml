@@ -161,9 +161,7 @@
     <string name="language_system_default">Systemstandard</string>
     <string name="adb_broadcast_usage_description">Schnellübersicht zur Verwendung von adb zur Firewall-Steuerung</string>
     <string name="export_settings">Einstellungen exportieren</string>
-    <string name="export_settings_description">Ihre Konfiguration in einer Datei speichern</string>
     <string name="import_settings">Einstellungen importieren</string>
-    <string name="import_settings_description">Konfiguration aus einer Datei wiederherstellen</string>
     <string name="support_developer_description">Den Entwickler unterstützen</string>
     <string name="github">GitHub</string>
     <string name="github_description">Quellcode anzeigen und beitragen</string>

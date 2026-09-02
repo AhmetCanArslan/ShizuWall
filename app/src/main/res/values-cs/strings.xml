@@ -168,9 +168,7 @@
     <string name="language_system_default">Vychozí systémové</string>
     <string name="adb_broadcast_usage_description">Stručný návod k použití adb pro ovládání brány firewall</string>
     <string name="export_settings">Export nastavení</string>
-    <string name="export_settings_description">Uložte svou konfiguraci do souboru</string>
     <string name="import_settings">Import nastavení</string>
-    <string name="import_settings_description">Obnovit konfiguraci ze souboru</string>
     <string name="support_developer_description">Podpořit vývojáře</string>
     <string name="github">GitHub</string>
     <string name="github_description">Zobrazit zdrojový kód a podílet se</string>

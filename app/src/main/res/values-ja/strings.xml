@@ -160,9 +160,7 @@
     <string name="language_system_default">システムのデフォルト</string>
     <string name="adb_broadcast_usage_description">adb を使用したファイアウォール制御のクイックガイド</string>
     <string name="export_settings">設定をエクスポート</string>
-    <string name="export_settings_description">設定をファイルに保存する</string>
     <string name="import_settings">設定をインポート</string>
-    <string name="import_settings_description">ファイルから設定を復元する</string>
     <string name="support_developer_description">開発者を支援する</string>
     <string name="github">GitHub</string>
     <string name="github_description">ソースコードの表示と貢献</string>

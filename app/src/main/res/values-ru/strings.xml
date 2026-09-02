@@ -160,9 +160,7 @@
     <string name="language_system_default">Системный по умолчанию</string>
     <string name="adb_broadcast_usage_description">Краткое руководство по использованию adb для управления брандмауэром</string>
     <string name="export_settings">Экспорт настроек</string>
-    <string name="export_settings_description">Сохранить конфигурацию в файл</string>
     <string name="import_settings">Импорт настроек</string>
-    <string name="import_settings_description">Восстановить конфигурацию из файла</string>
     <string name="support_developer_description">Поддержать разработчика</string>
     <string name="github">GitHub</string>
     <string name="github_description">Просмотреть исходный код и внести вклад</string>

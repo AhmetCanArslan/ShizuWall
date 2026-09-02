@@ -161,9 +161,7 @@
     <string name="language_system_default">Sistem varsayılanı</string>
     <string name="adb_broadcast_usage_description">Güvenlik duvarını kontrol etmek için adb kullanımına hızlı rehber</string>
     <string name="export_settings">Ayarları dışa aktar</string>
-    <string name="export_settings_description">Yapılandırmanızı bir dosyaya kaydedin</string>
     <string name="import_settings">Ayarları içe aktar</string>
-    <string name="import_settings_description">Yapılandırmayı bir dosyadan geri yükle</string>
     <string name="support_developer_description">Geliştiriciyi destekle</string>
     <string name="github">GitHub</string>
     <string name="github_description">Kaynak kodunu görüntüle ve katkıda bulun</string>

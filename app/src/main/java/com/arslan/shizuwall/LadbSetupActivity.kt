@@ -1159,16 +1159,14 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     }
 
     private fun createPairingNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val nm = getSystemService(NotificationManager::class.java)
-            if (nm.getNotificationChannel(PAIRING_CHANNEL_ID) == null) {
-                val channel = NotificationChannel(
-                    PAIRING_CHANNEL_ID,
-                    getString(R.string.ladb_pairing_channel_name),
-                    NotificationManager.IMPORTANCE_HIGH
-                )
-                nm.createNotificationChannel(channel)
-            }
+        val nm = getSystemService(NotificationManager::class.java)
+        if (nm.getNotificationChannel(PAIRING_CHANNEL_ID) == null) {
+            val channel = NotificationChannel(
+                PAIRING_CHANNEL_ID,
+                getString(R.string.ladb_pairing_channel_name),
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            nm.createNotificationChannel(channel)
         }
     }
 
@@ -1198,11 +1196,8 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         }
 
         // RemoteInput requires a mutable PendingIntent on Android 12+.
-        val actionFlags = PendingIntent.FLAG_UPDATE_CURRENT or when {
-            Build.VERSION.SDK_INT >= 31 -> PendingIntent.FLAG_MUTABLE
-            Build.VERSION.SDK_INT >= 23 -> 0
-            else -> 0
-        }
+        val actionFlags = PendingIntent.FLAG_UPDATE_CURRENT or
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
         val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, actionFlags)
 
         val action = NotificationCompat.Action.Builder(
@@ -1215,7 +1210,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             .build()
 
         val openIntent = Intent(this, LadbSetupActivity::class.java)
-        val contentFlags = PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0)
+        val contentFlags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         val contentIntent = PendingIntent.getActivity(this, 0, openIntent, contentFlags)
 
         val notification = NotificationCompat.Builder(this, PAIRING_CHANNEL_ID)

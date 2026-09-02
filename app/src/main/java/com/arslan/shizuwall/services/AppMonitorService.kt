@@ -80,27 +80,25 @@ class AppMonitorService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-            // Silent channel for foreground service
-            val silentName = getString(R.string.app_monitor_notification_channel_name)
-            val silentDesc = getString(R.string.app_monitor_notification_channel_description)
-            val silentChannel = NotificationChannel(CHANNEL_ID_SILENT, silentName, NotificationManager.IMPORTANCE_LOW).apply {
-                description = silentDesc
-                setShowBadge(false)
-            }
-            notificationManager.createNotificationChannel(silentChannel)
-
-            // Loud channel for app installations
-            val loudName = getString(R.string.app_installed_notification_channel_name)
-            val loudDesc = getString(R.string.app_installed_notification_channel_description)
-            val loudChannel = NotificationChannel(CHANNEL_ID_LOUD, loudName, NotificationManager.IMPORTANCE_DEFAULT).apply {
-                description = loudDesc
-                enableVibration(true)
-            }
-            notificationManager.createNotificationChannel(loudChannel)
+        // Silent channel for foreground service
+        val silentName = getString(R.string.app_monitor_notification_channel_name)
+        val silentDesc = getString(R.string.app_monitor_notification_channel_description)
+        val silentChannel = NotificationChannel(CHANNEL_ID_SILENT, silentName, NotificationManager.IMPORTANCE_LOW).apply {
+            description = silentDesc
+            setShowBadge(false)
         }
+        notificationManager.createNotificationChannel(silentChannel)
+
+        // Loud channel for app installations
+        val loudName = getString(R.string.app_installed_notification_channel_name)
+        val loudDesc = getString(R.string.app_installed_notification_channel_description)
+        val loudChannel = NotificationChannel(CHANNEL_ID_LOUD, loudName, NotificationManager.IMPORTANCE_DEFAULT).apply {
+            description = loudDesc
+            enableVibration(true)
+        }
+        notificationManager.createNotificationChannel(loudChannel)
     }
 
     private fun createForegroundNotification(): Notification {

@@ -171,9 +171,7 @@
     <string name="language_system_default">System default</string>
     <string name="adb_broadcast_usage_description">Quick guide to use adb to control firewall</string>
     <string name="export_settings">Export settings</string>
-    <string name="export_settings_description">Save your configuration to a file</string>
     <string name="import_settings">Import settings</string>
-    <string name="import_settings_description">Restore configuration from a file</string>
     <string name="support_developer_description">Support the developer</string>
     <string name="github">GitHub</string>
     <string name="github_description">View source code and contribute</string>

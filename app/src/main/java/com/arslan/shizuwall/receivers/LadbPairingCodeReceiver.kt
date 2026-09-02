@@ -61,7 +61,7 @@ class LadbPairingCodeReceiver : BroadcastReceiver() {
 
         fun postResultNotification(title: String, text: String) {
             val openIntent = Intent(context, LadbSetupActivity::class.java)
-            val contentFlags = PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0)
+            val contentFlags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             val contentIntent = PendingIntent.getActivity(context, 0, openIntent, contentFlags)
 
             val notification = NotificationCompat.Builder(context, PAIRING_CHANNEL_ID)

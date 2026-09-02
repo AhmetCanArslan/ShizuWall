@@ -160,9 +160,7 @@
     <string name="language_system_default">Predeterminado del sistema</string>
     <string name="adb_broadcast_usage_description">Guía rápida para usar adb para controlar el firewall</string>
     <string name="export_settings">Exportar ajustes</string>
-    <string name="export_settings_description">Guardar tu configuración en un archivo</string>
     <string name="import_settings">Importar ajustes</string>
-    <string name="import_settings_description">Restaurar configuración desde un archivo</string>
     <string name="support_developer_description">Apoya al desarrollador</string>
     <string name="github">GitHub</string>
     <string name="github_description">Ver código fuente y contribuir</string>

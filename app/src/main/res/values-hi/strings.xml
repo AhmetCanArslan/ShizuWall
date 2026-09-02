@@ -171,9 +171,7 @@
     <string name="language_system_default">सिस्टम डिफ़ॉल्ट</string>
     <string name="adb_broadcast_usage_description">adb से फ़ायरवॉल नियंत्रित करने की त्वरित मार्गदर्शिका</string>
     <string name="export_settings">सेटिंग्स निर्यात करें</string>
-    <string name="export_settings_description">अपना कॉन्फ़िगरेशन फ़ाइल में सहेजें</string>
     <string name="import_settings">सेटिंग्स आयात करें</string>
-    <string name="import_settings_description">फ़ाइल से कॉन्फ़िगरेशन पुनर्स्थापित करें</string>
     <string name="support_developer_description">डेवलपर का समर्थन करें</string>
     <string name="github">GitHub</string>
     <string name="github_description">सोर्स कोड देखें और योगदान करें</string>

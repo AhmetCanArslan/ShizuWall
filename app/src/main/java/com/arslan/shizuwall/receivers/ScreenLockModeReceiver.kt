@@ -3,7 +3,6 @@ package com.arslan.shizuwall.receivers
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.Log
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.ui.MainActivity
@@ -16,11 +15,7 @@ class ScreenLockModeReceiver {
         fun isDeviceLocked(context: Context): Boolean {
             val km = context.getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
                 ?: return false
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                km.isDeviceLocked
-            } else {
-                km.isKeyguardLocked
-            }
+            return km.isDeviceLocked
         }
     }
 

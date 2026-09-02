@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Build
 import android.os.SystemClock
 import android.os.UserManager
 import android.util.Log
@@ -71,11 +70,7 @@ class BootReceiver : BroadcastReceiver() {
 
         if (appMonitorEnabled || autoFirewallEnabled || firewallStatusNotificationEnabled) {
             val monitorIntent = Intent(context, AppMonitorService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(monitorIntent)
-            } else {
-                context.startService(monitorIntent)
-            }
+            context.startForegroundService(monitorIntent)
         }
 
         if (floatingButtonEnabled) {
@@ -164,12 +159,10 @@ class BootReceiver : BroadcastReceiver() {
     }
 
     private fun getCredentialProtectedPrefsOrNull(context: Context): SharedPreferences? {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val userManager = context.getSystemService(UserManager::class.java)
-            if (userManager != null && !userManager.isUserUnlocked) {
-                Log.d(TAG, "Credential-protected prefs unavailable until user unlock")
-                return null
-            }
+        val userManager = context.getSystemService(UserManager::class.java)
+        if (userManager != null && !userManager.isUserUnlocked) {
+            Log.d(TAG, "Credential-protected prefs unavailable until user unlock")
+            return null
         }
 
         return try {
@@ -286,7 +279,7 @@ class BootReceiver : BroadcastReceiver() {
             context,
             0,
             intentToOpen,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         val title = context.getString(R.string.firewall_reboot_title)
@@ -311,19 +304,17 @@ class BootReceiver : BroadcastReceiver() {
     }
 
     private fun createChannelIfNeeded(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val nm = context.getSystemService(NotificationManager::class.java)
-            if (nm.getNotificationChannel(CHANNEL_ID) == null) {
-                val channel = NotificationChannel(
-                    CHANNEL_ID,
-                    "ShizuWall boot notifications",
-                    NotificationManager.IMPORTANCE_DEFAULT
-                ).apply {
-                    description = "Notifications about firewall status after device reboot"
-                }
-                nm.createNotificationChannel(channel)
-                Log.d(TAG, "Created notification channel $CHANNEL_ID")
+        val nm = context.getSystemService(NotificationManager::class.java)
+        if (nm.getNotificationChannel(CHANNEL_ID) == null) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "ShizuWall boot notifications",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Notifications about firewall status after device reboot"
             }
+            nm.createNotificationChannel(channel)
+            Log.d(TAG, "Created notification channel $CHANNEL_ID")
         }
     }
 }

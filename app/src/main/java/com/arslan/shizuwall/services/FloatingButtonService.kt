@@ -3,7 +3,6 @@ package com.arslan.shizuwall.services
 import android.app.*
 import android.content.*
 import android.graphics.PixelFormat
-import android.os.Build
 import android.os.IBinder
 import android.view.*
 import android.widget.FrameLayout
@@ -42,11 +41,7 @@ class FloatingButtonService : Service() {
 
         fun start(context: Context) {
             val intent = Intent(context, FloatingButtonService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
-            }
+            context.startForegroundService(intent)
         }
 
         fun stop(context: Context) {
@@ -132,18 +127,16 @@ class FloatingButtonService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                getString(R.string.floating_button_notification_channel_name),
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = getString(R.string.floating_button_notification_channel_description)
-                setShowBadge(false)
-            }
-            nm.createNotificationChannel(channel)
+        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            getString(R.string.floating_button_notification_channel_name),
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = getString(R.string.floating_button_notification_channel_description)
+            setShowBadge(false)
         }
+        nm.createNotificationChannel(channel)
     }
 
     private fun createNotification(): Notification {
@@ -164,7 +157,7 @@ class FloatingButtonService : Service() {
     // ──────────────── floating window ────────────────
 
     private fun showFloatingButton() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
+        if (!android.provider.Settings.canDrawOverlays(this)) {
             Toast.makeText(this, getString(R.string.overlay_permission_required), Toast.LENGTH_SHORT).show()
             stopSelf()
             return

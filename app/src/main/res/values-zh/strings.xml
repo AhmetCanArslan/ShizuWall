@@ -161,9 +161,7 @@
     <string name="language_system_default">系统默认</string>
     <string name="adb_broadcast_usage_description">使用 adb 控制防火墙的快速指南</string>
     <string name="export_settings">导出设置</string>
-    <string name="export_settings_description">将您的配置保存到文件中</string>
     <string name="import_settings">导入设置</string>
-    <string name="import_settings_description">从文件中恢复配置</string>
     <string name="support_developer_description">支持开发者</string>
     <string name="github">GitHub</string>
     <string name="github_description">查看源代码并贡献</string>

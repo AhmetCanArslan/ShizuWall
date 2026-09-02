@@ -48,11 +48,7 @@ class ScreenLockMonitorService : Service() {
 
             val serviceIntent = Intent(appContext, ScreenLockMonitorService::class.java)
             if (shouldRun) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    appContext.startForegroundService(serviceIntent)
-                } else {
-                    appContext.startService(serviceIntent)
-                }
+                appContext.startForegroundService(serviceIntent)
             } else {
                 appContext.stopService(serviceIntent)
             }
@@ -236,17 +232,15 @@ class ScreenLockMonitorService : Service() {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                getString(R.string.screen_lock_mode_notification_channel_name),
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = getString(R.string.screen_lock_mode_notification_channel_description)
-                setShowBadge(false)
-            }
-            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            getString(R.string.screen_lock_mode_notification_channel_name),
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = getString(R.string.screen_lock_mode_notification_channel_description)
+            setShowBadge(false)
         }
+        getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
 
     private fun buildNotification(): Notification {

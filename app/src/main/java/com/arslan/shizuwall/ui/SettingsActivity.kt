@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -306,13 +305,11 @@ class SettingsActivity : BaseActivity() {
 
         ok = clearAllSharedPrefs(this) && ok
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            try {
-                val dp = createDeviceProtectedStorageContext()
-                ok = clearAllSharedPrefs(dp) && ok
-            } catch (_: Exception) {
-                ok = false
-            }
+        try {
+            val dp = createDeviceProtectedStorageContext()
+            ok = clearAllSharedPrefs(dp) && ok
+        } catch (_: Exception) {
+            ok = false
         }
 
         try {
@@ -326,9 +323,7 @@ class SettingsActivity : BaseActivity() {
         ok = deleteChildren(filesDir) && ok
         ok = deleteChildren(cacheDir) && ok
         ok = deleteChildren(codeCacheDir) && ok
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ok = deleteChildren(noBackupFilesDir) && ok
-        }
+        ok = deleteChildren(noBackupFilesDir) && ok
         ok = deleteChildren(externalCacheDir) && ok
         ok = deleteChildren(getExternalFilesDir(null)) && ok
 
@@ -337,7 +332,7 @@ class SettingsActivity : BaseActivity() {
 
     private fun clearAllSharedPrefs(context: Context): Boolean {
         var ok = true
-        val sharedPrefsDir = File(context.filesDir.parentFile, "shared_sharedPreferences")
+        val sharedPrefsDir = File(context.filesDir.parentFile, "shared_prefs")
         val prefNames = sharedPrefsDir.listFiles()
             ?.mapNotNull { file ->
                 val name = file.name
@@ -348,12 +343,7 @@ class SettingsActivity : BaseActivity() {
 
         for (name in prefNames) {
             try {
-                val deleted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    context.deleteSharedPreferences(name)
-                } else {
-                    context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit()
-                }
-                if (!deleted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (!context.deleteSharedPreferences(name)) {
                     context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit()
                 }
             } catch (_: Exception) {
@@ -406,9 +396,9 @@ class SettingsActivity : BaseActivity() {
                             )
                         )
                     )
-                    put("app_sharedPreferences", exportSharedPreferences("app_sharedPreferences"))
+                    put("app_prefs", exportSharedPreferences("app_prefs"))
                     put(LadbManager.PREFS_NAME, exportSharedPreferences(LadbManager.PREFS_NAME))
-                    put("daemon_sharedPreferences", exportSharedPreferences("daemon_sharedPreferences"))
+                    put("daemon_prefs", exportSharedPreferences("daemon_prefs"))
                 }
 
                 val exportJson = JSONObject().apply {
@@ -464,18 +454,14 @@ class SettingsActivity : BaseActivity() {
                 val monitorIntent = Intent(this@SettingsActivity, AppMonitorService::class.java)
                 try {
                     if (isMonitorEnabled) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            startForegroundService(monitorIntent)
-                        } else {
-                            startService(monitorIntent)
-                        }
+                        startForegroundService(monitorIntent)
                     } else {
                         stopService(monitorIntent)
                     }
                 } catch (_: Exception) {
                 }
 
-                getSharedPreferences("app_sharedPreferences", MODE_PRIVATE).edit()
+                getSharedPreferences("app_prefs", MODE_PRIVATE).edit()
                     .putBoolean("onboarding_complete", true)
                     .apply()
 
