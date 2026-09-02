@@ -511,6 +511,10 @@
     <string name="app_lock_pin_length">Длина PIN-кода</string>
     <string name="app_lock_pin_not_recoverable">PIN-код нельзя восстановить. Если вы его забудете, единственный выход — очистить данные приложения ShizuWall, что удалит все настройки и профили.</string>
     <string name="app_lock_scope_warning">Эта блокировка лишь мешает открыть ShizuWall. Правила брандмауэра хранятся в Android, поэтому их по-прежнему можно изменить через макрос-приложения, ADB-броадкасты, плитку быстрых настроек или виджет.</string>
+    <string name="app_lock_biometric_offer_title">Разблокировать биометрией?</string>
+    <string name="app_lock_biometric_offer_message">Если включить, любой, кто может разблокировать это устройство отпечатком или лицом, также сможет открыть ShizuWall и изменить брандмауэр. Оставьте выключенным, если устройство общее и брандмауэром должны управлять только вы.</string>
+    <string name="app_lock_biometric_offer_enable">Использовать биометрию</string>
+    <string name="app_lock_biometric_offer_pin_only">Только PIN</string>
     <string name="app_lock_wrong_pin">Неверный PIN-код</string>
     <string name="app_lock_locked_out">Слишком много попыток. Повторите через %1$d с</string>
     <string name="app_lock_biometric_title">Разблокировать ShizuWall</string>

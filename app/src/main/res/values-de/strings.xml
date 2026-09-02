@@ -506,6 +506,10 @@
     <string name="app_lock_pin_length">PIN-Länge</string>
     <string name="app_lock_pin_not_recoverable">Die PIN kann nicht wiederhergestellt werden. Wenn du sie vergisst, hilft nur das Löschen der App-Daten von ShizuWall – dabei gehen alle Einstellungen und Profile verloren.</string>
     <string name="app_lock_scope_warning">Diese Sperre verhindert nur das Öffnen von ShizuWall. Die Firewall-Regeln liegen in Android und lassen sich weiterhin über Makro-Apps, ADB-Broadcasts, die Schnelleinstellungen-Kachel oder das Widget ändern.</string>
+    <string name="app_lock_biometric_offer_title">Mit Biometrie entsperren?</string>
+    <string name="app_lock_biometric_offer_message">Wenn du das aktivierst, kann jeder, der dieses Gerät per Fingerabdruck oder Gesicht entsperrt, auch ShizuWall öffnen und die Firewall ändern. Lass es aus, wenn das Gerät geteilt wird und nur du die Firewall steuern sollst.</string>
+    <string name="app_lock_biometric_offer_enable">Biometrie verwenden</string>
+    <string name="app_lock_biometric_offer_pin_only">Nur PIN</string>
     <string name="app_lock_wrong_pin">Falsche PIN</string>
     <string name="app_lock_locked_out">Zu viele Versuche. In %1$d s erneut versuchen</string>
     <string name="app_lock_biometric_title">ShizuWall entsperren</string>

@@ -506,6 +506,10 @@
     <string name="app_lock_pin_length">Comprimento do PIN</string>
     <string name="app_lock_pin_not_recoverable">O PIN não pode ser recuperado. Se você esquecê-lo, a única saída é limpar os dados do app ShizuWall, o que apaga todas as configurações e perfis.</string>
     <string name="app_lock_scope_warning">Este bloqueio apenas impede abrir o ShizuWall. As regras do firewall ficam no Android, por isso ainda podem ser alteradas por apps de macros, broadcasts ADB, o botão das Definições rápidas ou o widget.</string>
+    <string name="app_lock_biometric_offer_title">Desbloquear com biometria?</string>
+    <string name="app_lock_biometric_offer_message">Se ativar isto, qualquer pessoa que consiga desbloquear este dispositivo com impressão digital ou rosto também pode abrir o ShizuWall e alterar a firewall. Deixe desativado se o dispositivo for partilhado e só você deve controlar a firewall.</string>
+    <string name="app_lock_biometric_offer_enable">Usar biometria</string>
+    <string name="app_lock_biometric_offer_pin_only">Apenas PIN</string>
     <string name="app_lock_wrong_pin">PIN incorreto</string>
     <string name="app_lock_locked_out">Tentativas demais. Tente em %1$d s</string>
     <string name="app_lock_biometric_title">Desbloquear o ShizuWall</string>

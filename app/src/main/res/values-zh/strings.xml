@@ -506,6 +506,10 @@
     <string name="app_lock_pin_length">PIN 位数</string>
     <string name="app_lock_pin_not_recoverable">PIN 码无法找回。如果忘记，只能清除 ShizuWall 的应用数据，这会删除所有设置和配置文件。</string>
     <string name="app_lock_scope_warning">此锁定仅阻止打开 ShizuWall。防火墙规则保存在 Android 中，仍可通过宏应用、ADB 广播、快速设置卡片或桌面小组件修改。</string>
+    <string name="app_lock_biometric_offer_title">使用生物识别解锁？</string>
+    <string name="app_lock_biometric_offer_message">开启后，任何能用指纹或人脸解锁本设备的人也能打开 ShizuWall 并更改防火墙。若设备为共用且只应由你控制防火墙，请保持关闭。</string>
+    <string name="app_lock_biometric_offer_enable">使用生物识别</string>
+    <string name="app_lock_biometric_offer_pin_only">仅使用 PIN</string>
     <string name="app_lock_wrong_pin">PIN 码错误</string>
     <string name="app_lock_locked_out">尝试次数过多，请在 %1$d 秒后重试</string>
     <string name="app_lock_biometric_title">解锁 ShizuWall</string>

@@ -38,7 +38,7 @@ object AppLock {
     }
 
     fun biometricsEnabled(context: Context): Boolean =
-        prefs(context).getBoolean(KEY_BIOMETRIC, true)
+        prefs(context).getBoolean(KEY_BIOMETRIC, false)
 
     fun setBiometricsEnabled(context: Context, enabled: Boolean) {
         prefs(context).edit().putBoolean(KEY_BIOMETRIC, enabled).apply()

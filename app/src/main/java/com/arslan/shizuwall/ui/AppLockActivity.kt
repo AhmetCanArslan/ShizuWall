@@ -25,6 +25,7 @@ import com.arslan.shizuwall.security.AppLock
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.widget.ImageView
 
 class AppLockActivity : BaseActivity() {
@@ -259,7 +260,7 @@ class AppLockActivity : BaseActivity() {
                 first == pin -> {
                     AppLock.setPin(this, pin)
                     setResult(RESULT_OK)
-                    finish()
+                    offerBiometrics()
                 }
                 else -> {
                     firstPin = null
@@ -279,6 +280,26 @@ class AppLockActivity : BaseActivity() {
             fail(getString(R.string.app_lock_wrong_pin))
             if (attempts >= MAX_ATTEMPTS) startLockout(LOCKOUT_MS)
         }
+    }
+
+    private fun offerBiometrics() {
+        if (!AppLock.biometricsAvailable(this)) {
+            finish()
+            return
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.app_lock_biometric_offer_title)
+            .setMessage(R.string.app_lock_biometric_offer_message)
+            .setCancelable(false)
+            .setPositiveButton(R.string.app_lock_biometric_offer_enable) { _, _ ->
+                AppLock.setBiometricsEnabled(this, true)
+                finish()
+            }
+            .setNegativeButton(R.string.app_lock_biometric_offer_pin_only) { _, _ ->
+                AppLock.setBiometricsEnabled(this, false)
+                finish()
+            }
+            .show()
     }
 
     private fun fail(message: String) {

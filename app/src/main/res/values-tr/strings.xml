@@ -507,6 +507,10 @@
     <string name="app_lock_pin_length">PIN uzunluğu</string>
     <string name="app_lock_pin_not_recoverable">PIN kurtarılamaz. Unutursanız tek yol ShizuWall uygulama verilerini silmektir; bu tüm ayarları ve profilleri siler.</string>
     <string name="app_lock_scope_warning">Bu kilit yalnızca ShizuWall’ın açılmasını engeller. Güvenlik duvarı kuralları Android’de tutulur; bu yüzden makro uygulamaları, ADB yayınları, Hızlı Ayarlar kutucuğu veya ana ekran widget’ı ile hâlâ değiştirilebilir.</string>
+    <string name="app_lock_biometric_offer_title">Biyometri ile açılsın mı?</string>
+    <string name="app_lock_biometric_offer_message">Bunu açarsanız, bu cihazı parmak izi veya yüzüyle açabilen herkes ShizuWall’ı da açıp güvenlik duvarını değiştirebilir. Cihaz paylaşılıyorsa ve güvenlik duvarını yalnızca siz yönetecekseniz kapalı bırakın.</string>
+    <string name="app_lock_biometric_offer_enable">Biyometri kullan</string>
+    <string name="app_lock_biometric_offer_pin_only">Yalnızca PIN</string>
     <string name="app_lock_wrong_pin">Yanlış PIN</string>
     <string name="app_lock_locked_out">Çok fazla deneme. %1$d sn sonra tekrar deneyin</string>
     <string name="app_lock_biometric_title">ShizuWall kilidini aç</string>

@@ -510,6 +510,10 @@
     <string name="app_lock_pin_length">Longitud del PIN</string>
     <string name="app_lock_pin_not_recoverable">El PIN no se puede recuperar. Si lo olvidas, la única salida es borrar los datos de la app ShizuWall, lo que elimina todos los ajustes y perfiles.</string>
     <string name="app_lock_scope_warning">Este bloqueo solo impide abrir ShizuWall. Las reglas del cortafuegos están en Android, así que aún pueden cambiarse desde apps de macros, difusiones ADB, el mosaico de Ajustes rápidos o el widget.</string>
+    <string name="app_lock_biometric_offer_title">¿Desbloquear con biometría?</string>
+    <string name="app_lock_biometric_offer_message">Si lo activas, cualquiera que pueda desbloquear este dispositivo con su huella o rostro podrá abrir ShizuWall y cambiar el cortafuegos. Déjalo desactivado si el dispositivo es compartido y solo tú debes controlar el cortafuegos.</string>
+    <string name="app_lock_biometric_offer_enable">Usar biometría</string>
+    <string name="app_lock_biometric_offer_pin_only">Solo PIN</string>
     <string name="app_lock_wrong_pin">PIN incorrecto</string>
     <string name="app_lock_locked_out">Demasiados intentos. Inténtalo en %1$d s</string>
     <string name="app_lock_biometric_title">Desbloquear ShizuWall</string>
