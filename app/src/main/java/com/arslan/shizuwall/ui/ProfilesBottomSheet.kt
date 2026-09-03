@@ -17,7 +17,6 @@ import com.arslan.shizuwall.model.Profile
 import com.arslan.shizuwall.profiles.ProfileTileSlots
 import com.arslan.shizuwall.profiles.ProfilesStore
 import com.arslan.shizuwall.widgets.ProfileWidgetProvider
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -37,14 +36,16 @@ class ProfilesBottomSheet(
         fun onProfilesChanged() {}
     }
 
-    private val dialog = BottomSheetDialog(context)
+    private var sheet: InlineBottomSheet? = null
     private lateinit var adapter: ProfileAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var emptyState: LinearLayout
 
     fun show() {
         val view = LayoutInflater.from(context).inflate(R.layout.sheet_profiles, null)
-        dialog.setContentView(view)
+        val activity = context as? android.app.Activity ?: return
+        val sheet = InlineBottomSheet(activity, view)
+        this.sheet = sheet
 
         recyclerView = view.findViewById(R.id.profilesRecyclerView)
         emptyState = view.findViewById(R.id.profilesEmptyState)
@@ -77,11 +78,11 @@ class ProfilesBottomSheet(
         saveCurrent.setOnClickListener { promptSaveCurrent() }
 
         refresh(playLayoutAnim = true)
-        dialog.show()
+        sheet.show()
     }
 
     fun dismiss() {
-        if (dialog.isShowing) dialog.dismiss()
+        sheet?.dismiss()
     }
 
     fun notifyActivated(profileId: String?) {

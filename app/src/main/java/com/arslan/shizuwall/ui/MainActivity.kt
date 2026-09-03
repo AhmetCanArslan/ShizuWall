@@ -38,7 +38,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.chip.ChipGroup
@@ -1298,8 +1297,7 @@ class MainActivity : BaseActivity() {
 
     private fun showSortDialog() {
         val sheetView = LayoutInflater.from(this).inflate(R.layout.sheet_sort, null)
-        val sheet = BottomSheetDialog(this)
-        sheet.setContentView(sheetView)
+        val sheet = InlineBottomSheet(this, sheetView)
 
         val radioGroup = sheetView.findViewById<RadioGroup>(R.id.radioGroupSort)
         val checkboxShowSystem = sheetView.findViewById<MaterialCheckBox>(R.id.checkboxShowSystemApps)
@@ -1356,73 +1354,82 @@ class MainActivity : BaseActivity() {
 
         sheetView.findViewById<MaterialButton>(R.id.sortCancelButton).setOnClickListener { sheet.dismiss() }
 
+        var pendingApply: (() -> Unit)? = null
+        sheet.setOnDismissListener {
+            val action = pendingApply
+            pendingApply = null
+            action?.invoke()
+        }
+
         sheetView.findViewById<MaterialButton>(R.id.sortApplyButton).setOnClickListener {
-            sheet.dismiss()
-            // Handle sort order change
-            val newSortOrder = when (radioGroup.checkedRadioButtonId) {
-                R.id.radioInstallTime -> SortOrder.INSTALL_TIME
-                R.id.radioNameAsc -> SortOrder.NAME_ASC
-                R.id.radioNameDesc -> SortOrder.NAME_DESC
-                else -> currentSortOrder
-            }
+            pendingApply = {
+                // Handle sort order change
+                val newSortOrder = when (radioGroup.checkedRadioButtonId) {
+                    R.id.radioInstallTime -> SortOrder.INSTALL_TIME
+                    R.id.radioNameAsc -> SortOrder.NAME_ASC
+                    R.id.radioNameDesc -> SortOrder.NAME_DESC
+                    else -> currentSortOrder
+                }
 
-            val sortChanged = newSortOrder != currentSortOrder
-            if (sortChanged) {
-                currentSortOrder = newSortOrder
-                sharedPreferences.edit().putString(KEY_SORT_ORDER, currentSortOrder.name).apply()
-            }
+                val sortChanged = newSortOrder != currentSortOrder
+                if (sortChanged) {
+                    currentSortOrder = newSortOrder
+                    sharedPreferences.edit().putString(KEY_SORT_ORDER, currentSortOrder.name).apply()
+                }
 
-            // Handle show system apps change
-            val newShowSystem = checkboxShowSystem.isChecked
-            val showSystemChanged = newShowSystem != showSystemApps
-            if (showSystemChanged) {
-                showSystemApps = newShowSystem
-                sharedPreferences.edit().putBoolean(KEY_SHOW_SYSTEM_APPS, showSystemApps).apply()
-                reconcileActiveProfile()
+                // Handle show system apps change
+                val newShowSystem = checkboxShowSystem.isChecked
+                val showSystemChanged = newShowSystem != showSystemApps
+                if (showSystemChanged) {
+                    showSystemApps = newShowSystem
+                    sharedPreferences.edit().putBoolean(KEY_SHOW_SYSTEM_APPS, showSystemApps).apply()
+                    reconcileActiveProfile()
 
-                // When hiding system apps, deselect all system apps to prevent them from being firewalled
-                if (!showSystemApps) {
-                    val systemAppsToDeselect = appList.filter { it.isSystem && it.isSelected }
-                    for (i in appList.indices) {
-                        if (appList[i].isSystem && appList[i].isSelected) {
-                            appList[i] = appList[i].copy(isSelected = false)
+                    // When hiding system apps, deselect all system apps to prevent them from being firewalled
+                    if (!showSystemApps) {
+                        val systemAppsToDeselect = appList.filter { it.isSystem && it.isSelected }
+                        for (i in appList.indices) {
+                            if (appList[i].isSystem && appList[i].isSelected) {
+                                appList[i] = appList[i].copy(isSelected = false)
+                            }
+                        }
+                        if (systemAppsToDeselect.isNotEmpty()) {
+                            saveSelectedApps()
+                            updateSelectedCount()
                         }
                     }
-                    if (systemAppsToDeselect.isNotEmpty()) {
-                        saveSelectedApps()
-                        updateSelectedCount()
-                    }
-                }
                 
-                updateCategoryChips()
-                // Always refresh the list when show system apps changes, with animation only if sort didn't change
-                sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
-            } else if (sortChanged) {
-                sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = true)
-            }
-
-            val newShowOtherProfiles = checkboxShowOtherProfiles.isChecked
-            if (newShowOtherProfiles != showOtherProfiles) {
-                showOtherProfiles = newShowOtherProfiles
-                sharedPreferences.edit().putBoolean(KEY_SHOW_OTHER_PROFILES, showOtherProfiles).apply()
-
-                if (!showOtherProfiles) {
-                    val hadSelection = appList.any { it.userId != 0 && it.isSelected }
-                    for (i in appList.indices) {
-                        if (appList[i].userId != 0 && appList[i].isSelected) {
-                            appList[i] = appList[i].copy(isSelected = false)
-                        }
-                    }
-                    if (hadSelection) {
-                        saveSelectedApps()
-                        updateSelectedCount()
-                    }
-
-                    MultiUserApps.invalidate()
+                    updateCategoryChips()
+                    // Always refresh the list when show system apps changes, with animation only if sort didn't change
+                    sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
+                } else if (sortChanged) {
+                    sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = true)
                 }
 
-                loadInstalledApps(showLoadingIfListEmpty = true)
+                val newShowOtherProfiles = checkboxShowOtherProfiles.isChecked
+                if (newShowOtherProfiles != showOtherProfiles) {
+                    showOtherProfiles = newShowOtherProfiles
+                    sharedPreferences.edit().putBoolean(KEY_SHOW_OTHER_PROFILES, showOtherProfiles).apply()
+
+                    if (!showOtherProfiles) {
+                        val hadSelection = appList.any { it.userId != 0 && it.isSelected }
+                        for (i in appList.indices) {
+                            if (appList[i].userId != 0 && appList[i].isSelected) {
+                                appList[i] = appList[i].copy(isSelected = false)
+                            }
+                        }
+                        if (hadSelection) {
+                            saveSelectedApps()
+                            updateSelectedCount()
+                        }
+
+                        MultiUserApps.invalidate()
+                    }
+
+                    loadInstalledApps(showLoadingIfListEmpty = true)
+                }
             }
+            sheet.dismiss()
         }
 
         sheet.show()
