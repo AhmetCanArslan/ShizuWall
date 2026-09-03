@@ -74,6 +74,8 @@
     <string name="grant_permission">İzin Ver</string>
     <string name="favorites_title">Favoriler</string>
     <string name="favorites_message">Hızlı erişim için bir uygulamaya uzun basın ve favorilerinize ekleyin.</string>
+    <string name="sorting_onboarding_title">Sıralama ve Filtreleme</string>
+    <string name="sorting_onboarding_message">Uygulamaların sıralamasını değiştirmek için sıralama simgesine dokunun. İnternet izni olmayan uygulamalar listelenmez; sistem uygulamalarının ve profil uygulamalarının görünüp görünmeyeceğini de buradan ayarlayabilirsiniz.</string>
     <string name="shizuku_required_title">Shizuku Modu</string>
     <string name="shizuku_required_message">Geliştirici herhangi bir olumsuz sonuçtan sorumlu değildir. Lütfen devam etmeden önce Shizuku\'yu kurun ve etkinleştirin.</string>
     <string name="onboarding_mode_selection_title">Çalışma Modunu Seçin</string>

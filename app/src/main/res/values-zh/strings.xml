@@ -74,6 +74,8 @@
     <string name="grant_permission">授予权限</string>
     <string name="favorites_title">收藏夹</string>
     <string name="favorites_message">长按应用以将其添加到收藏夹以快速访问。</string>
+    <string name="sorting_onboarding_title">排序与筛选</string>
+    <string name="sorting_onboarding_message">点击排序图标即可更改应用的排列方式。没有网络权限的应用不会显示，你也可以在这里选择是否显示系统应用和配置文件应用。</string>
     <string name="shizuku_required_title">Shizuku 模式</string>
     <string name="shizuku_required_message">开发者不对任何负面后果负责。请在继续之前安装并激活 Shizuku。</string>
     <string name="onboarding_mode_selection_title">选择工作模式</string>

@@ -76,6 +76,8 @@
     <string name="grant_permission">Povolit oprávnění</string>
     <string name="favorites_title">Oblíbené</string>
     <string name="favorites_message">Dlouhým stisknutím aplikace ji přidáte do oblíbených pro rychlý přístup.</string>
+    <string name="sorting_onboarding_title">Řazení a filtrování</string>
+    <string name="sorting_onboarding_message">Klepnutím na ikonu řazení změníte pořadí aplikací. Aplikace bez oprávnění k internetu se nezobrazují a zde můžete zvolit, zda se mají zobrazovat systémové aplikace a aplikace profilů.</string>
     <string name="shizuku_required_title">Shizuku režim</string>
     <string name="shizuku_required_message">Vývojář nenese odpovědnost za žádné negativní důsledky. Před pokračováním nainstalujte a aktivujte Shizuku.</string>
     <string name="onboarding_mode_selection_title">Zvolte Pracovní režim</string>

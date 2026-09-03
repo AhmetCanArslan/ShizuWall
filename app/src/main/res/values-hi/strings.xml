@@ -77,6 +77,8 @@
     <string name="grant_permission">अनुमति दें</string>
     <string name="favorites_title">पसंदीदा</string>
     <string name="favorites_message">त्वरित पहुँच के लिए किसी ऐप को पसंदीदा में जोड़ने हेतु उसे देर तक दबाएँ।</string>
+    <string name="sorting_onboarding_title">सॉर्टिंग और फ़िल्टरिंग</string>
+    <string name="sorting_onboarding_message">ऐप्स का क्रम बदलने के लिए सॉर्टिंग आइकन पर टैप करें। इंटरनेट अनुमति वाले बिना ऐप्स सूची में नहीं दिखते, और वहीं से आप चुन सकते हैं कि सिस्टम ऐप्स और प्रोफ़ाइल ऐप्स दिखें या नहीं।</string>
     <string name="shizuku_required_title">Shizuku मोड</string>
     <string name="shizuku_required_message">डेवलपर किसी भी नकारात्मक परिणाम के लिए ज़िम्मेदार नहीं है। कृपया आगे बढ़ने से पहले Shizuku इंस्टॉल और सक्रिय करें।</string>
     <string name="onboarding_mode_selection_title">कार्य मोड चुनें</string>

@@ -75,6 +75,8 @@
     <string name="grant_permission">منح الإذن</string>
     <string name="favorites_title">المفضلة</string>
     <string name="favorites_message">اضغط مطولًا على تطبيق لإضافته إلى مفضلاتك للوصول السريع.</string>
+    <string name="sorting_onboarding_title">الفرز والتصفية</string>
+    <string name="sorting_onboarding_message">اضغط على أيقونة الفرز لتغيير ترتيب التطبيقات. لا تظهر التطبيقات التي لا تملك إذن الإنترنت، ويمكنك من هناك اختيار إظهار تطبيقات النظام وتطبيقات الملفات الشخصية.</string>
     <string name="shizuku_required_title">وضع Shizuku</string>
     <string name="shizuku_required_message">المطور غير مسؤول عن أي عواقب سلبية. يرجى تثبيت وتفعيل Shizuku قبل المتابعة.</string>
     <string name="onboarding_mode_selection_title">اختر وضع العمل</string>

@@ -73,6 +73,8 @@
     <string name="grant_permission">権限を許可</string>
     <string name="favorites_title">お気に入り</string>
     <string name="favorites_message">アプリを長押しすると、クイックアクセスのためにお気に入りに追加できます。</string>
+    <string name="sorting_onboarding_title">並べ替えとフィルター</string>
+    <string name="sorting_onboarding_message">並べ替えアイコンをタップするとアプリの並び順を変更できます。インターネット権限のないアプリは表示されません。システムアプリやプロファイルアプリを表示するかどうかもここで選べます。</string>
     <string name="shizuku_required_title">Shizuku モード</string>
     <string name="shizuku_required_message">開発者は、発生したいかなる悪影響についても責任を負いません。続行する前に Shizuku をインストールして起動してください。</string>
     <string name="onboarding_mode_selection_title">動作モードの選択</string>

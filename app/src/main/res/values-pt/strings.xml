@@ -74,6 +74,8 @@
     <string name="grant_permission">Conceder Permissão</string>
     <string name="favorites_title">Favoritos</string>
     <string name="favorites_message">Pressione longamente em um app para adicioná-lo aos seus favoritos para acesso rápido.</string>
+    <string name="sorting_onboarding_title">Ordenação e filtros</string>
+    <string name="sorting_onboarding_message">Toque no ícone de ordenação para mudar a ordem dos apps. Apps sem permissão de internet não são listados, e ali você pode escolher se os apps do sistema e os apps de perfis são exibidos.</string>
     <string name="shizuku_required_title">Modo Shizuku</string>
     <string name="shizuku_required_message">O desenvolvedor não é responsável por quaisquer consequências negativas. Por favor, instale e ative o Shizuku antes de prosseguir.</string>
     <string name="onboarding_mode_selection_title">Escolha o Modo de Trabalho</string>

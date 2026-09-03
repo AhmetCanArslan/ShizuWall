@@ -73,6 +73,16 @@ class OnboardingActivity : BaseActivity() {
 
         pages.add(
             OnboardingPage(
+                title = getString(R.string.sorting_onboarding_title),
+                message = getString(R.string.sorting_onboarding_message),
+                buttonText = getString(R.string.next),
+                onButtonClick = { goToNextPage() },
+                imageResId = R.drawable.ic_sort
+            )
+        )
+
+        pages.add(
+            OnboardingPage(
                 title = getString(R.string.onboarding_mode_selection_title),
                 message = getString(R.string.onboarding_mode_selection_message),
                 buttonText = getString(R.string.use_shizuku),

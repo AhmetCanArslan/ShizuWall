@@ -73,6 +73,8 @@
     <string name="grant_permission">Предоставить разрешение</string>
     <string name="favorites_title">Избранное</string>
     <string name="favorites_message">Удерживайте приложение, чтобы добавить его в избранное для быстрого доступа.</string>
+    <string name="sorting_onboarding_title">Сортировка и фильтры</string>
+    <string name="sorting_onboarding_message">Нажмите значок сортировки, чтобы изменить порядок приложений. Приложения без разрешения на интернет не отображаются, и там же можно выбрать, показывать ли системные приложения и приложения профилей.</string>
     <string name="shizuku_required_title">Режим Shizuku</string>
     <string name="shizuku_required_message">Разработчик не несет ответственности за любые негативные последствия. Пожалуйста, установите и активируйте Shizuku перед продолжением.</string>
     <string name="onboarding_mode_selection_title">Выберите рабочий режим</string>
