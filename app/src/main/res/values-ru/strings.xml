@@ -12,6 +12,8 @@
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Пожертвовать</string>
     <string name="show_system_apps">Показать системные приложения</string>
+    <string name="show_system_apps_description">Показывать системные приложения Android в списке, чтобы их тоже можно было блокировать. При отключении выбранные системные приложения будут сняты с выбора.</string>
+    <string name="app_visibility_change_disabled">Это нельзя изменить, пока брандмауэр включён. Сначала отключите брандмауэр.</string>
     <string name="skip_enable_dialog">Пропустить подтверждение включения</string>
     <string name="app_icon_desc">Иконка приложения</string>
     <string name="app_switch_selected">%1$s, выбрано, %2$s</string>

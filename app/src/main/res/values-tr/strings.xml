@@ -13,6 +13,8 @@
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Bağış Yap</string>
     <string name="show_system_apps">Sistem uygulamalarını göster</string>
+    <string name="show_system_apps_description">Android sistem uygulamalarını listeye ekler, böylece onları da engelleyebilirsiniz. Kapatıldığında seçili sistem uygulamalarının seçimi kaldırılır.</string>
+    <string name="app_visibility_change_disabled">Güvenlik duvarı açıkken bu değiştirilemez. Önce güvenlik duvarını kapatın.</string>
     <string name="skip_enable_dialog">Etkinleştirme onayını atla</string>
     <string name="app_icon_desc">Uygulama simgesi</string>
     <string name="app_switch_selected">%1$s, Seçili, %2$s</string>

@@ -4,6 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Selection
@@ -24,8 +26,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.utils.AppKey
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.json.JSONObject
 
 class FirewallSettingsActivity : BaseActivity() {
 
@@ -35,6 +39,12 @@ class FirewallSettingsActivity : BaseActivity() {
     private lateinit var cardKeepErrorApps: com.google.android.material.card.MaterialCardView
     private lateinit var switchKeepErrorAppsSelected: androidx.appcompat.widget.SwitchCompat
     private lateinit var switchRememberDeletedApps: androidx.appcompat.widget.SwitchCompat
+    private lateinit var switchShowSystemApps: com.google.android.material.materialswitch.MaterialSwitch
+    private lateinit var switchShowOtherProfiles: com.google.android.material.materialswitch.MaterialSwitch
+    private lateinit var cardShowSystemApps: com.google.android.material.card.MaterialCardView
+    private lateinit var cardShowOtherProfiles: com.google.android.material.card.MaterialCardView
+    private lateinit var tvAppVisibilityDisabledWarning: TextView
+    private var suppressVisibilityListeners = false
     private lateinit var cardSkipConfirm: com.google.android.material.card.MaterialCardView
     private var suppressFirewallModeListener = false
 
@@ -90,6 +100,7 @@ class FirewallSettingsActivity : BaseActivity() {
         updateFirewallModeUI(mode)
         val isFirewallEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
         updateFirewallModeSelectorState(isFirewallEnabled)
+        loadAppVisibilitySettings()
     }
 
     private fun initializeViews() {
@@ -100,6 +111,11 @@ class FirewallSettingsActivity : BaseActivity() {
         switchKeepErrorAppsSelected = findViewById(R.id.switchKeepErrorAppsSelected)
         switchRememberDeletedApps = findViewById(R.id.switchRememberDeletedApps)
         layoutAdbBroadcastUsage = findViewById(R.id.layoutAdbBroadcastUsage)
+        switchShowSystemApps = findViewById(R.id.switchShowSystemApps)
+        switchShowOtherProfiles = findViewById(R.id.switchShowOtherProfiles)
+        cardShowSystemApps = findViewById(R.id.cardShowSystemApps)
+        cardShowOtherProfiles = findViewById(R.id.cardShowOtherProfiles)
+        tvAppVisibilityDisabledWarning = findViewById(R.id.tvAppVisibilityDisabledWarning)
 
         radioGroupFirewallMode = findViewById(R.id.radioGroupFirewallMode)
         radioModeDefault = findViewById(R.id.radioModeDefault)
@@ -166,6 +182,85 @@ class FirewallSettingsActivity : BaseActivity() {
 
         val isFirewallEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
         updateFirewallModeSelectorState(isFirewallEnabled)
+        loadAppVisibilitySettings()
+    }
+
+    private fun loadAppVisibilitySettings() {
+        val isFirewallEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
+
+        suppressVisibilityListeners = true
+        switchShowSystemApps.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
+        switchShowOtherProfiles.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_OTHER_PROFILES, false)
+        suppressVisibilityListeners = false
+
+        switchShowSystemApps.isEnabled = !isFirewallEnabled
+        switchShowOtherProfiles.isEnabled = !isFirewallEnabled
+        cardShowSystemApps.alpha = if (isFirewallEnabled) 0.5f else 1f
+        cardShowOtherProfiles.alpha = if (isFirewallEnabled) 0.5f else 1f
+        tvAppVisibilityDisabledWarning.visibility = if (isFirewallEnabled) View.VISIBLE else View.GONE
+    }
+
+    private fun selectedKeys(): Set<String> =
+        sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
+
+    private fun dropSelectionKeys(keys: Set<String>) {
+        if (keys.isEmpty()) return
+
+        val remaining = selectedKeys() - keys
+        val modes = try {
+            JSONObject(sharedPreferences.getString(MainActivity.KEY_APP_MODES, "{}") ?: "{}")
+        } catch (e: Exception) {
+            JSONObject()
+        }
+        keys.forEach { modes.remove(it) }
+
+        sharedPreferences.edit()
+            .putStringSet(MainActivity.KEY_SELECTED_APPS, remaining)
+            .putInt(MainActivity.KEY_SELECTED_COUNT, remaining.size)
+            .putString(MainActivity.KEY_APP_MODES, modes.toString())
+            .apply()
+    }
+
+    private fun selectedSystemAppKeys(): Set<String> {
+        val packageManager = packageManager
+        return selectedKeys().filterTo(mutableSetOf()) { key ->
+            val info = try {
+                packageManager.getApplicationInfo(AppKey.packageOf(key), 0)
+            } catch (e: PackageManager.NameNotFoundException) {
+                null
+            }
+            info != null && (info.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+        }
+    }
+
+    private fun setVisibilityPreference(key: String, value: Boolean) {
+        sharedPreferences.edit().putBoolean(key, value).apply()
+        setResult(RESULT_OK)
+    }
+
+    private fun confirmVisibilityUncheck(
+        titleRes: Int,
+        messageRes: Int,
+        switch: com.google.android.material.materialswitch.MaterialSwitch,
+        onConfirmed: () -> Unit
+    ) {
+        var confirmed = false
+        MaterialAlertDialogBuilder(this)
+            .setTitle(titleRes)
+            .setMessage(messageRes)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                confirmed = true
+                onConfirmed()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .setOnDismissListener {
+                if (!confirmed) {
+                    suppressVisibilityListeners = true
+                    switch.isChecked = true
+                    suppressVisibilityListeners = false
+                }
+            }
+            .show()
     }
 
     private fun migrateAdaptiveModeToFirewallMode(sharedPreferences: SharedPreferences) {
@@ -288,6 +383,51 @@ class FirewallSettingsActivity : BaseActivity() {
 
         switchKeepErrorAppsSelected.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit().putBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, isChecked).apply()
+        }
+
+        switchShowSystemApps.setOnCheckedChangeListener { _, isChecked ->
+            if (suppressVisibilityListeners) return@setOnCheckedChangeListener
+            val selectedSystemKeys = if (isChecked) emptySet() else selectedSystemAppKeys()
+            if (!isChecked && selectedSystemKeys.isNotEmpty()) {
+                confirmVisibilityUncheck(
+                    R.string.show_system_apps,
+                    R.string.show_system_apps_uncheck_confirm,
+                    switchShowSystemApps
+                ) {
+                    dropSelectionKeys(selectedSystemKeys)
+                    setVisibilityPreference(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
+                }
+            } else {
+                setVisibilityPreference(MainActivity.KEY_SHOW_SYSTEM_APPS, isChecked)
+            }
+        }
+
+        switchShowOtherProfiles.setOnCheckedChangeListener { _, isChecked ->
+            if (suppressVisibilityListeners) return@setOnCheckedChangeListener
+            val selectedSecondaryKeys = if (isChecked) {
+                emptySet()
+            } else {
+                selectedKeys().filterTo(mutableSetOf()) { AppKey.isSecondary(it) }
+            }
+            if (!isChecked && selectedSecondaryKeys.isNotEmpty()) {
+                confirmVisibilityUncheck(
+                    R.string.show_other_profiles,
+                    R.string.show_other_profiles_uncheck_confirm,
+                    switchShowOtherProfiles
+                ) {
+                    dropSelectionKeys(selectedSecondaryKeys)
+                    setVisibilityPreference(MainActivity.KEY_SHOW_OTHER_PROFILES, false)
+                }
+            } else {
+                setVisibilityPreference(MainActivity.KEY_SHOW_OTHER_PROFILES, isChecked)
+            }
+        }
+
+        cardShowSystemApps.setOnClickListener {
+            if (switchShowSystemApps.isEnabled) switchShowSystemApps.toggle()
+        }
+        cardShowOtherProfiles.setOnClickListener {
+            if (switchShowOtherProfiles.isEnabled) switchShowOtherProfiles.toggle()
         }
 
         layoutScreenLockDelay.setOnClickListener { showScreenLockDelayDialog() }

@@ -13,6 +13,8 @@
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">捐赠</string>
     <string name="show_system_apps">显示系统应用</string>
+    <string name="show_system_apps_description">在列表中包含 Android 系统应用，以便一并阻止。关闭后，已选择的系统应用将被取消选择。</string>
+    <string name="app_visibility_change_disabled">防火墙启用时无法更改。请先关闭防火墙。</string>
     <string name="skip_enable_dialog">跳过启用确认</string>
     <string name="app_icon_desc">应用图标</string>
     <string name="app_switch_selected">%1$s，已选中，%2$s</string>

@@ -12,6 +12,8 @@
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Podpořit</string>
     <string name="show_system_apps">Zobrazit systémové aplikace</string>
+    <string name="show_system_apps_description">Zahrnout do seznamu systémové aplikace Androidu, aby je bylo možné také blokovat. Vypnutím se odznačí všechny vybrané systémové aplikace.</string>
+    <string name="app_visibility_change_disabled">Toto nelze změnit, když je firewall zapnutý. Nejprve firewall vypněte.</string>
     <string name="skip_enable_dialog">Přeskočit potvrzení povolení</string>
     <string name="app_icon_desc">Ikona aplikace</string>
     <string name="app_switch_selected">%1$s, vybráno, %2$s</string>

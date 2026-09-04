@@ -13,6 +13,8 @@
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Spenden</string>
     <string name="show_system_apps">System-Apps anzeigen</string>
+    <string name="show_system_apps_description">Android-System-Apps in der Liste anzeigen, damit sie ebenfalls blockiert werden können. Beim Deaktivieren werden ausgewählte System-Apps abgewählt.</string>
+    <string name="app_visibility_change_disabled">Kann nicht geändert werden, während die Firewall aktiviert ist. Deaktivieren Sie zuerst die Firewall.</string>
     <string name="skip_enable_dialog">Aktivierungsbestätigung überspringen</string>
     <string name="app_icon_desc">App-Symbol</string>
     <string name="app_switch_selected">%1$s, ausgewählt, %2$s</string>

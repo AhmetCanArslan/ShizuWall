@@ -12,6 +12,8 @@
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Donate</string>
     <string name="show_system_apps">Show system apps</string>
+    <string name="show_system_apps_description">Include Android system apps in the list so they can be blocked too. Turning this off unselects any system app you had selected.</string>
+    <string name="app_visibility_change_disabled">Cannot change this while the firewall is enabled. Disable the firewall first.</string>
     <string name="skip_enable_dialog">Skip enable confirmation</string>
     <string name="app_icon_desc">App icon</string>
     <string name="app_switch_selected">%1$s, Selected, %2$s</string>

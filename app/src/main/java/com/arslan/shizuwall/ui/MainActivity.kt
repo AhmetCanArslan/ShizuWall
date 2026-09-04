@@ -647,9 +647,12 @@ class MainActivity : BaseActivity() {
         appListAdapter.setInfoButtonEnabled(
             sharedPreferences.getBoolean(KEY_SHOW_APP_INFO_BUTTON, true)
         )
+        val visibilityTriggeredReload = syncAppVisibilityPreferences()
         if (appListRefreshPending) {
             appListRefreshPending = false
-            loadInstalledApps()
+            if (!visibilityTriggeredReload) {
+                loadInstalledApps()
+            }
         }
         
         // If firewall is ON and mode needs foreground detection, ensure the service runs
@@ -1381,25 +1384,7 @@ class MainActivity : BaseActivity() {
                 val newShowSystem = checkboxShowSystem.isChecked
                 val showSystemChanged = newShowSystem != showSystemApps
                 if (showSystemChanged) {
-                    showSystemApps = newShowSystem
-                    sharedPreferences.edit().putBoolean(KEY_SHOW_SYSTEM_APPS, showSystemApps).apply()
-                    reconcileActiveProfile()
-
-                    // When hiding system apps, deselect all system apps to prevent them from being firewalled
-                    if (!showSystemApps) {
-                        val systemAppsToDeselect = appList.filter { it.isSystem && it.isSelected }
-                        for (i in appList.indices) {
-                            if (appList[i].isSystem && appList[i].isSelected) {
-                                appList[i] = appList[i].copy(isSelected = false)
-                            }
-                        }
-                        if (systemAppsToDeselect.isNotEmpty()) {
-                            saveSelectedApps()
-                            updateSelectedCount()
-                        }
-                    }
-                
-                    updateCategoryChips()
+                    applyShowSystemAppsChange(newShowSystem)
                     // Always refresh the list when show system apps changes, with animation only if sort didn't change
                     sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
                 } else if (sortChanged) {
@@ -1408,24 +1393,7 @@ class MainActivity : BaseActivity() {
 
                 val newShowOtherProfiles = checkboxShowOtherProfiles.isChecked
                 if (newShowOtherProfiles != showOtherProfiles) {
-                    showOtherProfiles = newShowOtherProfiles
-                    sharedPreferences.edit().putBoolean(KEY_SHOW_OTHER_PROFILES, showOtherProfiles).apply()
-
-                    if (!showOtherProfiles) {
-                        val hadSelection = appList.any { it.userId != 0 && it.isSelected }
-                        for (i in appList.indices) {
-                            if (appList[i].userId != 0 && appList[i].isSelected) {
-                                appList[i] = appList[i].copy(isSelected = false)
-                            }
-                        }
-                        if (hadSelection) {
-                            saveSelectedApps()
-                            updateSelectedCount()
-                        }
-
-                        MultiUserApps.invalidate()
-                    }
-
+                    applyShowOtherProfilesChange(newShowOtherProfiles)
                     loadInstalledApps(showLoadingIfListEmpty = true)
                 }
             }
@@ -1433,6 +1401,72 @@ class MainActivity : BaseActivity() {
         }
 
         sheet.show()
+    }
+
+    private fun applyShowSystemAppsChange(newValue: Boolean) {
+        showSystemApps = newValue
+        sharedPreferences.edit().putBoolean(KEY_SHOW_SYSTEM_APPS, showSystemApps).apply()
+        reconcileActiveProfile()
+
+        // When hiding system apps, deselect all system apps to prevent them from being firewalled
+        if (!showSystemApps) {
+            val hadSelection = appList.any { it.isSystem && it.isSelected }
+            for (i in appList.indices) {
+                if (appList[i].isSystem && appList[i].isSelected) {
+                    appList[i] = appList[i].copy(isSelected = false)
+                }
+            }
+            if (hadSelection) {
+                saveSelectedApps()
+                updateSelectedCount()
+            }
+        }
+
+        updateCategoryChips()
+    }
+
+    private fun applyShowOtherProfilesChange(newValue: Boolean) {
+        showOtherProfiles = newValue
+        sharedPreferences.edit().putBoolean(KEY_SHOW_OTHER_PROFILES, showOtherProfiles).apply()
+
+        if (!showOtherProfiles) {
+            val hadSelection = appList.any { it.userId != 0 && it.isSelected }
+            for (i in appList.indices) {
+                if (appList[i].userId != 0 && appList[i].isSelected) {
+                    appList[i] = appList[i].copy(isSelected = false)
+                }
+            }
+            if (hadSelection) {
+                saveSelectedApps()
+                updateSelectedCount()
+            }
+
+            MultiUserApps.invalidate()
+        }
+    }
+
+    private fun syncAppVisibilityPreferences(): Boolean {
+        val prefShowSystem = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
+        val showSystemChanged = prefShowSystem != showSystemApps
+        if (showSystemChanged) {
+            applyShowSystemAppsChange(prefShowSystem)
+        }
+
+        val prefShowOtherProfiles = sharedPreferences.getBoolean(KEY_SHOW_OTHER_PROFILES, false)
+        val showOtherProfilesChanged = prefShowOtherProfiles != showOtherProfiles
+        if (showOtherProfilesChanged) {
+            applyShowOtherProfilesChange(prefShowOtherProfiles)
+        }
+
+        if (showOtherProfilesChanged) {
+            loadInstalledApps(showLoadingIfListEmpty = true)
+            return true
+        }
+        if (showSystemChanged) {
+            sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
+        }
+
+        return false
     }
 
     private fun sortAndFilterApps(preserveScrollPosition: Boolean = false, scrollToTop: Boolean = false, animate: Boolean = false, smoothTransition: Boolean = false) {

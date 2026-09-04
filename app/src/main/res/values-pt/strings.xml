@@ -13,6 +13,8 @@
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">Doar</string>
     <string name="show_system_apps">Mostrar apps do sistema</string>
+    <string name="show_system_apps_description">Inclui os apps de sistema do Android na lista para que também possam ser bloqueados. Ao desativar, os apps de sistema selecionados são desmarcados.</string>
+    <string name="app_visibility_change_disabled">Não é possível alterar isto enquanto o firewall está ativado. Desative o firewall primeiro.</string>
     <string name="skip_enable_dialog">Pular confirmação de ativação</string>
     <string name="app_icon_desc">Ícone do app</string>
     <string name="app_switch_selected">%1$s, selecionado, %2$s</string>

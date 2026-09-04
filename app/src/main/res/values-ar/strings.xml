@@ -12,6 +12,8 @@
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">تبرع</string>
     <string name="show_system_apps">إظهار تطبيقات النظام</string>
+    <string name="show_system_apps_description">تضمين تطبيقات نظام Android في القائمة حتى يمكن حظرها أيضًا. إيقاف هذا الخيار يلغي تحديد أي تطبيق نظام كنت قد حددته.</string>
+    <string name="app_visibility_change_disabled">لا يمكن تغيير هذا أثناء تفعيل جدار الحماية. عطّل جدار الحماية أولاً.</string>
     <string name="skip_enable_dialog">تخطي تأكيد التفعيل</string>
     <string name="app_icon_desc">أيقونة التطبيق</string>
     <string name="app_switch_selected">%1$s، محدد، %2$s</string>

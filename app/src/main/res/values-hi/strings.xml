@@ -12,6 +12,8 @@
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">दान करें</string>
     <string name="show_system_apps">सिस्टम ऐप्स दिखाएँ</string>
+    <string name="show_system_apps_description">Android सिस्टम ऐप्स को सूची में शामिल करें ताकि उन्हें भी ब्लॉक किया जा सके। इसे बंद करने पर चयनित सभी सिस्टम ऐप्स अचयनित हो जाएँगे।</string>
+    <string name="app_visibility_change_disabled">फ़ायरवॉल चालू रहते हुए इसे बदला नहीं जा सकता। पहले फ़ायरवॉल बंद करें।</string>
     <string name="skip_enable_dialog">चालू करने की पुष्टि छोड़ें</string>
     <string name="app_icon_desc">ऐप आइकन</string>
     <string name="app_switch_selected">%1$s, चयनित, %2$s</string>

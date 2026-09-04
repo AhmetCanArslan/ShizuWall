@@ -12,6 +12,8 @@
     <string name="buymeacoffee_url">https://buymeacoffee.com/ahmetcanarslan</string>
     <string name="donate">寄付</string>
     <string name="show_system_apps">システムアプリを表示</string>
+    <string name="show_system_apps_description">Android のシステムアプリを一覧に含めてブロックできるようにします。オフにすると、選択済みのシステムアプリは選択解除されます。</string>
+    <string name="app_visibility_change_disabled">ファイアウォールが有効な間は変更できません。先にファイアウォールを無効にしてください。</string>
     <string name="skip_enable_dialog">確認ダイアログをスキップ</string>
     <string name="app_icon_desc">アプリのアイコン</string>
     <string name="app_switch_selected">%1$s、選択済み、%2$s</string>
