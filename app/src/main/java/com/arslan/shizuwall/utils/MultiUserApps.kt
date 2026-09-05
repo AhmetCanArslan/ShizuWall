@@ -23,12 +23,14 @@ object MultiUserApps {
     private val DUMPSYS_PRIVATE_FLAGS_TOKEN = Regex("""^privateFlags=\[(.*)]$""")
     private val DUMPSYS_USER_TOKEN = Regex("""^User (\d+):$""")
     private val DUMPSYS_INSTALLED_TOKEN = Regex("""^installed=(\w+)$""")
+    private val DUMPSYS_ENABLED_TOKEN = Regex("""^enabled=(\d+)$""")
     private val DUMPSYS_END_TOKEN = Regex("""^Shared users:$""")
     private val LIBRARY_FLAGS = setOf("STATIC_SHARED_LIBRARY", "SDK_LIBRARY")
+    private val DISABLED_STATES = setOf(2, 3, 4)
 
     private const val DUMPSYS_COMMAND = "dumpsys package packages | grep -oE " +
         "'Package \\[[^]]+]|appId=[0-9]+|userId=[0-9]+|pkgFlags=\\[[^]]*]|" +
-        "privateFlags=\\[[^]]*]|User [0-9]+:|installed=[a-z]+|Shared users:'"
+        "privateFlags=\\[[^]]*]|User [0-9]+:|installed=[a-z]+|enabled=[0-9]+|Shared users:'"
 
     data class SecondaryApp(
         val userId: Int,
@@ -129,8 +131,8 @@ object MultiUserApps {
             val results = try {
                 executor.execBatch(
                     listOf(
-                        "pm list packages -3 -U --user $userId",
-                        "pm list packages -s -U --user $userId"
+                        "pm list packages -3 -e -U --user $userId",
+                        "pm list packages -s -e -U --user $userId"
                     )
                 )
             } catch (t: Throwable) {
@@ -213,15 +215,24 @@ object MultiUserApps {
         var skip = false
         var isSystem = false
         var pendingUser = -1
+        var pending: SecondaryApp? = null
+
+        fun flush() {
+            val app = pending ?: return
+            pending = null
+            byUser.getOrPut(app.userId) { mutableListOf() }.add(app)
+        }
 
         output.lineSequence().forEach { raw ->
             val token = raw.trim()
 
             if (DUMPSYS_END_TOKEN.matches(token)) {
+                flush()
                 pkg = null
                 return@forEach
             }
             DUMPSYS_PACKAGE_TOKEN.matchEntire(token)?.let { match ->
+                flush()
                 val name = match.groupValues[1]
                 pkg = name
                 appId = -1
@@ -234,22 +245,26 @@ object MultiUserApps {
             if (skip) return@forEach
 
             DUMPSYS_APP_ID_TOKEN.matchEntire(token)?.let { match ->
+                flush()
                 if (appId < 0) appId = match.groupValues[1].toIntOrNull() ?: -1
                 pendingUser = -1
                 return@forEach
             }
             DUMPSYS_FLAGS_TOKEN.matchEntire(token)?.let { match ->
+                flush()
                 isSystem = match.groupValues[1].split(" ").contains("SYSTEM")
                 pendingUser = -1
                 return@forEach
             }
             DUMPSYS_PRIVATE_FLAGS_TOKEN.matchEntire(token)?.let { match ->
+                flush()
                 val flags = match.groupValues[1].split(" ")
                 if (flags.any { flag -> LIBRARY_FLAGS.any { flag.endsWith(it) } }) skip = true
                 pendingUser = -1
                 return@forEach
             }
             DUMPSYS_USER_TOKEN.matchEntire(token)?.let { match ->
+                flush()
                 pendingUser = match.groupValues[1].toIntOrNull() ?: -1
                 return@forEach
             }
@@ -260,10 +275,15 @@ object MultiUserApps {
                 if (match.groupValues[1] != "true") return@forEach
                 if (userId !in userIds) return@forEach
                 val uid = userId * AppIds.PER_USER_RANGE + AppIds.appIdOf(appId)
-                byUser.getOrPut(userId) { mutableListOf() }
-                    .add(SecondaryApp(userId, current, uid, isSystem))
+                pending = SecondaryApp(userId, current, uid, isSystem)
+                return@forEach
+            }
+            DUMPSYS_ENABLED_TOKEN.matchEntire(token)?.let { match ->
+                val state = match.groupValues[1].toIntOrNull()
+                if (state in DISABLED_STATES) pending = null else flush()
             }
         }
+        flush()
         return byUser
     }
 

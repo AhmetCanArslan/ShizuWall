@@ -43,8 +43,66 @@ class MultiUserAppsParseTest {
         installed=true
     """.trimIndent()
 
+    private val enabledOutput = """
+        Package [com.enabled]
+        appId=10234
+        pkgFlags=[ HAS_CODE ]
+        privateFlags=[ ]
+        User 150:
+        installed=true
+        enabled=0
+        Package [com.forced]
+        appId=10235
+        pkgFlags=[ HAS_CODE ]
+        privateFlags=[ ]
+        User 150:
+        installed=true
+        enabled=1
+        Package [com.disabled]
+        appId=10236
+        pkgFlags=[ HAS_CODE ]
+        privateFlags=[ ]
+        User 150:
+        installed=true
+        enabled=2
+        Package [com.disabledbyuser]
+        appId=10237
+        pkgFlags=[ HAS_CODE ]
+        privateFlags=[ ]
+        User 150:
+        installed=true
+        enabled=3
+        Package [com.disableduntilused]
+        appId=10238
+        pkgFlags=[ HAS_CODE ]
+        privateFlags=[ ]
+        User 150:
+        installed=true
+        enabled=4
+        Package [com.mixed]
+        appId=10239
+        pkgFlags=[ HAS_CODE ]
+        privateFlags=[ ]
+        User 0:
+        installed=true
+        enabled=0
+        User 150:
+        installed=true
+        enabled=3
+        Package [com.last]
+        appId=10240
+        pkgFlags=[ HAS_CODE ]
+        privateFlags=[ ]
+        User 150:
+        installed=true
+        enabled=0
+    """.trimIndent()
+
     private fun parse(userIds: Set<Int>, exclude: (String) -> Boolean = noExclusions) =
         MultiUserApps.parseDumpsysPackages(output, userIds, exclude)
+
+    private fun parseEnabled(userIds: Set<Int>) =
+        MultiUserApps.parseDumpsysPackages(enabledOutput, userIds, noExclusions)
 
     @Test
     fun keepsOnlyRequestedUsers() {
@@ -94,5 +152,35 @@ class MultiUserAppsParseTest {
     @Test
     fun returnsEmptyWhenNoUsersRequested() {
         assertTrue(parse(emptySet()).isEmpty())
+    }
+
+    @Test
+    fun keepsEnabledPackages() {
+        val names = parseEnabled(setOf(150)).getValue(150).map { it.packageName }
+        assertEquals(listOf("com.enabled", "com.forced", "com.last"), names)
+    }
+
+    @Test
+    fun dropsDisabledPackages() {
+        val names = parseEnabled(setOf(150)).getValue(150).map { it.packageName }
+        assertTrue("com.disabled" !in names)
+    }
+
+    @Test
+    fun dropsUserDisabledPackages() {
+        val names = parseEnabled(setOf(150)).getValue(150).map { it.packageName }
+        assertTrue("com.disabledbyuser" !in names)
+    }
+
+    @Test
+    fun dropsDisabledUntilUsedPackages() {
+        val names = parseEnabled(setOf(150)).getValue(150).map { it.packageName }
+        assertTrue("com.disableduntilused" !in names)
+    }
+
+    @Test
+    fun dropsDisabledUserWhileKeepingEnabledUser() {
+        val names = parseEnabled(setOf(0, 150)).getValue(0).map { it.packageName }
+        assertEquals(listOf("com.mixed"), names)
     }
 }
