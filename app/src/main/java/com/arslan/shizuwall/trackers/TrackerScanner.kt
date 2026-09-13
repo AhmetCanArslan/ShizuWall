@@ -7,7 +7,6 @@ import kotlinx.coroutines.withContext
 import java.io.DataInputStream
 import java.util.zip.ZipFile
 
-
 object TrackerScanner {
 
     sealed class ScanResult {
@@ -19,12 +18,6 @@ object TrackerScanner {
 
     private const val CACHE_PREFIX = "scan:"
 
-    /**
-     * Result for an already-scanned package, without touching disk beyond prefs.
-     * Returns null when nothing usable is cached, so the caller must run [scan].
-     * Cheap enough for the main thread: it never opens an APK and never parses
-     * the tracker asset (bails out if the registry has not been loaded yet).
-     */
     fun cachedResult(context: Context, packageName: String): ScanResult? {
         val definitions = TrackerRegistry.trackersIfLoaded() ?: return null
         if (definitions.isEmpty()) return null
@@ -161,10 +154,9 @@ object TrackerScanner {
                 val b = dex[p].toInt()
                 if (b == 0) break
                 if (b == ';'.code) break
-                if (b < 0) break // non-ASCII, cannot be part of a tracker prefix
+                if (b < 0) break
                 if (b == '/'.code) {
                     slashes++
-                    // Check the package prefix accumulated so far.
                     signatureIndex[builder.toString()]?.let { found.addAll(it) }
                     builder.append('.')
                 } else {

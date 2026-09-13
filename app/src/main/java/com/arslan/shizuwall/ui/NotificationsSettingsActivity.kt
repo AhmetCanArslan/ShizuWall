@@ -173,7 +173,6 @@ class NotificationsSettingsActivity : BaseActivity() {
                 }
             }
         } catch (e: Exception) {
-            // Don't crash if layout assumptions differ; silently ignore
         }
     }
 
@@ -182,11 +181,6 @@ class NotificationsSettingsActivity : BaseActivity() {
         startForegroundService(intent)
     }
 
-    /**
-     * AppMonitorService is shared by three features (new-app notifications,
-     * auto-firewall new apps, and the persistent firewall-status notification).
-     * Keep it running while any of them is on; stop it once all are off.
-     */
     private fun syncAppMonitorService() {
         val anyEnabled = sharedPreferences.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false) ||
             sharedPreferences.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false) ||

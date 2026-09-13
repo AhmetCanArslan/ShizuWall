@@ -78,7 +78,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Simple Setup View -->
             <LinearLayout
                 android:id="@+id/simpleSetupContainer"
                 android:layout_width="match_parent"
@@ -163,7 +162,6 @@
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
-            <!-- Advanced Setup View -->
             <LinearLayout
                 android:id="@+id/advancedSetupContainer"
                 android:layout_width="match_parent"
@@ -171,7 +169,6 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <!-- Status Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -191,7 +188,6 @@
                         android:padding="16dp" />
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Auto Pairing Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -274,7 +270,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-                <!-- Manual Connection Card (custom host/port) -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -374,7 +369,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Daemon Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -451,7 +445,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- LADB Logs Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -542,7 +535,6 @@
 
             </LinearLayout>
 
-            <!-- Direct ADB start (visible in both simple and advanced mode) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardAdbDirectStart"
                 android:layout_width="match_parent"

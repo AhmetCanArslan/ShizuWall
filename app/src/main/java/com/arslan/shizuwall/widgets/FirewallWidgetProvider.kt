@@ -31,17 +31,14 @@ class FirewallWidgetProvider : AppWidgetProvider() {
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
         if (intent.action == ACTION_WIDGET_CLICK) {
-            // Get current state
             val sharedPreferences = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
             val isEnabled = loadFirewallEnabled(sharedPreferences)
             val newState = !isEnabled
 
-            // Check Shizuku permission first
             if (!checkShizukuPermission(context)) {
                 return
             }
 
-            // Check constraints before enabling
             var selectedApps: List<String> = emptyList()
             if (newState) {
                 selectedApps = loadSelectedApps(context, sharedPreferences)
@@ -53,7 +50,6 @@ class FirewallWidgetProvider : AppWidgetProvider() {
                 }
             }
 
-            // Optimistically update widget immediately
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val componentName = android.content.ComponentName(context, FirewallWidgetProvider::class.java)
             val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
@@ -61,7 +57,6 @@ class FirewallWidgetProvider : AppWidgetProvider() {
                 updateAppWidgetOptimistic(context, appWidgetManager, appWidgetId, newState)
             }
 
-            // Send toggle broadcast
             val toggleIntent = Intent(context, FirewallControlReceiver::class.java).apply {
                 action = MainActivity.ACTION_FIREWALL_CONTROL
                 putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, newState)
@@ -71,7 +66,6 @@ class FirewallWidgetProvider : AppWidgetProvider() {
             }
             context.sendBroadcast(toggleIntent)
         } else if (intent.action == MainActivity.ACTION_FIREWALL_STATE_CHANGED) {
-            // Update widgets when state changes (corrects optimistic update if needed)
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val componentName = android.content.ComponentName(context, FirewallWidgetProvider::class.java)
             val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)

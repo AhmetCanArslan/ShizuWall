@@ -11,8 +11,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
-// Shell executor that runs commands through root via a reused `su` session.
-
 class RootShellExecutor : ShellExecutor {
 
     companion object {
@@ -22,8 +20,6 @@ class RootShellExecutor : ShellExecutor {
 
         @Volatile
         private var session: Session? = null
-
-        //Execute root command to verify root access is granted or not
 
         fun hasRootAccess(): Boolean {
             return try {

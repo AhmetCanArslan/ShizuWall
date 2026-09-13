@@ -7,7 +7,6 @@
     android:orientation="vertical"
     android:paddingBottom="12dp">
 
-    <!-- Drag handle -->
     <View
         android:layout_width="36dp"
         android:layout_height="4dp"
@@ -64,7 +63,6 @@
         tools:listitem="@layout/item_profile"
         xmlns:tools="http://schemas.android.com/tools" />
 
-    <!-- Empty state -->
     <LinearLayout
         android:id="@+id/profilesEmptyState"
         android:layout_width="match_parent"

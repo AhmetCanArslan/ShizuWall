@@ -90,9 +90,9 @@ class MainActivity : BaseActivity() {
         const val KEY_SELECTED_APPS = "selected_apps"
         const val KEY_SELECTED_COUNT = "selected_count"
         const val KEY_FAVORITE_APPS = "favorite_apps"
-        const val KEY_FIREWALL_ENABLED = "firewall_enabled"          // made public
+        const val KEY_FIREWALL_ENABLED = "firewall_enabled"
         const val KEY_ACTIVE_PACKAGES = "active_packages"
-        const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed" // made public
+        const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed"
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
         private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
@@ -110,7 +110,7 @@ class MainActivity : BaseActivity() {
         const val KEY_FIREWALL_MODE = "firewall_mode"
         const val KEY_SCREEN_LOCK_DELAY_SECONDS = "screen_lock_delay_seconds"
         const val DEFAULT_SCREEN_LOCK_DELAY_SECONDS = 2
-        const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"  // Current foreground app in smart mode
+        const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"
         const val KEY_LAST_FOREGROUND_APP = "last_foreground_app"
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
         const val KEY_APPLY_ROOT_RULES_AFTER_REBOOT = "apply_root_rules_after_reboot"
@@ -151,7 +151,6 @@ class MainActivity : BaseActivity() {
         const val ACTION_PROFILE_CONTROL = "shizuwall.PROFILE"
         const val EXTRA_PROFILE_NAME = "profile"
         const val EXTRA_PROFILE_ID = "profile_id"
-
 
     }
 
@@ -215,12 +214,9 @@ class MainActivity : BaseActivity() {
             return@OnBinderReceivedListener
         }
 
-        // If already enabled, nothing to do
         if (loadFirewallEnabled()) return@OnBinderReceivedListener
 
-        // Use coroutine to handle auto-enable with proper timing
         lifecycleScope.launch(Dispatchers.IO) {
-            // Wait a bit for Shizuku binder to fully initialize
             var binderReady = false
             for (attempt in 1..10) {
                 try {
@@ -239,7 +235,6 @@ class MainActivity : BaseActivity() {
 
             val selectedPkgs = loadSelectedApps().toList()
             if (selectedPkgs.isEmpty() && !firewallMode.allowsDynamicSelection()) {
-                // Nothing to enable (and adaptive/smart mode does not allow empty set)
                 return@launch
             }
             if (loadFirewallEnabled()) return@launch
@@ -291,24 +286,19 @@ class MainActivity : BaseActivity() {
 
     private var suppressToggleListener = false
     private val activeFirewallPackages = mutableSetOf<String>()
-    // store the last operation and its console output per package so we can show details dialogs
     private val lastOperationErrorDetails = mutableMapOf<String, String>()
     private enum class Category { NONE, FAVORITES, SYSTEM, SELECTED, UNSELECTED, USER, PROFILE }
     private var currentCategory: Category = Category.NONE
     private var currentProfileUserId: Int = -1
     private val profileChipIds = LinkedHashMap<Int, Int>()
     
-    // Track if we're waiting for Shizuku permission due to toggle attempt
     private var pendingToggleEnable = false
     private var pendingToggleDisable = false
-    // Store pending selections/packages when waiting for Shizuku permission
     private var pendingEnableSelectedApps: List<String>? = null
     private var pendingDisableActivePackages: List<String>? = null
-    // Pending auto-enable triggered by Shizuku binder
     private var pendingAutoEnable = false
     private var pendingAutoEnableSelectedApps: List<String>? = null
 
-    // receiver to handle package add/remove/replace events
     private var appListRefreshPending = true
 
     private val packageBroadcastReceiver = object : BroadcastReceiver() {
@@ -318,13 +308,11 @@ class MainActivity : BaseActivity() {
 
             when (action) {
                 Intent.ACTION_PACKAGE_REMOVED -> {
-                    // ignore when package is being replaced (i.e. during an update)
                     val replacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
                     if (replacing) return
                     handlePackageRemoved(pkg)
                 }
                 Intent.ACTION_PACKAGE_ADDED, Intent.ACTION_PACKAGE_REPLACED -> {
-                    // reload apps to show newly installed/updated app
                     handlePackageAdded(pkg)
                 }
             }
@@ -335,7 +323,6 @@ class MainActivity : BaseActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            // Reload settings and refresh the app list
             showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
         showOtherProfiles = sharedPreferences.getBoolean(KEY_SHOW_OTHER_PROFILES, false)
             moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, false)
@@ -358,12 +345,10 @@ class MainActivity : BaseActivity() {
 
         enableEdgeToEdge()
 
-        // Check if onboarding is complete
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val onboardingComplete = prefs.getBoolean("onboarding_complete", false)
 
         if (!onboardingComplete) {
-            // Show onboarding
             startActivity(Intent(this, OnboardingActivity::class.java))
             finish()
             return
@@ -371,7 +356,6 @@ class MainActivity : BaseActivity() {
 
         setContentView(R.layout.activity_main)
 
-        // Start App Monitor Service if any of its features are enabled
         if (sharedPreferences.getBoolean(KEY_APP_MONITOR_ENABLED, false) ||
             sharedPreferences.getBoolean(KEY_AUTO_FIREWALL_NEW_APPS, false) ||
             sharedPreferences.getBoolean(KEY_SHOW_FIREWALL_STATUS_NOTIFICATION, false)) {
@@ -379,18 +363,14 @@ class MainActivity : BaseActivity() {
             startForegroundService(monitorIntent)
         }
 
-        // Start Floating Button Service if enabled
         if (sharedPreferences.getBoolean(com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
             com.arslan.shizuwall.services.FloatingButtonService.start(this)
         }
 
-
-        // Show Android 11 compatibility warning if needed
         showAndroid11WarningDialog()
 
         showChangelogDialogIfNeeded()
 
-        // Prompt user to view Shizuku setup slides at app start
         val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
         if (workingMode == com.arslan.shizuwall.WorkingMode.LADB.name) {
             val ladbManager = com.arslan.shizuwall.ladb.LadbManager.getInstance(this)
@@ -501,7 +481,6 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        // wire category bar AFTER views are created
         val categoryGroup = findViewById<ChipGroup>(R.id.categoryChipGroup)
         categoryGroup.setOnCheckedStateChangeListener { _, checkedIds ->
             val checkedId = if (checkedIds.isEmpty()) -1 else checkedIds[0]
@@ -525,21 +504,17 @@ class MainActivity : BaseActivity() {
             sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true)
         }
 
-        // ensure the category chips reflect the saved "show system apps" preference
         updateCategoryChips()
 
         val hasWarmCache = restoreAppListFromCache()
         appListRefreshPending = false
         loadInstalledApps(showLoadingIfListEmpty = !hasWarmCache)
 
-        // If user enabled auto-enable and Shizuku is already present, attempt to auto-enable.
         try {
             val autoPref = sharedPreferences.getBoolean(KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
             if (autoPref && !loadFirewallEnabled()) {
                 if (Shizuku.pingBinder()) {
-                    // If permission granted, proceed or request permission
                     if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-                        // Avoid duplicating flows if we already have a pending auto enable
                         if (!pendingAutoEnable) {
                             val pkgs = loadSelectedApps().toList()
                             if (pkgs.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
@@ -559,7 +534,6 @@ class MainActivity : BaseActivity() {
                             }
                         }
                     } else {
-                        // Request permission and mark pending so onRequestPermissionsResult can resume
                         pendingAutoEnable = true
                         pendingAutoEnableSelectedApps = loadSelectedApps().toList()
                         Shizuku.requestPermission(SHIZUKU_PERMISSION_REQUEST_CODE)
@@ -567,38 +541,30 @@ class MainActivity : BaseActivity() {
                 }
             }
         } catch (_: Exception) {
-            // ignore errors when pinging or permission checking
         }
 
-        // Load and display saved selected count
         val savedCount = sharedPreferences.getInt(KEY_SELECTED_COUNT, 0)
         selectedCountText.text = savedCount.toString()
 
-        // Load saved firewall state and apply to toggle without triggering listener
         isFirewallEnabled = loadFirewallEnabled()
         activeFirewallPackages.addAll(loadActivePackages())
         suppressToggleListener = true
         firewallToggle.isChecked = isFirewallEnabled
         suppressToggleListener = false
 
-        // Ensure adapter and dim reflect saved firewall state
         appListAdapter.setSelectionEnabled(!isFirewallEnabled || firewallMode.allowsDynamicSelection())
         updateInteractiveViews()
         applyListInteractionState()
 
-        // ensure the toggle is disabled if firewall is off AND there are no selected apps
-        // (allows the toggle to remain enabled when firewall is active)
         if (::firewallToggle.isInitialized) {
             firewallToggle.isEnabled = isFirewallEnabled || savedCount > 0
         }
 
-        // "Press back again to exit" confirmation dialog
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             private var backPressedOnce = false
 
             override fun handleOnBackPressed() {
                 if (backPressedOnce) {
-                    // Second press within the window – exit the app
                     finish()
                     return
                 }
@@ -606,7 +572,6 @@ class MainActivity : BaseActivity() {
                 backPressedOnce = true
                 Toast.makeText(this@MainActivity, getString(R.string.exit_confirm_message), Toast.LENGTH_SHORT).show()
 
-                // Reset the flag after 2 seconds
                 recyclerView.postDelayed({ backPressedOnce = false }, 2000)
             }
         })
@@ -616,19 +581,16 @@ class MainActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
 
-        // If views were not initialized (e.g. onCreate returned early), avoid touching them.
         if (!::firewallToggle.isInitialized) {
             return
         }
 
-        // Re-sync toggle with saved state without triggering listener
         if (!isFirewallProcessRunning) {
             suppressToggleListener = true
             firewallToggle.isChecked = loadFirewallEnabled()
             suppressToggleListener = false
         }
 
-        // Update firewallMode from preferences
         firewallMode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
         updateFirewallToggleThumbIcon()
 
@@ -636,7 +598,6 @@ class MainActivity : BaseActivity() {
         updateProfileButtonIcon()
         refreshBackendBanner()
 
-        // Reflect current firewall state in UI
         if (!isFirewallProcessRunning) {
             isFirewallEnabled = loadFirewallEnabled()
         } else {
@@ -657,7 +618,6 @@ class MainActivity : BaseActivity() {
             }
         }
         
-        // If firewall is ON and mode needs foreground detection, ensure the service runs
         if (isFirewallEnabled && firewallMode.requiresForegroundDetection()) {
             ForegroundDetectionService.start(this)
         } else if (!isFirewallEnabled && firewallMode.requiresForegroundDetection()) {
@@ -669,8 +629,6 @@ class MainActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
 
-        // Register package change receiver so installs/uninstalls/updates immediately refresh the list.
-        // Wrapped in try/catch to avoid IllegalArgumentException if already registered.
         try {
             val filter = android.content.IntentFilter().apply {
                 addAction(Intent.ACTION_PACKAGE_ADDED)
@@ -680,9 +638,7 @@ class MainActivity : BaseActivity() {
             }
             registerReceiver(packageBroadcastReceiver, filter)
         } catch (e: IllegalArgumentException) {
-            // already registered or other issue; ignore
         } catch (e: Exception) {
-            // ignore other registration errors
         }
     }
 
@@ -692,13 +648,10 @@ class MainActivity : BaseActivity() {
         MultiUserApps.invalidate()
         appListRefreshPending = true
 
-        // Unregister package receiver to avoid leaks; ignore if not registered.
         try {
             unregisterReceiver(packageBroadcastReceiver)
         } catch (e: IllegalArgumentException) {
-            // not registered
         } catch (e: Exception) {
-            // ignore
         }
     }
 
@@ -725,11 +678,9 @@ class MainActivity : BaseActivity() {
                 Shizuku.removeBinderReceivedListener(binderReceivedListener)
                 Shizuku.removeBinderDeadListener(binderDeadListener)
             } catch (_: Exception) {
-                // ignore if not registered or removal fails
             }
         }
         firewallRepo?.close()
-        // Background service removed, nothing to stop here.
     }
 
     private fun checkShizukuPermission() {
@@ -737,7 +688,7 @@ class MainActivity : BaseActivity() {
             val d = MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.shizuku_update_required))
                 .setMessage(getString(R.string.shizuku_version_too_old))
-                .setPositiveButton(getString(R.string.ok), null) // do not close app, just dismiss
+                .setPositiveButton(getString(R.string.ok), null)
                 .setCancelable(true)
                 .create()
             d.show()
@@ -745,19 +696,16 @@ class MainActivity : BaseActivity() {
         }
 
         if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-            // Permission already granted
             return
         } else if (Shizuku.shouldShowRequestPermissionRationale()) {
-            // User denied permission permanently
             val d = MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.permission_required))
                 .setMessage(getString(R.string.shizuku_permission_required_message))
-                .setPositiveButton(getString(R.string.ok), null) // do not close app
+                .setPositiveButton(getString(R.string.ok), null)
                 .setCancelable(true)
                 .create()
             d.show()
         } else {
-            // Request permission
             Shizuku.requestPermission(SHIZUKU_PERMISSION_REQUEST_CODE)
         }
     }
@@ -768,14 +716,12 @@ class MainActivity : BaseActivity() {
             SHIZUKU_PERMISSION_REQUEST_CODE -> {
                 if (granted) {
                     Toast.makeText(this, getString(R.string.shizuku_permission_granted), Toast.LENGTH_SHORT).show()
-                    // If permission was requested due to toggle attempt, resume the enable flow
                     if (pendingToggleEnable) {
                         pendingToggleEnable = false
                         val selectedAppPkgs = pendingEnableSelectedApps ?: appList.filter { it.isSelected }.map { it.key }
                         val selectedApps = appList.filter { selectedAppPkgs.contains(it.packageName) }
                         pendingEnableSelectedApps = null
                         if (selectedApps.isNotEmpty()) {
-                            // Set toggle to ON before showing confirmation dialog
                             suppressToggleListener = true
                             firewallToggle.isChecked = true
                             suppressToggleListener = false
@@ -788,13 +734,10 @@ class MainActivity : BaseActivity() {
                         }
                     } else if (pendingToggleDisable) {
                         pendingToggleDisable = false
-                        // Use the active package list captured when the disable was requested; fallback to current active set
                         val pkgs = pendingDisableActivePackages ?: activeFirewallPackages.toList()
                         pendingDisableActivePackages = null
-                        // Proceed with disabling the firewall
                         applyFirewallState(false, pkgs)
                     }
-                    // If permission was requested for an auto-enable flow, resume it here
                     else if (pendingAutoEnable) {
                         pendingAutoEnable = false
                         val pkgs = pendingAutoEnableSelectedApps ?: appList.filter { it.isSelected }.map { it.key }
@@ -806,19 +749,16 @@ class MainActivity : BaseActivity() {
                             if (sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
                                 applyFirewallState(true, targetPkgs, allowPkgs)
                             } else if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                                // Show confirmation dialog in foreground
                                 if (selectedApps.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                                     showFirewallConfirmDialog(selectedApps, targetPkgs, allowPkgs)
                                 }
                             } else {
-                                // Not in the foreground; keep pending and rely on onResume to show dialog
                                 pendingAutoEnable = true
                                 pendingAutoEnableSelectedApps = pkgs
                             }
                         }
                     }
                 } else {
-                    // Permission denied, revert toggle to its previous state
                     pendingToggleEnable = false
                     pendingToggleDisable = false
                     pendingEnableSelectedApps = null
@@ -826,13 +766,12 @@ class MainActivity : BaseActivity() {
                     pendingAutoEnable = false
                     pendingAutoEnableSelectedApps = null
                     suppressToggleListener = true
-                    // If we were trying to enable, revert to off; if trying to disable, revert to on
                     firewallToggle.isChecked = isFirewallEnabled
                     suppressToggleListener = false
                     val d = MaterialAlertDialogBuilder(this)
                         .setTitle(getString(R.string.permission_denied))
                         .setMessage(getString(R.string.shizuku_permission_required_message))
-                        .setPositiveButton(getString(R.string.ok), null) // just dismiss dialog
+                        .setPositiveButton(getString(R.string.ok), null)
                         .setCancelable(true)
                         .create()
                     d.show()
@@ -877,31 +816,25 @@ class MainActivity : BaseActivity() {
             return false
         }
 
-        // First ensure Shizuku binder is reachable. If it's not running, show a friendly dialog prompting the user to start/install Shizuku.
         try {
             if (!Shizuku.pingBinder()) {
                 showShizukuNotRunningDialog()
                 return false
             }
         } catch (e: Exception) {
-            // If ping fails unexpectedly, fall back to permission flow below.
         }
 
         if (Shizuku.isPreV11()) {
-            // Pre-v11 is unsupported
             Toast.makeText(this, getString(R.string.shizuku_version_old_toast), Toast.LENGTH_SHORT).show()
             return false
         }
 
         return if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-            // Granted
             true
         } else if (Shizuku.shouldShowRequestPermissionRationale()) {
-            // Users chose "Deny and don't ask again"
             Toast.makeText(this, getString(R.string.grant_shizuku_permission_settings), Toast.LENGTH_LONG).show()
             false
         } else {
-            // Request the permission (this will show the Shizuku permission dialog)
             Shizuku.requestPermission(code)
             false
         }
@@ -911,7 +844,6 @@ class MainActivity : BaseActivity() {
         searchView = findViewById(R.id.searchView)
         searchView.queryHint = getString(R.string.search_app)
 
-        // Hide keyboard when SearchView loses focus
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 try {
@@ -930,7 +862,6 @@ class MainActivity : BaseActivity() {
                 currentQuery = newText ?: ""
                 filterApps(currentQuery)
 
-                // Disable animator to prevent visual clutter during search filtering
                 if (::recyclerView.isInitialized) recyclerView.itemAnimator = null
                 appListAdapter.submitList(filteredAppList.toList()) {
                     if (::recyclerView.isInitialized) recyclerView.itemAnimator = defaultItemAnimator
@@ -940,7 +871,6 @@ class MainActivity : BaseActivity() {
                 return true
             }
         })
-
 
     }
 
@@ -974,7 +904,6 @@ class MainActivity : BaseActivity() {
                 val allSelected = selectableFilteredApps().all { it.isSelected }
                 if (allSelected) return true
 
-                // Show confirmation dialog before selecting all
                 showSelectAllConfirmDialog()
                 return true
             }
@@ -1031,7 +960,6 @@ class MainActivity : BaseActivity() {
 
         selectedCountText.setOnTouchListener { v, event ->
             gestureDetector.onTouchEvent(event)
-            // consume only if enabled so ripple still works
             if (!selectedCountText.isEnabled) false else {
                 v.performClick()
                 true
@@ -1068,12 +996,8 @@ class MainActivity : BaseActivity() {
                 saveSelectedApps()
                 sortAndFilterApps(preserveScrollPosition = true)
 
-                // Apply rule immediately if firewall is enabled
-                // Skip for HYBRID mode - Smart Foreground and Screen Lock handled dynamically
                 if (isFirewallEnabled && firewallMode == FirewallMode.HYBRID && appInfo.appFirewallMode != 0) {
-                    // HYBRID mode with per-app mode - reconcile services immediately
                     lifecycleScope.launch(Dispatchers.IO) {
-                        // Reconcile screen lock state if switching to/from Screen Lock mode
                         if (appInfo.appFirewallMode == 2) {
                             ScreenLockMonitorService.sync(this@MainActivity)
                         }
@@ -1098,9 +1022,7 @@ class MainActivity : BaseActivity() {
                                 }
                                 saveActivePackages(activeFirewallPackages)
                             } else {
-                                // Operation failed
                                 if (shouldBlock) {
-                                    // Failed to block
                                     val skipErrorDialog = sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)
                                     val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
 
@@ -1116,7 +1038,6 @@ class MainActivity : BaseActivity() {
                                     lastOperationErrorDetails[pkg] = res.stderr.ifEmpty { res.stdout }
                                     showOperationErrorsDialog(listOf(pkg), lastOperationErrorDetails)
                                 } else {
-                                    // Failed to unblock
                                     val revertIdx = appList.indexOfFirst { it.key == pkg }
                                     if (revertIdx != -1) {
                                         appList[revertIdx] = appList[revertIdx].copy(isSelected = !isSelected)
@@ -1142,7 +1063,6 @@ class MainActivity : BaseActivity() {
         recyclerView.adapter = appListAdapter
         defaultItemAnimator = recyclerView.itemAnimator
         (defaultItemAnimator as? androidx.recyclerview.widget.SimpleItemAnimator)?.supportsChangeAnimations = false
-
 
     }
 
@@ -1236,25 +1156,20 @@ class MainActivity : BaseActivity() {
             
             saveFavoriteApps()
             
-            // If we're viewing favorites and removed this item, remove it from filtered list
             if (currentCategory == Category.FAVORITES && !newFavoriteState) {
                 filteredAppList.removeAll { it.key == appInfo.key }
             } else if (currentCategory == Category.FAVORITES && newFavoriteState) {
-                // If we're viewing favorites and added this item, it should already be there
-                // but let's update it to be safe
                 val filteredIdx = filteredAppList.indexOfFirst { it.key == appInfo.key }
                 if (filteredIdx != -1) {
                     filteredAppList[filteredIdx] = appList[idx]
                 }
             } else {
-                // For other categories, just update the item in place
                 val filteredIdx = filteredAppList.indexOfFirst { it.key == appInfo.key }
                 if (filteredIdx != -1) {
                     filteredAppList[filteredIdx] = appList[idx]
                 }
             }
             
-            // Force adapter to update by submitting a new list
             appListAdapter.submitList(filteredAppList.toList())
             updateEmptyState()
         }
@@ -1275,7 +1190,6 @@ class MainActivity : BaseActivity() {
     private fun filterApps(query: String) {
         filteredAppList.clear()
 
-        // Apply category filter first
         val baseList: List<AppInfo> = when (currentCategory) {
             Category.NONE -> appList
             Category.FAVORITES -> appList.filter { it.isFavorite }
@@ -1298,7 +1212,6 @@ class MainActivity : BaseActivity() {
                 it.packageName.lowercase().contains(searchQuery)
             })
         }
-        // Removed submitList from here; handled in callers
     }
 
     private fun showSortDialog() {
@@ -1309,14 +1222,12 @@ class MainActivity : BaseActivity() {
         val checkboxShowSystem = sheetView.findViewById<MaterialCheckBox>(R.id.checkboxShowSystemApps)
         val checkboxShowOtherProfiles = sheetView.findViewById<MaterialCheckBox>(R.id.checkboxShowOtherProfiles)
 
-        // Set current sort order
         when (currentSortOrder) {
             SortOrder.INSTALL_TIME -> radioGroup.check(R.id.radioInstallTime)
             SortOrder.NAME_ASC -> radioGroup.check(R.id.radioNameAsc)
             SortOrder.NAME_DESC -> radioGroup.check(R.id.radioNameDesc)
         }
 
-        // Set current show system apps state
         checkboxShowSystem.isChecked = showSystemApps
         
         checkboxShowOtherProfiles.isChecked = showOtherProfiles
@@ -1369,7 +1280,6 @@ class MainActivity : BaseActivity() {
 
         sheetView.findViewById<MaterialButton>(R.id.sortApplyButton).setOnClickListener {
             pendingApply = {
-                // Handle sort order change
                 val newSortOrder = when (radioGroup.checkedRadioButtonId) {
                     R.id.radioInstallTime -> SortOrder.INSTALL_TIME
                     R.id.radioNameAsc -> SortOrder.NAME_ASC
@@ -1383,12 +1293,10 @@ class MainActivity : BaseActivity() {
                     sharedPreferences.edit().putString(KEY_SORT_ORDER, currentSortOrder.name).apply()
                 }
 
-                // Handle show system apps change
                 val newShowSystem = checkboxShowSystem.isChecked
                 val showSystemChanged = newShowSystem != showSystemApps
                 if (showSystemChanged) {
                     applyShowSystemAppsChange(newShowSystem)
-                    // Always refresh the list when show system apps changes, with animation only if sort didn't change
                     sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
                 } else if (sortChanged) {
                     sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = true)
@@ -1411,7 +1319,6 @@ class MainActivity : BaseActivity() {
         sharedPreferences.edit().putBoolean(KEY_SHOW_SYSTEM_APPS, showSystemApps).apply()
         reconcileActiveProfile()
 
-        // When hiding system apps, deselect all system apps to prevent them from being firewalled
         if (!showSystemApps) {
             val hadSelection = appList.any { it.isSystem && it.isSelected }
             for (i in appList.indices) {
@@ -1599,9 +1506,7 @@ class MainActivity : BaseActivity() {
                     return@setOnCheckedChangeListener
                 }
 
-                // Non-LADB path: fall back to Shizuku permission flow
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
-                    // Permission not granted, mark that we're waiting for it
                     pendingToggleEnable = true
                     pendingEnableSelectedApps = targetAppPkgs
                     suppressToggleListener = true
@@ -1609,7 +1514,6 @@ class MainActivity : BaseActivity() {
                     suppressToggleListener = false
                     return@setOnCheckedChangeListener
                 }
-                // Permission already granted, proceed
                 pendingToggleEnable = false
                 showFirewallConfirmDialog(selectedApps, targetAppPkgs, whitelistAllowPkgs)
             } else {
@@ -1628,7 +1532,6 @@ class MainActivity : BaseActivity() {
                 }
 
                 if (!checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)) {
-                    // Permission not granted, mark that we're waiting for it
                     pendingToggleDisable = true
                     pendingDisableActivePackages = activeFirewallPackages.toList()
                     suppressToggleListener = true
@@ -1636,7 +1539,6 @@ class MainActivity : BaseActivity() {
                     suppressToggleListener = false
                     return@setOnCheckedChangeListener
                 }
-                // Permission already granted, proceed
                 pendingToggleDisable = false
                 applyFirewallState(false, activeFirewallPackages.toList())
             }
@@ -1698,7 +1600,6 @@ class MainActivity : BaseActivity() {
     }
 
     private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>, blockPkgs: List<String> = selectedApps.map { it.key }, whitelistAllowApps: List<String> = emptyList()) {
-        // If user opted to skip the confirmation, directly apply the firewall
         val prefsLocal = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         if (prefsLocal.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
             applyFirewallState(true, blockPkgs, whitelistAllowApps)
@@ -1730,13 +1631,10 @@ class MainActivity : BaseActivity() {
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
         selectedAppsRecyclerView.adapter = SelectedAppsAdapter(selectedApps)
 
-        // Limit the RecyclerView height to a fraction of the screen
-        // Calculate constraints BEFORE showing dialog to prevent visual jumping/sliding
         val displayMetrics = resources.displayMetrics
         val displayHeight = displayMetrics.heightPixels
-        val maxRecyclerHeight = (displayHeight * 0.4).toInt() // 40% of screen height
+        val maxRecyclerHeight = (displayHeight * 0.4).toInt()
         
-        // Estimate height: ~72dp per item. If total exceeds max, fix the height.
         val estimatedItemHeight = (72 * displayMetrics.density).toInt()
         val estimatedContentHeight = estimatedItemHeight * selectedApps.size
         
@@ -1765,7 +1663,6 @@ class MainActivity : BaseActivity() {
     }
 
     private fun showAndroid11WarningDialog() {
-        // Only show for Android 11 and if user hasn't opted out
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.R) return
 
         val prefsLocal = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -1836,8 +1733,6 @@ class MainActivity : BaseActivity() {
         val count = appList.count { it.isSelected }
         selectedCountText.text = count.toString()
 
-        // enable the firewall toggle if firewall is currently active (so user can disable),
-        // or if there is at least one selected app (so user can enable).
         if (::firewallToggle.isInitialized) {
             firewallToggle.isEnabled = isFirewallEnabled || count > 0 || firewallMode.allowsDynamicSelection()
         }
@@ -1898,7 +1793,6 @@ class MainActivity : BaseActivity() {
 
                 val savedSelected = loadSelectedApps().toMutableSet()
                 val selectedToRemove = if (rememberDisabled) emptyList() else savedSelected.filterNot(isKnown)
-                // Remove this app itself from saved selected apps if present
                 val selfPkg = this@MainActivity.packageName
                 var selectedChanged = false
                 if (savedSelected.remove(selfPkg)) selectedChanged = true
@@ -1917,7 +1811,6 @@ class MainActivity : BaseActivity() {
                 val modesStr = sharedPreferences.getString(KEY_APP_MODES, "{}")
                 val modesJson = try { JSONObject(modesStr!!) } catch (e: Exception) { JSONObject() }
                 
-                // Process packages in parallel chunks for better performance
                 val chunkSize = 50
                 val chunks = packages.chunked(chunkSize)
                 val results = chunks.map { chunk ->
@@ -1927,16 +1820,13 @@ class MainActivity : BaseActivity() {
                             val appInfo = packageInfo.applicationInfo ?: continue
                             val isSystemApp = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
 
-                            // skip apps that are disabled
                             if (!appInfo.enabled) continue
 
                             val packageName = packageInfo.packageName
 
-                            // never show Shizuku app(s) or this app itself
                             if (ShizukuPackageResolver.isShizukuPackage(this@MainActivity, packageName)) continue
                             if (packageName == selfPkg) continue
 
-                            // Check INTERNET permission from pre-fetched permissions array
                             val hasInternetPermission = packageInfo.requestedPermissions?.contains(Manifest.permission.INTERNET) == true
                             if (!hasInternetPermission) continue
 
@@ -1986,12 +1876,9 @@ class MainActivity : BaseActivity() {
                 activeFirewallPackages.addAll(currentActive)
             }
 
-            // If firewall is enabled but no packages are active (e.g. all uninstalled), disable it
-            // In Adaptive Mode, we allow firewall to stay ON even with 0 active packages
             if (isFirewallEnabled && !isFirewallProcessRunning && activeFirewallPackages.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                 isFirewallEnabled = false
                 saveFirewallEnabled(false)
-                // Update UI to reflect disabled state
                 suppressToggleListener = true
                 firewallToggle.isChecked = false
                 suppressToggleListener = false
@@ -2004,7 +1891,6 @@ class MainActivity : BaseActivity() {
                 }
             }
 
-            // Only update if the list has changed to prevent UI sliding/glitches on resume
             if (appList != builtList) {
                 appList.clear()
                 appList.addAll(builtList)
@@ -2328,10 +2214,8 @@ class MainActivity : BaseActivity() {
     }
 
     private fun saveFirewallEnabled(enabled: Boolean) {
-        // store a boot-relative timestamp when enabling so we can detect reboots
         val elapsed = if (enabled) SystemClock.elapsedRealtime() else -1L
 
-        // Regular (credential-protected) prefs
         sharedPreferences.edit().apply {
             putBoolean(KEY_FIREWALL_ENABLED, enabled)
             if (enabled) putLong(KEY_FIREWALL_SAVED_ELAPSED, elapsed) else remove(KEY_FIREWALL_SAVED_ELAPSED)
@@ -2339,7 +2223,6 @@ class MainActivity : BaseActivity() {
             apply()
         }
 
-        // Also persist into device-protected storage so a direct-boot receiver can read it after reboot.
         try {
             val dpCtx = createDeviceProtectedStorageContext()
             val dpPrefs = dpCtx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -2350,10 +2233,8 @@ class MainActivity : BaseActivity() {
                 apply()
             }
         } catch (e: Exception) {
-            // ignore device-protected write failures
         }
 
-        // Notify widget to update
         val intent = Intent(this, FirewallWidgetProvider::class.java)
         intent.action = ACTION_FIREWALL_STATE_CHANGED
         sendBroadcast(intent)
@@ -2367,7 +2248,6 @@ class MainActivity : BaseActivity() {
 
         val savedElapsed = sharedPreferences.getLong(KEY_FIREWALL_SAVED_ELAPSED, -1L)
         if (savedElapsed == -1L) {
-            // no timestamp — treat as disabled and clean up
             sharedPreferences.edit().remove(KEY_FIREWALL_ENABLED).apply()
             return false
         }
@@ -2424,13 +2304,10 @@ class MainActivity : BaseActivity() {
             }
             
             try {
-                // perform package existence checks and run enable/disable on IO thread
                 val (installed, missing) = withContext(Dispatchers.IO) {
                     filterInstalledPackages(effectivePackageNames)
                 }
 
-                // If enabling and none of the chosen packages remain installed -> abort
-                // In Adaptive Mode, allow enabling with empty list
                 if (enable && installed.isEmpty() && !firewallMode.allowsDynamicSelection()) {
                     Toast.makeText(this@MainActivity, getString(R.string.none_selected_apps_installed), Toast.LENGTH_SHORT).show()
                     suppressToggleListener = true
@@ -2441,7 +2318,6 @@ class MainActivity : BaseActivity() {
                     return@launch
                 }
 
-                // Inform about ignored (missing) packages when appropriate
                 if (missing.isNotEmpty()) {
                     Toast.makeText(this@MainActivity, getString(R.string.selected_apps_not_installed, missing.size), Toast.LENGTH_SHORT).show()
                 }
@@ -2454,7 +2330,6 @@ class MainActivity : BaseActivity() {
                     }
                 }
 
-                // Handle successes
                 if (enable) {
                     if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                         isFirewallEnabled = true
@@ -2463,12 +2338,10 @@ class MainActivity : BaseActivity() {
                         saveActivePackages(activeFirewallPackages)
                         saveFirewallEnabled(true)
                         
-                        // Start foreground detection for modes that require it
                         if (firewallMode.requiresForegroundDetection()) {
                             ForegroundDetectionService.start(this@MainActivity)
                         }
                         
-                        // Ensure toggle stays ON
                         suppressToggleListener = true
                         firewallToggle.isChecked = true
                         suppressToggleListener = false
@@ -2479,7 +2352,6 @@ class MainActivity : BaseActivity() {
                         
 
                 } else {
-                    // None succeeded, revert toggle
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
@@ -2492,13 +2364,10 @@ class MainActivity : BaseActivity() {
                     saveActivePackages(activeFirewallPackages)
                 }
 
-                // If we successfully unblocked apps OR there were no apps to unblock (e.g. Adaptive Mode empty, or all uninstalled)
-                // We consider it disabled because disableFirewall() disables the global chain.
                     if (successful.isNotEmpty() || installed.isEmpty()) {
                     isFirewallEnabled = false
                     profileEnableActive = false
                     saveFirewallEnabled(false)
-                    // Ensure toggle stays OFF
                     suppressToggleListener = true
                     firewallToggle.isChecked = false
                     suppressToggleListener = false
@@ -2515,18 +2384,15 @@ class MainActivity : BaseActivity() {
 
             val showedLadbRecoveryDialog = enable && maybeShowLadbDaemonRecoveryDialog(failed, lastOperationErrorDetails)
 
-            // Handle failures: unselect failed apps and show error dialog
             if (failed.isNotEmpty()) {
                 val skipErrorDialog = sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)
                 val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
                 
-                // Only unselect if user hasn't opted to keep them selected
                 if (!(skipErrorDialog && keepErrorAppsSelected)) {
                     for (pkg in failed) {
                         val idx = appList.indexOfFirst { it.key == pkg }
                         if (idx != -1) {
                             if (firewallMode == FirewallMode.WHITELIST) {
-                                // For whitelist mode: If we failed to block/unblock during enable/disable, invert.
                                 appList[idx] = appList[idx].copy(isSelected = !appList[idx].isSelected)
                             } else {
                                 appList[idx] = appList[idx].copy(isSelected = false)
@@ -2566,7 +2432,6 @@ class MainActivity : BaseActivity() {
         val pm = packageManager
         val secondaryKeys = MultiUserApps.cachedSnapshot(this).apps.mapTo(HashSet()) { it.key }
         for (pkg in packageNames) {
-            // Treat Shizuku packages as "missing" / never-operable
             if (ShizukuPackageResolver.isShizukuPackage(this, AppKey.packageOf(pkg))) {
                 missing.add(pkg)
                 continue
@@ -2582,7 +2447,6 @@ class MainActivity : BaseActivity() {
             } catch (e: PackageManager.NameNotFoundException) {
                 missing.add(pkg)
             } catch (e: Exception) {
-                // defensively treat errors as missing
                 missing.add(pkg)
             }
         }
@@ -2676,7 +2540,6 @@ class MainActivity : BaseActivity() {
         else ShellExecutorProvider.forContext(this).execBatch(commands)
     }
 
-    // Keep list interactivity and dim state consistent with current firewall mode/state.
     private fun applyListInteractionState() {
         val dimmed = listDimmed
         recyclerView.alpha = if (dimmed) 0.5f else 1f
@@ -2687,7 +2550,6 @@ class MainActivity : BaseActivity() {
         updateInteractiveViews()
     }
 
-    // Called by packageBroadcastReceiver when a package is removed.
     private fun handlePackageRemoved(pkg: String) {
         runOnUiThread {
             var changed = false
@@ -2700,7 +2562,6 @@ class MainActivity : BaseActivity() {
                 }
             }
             if (changed) {
-                // update filtered list and UI
                 filteredAppList.removeAll { it.userId == 0 && it.packageName == pkg }
 
                 val keepSelection = sharedPreferences.getBoolean(KEY_REMEMBER_DISABLED_APPS, true)
@@ -2737,7 +2598,6 @@ class MainActivity : BaseActivity() {
         false
     }
 
-    // Called by packageBroadcastReceiver when a package is added/updated.
     private fun handlePackageAdded(pkg: String) {
         lifecycleScope.launch {
             val maybeApp = withContext(Dispatchers.IO) {
@@ -2759,10 +2619,8 @@ class MainActivity : BaseActivity() {
                 }
             }
             maybeApp?.let { appInfo ->
-                // skip Shizuku packages entirely
                 if (ShizukuPackageResolver.isShizukuPackage(this@MainActivity, appInfo.packageName)) return@let
 
-                // Avoid duplicates (in case it was already present)
                 if (appList.any { it.key == appInfo.key }) return@let
                 appList.add(appInfo)
                 sortAndFilterApps(preserveScrollPosition = false)
@@ -2772,7 +2630,6 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateCategoryChips() {
-        // guard: views may not be initialized in some lifecycle flows
         val categoryGroup = findViewById<ChipGroup?>(R.id.categoryChipGroup) ?: return
         val chipSystem = findViewById<Chip?>(R.id.chip_system)
         val chipUser = findViewById<Chip?>(R.id.chip_user)
@@ -2786,7 +2643,6 @@ class MainActivity : BaseActivity() {
 
         syncProfileChips(categoryGroup)
 
-        // if we hid the system/user chip and it was selected, clear the selection (do NOT switch to a removed default)
         if (!showSystemApps && (categoryGroup.checkedChipId == R.id.chip_system || categoryGroup.checkedChipId == R.id.chip_user)) {
             categoryGroup.clearCheck()
             currentCategory = Category.NONE
@@ -2852,7 +2708,6 @@ class MainActivity : BaseActivity() {
         val failedApps = appList.filter { it.key in failedPackages }
         if (failedApps.isEmpty()) return
 
-        // Check if user opted to skip error dialogs
         if (sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)) {
             Toast.makeText(this, getString(R.string.operation_failed_for_apps, failedApps.size), Toast.LENGTH_SHORT).show()
             return
@@ -2864,7 +2719,6 @@ class MainActivity : BaseActivity() {
             .setCancelable(true)
             .setPositiveButton(getString(R.string.ok), null)
 
-        // show details button only if we have any details for the failed packages
         val hasDetails = failedPackages.any { errorDetails[it]?.isNotEmpty() == true } ||
             errorDetails.containsKey("_chain3") ||
             errorDetails.containsKey("_daemon_log")
@@ -2882,7 +2736,6 @@ class MainActivity : BaseActivity() {
 
         dialogMessage.text = getString(R.string.operation_failed_message, failedApps.size)
 
-        // If any error detail indicates the chain3 command is missing, append a short hint
         val chain3Msg = errorDetails["_chain3"] ?: errorDetails.values.firstOrNull { it.contains("no command found set chain 3", ignoreCase = true) }
         if (chain3Msg != null) {
             dialogMessage.append("\n\n${getString(R.string.android11_unsupported_hint)}")
@@ -2895,10 +2748,9 @@ class MainActivity : BaseActivity() {
         selectedAppsRecyclerView.layoutManager = LinearLayoutManager(this)
         selectedAppsRecyclerView.adapter = SelectedAppsAdapter(failedApps)
 
-        // Limit the RecyclerView height to a fraction of the screen
         val displayMetrics = resources.displayMetrics
         val displayHeight = displayMetrics.heightPixels
-        val maxRecyclerHeight = (displayHeight * 0.4).toInt() // 40% of screen height
+        val maxRecyclerHeight = (displayHeight * 0.4).toInt()
         
         val estimatedItemHeight = (72 * displayMetrics.density).toInt()
         val estimatedContentHeight = estimatedItemHeight * failedApps.size
@@ -3081,7 +2933,6 @@ class MainActivity : BaseActivity() {
         }
 
         btnClose.setOnClickListener { dialog.dismiss() }
-        // continue was removed — close handles dialog dismissal
 
         dialog.show()
     }
@@ -3139,8 +2990,6 @@ class MainActivity : BaseActivity() {
             if (sharedPreferences.getBoolean(KEY_AUTO_ENABLE_ON_PROFILE_ACTIVATE, false) &&
                 !isFirewallProcessRunning
             ) {
-                // Close the sheet so the confirm/permission dialogs are visible, then run the
-                // regular enable flow (it reads the selection we just wrote into appList).
                 profilesBottomSheet?.dismiss()
                 profileEnableRequested = true
                 firewallToggle.isChecked = true

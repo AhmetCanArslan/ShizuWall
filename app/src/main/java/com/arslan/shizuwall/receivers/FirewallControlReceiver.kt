@@ -26,15 +26,6 @@ import rikka.shizuku.Shizuku
 import com.arslan.shizuwall.firewall.FirewallCommands
 import com.arslan.shizuwall.firewall.FirewallTargets
 
-/**
- * Manifest-registered receiver for ACTION_FIREWALL_CONTROL.
- * - Extras:
- *   - MainActivity.EXTRA_FIREWALL_ENABLED (boolean)
- *   - MainActivity.EXTRA_PACKAGES_CSV (string, optional)
- *
- * Performs the same cmd connectivity operations via Shizuku and updates prefs,
- * then broadcasts ACTION_FIREWALL_STATE_CHANGED for UI refresh.
- */
 class FirewallControlReceiver : BroadcastReceiver() {
 
     companion object {
@@ -52,7 +43,6 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     return true
                 }
             } catch (_: Throwable) {
-                // Shizuku not ready yet
             }
             if (attempt < SHIZUKU_WAIT_MAX_ATTEMPTS) {
                 delay(SHIZUKU_WAIT_DELAY_MS)
@@ -81,12 +71,10 @@ class FirewallControlReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         
-        // Log received action to help debug ADB commands
         android.util.Log.d(TAG, "Received action: ${intent.action}")
         
         if (intent.action != MainActivity.ACTION_FIREWALL_CONTROL) return
 
-        // Use goAsync pattern via coroutine to avoid blocking receiver thread.
         val pending = goAsync()
         val enabled = intent.getBooleanExtra(MainActivity.EXTRA_FIREWALL_ENABLED, false)
         val csv = intent.getStringExtra(MainActivity.EXTRA_PACKAGES_CSV)
@@ -94,13 +82,10 @@ class FirewallControlReceiver : BroadcastReceiver() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Read SharedPreferences inside IO coroutine to ensure proper initialization
-                // when app process is started by this broadcast
                 val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
                 val mode = prefs.getString(MainActivity.KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
                 val firewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
 
-                // Resolve package list: CSV -> saved selected apps
                 val rawPackages = if (!csv.isNullOrBlank()) {
                     csv.split(",").map { it.trim() }.filter { it.isNotEmpty() }
                 } else {
@@ -113,10 +98,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     }
                 }
 
-                // In Whitelist mode, also resolve the apps that should be explicitly allowed (whitelisted)
                 val whitelistAllowApps = if (enabled && !csv.isNullOrBlank() && firewallMode == FirewallMode.WHITELIST) {
-                    // Single-package operation in Whitelist mode: this is an unblock action
-                    // handled by the enabled=false path; no need to allow any apps here.
                     emptyList()
                 } else if (enabled && csv.isNullOrBlank() && firewallMode == FirewallMode.WHITELIST) {
                     val saved = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toList() ?: emptyList()
@@ -126,7 +108,6 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     emptyList()
                 }
 
-                // filter out any Shizuku packages and this app itself from incoming list
                 val requestedPackages = rawPackages.filterNot { ShizukuPackageResolver.isShizukuPackage(context, it) || it == context.packageName }
                 val packages = if (enabled) {
                     FirewallTargets.effectiveBlockList(
@@ -205,7 +186,6 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 var hadCommandFailure = false
 
                 if (enabled) {
-                    // enable chain3
                     val chainEnableResult = execShell(FirewallCommands.CHAIN3_ENABLE)
                     globalCommandSuccess = chainEnableResult.success
                     if (!chainEnableResult.success && mode == "LADB") {
@@ -229,7 +209,6 @@ class FirewallControlReceiver : BroadcastReceiver() {
                                 hadCommandFailure = true
                             }
                         }
-                        // In Whitelist mode, explicitly allow whitelisted apps to ensure they have internet access
                         val allowResults = execShellBatch(
                             FirewallCommands.unblockAll(whitelistAllowApps)
                         )
@@ -268,15 +247,11 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     }
                 }
 
-                // Persist state to shared prefs (same keys MainActivity uses)
-                // val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
                 prefs.edit().apply {
                     if (enabled && globalCommandSuccess && (successful.isNotEmpty() || firewallMode.allowsDynamicSelection())) {
                         putBoolean(MainActivity.KEY_FIREWALL_ENABLED, true)
                         putLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, SystemClock.elapsedRealtime())
                         
-                        // When blocking individual apps (CSV provided), merge with existing active packages.
-                        // When bulk-enabling firewall (no CSV), replace the entire set.
                         if (!csv.isNullOrBlank()) {
                             val currentActive = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
                             currentActive.addAll(successful)
@@ -285,8 +260,6 @@ class FirewallControlReceiver : BroadcastReceiver() {
                             putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, successful.toSet())
                         }
                         
-                        // In Adaptive Mode, sync the selected apps list with what was just enabled.
-                        // In Whitelist Mode, blocked apps should NOT be added to the selected (whitelist) list.
                         if (firewallMode.allowsDynamicSelection() && successful.isNotEmpty() && firewallMode != FirewallMode.WHITELIST) {
                             val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
                             currentSelected.addAll(successful)
@@ -294,7 +267,6 @@ class FirewallControlReceiver : BroadcastReceiver() {
                             putInt(MainActivity.KEY_SELECTED_COUNT, currentSelected.size)
                         }
                         
-                        // Start floating button if enabled
                         if (prefs.getBoolean(com.arslan.shizuwall.services.FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
                             com.arslan.shizuwall.services.FloatingButtonService.start(context)
                         }
@@ -309,7 +281,6 @@ class FirewallControlReceiver : BroadcastReceiver() {
                                     putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                                 }
                             } else {
-                                // Global disable failed, show error but don't update state
                                 if (!automationEvent) {
                                     withContext(Dispatchers.Main) {
                                         Toast.makeText(context, context.getString(R.string.failed_to_disable_firewall), Toast.LENGTH_SHORT).show()
@@ -317,14 +288,10 @@ class FirewallControlReceiver : BroadcastReceiver() {
                                 }
                             }
                         } else {
-                            // Partial disable (unblock specific apps), firewall stays ON
                             val currentActive = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toMutableSet() ?: mutableSetOf()
                             currentActive.removeAll(successful)
                             putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, currentActive)
 
-                            // In Whitelist Mode, unblocking an app means adding it to the whitelist (selected list).
-                            // In other dynamic modes, unblocking means removing from the selected list.
-                            // Screen Lock Mode and Hybrid Mode preserve selected apps across unlock events.
                             if (firewallMode == FirewallMode.WHITELIST) {
                                 val currentSelected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
                                 currentSelected.addAll(successful)
@@ -355,7 +322,6 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     }
                 }
 
-                // Notify widget to update
                 val updateIntent = Intent(context, FirewallWidgetProvider::class.java)
                 updateIntent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
                 context.sendBroadcast(updateIntent)

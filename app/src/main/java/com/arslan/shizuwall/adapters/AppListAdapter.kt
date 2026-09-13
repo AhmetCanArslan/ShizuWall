@@ -46,7 +46,6 @@ class AppListAdapter(
     private val onAppIconClick: (AppInfo) -> Unit = {}
 ) : ListAdapter<AppInfo, AppListAdapter.AppViewHolder>(AppInfoDiffCallback()) {
 
-    // Cache icons to avoid reloading. Max size 1/8th of available memory.
     private val iconCache = object : LruCache<String, Bitmap>(
         (Runtime.getRuntime().maxMemory() / 1024 / 8).toInt()
     ) {
@@ -55,7 +54,6 @@ class AppListAdapter(
         }
     }
 
-    // controls whether user can change selection
     private var selectionEnabled: Boolean = true
 
     fun setSelectionEnabled(enabled: Boolean) {
@@ -105,12 +103,11 @@ class AppListAdapter(
         private var boundKey: String? = null
         private var boundFavorite: Boolean? = null
 
-
         fun bind(appInfo: AppInfo) {
             val pkg = appInfo.packageName
             val iconKey = appInfo.key
             appIcon.tag = iconKey
-            appIcon.setImageDrawable(null) // Clear previous
+            appIcon.setImageDrawable(null)
 
             val cached = iconCache.get(iconKey)
             if (cached != null) {
@@ -130,7 +127,6 @@ class AppListAdapter(
                             }
                         }
                     } catch (_: Exception) {
-                        // ignore
                     }
                 }
             }
@@ -168,7 +164,6 @@ class AppListAdapter(
                 modeDropdownText.visibility = View.GONE
             }
 
-            // Set icon based on selection state
             val iconRes = if (appInfo.isSelected) R.drawable.check_circle_24dp else R.drawable.circle_24dp
             appSwitch.setImageResource(iconRes)
             val tintColor = if (appInfo.isSelected) {

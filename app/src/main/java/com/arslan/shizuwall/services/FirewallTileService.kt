@@ -24,14 +24,12 @@ class FirewallTileService : TileService() {
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Main + job)
 
-    // SharedPreferences listener to update tile whenever relevant prefs change
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == MainActivity.KEY_FIREWALL_ENABLED ||
             key == MainActivity.KEY_ACTIVE_PACKAGES ||
             key == MainActivity.KEY_FIREWALL_SAVED_ELAPSED ||
             key == MainActivity.KEY_FIREWALL_MODE
         ) {
-            // update UI to reflect new saved state
             updateTile()
         }
     }
@@ -44,11 +42,9 @@ class FirewallTileService : TileService() {
     override fun onStartListening() {
         super.onStartListening()
         updateTile()
-        // register prefs listener so tile updates without broadcasts
         try {
             sharedPreferences.registerOnSharedPreferenceChangeListener(prefsListener)
         } catch (e: Exception) {
-            // ignore
         }
     }
 
@@ -57,9 +53,7 @@ class FirewallTileService : TileService() {
         try {
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(prefsListener)
         } catch (e: IllegalArgumentException) {
-            // not registered
         } catch (e: Exception) {
-            // ignore
         }
     }
 
@@ -67,13 +61,11 @@ class FirewallTileService : TileService() {
         super.onClick()
         val isEnabled = loadFirewallEnabled()
         if (isEnabled) {
-            // Disable firewall
             if (!checkBackendReady()) return
             scope.launch {
                 applyDisableFirewall()
             }
         } else {
-            // Enable firewall
             val selectedApps = loadSelectedApps()
             val firewallMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
             
@@ -128,7 +120,6 @@ class FirewallTileService : TileService() {
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
 
-        // For tracking modes, start the foreground detection service
         if (firewallMode.requiresForegroundDetection()) {
             ForegroundDetectionService.start(this@FirewallTileService)
         }
@@ -161,7 +152,6 @@ class FirewallTileService : TileService() {
                 saveFirewallEnabled(false)
                 saveActivePackages(emptySet())
             } else {
-                // Show error if disable failed
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@FirewallTileService, getString(R.string.failed_to_disable_firewall), Toast.LENGTH_SHORT).show()
                 }
@@ -220,7 +210,6 @@ class FirewallTileService : TileService() {
             }
         }
 
-        // never target the app itself or Shizuku
         val unblockTargets = toUnblock.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
         val unblockResults = ShellExecutorBlocking.execBatchBlocking(
             this,

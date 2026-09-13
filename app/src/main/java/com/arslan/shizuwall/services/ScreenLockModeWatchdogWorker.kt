@@ -14,7 +14,6 @@ class ScreenLockModeWatchdogWorker(
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
-        // Reconcile desired state and recover the monitor service if it was killed.
         ScreenLockMonitorService.sync(applicationContext)
         return Result.success()
     }

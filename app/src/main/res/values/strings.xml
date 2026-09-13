@@ -35,7 +35,6 @@
     <string name="export_failed">Export failed: %s</string>
     <string name="import_successful">Import successful. Please restart the app.</string>
     <string name="import_failed">Import failed: %s</string>
-    <!-- Exit confirmation -->
     <string name="exit_confirm_message">Press back again to exit</string>
     <string name="reset_app_title">Reset App</string>
     <string name="reset_app_message">Are you sure you want to reset the app? This will disable the firewall (if active), clear all data, and close the app.</string>
@@ -305,7 +304,6 @@
     <string name="log_logs_cleared">Logs cleared</string>
     <string name="log_logs_copied">Logs copied to clipboard</string>
     
-    <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">Firewall Mode</string>
     <string name="firewall_mode_default">Default</string>
     <string name="firewall_mode_default_description">Traditional firewall - block selected apps</string>
@@ -323,7 +321,6 @@
     <string name="firewall_mode_focus_tracker_description">Enable firewall when ShizuWall is unfocused, and disable when focused.</string>
     <string name="firewall_mode_change_disabled">Cannot change firewall mode while firewall is enabled. Please disable the firewall first.</string>
 
-    <!-- Firewall Mode detailed explanations -->
     <string name="firewall_mode_details_button">How do these modes work?</string>
     <string name="firewall_mode_details_title">How firewall modes work</string>
     <string name="firewall_mode_default_details">You tick the apps you want blocked, then turn the firewall on. Only those apps lose network access; everything else stays online. Changes to the selection take effect the next time you turn the firewall off and on again.</string>
@@ -354,7 +351,6 @@
     <string name="select_font">Select Font</string>
     <string name="apply">Apply</string>
 
-
     <string name="screen_lock_delay_title">Lock Delay</string>
     <string name="screen_lock_delay_value">Enable after %1$d seconds of lock</string>
     <string name="screen_lock_delay_dialog_title">Screen Lock Delay</string>
@@ -362,7 +358,6 @@
     <string name="screen_lock_mode_notification_channel_description">Background service for screen lock automation</string>
     <string name="screen_lock_mode_notification_title">Screen Lock Mode</string>
 
-    <!-- Floating Firewall Button -->
     <string name="floating_button">Floating Firewall Button</string>
     <string name="floating_button_description">Show a draggable overlay button to toggle firewall from anywhere</string>
     <string name="floating_button_notification_channel_name">Floating Button (Service)</string>
@@ -373,7 +368,6 @@
     <string name="floating_button_content_description">Toggle firewall</string>
     <string name="overlay_permission_required">Overlay permission is required for the floating button</string>
 
-    <!-- Floating Button Personalization -->
     <string name="floating_settings_title">Floating Button</string>
     <string name="floating_settings_content_description">Personalize floating button</string>
     <string name="floating_idle_opacity">Idle transparency</string>
@@ -390,9 +384,6 @@
     <string name="floating_disable_dim">Don\'t dim</string>
     <string name="floating_disable_dim_desc">Keep the button fully visible and never fade or tuck it when idle</string>
 
-
-
-    <!-- Profiles -->
     <string name="profiles">Profiles</string>
     <string name="profiles_subtitle">Switch firewall contexts in one tap</string>
     <string name="profile_auto_enable_firewall">Turn on firewall when activating a profile</string>
@@ -440,8 +431,6 @@
     <string name="profile_automation_desc">Switch to this profile from a macro app (Tasker, MacroDroid, Automate) or adb. In the macro app, add a \"Send Broadcast\" action targeting the receiver below. Tap any value to copy it.</string>
     <string name="profile_automation_adb_label">ADB command</string>
 
-
-    <!-- App info dialog / tracker detection -->
     <string name="app_info_icon_content_description">Details for %1$s</string>
     <string name="app_info_version">Version %1$s</string>
     <string name="app_info_installed">Installed %1$s</string>

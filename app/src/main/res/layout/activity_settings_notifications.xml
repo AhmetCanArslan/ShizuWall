@@ -27,7 +27,6 @@
             android:paddingTop="8dp"
             android:paddingBottom="32dp">
 
-            <!-- App Monitor Service -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -109,7 +108,6 @@
                     android:textColor="?android:attr/textColorSecondary" />
             </LinearLayout>
 
-            <!-- Auto-firewall New Apps -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -191,7 +189,6 @@
                     android:textColor="?android:attr/textColorSecondary" />
             </LinearLayout>
 
-            <!-- Firewall Status Notification -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -247,7 +244,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Floating Firewall Button -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -27,7 +27,6 @@
             android:paddingTop="8dp"
             android:paddingBottom="32dp">
 
-            <!-- Appearance -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -87,7 +86,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Firewall behavior -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -147,7 +145,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Backend & working mode -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -207,7 +204,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Notifications & floating button -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -266,7 +262,6 @@
                         android:contentDescription="@null" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-            <!-- Security -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -326,7 +321,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Tracker definitions -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardTrackerDefinitions"
                 android:layout_width="match_parent"
@@ -399,7 +393,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Donate -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -452,7 +445,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- GitHub -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -505,7 +497,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- What's new -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -558,7 +549,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Contact developer -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -611,7 +601,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Made By -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -622,7 +611,6 @@
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp" />
 
-            <!-- Version -->
             <TextView
                 android:id="@+id/tvVersion"
                 android:layout_width="match_parent"

@@ -35,7 +35,6 @@
     <string name="export_failed">Export selhal: %s</string>
     <string name="import_successful">Import byl úspěšný. Prosím restarujte aplikaci.</string>
     <string name="import_failed">Import selhal: %s</string>
-    <!-- Exit confirmation -->
     <string name="exit_confirm_message">Zmáčkněte tlačítko zpět pro zavření</string>
     <string name="reset_app_title">Resetovat aplikaci</string>
     <string name="reset_app_message">Opravdu chcete aplikaci resetovat? Tím se deaktivuje brána firewall (pokud je aktivní), vymažou se všechna data a aplikace se zavře.</string>
@@ -301,7 +300,6 @@
     <string name="log_logs_cleared">Logy vymazány</string>
     <string name="log_logs_copied">Logy zkopírovány do schránky</string>
     
-    <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">Firewall režim</string>
     <string name="firewall_mode_default">Základní</string>
     <string name="firewall_mode_default_description">Tradiční firewall – blokování vybraných aplikací</string>
@@ -319,7 +317,6 @@
     <string name="firewall_mode_focus_tracker_description">Zapnout bránu firewall, když není ShizuWall aktivní, a vypnout ji, když je aktivní.</string>
     <string name="firewall_mode_change_disabled">Nelze změnit režim brány firewall, když je brána firewall aktivní. Nejprve ji deaktivujte.</string>
 
-    <!-- Firewall Mode detailed explanations -->
     <string name="firewall_mode_details_button">Jak tyto režimy fungují?</string>
     <string name="firewall_mode_details_title">Jak fungují režimy brány firewall</string>
     <string name="firewall_mode_default_details">Zaškrtnete aplikace, které chcete blokovat, a zapnete bránu firewall. Připojení ztratí pouze tyto aplikace, ostatní zůstanou online. Změny výběru se projeví, až bránu firewall vypnete a znovu zapnete.</string>
@@ -350,8 +347,6 @@
     <string name="select_font">Vybrat písmo</string>
     <string name="apply">Aplikovat</string>
 
-
-        <!-- Floating Firewall Button -->
     <string name="floating_button">Plovoucí tlačítko firewallu</string>
     <string name="floating_button_description">Zobrazit přetahovatelné překryvné tlačítko pro přepínání firewallu odkudkoli</string>
     <string name="floating_button_notification_channel_name">Plovoucí tlačítko (Služba)</string>
@@ -372,9 +367,6 @@
     <string name="screen_lock_mode_notification_title">Režim uzamčení obrazovky</string>
     <string name="notification_permission_background_request">Udělte prosím oprávnění k běhu na pozadí.</string>
 
-    <!-- Auto-added missing translations (English fallback) -->
-
-    <!-- Floating Button Personalization -->
     <string name="floating_settings_title">Floating Button</string>
     <string name="floating_settings_content_description">Personalize floating button</string>
     <string name="floating_idle_opacity">Idle transparency</string>
@@ -390,7 +382,6 @@
     <string name="floating_seconds_format">%1$d s</string>
     <string name="floating_disable_dim">Nezeslabovat</string>
     <string name="floating_disable_dim_desc">Udržet tlačítko plně viditelné a nikdy je nezeslabovat ani nezasouvat, když je nečinné</string>
-        <!-- Profiles -->
     <string name="profiles">Profily</string>
     <string name="profiles_subtitle">Přepínejte kontexty firewallu jedním klepnutím</string>
     <string name="profile_auto_enable_firewall">Zapnout firewall při aktivaci profilu</string>
@@ -440,8 +431,6 @@
     <string name="profile_automation_desc">Přepněte na tento profil z makro aplikace (Tasker, MacroDroid, Automate) nebo adb. V makro aplikaci přidejte akci „Odeslat vysílání" cílenou na níže uvedený receiver. Klepnutím na hodnotu ji zkopírujete.</string>
     <string name="profile_automation_adb_label">Příkaz ADB</string>
 
-
-    <!-- App info dialog / tracker detection -->
     <string name="app_info_icon_content_description">Podrobnosti o %1$s</string>
     <string name="app_info_version">Verze %1$s</string>
     <string name="app_info_installed">Nainstalováno %1$s</string>

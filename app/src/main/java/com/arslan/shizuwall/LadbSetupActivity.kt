@@ -67,7 +67,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     private var adbCommand: String? = null
     private lateinit var advancedSetupContainer: LinearLayout
 
-    // Daemon UI
     private lateinit var daemonStatusIndicator: View
     private lateinit var daemonStatusIndicatorSimple: View
     private lateinit var tvDaemonStatus: TextView
@@ -78,7 +77,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     private lateinit var btnStartDaemon: MaterialButton
     private lateinit var btnKillDaemon: MaterialButton
 
-    // Manual host/port UI
     private lateinit var etManualHost: com.google.android.material.textfield.TextInputEditText
     private lateinit var etManualPort: com.google.android.material.textfield.TextInputEditText
     private lateinit var btnCheckAndConnect: MaterialButton
@@ -103,7 +101,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             val savedPairingPort = ladbManager.getSavedPairingPort()
             val savedConnectPort = ladbManager.getSavedConnectPort()
 
-            // Determine effective status based on both current state and saved configurations
             val effectiveState = when {
                 state == LadbManager.State.CONNECTED -> LadbManager.State.CONNECTED
                 state == LadbManager.State.ERROR -> LadbManager.State.ERROR
@@ -154,10 +151,8 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 btnPairSimple.text = getString(R.string.pair)
             }
 
-            // Simple pair button is only disabled when daemon is running
             applyButtonEnabledState(btnPairSimple, !isDaemonRunning)
 
-            // Update Daemon UI
             if (isDaemonRunning) {
                 daemonStatusIndicator.setBackgroundColor(Color.GREEN)
                 daemonStatusIndicatorSimple.setBackgroundColor(Color.GREEN)
@@ -189,7 +184,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             val currentLogs = tvLadbLogs.text.toString()
             val newLogs = currentLogs + logEntry
             
-            // Keep only the last 1000 lines to prevent memory issues
             val lines = newLogs.split("\n")
             val trimmedLogs = if (lines.size > 1000) {
                 lines.takeLast(1000).joinToString("\n") + "\n"
@@ -199,10 +193,8 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             
             tvLadbLogs.text = trimmedLogs
             
-            // Save logs to persistent storage
             saveLogs(trimmedLogs)
             
-            // Auto-scroll to bottom
             val scrollView = tvLadbLogs.parent as? NestedScrollView
             scrollView?.post {
                 scrollView.fullScroll(View.FOCUS_DOWN)
@@ -226,21 +218,18 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     }
 
     private fun animateLogsContainer(show: Boolean) {
-        // Cancel any ongoing animation
         logsContainer.animate().cancel()
 
         if (show) {
-            // Fade in animation
             logsContainer.visibility = View.VISIBLE
             logsContainer.alpha = 0f
             logsContainer.animate()
                 .alpha(1f)
                 .setDuration(300)
                 .setInterpolator(android.view.animation.DecelerateInterpolator())
-                .setListener(null) // Remove any previous listener
+                .setListener(null)
                 .start()
         } else {
-            // Fade out animation
             logsContainer.animate()
                 .alpha(0f)
                 .setDuration(300)
@@ -248,12 +237,11 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 .setListener(object : android.animation.Animator.AnimatorListener {
                     override fun onAnimationStart(animation: android.animation.Animator) {}
                     override fun onAnimationEnd(animation: android.animation.Animator) {
-                        if (!getLoggingEnabled()) { // Double-check the state
+                        if (!getLoggingEnabled()) {
                             logsContainer.visibility = View.GONE
                         }
                     }
                     override fun onAnimationCancel(animation: android.animation.Animator) {
-                        // If animation is cancelled and logging is disabled, hide immediately
                         if (!getLoggingEnabled()) {
                             logsContainer.visibility = View.GONE
                             logsContainer.alpha = 0f
@@ -316,7 +304,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                     mPermissionCallback = onPermissionGranted
                     requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1001)
                 } else {
-                    // For older versions, open app settings
                     val intent = Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
                         putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName)
                     }
@@ -342,12 +329,10 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             .setMessage(R.string.enter_pairing_code_hint)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.open_developer_settings) { _, _ ->
-                // Open developer settings
                 val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
                 
-                // After opening settings, proceed with pairing (will show "Waiting..." snackbar)
                 proceedWithPairing()
             }
             .show()
@@ -382,14 +367,11 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             toolbar?.setTitleTextColor(onSurfaceColor)
             toolbar?.navigationIcon?.setTint(onSurfaceColor)
         } catch (_: Exception) {
-            // ignore
         }
 
-        // Respect system bars (status/navigation) similar to SettingsActivity
         rootView = findViewById<android.view.View>(R.id.ladbSetupRoot) ?: return
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            // Apply top margin to toolbar to account for status bar
             try {
                 toolbar?.let {
                     val toolbarParams = it.layoutParams as ViewGroup.MarginLayoutParams
@@ -397,13 +379,11 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                     it.layoutParams = toolbarParams
                 }
             } catch (e: Exception) {
-                // ignore
             }
             view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
             insets
         }
 
-        // Bind UI controls
         tvStatus = findViewById<TextView>(R.id.tvLadbStatus)
         btnPair = findViewById<MaterialButton>(R.id.btnPair)
         btnPairSimple = findViewById<MaterialButton>(R.id.btnPairSimple)
@@ -420,7 +400,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         logsContainer = findViewById<LinearLayout>(R.id.logsContainer)
         simpleSetupContainer = findViewById<LinearLayout>(R.id.simpleSetupContainer)
         advancedSetupContainer = findViewById<LinearLayout>(R.id.advancedSetupContainer)
-        // Daemon UI
         daemonStatusIndicator = findViewById(R.id.daemonStatusIndicator)
         daemonStatusIndicatorSimple = findViewById(R.id.daemonStatusIndicatorSimple)
         tvDaemonStatus = findViewById(R.id.tvDaemonStatus)
@@ -437,10 +416,8 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         btnCheckAndConnect.setOnClickListener { handleCheckAndConnect() }
 
         setupDaemonCommandsDropdown()
-        // Load logging preference
         switchEnableLogs.isChecked = getLoggingEnabled()
         
-        // Set initial state without animation
         logsContainer.visibility = if (getLoggingEnabled()) View.VISIBLE else View.GONE
 
         switchEnableLogs.setOnCheckedChangeListener { _, isChecked ->
@@ -451,7 +428,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             }
         }
 
-        // Advanced Mode Toggle
         val prefs = getSharedPreferences("ladb_settings", Context.MODE_PRIVATE)
         val isAdvanced = prefs.getBoolean("advanced_mode", false)
         switchAdvancedMode.isChecked = isAdvanced
@@ -464,7 +440,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             val outgoing = if (isChecked) simpleSetupContainer else advancedSetupContainer
             val incoming = if (isChecked) advancedSetupContainer else simpleSetupContainer
 
-            // Cancel any ongoing animations to prevent overlapping transitions
             simpleSetupContainer.animate().cancel()
             advancedSetupContainer.animate().cancel()
 
@@ -489,11 +464,9 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             switchAdvancedMode.isChecked = !switchAdvancedMode.isChecked
         }
 
-        // Load saved logs
         val savedLogs = loadLogs()
         if (savedLogs.isNotEmpty()) {
             tvLadbLogs.text = savedLogs
-            // Scroll to bottom when loading saved logs
             val scrollView = tvLadbLogs.parent as? NestedScrollView
             scrollView?.post {
                 scrollView.fullScroll(View.FOCUS_DOWN)
@@ -532,7 +505,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         ladbManager.getSavedHost()?.let { etManualHost.setText(it) }
         ladbManager.getSavedConnectPort().takeIf { it > 0 }?.let { etManualPort.setText(it.toString()) }
 
-        // Start daemon status check
         lifecycleScope.launch {
             while (true) {
                 val running = withContext(Dispatchers.IO) { daemonManager.isDaemonRunning() }
@@ -546,7 +518,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
         updateStatus()
 
-        // Auto-initialize components if paired to start port discovery immediately
         if (ladbManager.isPaired() && ladbManager.state != LadbManager.State.CONNECTED) {
             initializeConnectionComponents()
         }
@@ -567,17 +538,14 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             val isConnected = state == LadbManager.State.CONNECTED
 
             if (isConnected) {
-                // If connected but daemon not running, start daemon
                 if (!isDaemonRunning) {
                     lifecycleScope.launch {
                         performDaemonStart()
                     }
                 }
             } else if (isPaired) {
-                // If paired, skip to connection
                 performConnection()
             } else {
-                // Otherwise start pairing
                 handlePairingClick()
             }
         }
@@ -646,10 +614,8 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     }
 
     private fun handlePairingClick() {
-        // Initialize pairing components when pairing is requested
         initializePairingComponents()
         
-        // Clear stale pairing port for fresh pairing
         lifecycleScope.launch {
             ladbManager.clearPairingPort()
         }
@@ -662,7 +628,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 return
             }
         } else if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-            // For older Android versions, show denied dialog since we can't properly request permission
             showNotificationDeniedDialog()
             return
         }
@@ -671,7 +636,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     }
 
     private fun performConnection() {
-        // Initialize connection components when connecting is requested
         initializeConnectionComponents()
 
         appendLog(getString(R.string.log_starting_connection))
@@ -683,12 +647,10 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             var savedHost = ladbManager.getSavedHost()
             var savedConnectPort = ladbManager.getSavedConnectPort()
 
-            // If no connect config, wait a bit for auto-discovery to complete
             if ((savedHost.isNullOrBlank() || savedConnectPort <= 0)) {
                 appendLog(getString(R.string.log_no_connect_config))
-                // Wait up to 3 seconds for port discovery to complete
                 var waitCount = 0
-                while (waitCount < 30) { // 30 * 100ms = 3 seconds
+                while (waitCount < 30) {
                     delay(100)
                     savedHost = ladbManager.getSavedHost()
                     savedConnectPort = ladbManager.getSavedConnectPort()
@@ -700,7 +662,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 }
             }
 
-            // If still no config, try scanning detected ports
             if ((savedHost.isNullOrBlank() || savedConnectPort <= 0)) {
                 val host = savedHost ?: localIp
                 if (!host.isNullOrBlank()) {
@@ -744,7 +705,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 }
                 appendLog(getString(R.string.log_connection_failed, errorMessage))
                 
-                // Clear state so next attempt starts fresh discovery
                 withContext(Dispatchers.IO) {
                     ladbManager.clearConnectPort()
                 }
@@ -752,9 +712,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 showLadbErrorDialog(getString(R.string.ladb_error_title), errorMessage)
             } else {
                 appendLog(getString(R.string.log_connection_success))
-                // Automatically start daemon after connection (if not already running)
                 if (!isDaemonRunning) {
-                    // Delay to let connection stabilize
                     delay(2000)
                     performDaemonStart()
                 } else {
@@ -811,7 +769,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 tvManualConnectStatus.text = getString(R.string.manual_connect_success)
                 appendLog(getString(R.string.log_connection_success))
             } else if (ladbManager.state == LadbManager.State.PAIRED) {
-                // Reachable but our TLS key isn't trusted yet on this device/port.
                 tvManualConnectStatus.text = getString(R.string.manual_connect_needs_pairing)
             } else {
                 tvManualConnectStatus.text = getString(R.string.manual_connect_authorize_timeout)
@@ -824,13 +781,10 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
     override fun onResume() {
         super.onResume()
-        // Refresh status in case pairing happened via notification while we were away.
         tvStatus.post { 
             try {
                 updateStatus()
 
-                // After pairing completes, check if we have detected connect ports but no saved connect config
-                // This handles the race condition where connect port is detected before pairing finishes
                 val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 || ladbManager.isPaired()
                 val hasConnectConfig = ladbManager.getSavedConnectPort() > 0
                 
@@ -857,7 +811,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                     }
                 }
             } catch (_: Exception) {
-                // ignore
             }
         }
     }
@@ -873,7 +826,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         if (host == "unknown" || port <= 0 || port > 65535) return
 
         lifecycleScope.launch(Dispatchers.IO) {
-            ladbManager.clearConnectPort() // Clear old connect port when new pairing port is found
+            ladbManager.clearConnectPort()
             ladbManager.saveHost(host)
             val success = ladbManager.savePairingConfig(host, port)
             withContext(Dispatchers.Main) {
@@ -898,10 +851,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         }
     }
 
-    /**
-     * Suspend version of port scanning that returns the found port.
-     * Must be called from a coroutine.
-     */
     private suspend fun scanAndSaveConnectPort(host: String): Int {
         val ports = synchronized(detectedConnectPorts) {
             detectedConnectPorts.filter { it.first == host }.map { it.second }.sorted()
@@ -925,7 +874,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                     break
                 }
             } catch (e: Exception) {
-                // Port not open, continue
             }
         }
         if (realPort != -1) {
@@ -965,14 +913,12 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                         break
                     }
                 } catch (e: Exception) {
-                    // Port not open, continue
                 }
             }
             withContext(Dispatchers.Main) {
                 if (realPort != -1) {
                     appendLog("Real connect port found: $realPort")
                     lifecycleScope.launch {
-                        // Only save connect config if we have pairing config (device has been paired)
                         val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 || ladbManager.isPaired()
                         if (hasPairingConfig && ladbManager.getSavedHost() != null) {
                             val success = ladbManager.saveConnectConfig(host, realPort)
@@ -980,7 +926,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                                 appendLog("Connect config saved")
                                 updateStatus()
                                 
-                                // Auto-connect if we're not currently connected
                                 if (ladbManager.state != LadbManager.State.CONNECTED) {
                                     appendLog("Discovered port - attempting auto-connection...")
                                     performConnection()
@@ -1005,11 +950,9 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             btnStartDaemon.text = getString(R.string.daemon_installing)
             connectProgressSimple.visibility = View.VISIBLE
             
-            // Small delay to ensure connection is stable
             delay(500)
             
             val success = withContext(Dispatchers.IO) {
-                // Kill any existing daemon first
                 try {
                     val pidResult = daemonManager.executeCommand("cat /data/local/tmp/daemon.pid 2>/dev/null")
                     if (pidResult.isNotBlank()) {
@@ -1017,7 +960,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                         daemonManager.executeCommand("kill $pid 2>/dev/null || kill -9 $pid 2>/dev/null || true")
                     }
                 } catch (e: Exception) {
-                    // ignore
                 }
                 
                 daemonManager.installDaemon { progress ->
@@ -1086,7 +1028,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             val result = withContext(Dispatchers.IO) {
                 when (cmd) {
                     "ping" -> {
-                        // Health check - verify daemon is responding
                         try {
                             val response = daemonManager.executeCommand("ping")
                             if (response.trim() == "pong") {
@@ -1105,7 +1046,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             }
             appendLog("Daemon Result:\n$result")
 
-            // Update daemon status after ping or kill
             if (cmd == "ping") {
                 isDaemonRunning = result.contains("✓")
                 updateStatus()
@@ -1117,7 +1057,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     }
 
     private fun initializePairingComponents() {
-        // Initialize components needed for pairing
         if (localIp == null) {
             localIp = detectLocalIpv4OrNull()
         }
@@ -1131,7 +1070,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     }
 
     private fun initializeConnectionComponents() {
-        // Initialize components needed for connection
         if (localIp == null) {
             localIp = detectLocalIpv4OrNull()
         }
@@ -1171,7 +1109,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     }
 
     private fun showPairingCodeNotification() {
-        // Android 13+ requires notification permission.
         if (Build.VERSION.SDK_INT >= 33) {
             if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 Snackbar.make(rootView, getString(R.string.ladb_notification_permission_required), Snackbar.LENGTH_LONG).show()
@@ -1195,7 +1132,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             action = LadbPairingCodeReceiver.ACTION_LADB_PAIRING_CODE
         }
 
-        // RemoteInput requires a mutable PendingIntent on Android 12+.
         val actionFlags = PendingIntent.FLAG_UPDATE_CURRENT or
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
         val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, actionFlags)
@@ -1238,12 +1174,10 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1001) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, execute callback if available
                 Snackbar.make(rootView, R.string.notification_permission_granted, Snackbar.LENGTH_SHORT).show()
                 mPermissionCallback?.invoke()
                 mPermissionCallback = null
             } else {
-                // Permission denied
                 showNotificationDeniedDialog()
             }
         }
@@ -1263,13 +1197,11 @@ class AdbPortFinder(context: Context, private val listener: AdbPortListener) {
 
     private val nsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
 
-    // Service types
     private val PAIRING_SERVICE_TYPE = "_adb-tls-pairing._tcp"
     private val CONNECT_SERVICE_TYPE = "_adb-tls-connect._tcp"
     private val TAG = "AdbPortFinder"
 
     fun startDiscovery() {
-        // Ensure any previous discovery is stopped to avoid "listener already in use" error
         stopDiscovery()
         nsdManager.discoverServices(
             PAIRING_SERVICE_TYPE,
@@ -1287,12 +1219,10 @@ class AdbPortFinder(context: Context, private val listener: AdbPortListener) {
         try {
             nsdManager.stopServiceDiscovery(pairingDiscoveryListener)
         } catch (e: Exception) {
-            // Already stopped
         }
         try {
             nsdManager.stopServiceDiscovery(connectDiscoveryListener)
         } catch (e: Exception) {
-            // Already stopped
         }
     }
 
@@ -1300,7 +1230,6 @@ class AdbPortFinder(context: Context, private val listener: AdbPortListener) {
         override fun onDiscoveryStarted(regType: String) {
             Log.d(TAG, "Pairing service discovery started")
         }
-
 
         @Suppress("DEPRECATION")
         override fun onServiceFound(service: NsdServiceInfo) {
@@ -1341,7 +1270,6 @@ class AdbPortFinder(context: Context, private val listener: AdbPortListener) {
         override fun onDiscoveryStarted(regType: String) {
             Log.d(TAG, "Connect service discovery started")
         }
-
 
         @Suppress("DEPRECATION")
         override fun onServiceFound(service: NsdServiceInfo) {

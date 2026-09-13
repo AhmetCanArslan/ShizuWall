@@ -35,7 +35,6 @@
     <string name="export_failed">Esportazione non riuscita: %s</string>
     <string name="import_successful">Importazione riuscita. Riavvia l\'app.</string>
     <string name="import_failed">Importazione non riuscita: %s</string>
-    <!-- Exit confirmation -->
     <string name="exit_confirm_message">Premi di nuovo Indietro per uscire</string>
     <string name="reset_app_title">Reimposta app</string>
     <string name="reset_app_message">Vuoi davvero reimpostare l\'app? Il firewall verrà disattivato (se attivo), tutti i dati verranno cancellati e l\'app verrà chiusa.</string>
@@ -305,7 +304,6 @@
     <string name="log_logs_cleared">Registri cancellati</string>
     <string name="log_logs_copied">Registri copiati negli appunti</string>
 
-    <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">Modalità firewall</string>
     <string name="firewall_mode_default">Predefinita</string>
     <string name="firewall_mode_default_description">Firewall tradizionale: blocca le app selezionate</string>
@@ -323,7 +321,6 @@
     <string name="firewall_mode_focus_tracker_description">Attiva il firewall quando ShizuWall non è in primo piano e disattivalo quando lo è.</string>
     <string name="firewall_mode_change_disabled">Impossibile cambiare la modalità firewall mentre il firewall è attivo. Disattivalo prima.</string>
 
-    <!-- Firewall Mode detailed explanations -->
     <string name="firewall_mode_details_button">Come funzionano queste modalità?</string>
     <string name="firewall_mode_details_title">Come funzionano le modalità firewall</string>
     <string name="firewall_mode_default_details">Selezioni le app che vuoi bloccare, poi attivi il firewall. Solo quelle app perdono l\'accesso alla rete; tutte le altre restano online. Le modifiche alla selezione hanno effetto la volta successiva in cui disattivi e riattivi il firewall.</string>
@@ -354,7 +351,6 @@
     <string name="select_font">Seleziona carattere</string>
     <string name="apply">Applica</string>
 
-
     <string name="screen_lock_delay_title">Ritardo del blocco</string>
     <string name="screen_lock_delay_value">Attiva dopo %1$d secondi di blocco</string>
     <string name="screen_lock_delay_dialog_title">Ritardo del blocco schermo</string>
@@ -362,7 +358,6 @@
     <string name="screen_lock_mode_notification_channel_description">Servizio in background per l\'automazione del blocco schermo</string>
     <string name="screen_lock_mode_notification_title">Modalità blocco schermo</string>
 
-    <!-- Floating Firewall Button -->
     <string name="floating_button">Pulsante firewall flottante</string>
     <string name="floating_button_description">Mostra un pulsante trascinabile in sovrimpressione per attivare il firewall ovunque</string>
     <string name="floating_button_notification_channel_name">Pulsante flottante (servizio)</string>
@@ -372,7 +367,6 @@
     <string name="floating_button_content_description">Attiva/disattiva firewall</string>
     <string name="overlay_permission_required">L\'autorizzazione di sovrapposizione è necessaria per il pulsante flottante</string>
 
-    <!-- Floating Button Personalization -->
     <string name="floating_settings_title">Pulsante flottante</string>
     <string name="floating_settings_content_description">Personalizza il pulsante flottante</string>
     <string name="floating_idle_opacity">Trasparenza a riposo</string>
@@ -389,9 +383,6 @@
     <string name="floating_disable_dim">Non attenuare</string>
     <string name="floating_disable_dim_desc">Mantieni il pulsante completamente visibile senza mai dissolverlo o accostarlo quando è inattivo</string>
 
-
-
-    <!-- Profiles -->
     <string name="profiles">Profili</string>
     <string name="profiles_subtitle">Cambia contesto del firewall con un tocco</string>
     <string name="profile_auto_enable_firewall">Attiva il firewall quando si attiva un profilo</string>
@@ -439,8 +430,6 @@
     <string name="profile_automation_desc">Passa a questo profilo da un\'app di macro (Tasker, MacroDroid, Automate) o da adb. Nell\'app di macro, aggiungi un\'azione \"Invia broadcast\" che punti al receiver qui sotto. Tocca un valore per copiarlo.</string>
     <string name="profile_automation_adb_label">Comando ADB</string>
 
-
-    <!-- App info dialog / tracker detection -->
     <string name="app_info_icon_content_description">Dettagli di %1$s</string>
     <string name="app_info_version">Versione %1$s</string>
     <string name="app_info_installed">Installata il %1$s</string>

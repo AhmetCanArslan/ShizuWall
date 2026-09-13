@@ -20,7 +20,6 @@ class NotificationActionReceiver : BroadcastReceiver() {
         const val ACTION_FIREWALL_APP = "com.arslan.shizuwall.ACTION_FIREWALL_APP"
         const val ACTION_ADD_TO_LIST = "com.arslan.shizuwall.ACTION_ADD_TO_LIST"
         const val ACTION_WHITELIST_APP = "com.arslan.shizuwall.ACTION_WHITELIST_APP"
-        // Used when auto-firewall added the app: allows network AND removes from selected list.
         const val ACTION_ALLOW_AND_UNSELECT = "com.arslan.shizuwall.ACTION_ALLOW_AND_UNSELECT"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
     }
@@ -46,22 +45,18 @@ class NotificationActionReceiver : BroadcastReceiver() {
             }
         }
 
-        // Dismiss notification
         if (notificationId != -1) {
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancel(notificationId)
         } else {
-            // Fallback: cancel by hashcode if ID not passed (though we should pass it)
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancel(3000 + packageName.hashCode())
         }
     }
 
     private fun firewallApp(context: Context, packageName: String) {
-        // Add to selected list first
         addToList(context, packageName, showToast = false)
 
-        // Then trigger firewall control for this specific app
         val controlIntent = Intent(context, FirewallControlReceiver::class.java).apply {
             action = MainActivity.ACTION_FIREWALL_CONTROL
             putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)

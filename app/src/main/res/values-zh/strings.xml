@@ -282,10 +282,8 @@
     <string name="log_logs_cleared">日志已清除</string>
     <string name="log_logs_copied">日志已复制到剪贴板</string>
 
-    <!-- Exit confirmation -->
     <string name="exit_confirm_message">再按一次返回键退出</string>
 
-    <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">防火墙模式</string>
     <string name="firewall_mode_default">默认</string>
     <string name="firewall_mode_default_description">传统防火墙 - 阻止所选应用</string>
@@ -316,7 +314,6 @@
     <string name="whitelist_info_system_apps_warning">当"显示系统应用"被禁用时，系统应用将不会在白名单模式下被防火墙阻止。\n\n如果您已启用"显示系统应用"并使用白名单模式，此组合尚未完全测试。请谨慎使用。\n\n防火墙开启期间安装到工作资料或分身空间的应用不会被检测到，在关闭并重新开启防火墙之前会保持放行。</string>
     <string name="firewall_mode_change_disabled">启用防火墙时无法更改防火墙模式。请先禁用防火墙。</string>
 
-    <!-- Firewall Mode detailed explanations -->
     <string name="firewall_mode_details_button">这些模式如何工作？</string>
     <string name="firewall_mode_details_title">防火墙模式的工作方式</string>
     <string name="firewall_mode_default_details">你勾选要拦截的应用，然后开启防火墙。只有这些应用会失去网络，其他应用照常联网。修改勾选后，需要关闭并重新开启防火墙才会生效。</string>
@@ -360,7 +357,6 @@
 
     <string name="notification_permission_background_request">请授予权限以继续在后台运行。</string>
 
-    <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">锁屏模式 (服务)</string>
     <string name="screen_lock_delay_title">锁定延迟</string>
     <string name="firewall_mode_screen_lock_description">锁定屏幕时阻止选定的应用</string>
@@ -371,7 +367,6 @@
     <string name="screen_lock_mode_notification_channel_description">锁屏自动化的后台服务</string>
     <string name="screen_lock_delay_dialog_title">锁屏延迟</string>
 
-    <!-- Floating Button Personalization -->
     <string name="floating_settings_title">Floating Button</string>
     <string name="floating_settings_content_description">Personalize floating button</string>
     <string name="floating_idle_opacity">Idle transparency</string>
@@ -387,7 +382,6 @@
     <string name="floating_seconds_format">%1$d s</string>
     <string name="floating_disable_dim">不要变暗</string>
     <string name="floating_disable_dim_desc">闲置时保持按钮完全可见，永不淡出或收进边缘</string>
-    <!-- Profiles -->
     <string name="profiles">配置文件</string>
     <string name="profiles_subtitle">一键切换防火墙场景</string>
     <string name="profile_auto_enable_firewall">启用配置时自动开启防火墙</string>
@@ -434,7 +428,6 @@
     <string name="profile_automation_desc">从宏应用（Tasker、MacroDroid、Automate）或 adb 切换到此配置文件。在宏应用中，添加一个指向下方接收器的\"发送广播\"操作。点按任意值即可复制。</string>
     <string name="profile_automation_adb_label">ADB 命令</string>
 
-    <!-- App info dialog / tracker detection -->
     <string name="app_info_icon_content_description">%1$s 的详情</string>
     <string name="app_info_version">版本 %1$s</string>
     <string name="app_info_installed">安装于 %1$s</string>

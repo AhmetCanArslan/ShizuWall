@@ -163,7 +163,6 @@ object ProfileIcons {
         "wifi" to R.drawable.ic_picon_wifi
     )
 
-    /** Order shown in the picker grid. */
     val keys: List<String> = icons.keys.toList()
 
     @DrawableRes

@@ -40,22 +40,6 @@ import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.firewall.FirewallCommands
 
-/**
- * Foreground service that monitors foreground app changes for Smart Foreground mode.
- *
- * Detection is push-based: [ForegroundTaskWatcher] delivers task changes from the
- * privileged helper, with a [RECONCILE_INTERVAL_MS] safety pass. When a new app comes
- * to the foreground:
- * 1. Allows the new foreground app (first, to minimize latency)
- * 2. Blocks the previously allowed app
- *
- * Key design decisions:
- * - A settle re-check (350 ms) filters transient packages sampled mid-switch.
- * - chain3 is validated before each rule-change batch; re-enabled if needed.
- * - Failed shell commands are retried once before giving up.
- * - Skip-packages list is refreshed on package-install/uninstall broadcasts.
- * - The notification subtitle reflects the name of the currently-active app.
- */
 class ForegroundDetectionService : Service() {
 
     companion object {
@@ -78,7 +62,6 @@ class ForegroundDetectionService : Service() {
             "com.google.android.packageinstaller"
         )
 
-        // System packages that should never be managed by Smart Foreground
         private val SYSTEM_PACKAGES = setOf(
             "com.android.systemui",
             "com.android.launcher",
@@ -96,7 +79,6 @@ class ForegroundDetectionService : Service() {
             "com.sec.android.app.launcher"
         )
         
-        // Known input method packages to skip
         private val INPUT_METHOD_PACKAGES = setOf(
             "com.google.android.inputmethod.latin",
             "com.samsung.android.honeyboard",
@@ -105,12 +87,10 @@ class ForegroundDetectionService : Service() {
             "org.futo.inputmethod.latin"
         )
         
-        // Action for broadcasting foreground app changes
         const val ACTION_FOREGROUND_APP_CHANGED = "com.arslan.shizuwall.FOREGROUND_APP_CHANGED"
         const val EXTRA_PACKAGE_NAME = "package_name"
         const val EXTRA_PREVIOUS_PACKAGE = "previous_package"
         
-        /** Start the foreground-detection polling service. */
         fun start(context: Context) {
             try {
                 context.startForegroundService(Intent(context, ForegroundDetectionService::class.java))
@@ -119,7 +99,6 @@ class ForegroundDetectionService : Service() {
             }
         }
 
-        /** Stop the foreground-detection polling service. */
         fun stop(context: Context) {
             try {
                 context.stopService(Intent(context, ForegroundDetectionService::class.java))
@@ -365,11 +344,9 @@ class ForegroundDetectionService : Service() {
     }
 
     private suspend fun onForegroundSample(packageName: String) {
-        // Skip self for non-focus-tracker modes to avoid processing our own windows.
         if (AppKey.packageOf(packageName) == this.packageName && cachedFirewallMode != FirewallMode.FOCUS_TRACKER) return
         if (isTransientOverlayPackage(packageName)) return
 
-        // Skip same-package samples immediately.
         if (packageName == currentForegroundPackage) {
             healBlockedForegroundApp(packageName)
             return
@@ -386,7 +363,7 @@ class ForegroundDetectionService : Service() {
 
         delay(SETTLE_RECHECK_MS)
         val confirm = ForegroundTaskProbe.query(applicationContext)
-        if (confirm != packageName) return // changed again; next poll handles it
+        if (confirm != packageName) return
         processPackageChange(packageName)
     }
 
@@ -438,11 +415,9 @@ class ForegroundDetectionService : Service() {
     }
 
     private fun processFocusTracker(newPackage: String) {
-        // Remove the system ui overlay ignorance feature
         currentForegroundPackage = newPackage
         val isNowFocused = (AppKey.packageOf(newPackage) == this.packageName)
         
-        // Only execute when focus changes
         if (isShizuWallFocused == isNowFocused) return
     
         isShizuWallFocused = isNowFocused
@@ -470,16 +445,13 @@ class ForegroundDetectionService : Service() {
         val shouldManage = isSelected && !isPlatformSkip && isSmartForegroundApp
 
         if (!shouldManage) {
-            // Going to launcher/system or an unselected app: don't manage the new package,
-            // but block the previously managed selected package.
             currentForegroundPackage = newPackage
             val previous = lastManagedPackage
             lastManagedPackage = null
 
             if (previous != null) {
-                // Store which package we're about to block so a quick return can cancel it.
                 pendingBlockPackage = previous
-                delay(BLOCK_CONFIRM_DELAY_MS) // grace period before committing the block
+                delay(BLOCK_CONFIRM_DELAY_MS)
 
                 val stillForeground = ForegroundTaskProbe.query(applicationContext)
                 if (stillForeground == previous) {
@@ -496,16 +468,12 @@ class ForegroundDetectionService : Service() {
                 }
             }
 
-            // If the user switched to an unselected normal app, proactively allow it.
-            // This self-heals stale blocks from past states without bringing it into managed set.
             if (!isPlatformSkip && !isSelected) {
                 allowUnmanagedPackage(newPackage)
             }
             return
         }
 
-        // If this package equals the one we were about to block (user switched back quickly),
-        // cancel the pending block.
         if (newPackage == pendingBlockPackage) {
             pendingBlockPackage = null
         }
@@ -535,8 +503,6 @@ class ForegroundDetectionService : Service() {
         return false
     }
 
-    // When "show other profiles" is off, clones aren't individually selectable — a
-    // selected primary-user package should still be foreground-managed for its clones.
     private fun isPackageSelected(key: String): Boolean {
         if (selectedPackages.contains(key)) return true
         if (AppKey.isSecondary(key) && !MultiUserApps.isEnabled(this)) {
@@ -551,7 +517,6 @@ class ForegroundDetectionService : Service() {
         if (SYSTEM_PACKAGES.contains(packageName)) return true
         if (INPUT_METHOD_PACKAGES.contains(packageName)) return true
         if (dynamicSkipPackages.contains(packageName)) return true
-
 
         if (packageName.contains("launcher", ignoreCase = true)) return true
         if (packageName.startsWith("com.android.") && !packageName.contains("chrome")) return true
@@ -609,7 +574,6 @@ class ForegroundDetectionService : Service() {
                 .putString(MainActivity.KEY_SMART_FOREGROUND_APP, newPackage)
                 .apply()
 
-            // Update notification to show the active app name.
             updateNotification(newPackage)
 
             sendBroadcast(Intent(ACTION_FOREGROUND_APP_CHANGED).apply {
@@ -617,9 +581,6 @@ class ForegroundDetectionService : Service() {
                 putExtra(EXTRA_PREVIOUS_PACKAGE, previousPackage)
             })
         } else {
-            // Rule application failed — reset state so next event can re-try from scratch.
-            // Only restore previousPackage if it was a managed (non-skip) app; otherwise
-            // clear both to avoid an inconsistent state.
             if (previousPackage != null && !shouldSkipPackage(previousPackage)) {
                 lastManagedPackage = previousPackage
                 currentForegroundPackage = previousPackage
@@ -651,7 +612,6 @@ class ForegroundDetectionService : Service() {
                     .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
                     .apply()
 
-                // Update notification to idle state.
                 withContext(Dispatchers.Main) { updateNotification(null) }
 
                 sendBroadcast(Intent(ACTION_FOREGROUND_APP_CHANGED).apply {
@@ -685,7 +645,6 @@ class ForegroundDetectionService : Service() {
                     Log.w(TAG, "Failed to allow unmanaged package $packageName: $err")
                 }
             } catch (e: CancellationException) {
-                // Expected when rapid app switches cancel the in-flight debounce job.
                 throw e
             } catch (e: Exception) {
                 Log.w(TAG, "Failed unmanaged allow for $packageName", e)
@@ -731,9 +690,6 @@ class ForegroundDetectionService : Service() {
         }
     }
 
-    /**
-     * Execute [command] and retry once on failure after a short delay.
-     */
     private suspend fun execWithRetry(executor: ShellExecutor, command: String): com.arslan.shizuwall.shell.ShellResult {
         val first = executor.exec(command)
         if (first.success) return first
@@ -782,7 +738,6 @@ class ForegroundDetectionService : Service() {
         }
     }
 
-
     private suspend fun ensureChain3Enabled(executor: ShellExecutor) {
         try {
             val checkResult = executor.exec("cmd connectivity get-chain3-enabled")
@@ -795,7 +750,6 @@ class ForegroundDetectionService : Service() {
             throw e
         } catch (e: Exception) {
             Log.d(TAG, "chain3 enable check/set failed (non-fatal)", e)
-            // If check not supported, try to re-enable anyway.
             try {
                 executor.exec(FirewallCommands.CHAIN3_ENABLE)
             } catch (e3: CancellationException) {

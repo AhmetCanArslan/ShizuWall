@@ -34,7 +34,6 @@ class LadbPairingCodeReceiver : BroadcastReceiver() {
             val s = input.trim()
             if (s.isEmpty()) return null to null
 
-            // Accept: "37133 123456" or "37133:123456" or "37133,123456".
             val tokens = s.split(Regex("[\\s,:]+"), limit = 2).filter { it.isNotBlank() }
             if (tokens.size != 2) return null to null
 
@@ -45,11 +44,9 @@ class LadbPairingCodeReceiver : BroadcastReceiver() {
             val code: String?
 
             if (first.length == 6 && first.toIntOrNull() != null && second.toIntOrNull() != null && second.toInt() in 1..65535) {
-                // Assume first is 6-digit code, second is port
                 code = first
                 port = second.toInt()
             } else if (first.toIntOrNull() != null && first.toInt() in 1..65535) {
-                // Assume first is port, second is code
                 port = first.toInt()
                 code = second
             } else {
@@ -106,8 +103,6 @@ class LadbPairingCodeReceiver : BroadcastReceiver() {
                     ladb.savePairingPortUsingSavedHost(port)
                 }
 
-                // If the user entered code-only but we still don't have a pairing port, fail fast
-                // with a clear message (otherwise pairing will always fail).
                 if (ladb.getSavedPairingPort() <= 0) {
                     postResultNotification(
                         context.getString(R.string.ladb_pairing_result_failed_title),

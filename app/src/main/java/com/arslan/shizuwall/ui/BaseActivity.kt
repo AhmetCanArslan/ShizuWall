@@ -29,7 +29,6 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Disable system transition if we're doing our own fade animation
         if (shouldAnimateFadeIn) {
             if (android.os.Build.VERSION.SDK_INT >= 34) {
                 overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0)

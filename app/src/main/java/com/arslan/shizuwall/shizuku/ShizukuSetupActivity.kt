@@ -28,16 +28,13 @@ class ShizukuSetupActivity : BaseActivity() {
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            // apply top inset to toolbar margin
             val toolbarParams = toolbar.layoutParams as android.view.ViewGroup.MarginLayoutParams
             toolbarParams.topMargin = systemBars.top
             toolbar.layoutParams = toolbarParams
-            // ensure bottom nav doesn't overlap content: add bottom padding
             v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, systemBars.bottom)
             insets
         }
 
-        // Ensure toolbar colors match theme
         val typedValue = android.util.TypedValue()
         val theme = theme
         theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
@@ -55,9 +52,6 @@ class ShizukuSetupActivity : BaseActivity() {
         viewPager.adapter = ShizukuSlideAdapter(slides, this)
         descriptionView.text = slides.firstOrNull()?.description ?: ""
 
-        // center the current page's ImageView if visible (adapter uses wrap_content and center)
-        // ensure ViewPager uses match_parent height and content is centered by the slide layout
-
         TabLayoutMediator(tabLayout, viewPager) { _, _ -> }.attach()
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -70,7 +64,6 @@ class ShizukuSetupActivity : BaseActivity() {
         val prev = findViewById<MaterialButton>(R.id.prevButton)
         val next = findViewById<MaterialButton>(R.id.nextButton)
 
-        // Ensure button colors match Material theme attributes in case XML tints didn't apply
         val tvPrimaryContainer = android.util.TypedValue()
         theme.resolveAttribute(com.google.android.material.R.attr.colorPrimaryContainer, tvPrimaryContainer, true)
         val colorPrimaryContainer = tvPrimaryContainer.data
@@ -114,7 +107,6 @@ class ShizukuSetupActivity : BaseActivity() {
                 return slides
             }
         } catch (_: Exception) {
-            // ignore and fall back
         }
 
         return slides

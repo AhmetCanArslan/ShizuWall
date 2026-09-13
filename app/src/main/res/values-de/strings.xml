@@ -282,10 +282,8 @@
     <string name="log_logs_cleared">Protokolle gelöscht</string>
     <string name="log_logs_copied">Protokolle in die Zwischenablage kopiert</string>
 
-    <!-- Exit confirmation -->
     <string name="exit_confirm_message">Nochmal drücken zum Beenden</string>
 
-    <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">Firewall-Modus</string>
     <string name="firewall_mode_default">Standard</string>
     <string name="firewall_mode_default_description">Traditionelle Firewall - ausgewählte Apps blockieren</string>
@@ -316,7 +314,6 @@
     <string name="whitelist_info_system_apps_warning">Wenn "System-Apps anzeigen" deaktiviert ist, werden System-Apps im Whitelist-Modus nicht durch die Firewall geschützt.\n\nWenn Sie "System-Apps anzeigen" aktiviert haben und den Whitelist-Modus verwenden, wurde diese Kombination nicht vollständig getestet. Verwenden Sie sie mit Vorsicht.\n\nApps, die bei aktiver Firewall in einem Arbeitsprofil oder Klonbereich installiert werden, werden nicht erkannt und bleiben erlaubt, bis die Firewall aus- und wieder eingeschaltet wird.</string>
     <string name="firewall_mode_change_disabled">Firewall-Modus kann nicht geändert werden, während die Firewall aktiviert ist. Bitte deaktivieren Sie zuerst die Firewall.</string>
 
-    <!-- Firewall Mode detailed explanations -->
     <string name="firewall_mode_details_button">Wie funktionieren diese Modi?</string>
     <string name="firewall_mode_details_title">So funktionieren die Firewall-Modi</string>
     <string name="firewall_mode_default_details">Du wählst die Apps aus, die blockiert werden sollen, und schaltest die Firewall ein. Nur diese Apps verlieren den Netzwerkzugriff, alle anderen bleiben online. Änderungen an der Auswahl wirken sich aus, sobald du die Firewall aus- und wieder einschaltest.</string>
@@ -360,7 +357,6 @@
 
     <string name="notification_permission_background_request">Bitte erteilen Sie die Berechtigung, weiterhin im Hintergrund ausgeführt zu werden.</string>
 
-    <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">Bildschirmsperre-Modus (Dienst)</string>
     <string name="screen_lock_delay_title">Sperrverzögerung</string>
     <string name="firewall_mode_screen_lock_description">Ausgewählte Apps bei Sperrung blockieren, bei Entsperrung freigeben</string>
@@ -371,7 +367,6 @@
     <string name="screen_lock_mode_notification_channel_description">Hintergrunddienst für Bildschirmsperren-Automatisierung</string>
     <string name="screen_lock_delay_dialog_title">Bildschirmsperren-Verzögerung</string>
 
-    <!-- Floating Button Personalization -->
     <string name="floating_settings_title">Floating Button</string>
     <string name="floating_settings_content_description">Personalize floating button</string>
     <string name="floating_idle_opacity">Idle transparency</string>
@@ -434,7 +429,6 @@
     <string name="profile_automation_desc">Zu diesem Profil aus einer Makro-App (Tasker, MacroDroid, Automate) oder per adb wechseln. Füge in der Makro-App eine „Broadcast senden"-Aktion hinzu, die den unten stehenden Receiver anspricht. Tippe auf einen Wert, um ihn zu kopieren.</string>
     <string name="profile_automation_adb_label">ADB-Befehl</string>
 
-    <!-- App info dialog / tracker detection -->
     <string name="app_info_icon_content_description">Details zu %1$s</string>
     <string name="app_info_version">Version %1$s</string>
     <string name="app_info_installed">Installiert %1$s</string>

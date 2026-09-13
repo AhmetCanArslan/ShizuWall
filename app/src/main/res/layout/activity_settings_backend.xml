@@ -27,7 +27,6 @@
             android:paddingTop="8dp"
             android:paddingBottom="32dp">
 
-            <!-- Working Mode -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -109,7 +108,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-             <!-- Set LADB (LibADB) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardSetLadb"
                 android:layout_width="match_parent"
@@ -166,7 +164,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Auto-enable on Shizuku start -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardAutoEnableOnShizukuStart"
                 android:layout_width="match_parent"
@@ -223,7 +220,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Apply Root Rules After Reboot -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardApplyRootRulesAfterReboot"
                 android:layout_width="match_parent"

@@ -28,12 +28,11 @@ class FloatingButtonService : Service() {
         const val NOTIFICATION_ID = 4001
         const val KEY_FLOATING_BUTTON_ENABLED = "floating_button_enabled"
 
-
-        const val KEY_FLOATING_IDLE_OPACITY = "floating_button_idle_opacity" // 0..100 (%)
-        const val KEY_FLOATING_SIZE = "floating_button_size"                 // dp
-        const val KEY_FLOATING_FADE_DELAY = "floating_button_fade_delay"     // seconds
-        const val KEY_FLOATING_EDGE_SNAP = "floating_button_edge_snap"       // boolean
-        const val KEY_FLOATING_DISABLE_DIM = "floating_button_disable_dim"   // boolean
+        const val KEY_FLOATING_IDLE_OPACITY = "floating_button_idle_opacity"
+        const val KEY_FLOATING_SIZE = "floating_button_size"
+        const val KEY_FLOATING_FADE_DELAY = "floating_button_fade_delay"
+        const val KEY_FLOATING_EDGE_SNAP = "floating_button_edge_snap"
+        const val KEY_FLOATING_DISABLE_DIM = "floating_button_disable_dim"
 
         const val DEFAULT_IDLE_OPACITY = 30
         const val DEFAULT_SIZE_DP = 56
@@ -72,7 +71,6 @@ class FloatingButtonService : Service() {
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Main + job)
 
-    // Track state changes via SharedPreferences listener
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         when (key) {
             MainActivity.KEY_FIREWALL_ENABLED,
@@ -154,8 +152,6 @@ class FloatingButtonService : Service() {
             .build()
     }
 
-    // ──────────────── floating window ────────────────
-
     private fun showFloatingButton() {
         if (!android.provider.Settings.canDrawOverlays(this)) {
             Toast.makeText(this, getString(R.string.overlay_permission_required), Toast.LENGTH_SHORT).show()
@@ -168,7 +164,6 @@ class FloatingButtonService : Service() {
         floatingView = LayoutInflater.from(this).inflate(R.layout.floating_firewall_button, null)
         fabIcon = floatingView?.findViewById(R.id.fabFirewallIcon)
         fabIcon?.layoutParams = FrameLayout.LayoutParams(iconSizePx, iconSizePx, Gravity.CENTER)
-
 
         snappedRight = true
         isTucked = false
@@ -188,7 +183,6 @@ class FloatingButtonService : Service() {
         }
         layoutParams = params
 
-        // Use system touch slop for reliable tap vs drag detection
         val touchSlop = ViewConfiguration.get(this).scaledTouchSlop
 
         var initialX = 0
@@ -207,7 +201,6 @@ class FloatingButtonService : Service() {
                     v.background?.alpha = 255
                     fabIcon?.animate()?.cancel()
                     fabIcon?.alpha = 1.0f
-                    // If hidden at the edge, the first touch only reveals it (no toggle).
                     wasTucked = isTucked
                     if (hideAtEdge && isTucked) untuckFromEdge()
 
@@ -216,7 +209,6 @@ class FloatingButtonService : Service() {
                     initialTouchX = event.rawX
                     initialTouchY = event.rawY
                     moved = false
-                    // Press feedback
                     v.alpha = 0.7f
                     true
                 }
@@ -299,7 +291,6 @@ class FloatingButtonService : Service() {
         }
     }
 
-
     private fun applyFloatingSettingsLive() {
         val params = layoutParams ?: return
         params.width = sizePx
@@ -339,7 +330,7 @@ class FloatingButtonService : Service() {
         val bw = params.width
         val screenWidth = resources.displayMetrics.widthPixels
         snappedRight = params.x <= (screenWidth - bw) / 2
-        val tuck = bw / 2  // 50% of the body off-screen
+        val tuck = bw / 2
         isTucked = true
         animateWindowX(if (snappedRight) -tuck else (screenWidth - bw + tuck))
     }
@@ -351,23 +342,18 @@ class FloatingButtonService : Service() {
         animateWindowX(if (snappedRight) 0 else screenWidth - params.width)
     }
 
-    // ──────────────── appearance ────────────────
-
     private fun updateFabAppearance() {
         val enabled = loadFirewallEnabled()
         fabIcon?.setImageResource(
             if (enabled) R.drawable.ic_quick_tile else R.drawable.ic_firewall_enabled 
         )
-        // Tint using standard colours — green when active, grey when off
         val tint = if (enabled) {
-            android.content.res.ColorStateList.valueOf(0xFF4CAF50.toInt()) // green
+            android.content.res.ColorStateList.valueOf(0xFF4CAF50.toInt())
         } else {
-            android.content.res.ColorStateList.valueOf(0xFFBDBDBD.toInt()) // grey
+            android.content.res.ColorStateList.valueOf(0xFFBDBDBD.toInt())
         }
         fabIcon?.imageTintList = tint
     }
-
-    // ──────────────── firewall toggle ────────────────
 
     private fun onFabClicked() {
         try {
@@ -415,8 +401,6 @@ class FloatingButtonService : Service() {
         }
     }
 
-    // ──────────────── helpers ────────────────
-
     private fun loadFirewallEnabled(): Boolean = FirewallUtils.loadFirewallEnabled(sharedPreferences)
 
     private fun loadSelectedApps(): List<String> = FirewallUtils.loadSelectedApps(this, sharedPreferences)
@@ -430,16 +414,12 @@ class FloatingButtonService : Service() {
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
 
-        // For tracking modes, start the foreground detection service
         if (firewallMode.requiresForegroundDetection()) {
             ForegroundDetectionService.start(this@FloatingButtonService)
         }
 
         withContext(Dispatchers.IO) {
             val successful = enableFirewall(packageNames, whitelistAllowApps)
-            // In dynamic-selection modes (Adaptive, Smart Foreground, Whitelist),
-            // the firewall is valid even if no individual apps were blocked yet —
-            // chain3 was turned on and that's enough.
             if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
                 saveFirewallEnabled(true)
                 saveActivePackages(successful.toSet())
@@ -513,7 +493,6 @@ class FloatingButtonService : Service() {
         val selfPkg = packageName
         val toUnblock = packageNames.toMutableList()
 
-        // In Smart Foreground mode, also unblock the current foreground app
         val firewallMode = FirewallMode.fromName(
             sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
         )
@@ -524,7 +503,6 @@ class FloatingButtonService : Service() {
             }
         }
 
-        // Ignore per-package unblock failures here; global chain disable is the source of truth.
         ShellExecutorBlocking.execBatchBlocking(
             this,
             toUnblock.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }

@@ -35,7 +35,6 @@
     <string name="export_failed">निर्यात विफल: %s</string>
     <string name="import_successful">आयात सफल। कृपया ऐप को पुनः आरंभ करें।</string>
     <string name="import_failed">आयात विफल: %s</string>
-    <!-- Exit confirmation -->
     <string name="exit_confirm_message">बाहर निकलने के लिए फिर से बैक दबाएँ</string>
     <string name="reset_app_title">ऐप रीसेट करें</string>
     <string name="reset_app_message">क्या आप वाकई ऐप रीसेट करना चाहते हैं? इससे फ़ायरवॉल बंद हो जाएगा (यदि सक्रिय है), सारा डेटा मिट जाएगा और ऐप बंद हो जाएगा।</string>
@@ -305,7 +304,6 @@
     <string name="log_logs_cleared">लॉग साफ़ हो गए</string>
     <string name="log_logs_copied">लॉग क्लिपबोर्ड पर कॉपी हो गए</string>
 
-    <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">फ़ायरवॉल मोड</string>
     <string name="firewall_mode_default">डिफ़ॉल्ट</string>
     <string name="firewall_mode_default_description">पारंपरिक फ़ायरवॉल - चयनित ऐप्स ब्लॉक करें</string>
@@ -323,7 +321,6 @@
     <string name="firewall_mode_focus_tracker_description">ShizuWall फ़ोकस में न हो तो फ़ायरवॉल चालू करें, और फ़ोकस में हो तो बंद करें।</string>
     <string name="firewall_mode_change_disabled">फ़ायरवॉल चालू रहते हुए फ़ायरवॉल मोड नहीं बदला जा सकता। कृपया पहले फ़ायरवॉल बंद करें।</string>
 
-    <!-- Firewall Mode detailed explanations -->
     <string name="firewall_mode_details_button">ये मोड कैसे काम करते हैं?</string>
     <string name="firewall_mode_details_title">फ़ायरवॉल मोड कैसे काम करते हैं</string>
     <string name="firewall_mode_default_details">आप वे ऐप्स चुनते हैं जिन्हें ब्लॉक करना है, फिर फ़ायरवॉल चालू करते हैं। केवल उन्हीं ऐप्स की नेटवर्क पहुँच जाती है; बाकी सब ऑनलाइन रहते हैं। चयन में किए गए बदलाव अगली बार फ़ायरवॉल बंद करके चालू करने पर प्रभावी होते हैं।</string>
@@ -354,7 +351,6 @@
     <string name="select_font">फ़ॉन्ट चुनें</string>
     <string name="apply">लागू करें</string>
 
-
     <string name="screen_lock_delay_title">लॉक देरी</string>
     <string name="screen_lock_delay_value">लॉक के %1$d सेकंड बाद चालू करें</string>
     <string name="screen_lock_delay_dialog_title">स्क्रीन लॉक देरी</string>
@@ -362,7 +358,6 @@
     <string name="screen_lock_mode_notification_channel_description">स्क्रीन लॉक ऑटोमेशन के लिए बैकग्राउंड सेवा</string>
     <string name="screen_lock_mode_notification_title">स्क्रीन लॉक मोड</string>
 
-    <!-- Floating Firewall Button -->
     <string name="floating_button">फ़्लोटिंग फ़ायरवॉल बटन</string>
     <string name="floating_button_description">कहीं से भी फ़ायरवॉल टॉगल करने के लिए खींचने योग्य ओवरले बटन दिखाएँ</string>
     <string name="floating_button_notification_channel_name">फ़्लोटिंग बटन (सेवा)</string>
@@ -372,7 +367,6 @@
     <string name="floating_button_content_description">फ़ायरवॉल टॉगल करें</string>
     <string name="overlay_permission_required">फ़्लोटिंग बटन के लिए ओवरले अनुमति आवश्यक है</string>
 
-    <!-- Floating Button Personalization -->
     <string name="floating_settings_title">फ़्लोटिंग बटन</string>
     <string name="floating_settings_content_description">फ़्लोटिंग बटन को वैयक्तिकृत करें</string>
     <string name="floating_idle_opacity">निष्क्रिय पारदर्शिता</string>
@@ -389,9 +383,6 @@
     <string name="floating_disable_dim">धुँधला न करें</string>
     <string name="floating_disable_dim_desc">बटन को पूरी तरह दिखाई देता रखें और निष्क्रिय रहने पर कभी फ़ेड या किनारे न लगाएँ</string>
 
-
-
-    <!-- Profiles -->
     <string name="profiles">प्रोफ़ाइल</string>
     <string name="profiles_subtitle">एक टैप में फ़ायरवॉल संदर्भ बदलें</string>
     <string name="profile_auto_enable_firewall">प्रोफ़ाइल सक्रिय करते समय फ़ायरवॉल चालू करें</string>
@@ -439,8 +430,6 @@
     <string name="profile_automation_desc">किसी मैक्रो ऐप (Tasker, MacroDroid, Automate) या adb से इस प्रोफ़ाइल पर स्विच करें। मैक्रो ऐप में नीचे दिए रिसीवर को लक्षित करते हुए \"Send Broadcast\" क्रिया जोड़ें। कॉपी करने के लिए किसी भी मान पर टैप करें।</string>
     <string name="profile_automation_adb_label">ADB कमांड</string>
 
-
-    <!-- App info dialog / tracker detection -->
     <string name="app_info_icon_content_description">%1$s का विवरण</string>
     <string name="app_info_version">संस्करण %1$s</string>
     <string name="app_info_installed">%1$s को इंस्टॉल हुआ</string>

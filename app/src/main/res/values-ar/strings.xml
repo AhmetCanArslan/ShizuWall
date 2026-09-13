@@ -34,7 +34,6 @@
     <string name="export_failed">فشل التصدير: %s</string>
     <string name="import_successful">نجح الاستيراد. يرجى إعادة تشغيل التطبيق.</string>
     <string name="import_failed">فشل الاستيراد: %s</string>
-    <!-- Exit confirmation -->
     <string name="exit_confirm_message">اضغط على زر الرجوع مرة أخرى للخروج</string>
     <string name="reset_app_title">إعادة تعيين التطبيق</string>
     <string name="reset_app_message">هل أنت متأكد أنك تريد إعادة تعيين التطبيق؟ سيتم إيقاف الجدار الناري (إذا كان مفعلًا)، ومسح جميع البيانات، وإغلاق التطبيق.</string>
@@ -286,7 +285,6 @@
     <string name="log_logs_cleared">تم مسح السجلات</string>
     <string name="log_logs_copied">تم نسخ السجلات إلى الحافظة</string>
     
-    <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">وضع الجدار الناري</string>
     <string name="firewall_mode_default">الافتراضي</string>
     <string name="firewall_mode_default_description">جدار ناري تقليدي - حظر تطبيقات محددة</string>
@@ -302,7 +300,6 @@
     <string name="firewall_mode_focus_tracker_description">.خارج نطاق التركيز، وقم بتعطيله عندما يكون داخل نطاق التركيزShizuWall قم بتفعيل جدار الحماية عندما يكون </string>
     <string name="firewall_mode_change_disabled">لا يمكن تغيير وضع الجدار الناري أثناء تفعيله. يرجى تعطيل الجدار الناري أولاً.</string>
 
-    <!-- Firewall Mode detailed explanations -->
     <string name="firewall_mode_details_button">كيف تعمل هذه الأوضاع؟</string>
     <string name="firewall_mode_details_title">كيف تعمل أوضاع الجدار الناري</string>
     <string name="firewall_mode_default_details">تحدد التطبيقات التي تريد حظرها، ثم تُفعّل الجدار الناري. تفقد تلك التطبيقات فقط الاتصال بالشبكة، ويبقى غيرها متصلاً. تسري تغييرات التحديد عند إيقاف الجدار الناري وتشغيله مرة أخرى.</string>
@@ -334,7 +331,6 @@
 
     <string name="do_not_show_again">لا تظهر مرة أخرى</string>
 
-    <!-- Floating Firewall Button -->
     <string name="floating_button">زر الجدار الناري العائم</string>
     <string name="floating_button_description">إظهار زر عائم قابل للسحب لتغيير حالة الجدار الناري من أي مكان</string>
     <string name="floating_button_notification_channel_name">الزر العائم (خدمة)</string>
@@ -363,7 +359,6 @@
 
     <string name="notification_permission_background_request">يرجى منح الإذن للتشغيل في الخلفية.</string>
 
-    <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">وضع قفل الشاشة (خدمة)</string>
     <string name="screen_lock_delay_title">تأخير القفل</string>
     <string name="firewall_mode_screen_lock_description">حظر التطبيقات المحددة عند قفل الشاشة</string>
@@ -374,7 +369,6 @@
     <string name="screen_lock_mode_notification_channel_description">خدمة خلفية لأتمتة قفل الشاشة</string>
     <string name="screen_lock_delay_dialog_title">تأخير قفل الشاشة</string>
 
-    <!-- Floating Button Personalization -->
     <string name="floating_settings_title">Floating Button</string>
     <string name="floating_settings_content_description">Personalize floating button</string>
     <string name="floating_idle_opacity">Idle transparency</string>
@@ -390,7 +384,6 @@
     <string name="floating_seconds_format">%1$d s</string>
     <string name="floating_disable_dim">عدم التعتيم</string>
     <string name="floating_disable_dim_desc">حافظ على ظهور الزر بالكامل ولا تعتّمه أو تخفيه عند الخمول</string>
-        <!-- Profiles -->
     <string name="profiles">ملفات التعريف</string>
     <string name="profiles_subtitle">بدّل سياقات جدار الحماية بنقرة واحدة</string>
     <string name="profile_auto_enable_firewall">تشغيل جدار الحماية عند تفعيل ملف تعريف</string>
@@ -442,8 +435,6 @@
     <string name="profile_automation_desc">بدّل إلى هذا الملف التعريفي من تطبيق ماكرو (Tasker، MacroDroid، Automate) أو adb. في تطبيق الماكرو، أضف إجراء \"إرسال بث\" يستهدف المستقبل أدناه. انقر أي قيمة لنسخها.</string>
     <string name="profile_automation_adb_label">أمر ADB</string>
 
-
-    <!-- App info dialog / tracker detection -->
     <string name="app_info_icon_content_description">تفاصيل %1$s</string>
     <string name="app_info_version">الإصدار %1$s</string>
     <string name="app_info_installed">تم التثبيت %1$s</string>

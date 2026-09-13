@@ -7,9 +7,6 @@ import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
 
-/**
- * Shell executor that runs commands via Shizuku privileged process creation.
- */
 class ShizukuShellExecutor : ShellExecutor {
     companion object {
         private val SHIZUKU_NEW_PROCESS_METHOD by lazy {

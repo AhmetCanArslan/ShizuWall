@@ -454,7 +454,6 @@ class FirewallSettingsActivity : BaseActivity() {
                 }
             }
         } catch (e: Exception) {
-            // Don't crash if layout assumptions differ; silently ignore
         }
     }
 

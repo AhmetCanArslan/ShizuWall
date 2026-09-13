@@ -27,7 +27,6 @@
             android:paddingTop="8dp"
             android:paddingBottom="32dp">
 
-            <!-- App visibility -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardShowSystemApps"
                 android:layout_width="match_parent"
@@ -153,7 +152,6 @@
                 android:textColor="?attr/colorError"
                 android:visibility="gone" />
 
-            <!-- Skip Confirm -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardSkipConfirm"
                 android:layout_width="match_parent"
@@ -210,7 +208,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Firewall Mode Selector -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardFirewallMode"
                 android:layout_width="match_parent"
@@ -255,7 +252,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp">
 
-                        <!-- Default Mode -->
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/radioModeDefault"
                             android:layout_width="match_parent"
@@ -273,7 +269,6 @@
                             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
-                        <!-- Adaptive Mode -->
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/radioModeAdaptive"
                             android:layout_width="match_parent"
@@ -291,7 +286,6 @@
                             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
-                        <!-- Whitelist Mode -->
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/radioModeWhitelist"
                             android:layout_width="match_parent"
@@ -309,7 +303,6 @@
                             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
-                        <!-- Screen Lock Mode -->
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/radioModeScreenLock"
                             android:layout_width="match_parent"
@@ -327,7 +320,6 @@
                             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
-                        <!-- Smart Foreground Mode -->
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/radioModeSmartForeground"
                             android:layout_width="match_parent"
@@ -345,7 +337,6 @@
                             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
-                        <!-- Hybrid Mode -->
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/radioModeHybrid"
                             android:layout_width="match_parent"
@@ -466,7 +457,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- ADB Broadcast -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardAdbBroadcastUsage"
                 android:layout_width="match_parent"
@@ -523,7 +513,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Skip Error Dialog -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -579,7 +568,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Keep Error Apps -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardKeepErrorApps"
                 android:layout_width="match_parent"
@@ -637,7 +625,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Remember Disabled Apps -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardRememberDeletedApps"
                 android:layout_width="match_parent"

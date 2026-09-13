@@ -284,10 +284,8 @@
     <string name="log_logs_cleared">Логи очищены</string>
     <string name="log_logs_copied">Логи скопированы в буфер обмена</string>
 
-    <!-- Exit confirmation -->
     <string name="exit_confirm_message">Нажмите назад ещё раз для выхода</string>
 
-    <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">Режим брандмауэра</string>
     <string name="firewall_mode_default">По умолчанию</string>
     <string name="firewall_mode_default_description">Традиционный брандмауэр - блокировка выбранных приложений</string>
@@ -318,7 +316,6 @@
     <string name="whitelist_info_system_apps_warning">Когда "Показать системные приложения" отключено, системные приложения не будут заблокированы брандмауэром в режиме Белого списка.\n\nЕсли вы включили "Показать системные приложения" и используете режим Белого списка, эта комбинация не была полностью протестирована. Используйте с осторожностью.\n\nПриложения, установленные в рабочем профиле или клонированном пространстве при включённом брандмауэре, не обнаруживаются и остаются разрешёнными, пока вы не выключите и снова не включите брандмауэр.</string>
     <string name="firewall_mode_change_disabled">Невозможно изменить режим брандмауэра, пока он включен. Пожалуйста, сначала отключите брандмауэр.</string>
 
-    <!-- Firewall Mode detailed explanations -->
     <string name="firewall_mode_details_button">Как работают эти режимы?</string>
     <string name="firewall_mode_details_title">Как работают режимы брандмауэра</string>
     <string name="firewall_mode_default_details">Вы отмечаете приложения, которые нужно заблокировать, и включаете брандмауэр. Доступ к сети теряют только они, остальные остаются в сети. Изменения выбора вступают в силу после выключения и повторного включения брандмауэра.</string>
@@ -362,7 +359,6 @@
 
     <string name="notification_permission_background_request">Пожалуйста, предоставьте разрешение для продолжения работы в фоновом режиме.</string>
 
-    <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">Режим блокировки экрана (Сервис)</string>
     <string name="screen_lock_delay_title">Задержка блокировки</string>
     <string name="firewall_mode_screen_lock_description">Блокировать выбранные приложения при блокировке экрана</string>
@@ -373,7 +369,6 @@
     <string name="screen_lock_mode_notification_channel_description">Фоновый сервис автоматизации блокировки</string>
     <string name="screen_lock_delay_dialog_title">Задержка блокировки экрана</string>
 
-    <!-- Floating Button Personalization -->
     <string name="floating_settings_title">Floating Button</string>
     <string name="floating_settings_content_description">Personalize floating button</string>
     <string name="floating_idle_opacity">Idle transparency</string>
@@ -389,7 +384,6 @@
     <string name="floating_seconds_format">%1$d s</string>
     <string name="floating_disable_dim">Не затемнять</string>
     <string name="floating_disable_dim_desc">Кнопка остаётся полностью видимой и никогда не затемняется и не прячется у края при простое</string>
-    <!-- Profiles -->
     <string name="profiles">Профили</string>
     <string name="profiles_subtitle">Переключайте конфигурации брандмауэра одним касанием</string>
     <string name="profile_auto_enable_firewall">Включать брандмауэр при активации профиля</string>
@@ -439,7 +433,6 @@
     <string name="profile_automation_desc">Переключитесь на этот профиль из макро-приложения (Tasker, MacroDroid, Automate) или через adb. В макро-приложении добавьте действие «Отправить широковещание», нацеленное на приёмник ниже. Нажмите на значение, чтобы скопировать.</string>
     <string name="profile_automation_adb_label">Команда ADB</string>
 
-    <!-- App info dialog / tracker detection -->
     <string name="app_info_icon_content_description">Сведения о %1$s</string>
     <string name="app_info_version">Версия %1$s</string>
     <string name="app_info_installed">Установлено %1$s</string>

@@ -47,13 +47,12 @@ public class SystemDaemon {
     private static final int FIREWALL_CHAIN_OEM_DENY_3 = 9;
     private static final String UID_OWNER_MAP_MISSING = "suidownermap does not have entry for uid";
     
-    // Blocked dangerous commands
     private static final Set<String> BLOCKED_PATTERNS = new HashSet<>(Arrays.asList(
         "rm -rf /",
         "mkfs",
         "dd if=",
         "> /dev/",
-        ":(){ :|:& };:" // fork bomb
+        ":(){ :|:& };:"
     ));
     
     private static String authToken = "";
@@ -93,7 +92,6 @@ public class SystemDaemon {
             });
             return;
         }
-        // Setup shutdown hook for graceful termination
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("SystemDaemon: Shutdown signal received");
             running = false;
@@ -118,7 +116,6 @@ public class SystemDaemon {
             }
             authToken = authToken.trim();
             
-            // Secure the token file further
             tokenFile.setReadable(false, false);
             tokenFile.setReadable(true, true);
         } catch (Exception e) {
@@ -130,18 +127,15 @@ public class SystemDaemon {
         System.out.println("SystemDaemon: Starting...");
         System.out.flush();
         try {
-            // Log identity
             executeCommand("id");
             
-            // Start TCP socket server
             startSocketServer();
             logD("TCP server started on port " + PORT);
             System.out.println("SystemDaemon: TCP server started on port " + PORT);
             System.out.flush();
             
-            // Keep the process alive with health logging
             while(running) {
-                Thread.sleep(30000); // 30 seconds
+                Thread.sleep(30000);
                 logD("Heartbeat - Active connections: " + activeConnections.get());
             }
         } catch (Exception e) {
@@ -153,7 +147,6 @@ public class SystemDaemon {
     private static void startSocketServer() throws Exception {
         new Thread(() -> {
             try {
-                // Bind only to localhost (loopback) to prevent external network access
                 ServerSocket server = new ServerSocket(PORT, 50, InetAddress.getByName("127.0.0.1"));
                 server.setReuseAddress(true);
                 System.out.println("SystemDaemon: Listening on 127.0.0.1:" + PORT);
@@ -173,7 +166,6 @@ public class SystemDaemon {
                                 }
                             });
                         } catch (RejectedExecutionException e) {
-                            // Too many connections, reject
                             activeConnections.decrementAndGet();
                             try {
                                 PrintWriter w = new PrintWriter(client.getOutputStream());
@@ -222,7 +214,6 @@ public class SystemDaemon {
 
             command = reader.readLine();
             
-            // Validate command
             if (command == null || command.trim().isEmpty()) {
                 writer.println("Error: Empty command");
                 return;
@@ -234,7 +225,6 @@ public class SystemDaemon {
                 return;
             }
             
-            // Check for dangerous patterns
             String lowerCmd = command.toLowerCase();
             for (String blocked : BLOCKED_PATTERNS) {
                 if (lowerCmd.contains(blocked.toLowerCase())) {
@@ -271,7 +261,6 @@ public class SystemDaemon {
                 result = "active:" + activeConnections.get() + ",uptime:" + 
                          (System.currentTimeMillis() / 1000);
             } else {
-                // Acquire semaphore for rate limiting
                 if (!commandSemaphore.tryAcquire(5, TimeUnit.SECONDS)) {
                     writer.println("Error: Too many concurrent commands");
                     return;
@@ -600,7 +589,7 @@ public class SystemDaemon {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
                 String line;
                 int totalLength = 0;
-                final int MAX_OUTPUT = 1024 * 1024; // 1MB limit
+                final int MAX_OUTPUT = 1024 * 1024;
                 
                 while ((line = reader.readLine()) != null) {
                     if (totalLength + line.length() > MAX_OUTPUT) {
@@ -612,7 +601,6 @@ public class SystemDaemon {
                 }
             }
             
-            // Wait with timeout
             boolean finished = p.waitFor(COMMAND_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             if (!finished) {
                 p.destroyForcibly();

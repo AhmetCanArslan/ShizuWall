@@ -128,7 +128,6 @@
 
     </LinearLayout>
 
-    <!-- Right-side controls: scroll-to-top chip + selected count badge -->
     <LinearLayout
         android:id="@+id/rightBarControls"
         android:layout_width="wrap_content"

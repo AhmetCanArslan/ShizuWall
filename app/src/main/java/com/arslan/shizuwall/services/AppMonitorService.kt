@@ -82,7 +82,6 @@ class AppMonitorService : Service() {
     private fun createNotificationChannel() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Silent channel for foreground service
         val silentName = getString(R.string.app_monitor_notification_channel_name)
         val silentDesc = getString(R.string.app_monitor_notification_channel_description)
         val silentChannel = NotificationChannel(CHANNEL_ID_SILENT, silentName, NotificationManager.IMPORTANCE_LOW).apply {
@@ -91,7 +90,6 @@ class AppMonitorService : Service() {
         }
         notificationManager.createNotificationChannel(silentChannel)
 
-        // Loud channel for app installations
         val loudName = getString(R.string.app_installed_notification_channel_name)
         val loudDesc = getString(R.string.app_installed_notification_channel_description)
         val loudChannel = NotificationChannel(CHANNEL_ID_LOUD, loudName, NotificationManager.IMPORTANCE_DEFAULT).apply {
@@ -165,9 +163,6 @@ class AppMonitorService : Service() {
         val firewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
         val autoFirewallEnabled = prefs.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false)
 
-        // Auto-block path 1: Whitelist mode — new apps are not in the whitelist so block them.
-        // Auto-block path 2: "Auto-firewall new apps" toggle — add to selected list and block.
-        // Skip both auto-block paths for updated/restored apps.
         val wasAutoFirewalled = if (!isReplacing) {
             isFirewallEnabled && autoFirewallEnabled && firewallMode != FirewallMode.WHITELIST
         } else {
@@ -198,17 +193,13 @@ class AppMonitorService : Service() {
             }
         }
 
-        // Show notification only when the notifications toggle is on, or when the app was
-        // auto-firewalled (so the user can tap "Allow" to undo).
         if (!notificationsEnabled && !wasAutoFirewalled) return
 
         val (actionText, action) = if (isFirewallEnabled) {
             when {
                 wasAutoFirewalled ->
-                    // Auto-firewall added the app to selected list; "Allow" must undo both.
                     context.getString(R.string.allow_app) to NotificationActionReceiver.ACTION_ALLOW_AND_UNSELECT
                 firewallMode == FirewallMode.WHITELIST ->
-                    // Whitelist mode: "Allow" adds to whitelist (keeps in selected list).
                     context.getString(R.string.allow_app) to NotificationActionReceiver.ACTION_WHITELIST_APP
                 else ->
                     context.getString(R.string.firewall_app) to NotificationActionReceiver.ACTION_FIREWALL_APP

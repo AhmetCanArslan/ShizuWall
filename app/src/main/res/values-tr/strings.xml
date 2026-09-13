@@ -282,10 +282,8 @@
     <string name="log_logs_cleared">Günlükler temizlendi</string>
     <string name="log_logs_copied">Günlükler panoya kopyalandı</string>
 
-    <!-- Exit confirmation -->
     <string name="exit_confirm_message">Çıkmak için tekrar geri basın</string>
 
-    <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">Güvenlik Duvarı Modu</string>
     <string name="firewall_mode_default">Varsayılan</string>
     <string name="firewall_mode_default_description">Geleneksel güvenlik duvarı - seçili uygulamaları engelle</string>
@@ -316,7 +314,6 @@
     <string name="whitelist_info_system_apps_warning">"Sistem uygulamalarını göster" devre dışı bırakıldığında, sistem uygulamaları Beyaz Liste modunda güvenlik duvarı tarafından engellenmez.\n\n"Sistem uygulamalarını göster" seçeneğini etkinleştirdiyseniz ve Beyaz Liste modunu kullanıyorsanız, bu kombinasyon tam olarak test edilmemiştir. Dikkatli kullanın.\n\nFirewall açıkken iş profiline veya klon alana kurulan uygulamalar algılanmaz; firewall kapatılıp yeniden açılana kadar izinli kalırlar.</string>
     <string name="firewall_mode_change_disabled">Güvenlik duvarı etkinleştirilirken modu değiştiremezsiniz. Lütfen önce güvenlik duvarını devre dışı bırakın.</string>
 
-    <!-- Firewall Mode detailed explanations -->
     <string name="firewall_mode_details_button">Bu modlar nasıl çalışır?</string>
     <string name="firewall_mode_details_title">Güvenlik duvarı modları nasıl çalışır</string>
     <string name="firewall_mode_default_details">Engellemek istediğiniz uygulamaları işaretler, sonra güvenlik duvarını açarsınız. Yalnızca o uygulamalar ağ erişimini kaybeder, diğerleri çevrimiçi kalır. Seçimdeki değişiklikler, güvenlik duvarını kapatıp yeniden açtığınızda geçerli olur.</string>
@@ -358,7 +355,6 @@
     <string name="ladb_daemon_log_detected_hint">Son daemon günlükleri Ayrıntılar bölümünde mevcut.</string>
     <string name="firewall_reboot_apply_failed_message">Yeniden başlatma sonrası güvenlik duvarı kuralları yeniden uygulanamadı. Uygulamayı açmak için dokunun.</string>
 
-
     <string name="notification_permission_background_request">Arka planda aktif kalması için izin verin.</string>
 
     <string name="screen_lock_delay_value">Kilitten %1$d saniye sonra etkinleştir</string>
@@ -371,7 +367,6 @@
     <string name="screen_lock_mode_notification_channel_description">Ekran kilidi otomasyonu için arka plan servisi</string>
     <string name="screen_lock_delay_title">Kilit Gecikmesi</string>
 
-    <!-- Floating Button Personalization -->
     <string name="floating_settings_title">Floating Button</string>
     <string name="floating_settings_content_description">Personalize floating button</string>
     <string name="floating_idle_opacity">Idle transparency</string>
@@ -387,7 +382,6 @@
     <string name="floating_seconds_format">%1$d s</string>
     <string name="floating_disable_dim">Hiç Soldurma</string>
     <string name="floating_disable_dim_desc">Boşta kaldığında düğmeyi tam görünür tutar, asla soldurmaz veya kenara gizlemez</string>
-    <!-- Profiles -->
     <string name="profiles">Profiller</string>
     <string name="profiles_subtitle">Güvenlik duvarı bağlamlarını tek dokunuşla değiştirin</string>
     <string name="profile_auto_enable_firewall">Profil etkinleştirilince güvenlik duvarını aç</string>
@@ -435,7 +429,6 @@
     <string name="profile_automation_desc">Bu profile bir makro uygulamasından (Tasker, MacroDroid, Automate) veya adb ile geç. Makro uygulamasında, aşağıdaki alıcıyı hedefleyen bir \"Yayın Gönder (Send Broadcast)\" eylemi ekle. Kopyalamak için herhangi bir değere dokun.</string>
     <string name="profile_automation_adb_label">ADB komutu</string>
 
-    <!-- App info dialog / tracker detection -->
     <string name="app_info_icon_content_description">%1$s ayrıntıları</string>
     <string name="app_info_version">Sürüm %1$s</string>
     <string name="app_info_installed">Yüklendi %1$s</string>

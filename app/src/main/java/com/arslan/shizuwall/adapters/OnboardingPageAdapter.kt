@@ -35,7 +35,6 @@ class OnboardingPageAdapter(
         private val tertiaryButton: MaterialButton = itemView.findViewById(R.id.page_button_tertiary)
 
         fun bind(page: OnboardingPage) {
-            // Show/hide image based on whether imageResId is provided
             if (page.imageResId != null) {
                 imageView?.visibility = View.VISIBLE
                 imageView?.setImageResource(page.imageResId)

@@ -3,7 +3,6 @@ package com.arslan.shizuwall.trackers
 import android.content.Context
 import org.json.JSONObject
 
-
 data class Tracker(
     val id: Int,
     val name: String,
@@ -11,7 +10,6 @@ data class Tracker(
     val website: String,
     val signatures: List<String>
 )
-
 
 object TrackerRegistry {
 
@@ -25,7 +23,6 @@ object TrackerRegistry {
     @Volatile
     private var databaseStamp: String = ""
 
-    /** Already-parsed database, or null if it has never been loaded on this process. */
     fun trackersIfLoaded(): List<Tracker>? = cached
 
     fun trackers(context: Context): List<Tracker> {

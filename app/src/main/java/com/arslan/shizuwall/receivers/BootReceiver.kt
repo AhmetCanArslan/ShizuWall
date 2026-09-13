@@ -142,11 +142,6 @@ class BootReceiver : BroadcastReceiver() {
         postBootNotification(context, messageRes)
     }
 
-    /**
-     * Foreground detection is a normal service now (no OS auto-rebind like the old
-     * accessibility service), so it must be restarted after boot when the firewall
-     * is still enabled in a mode that needs it.
-     */
     private fun maybeStartForegroundDetection(
         context: Context,
         primary: SharedPreferences,

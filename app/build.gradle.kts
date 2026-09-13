@@ -24,13 +24,12 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = true                         // enable R8 shrinking/obfuscation/optimization
-            isShrinkResources = true                       // remove unused resources
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // keep debuggable off in release
             isDebuggable = false
             manifestPlaceholders["appLabel"] = "@string/app_name"
         }
@@ -42,10 +41,7 @@ android {
         }
     }
 
-
-    // strip unneeded files from APK
     packaging {
-        // remove common license/metadata files that bloat APK
         resources {
             excludes += setOf(
                 "META-INF/AL2.0",
@@ -58,23 +54,15 @@ android {
                 "META-INF/*.kotlin_module",
                 "META-INF/versions/**",
                 "DebugProbesKt.bin",
-                // BouncyCastle metadata
                 "META-INF/maven/**",
                 "META-INF/proguard/**"
             )
         }
-        // Keep only essential JNI libs
         jniLibs {
             useLegacyPackaging = false
-            // RB don't strip .so — keep the Maven bytes so F-Droid's server
-            // (NDK present) can't re-strip and change ELF .shstrtab, breaking
-            // byte-for-byte reproducibility (libconscrypt_jni.so, libspake2.so)
             keepDebugSymbols += "**/*.so"
         }
     }
-
-    // optional: limit locales/resources if you only need specific ones
-    // defaultConfig { resConfigs("en") }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -125,20 +113,10 @@ dependencies {
     implementation ("com.github.MuntashirAkon:libadb-android:3.1.1")
     implementation ("org.conscrypt:conscrypt-android:2.5.3")
 
-    // Required for generating a self-signed certificate for ADB-over-WiFi TLS.
     implementation ("org.bouncycastle:bcprov-jdk15to18:1.81")
     implementation ("org.bouncycastle:bcpkix-jdk15to18:1.81")
 }
 
-// ---------------------------------------------------------------------------
-// On-device daemon (DEX), compiled from source as part of the normal build.
-//
-// SystemDaemon.java is a plain Java class that runs on the
-// device under the shell UID via app_process. It is compiled to a DEX and
-// shipped as the daemon.bin asset. Compiling it here instead of committing
-// a prebuilt binary or running a manual script lets reproducible build
-// servers (F-Droid) produce it from source during assemble.
-// ---------------------------------------------------------------------------
 abstract class CompileDaemonDexTask : DefaultTask() {
     @get:InputFile
     abstract val javaSource: RegularFileProperty

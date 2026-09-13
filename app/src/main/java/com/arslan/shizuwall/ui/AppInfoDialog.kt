@@ -46,9 +46,6 @@ object AppInfoDialog {
         iconView.setImageDrawable(CrossUserAppInfo.icon(context, packageName, userId))
         metaView.text = buildMeta(context, packageInfo)
 
-        // On a repeat open the scan result comes back from cache almost instantly, so
-        // swapping the tracker section in after show() resizes the dialog mid enter
-        // animation and reads as a flicker. Render it up front when it is already known.
         val cachedResult = TrackerScanner.cachedResult(context, packageName)
         if (cachedResult != null) {
             renderTrackers(context, cachedResult, loadingView, summaryView, listView, noteView)
@@ -65,7 +62,6 @@ object AppInfoDialog {
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
                 } catch (_: Exception) {
-                    // Some OEM builds hide this screen; nothing else to do.
                 }
             }
             .create()

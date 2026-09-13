@@ -26,7 +26,6 @@ class PersistentDaemonManager(private val context: Context) {
         private const val SOCKET_TIMEOUT_MS = 5000
         private const val CONNECT_TIMEOUT_MS = 2000
         
-        // Shared socket pool for connection reuse
         private val connectionMutex = Mutex()
     }
     
@@ -44,10 +43,6 @@ class PersistentDaemonManager(private val context: Context) {
         return token
     }
     
-    /**
-     * Force regenerate the authentication token.
-     * Call this when reinstalling the daemon.
-     */
     fun regenerateToken(): String {
         val token = UUID.randomUUID().toString()
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -74,14 +69,12 @@ class PersistentDaemonManager(private val context: Context) {
                 return@withContext false
             }
 
-            // Regenerate token on reinstall to ensure sync
             val token = regenerateToken()
             val tokenFile = File(context.externalCacheDir ?: context.cacheDir, "token")
             FileOutputStream(tokenFile).use { it.write(token.toByteArray()) }
             val tokenPath = tokenFile.absolutePath
             
             onProgress("Stopping existing daemon...")
-            // Kill any existing daemon first
             ladb.execShell("pkill -f 'com.arslan.shizuwall.daemon.SystemDaemon' 2>/dev/null || true")
             delay(500)
             
@@ -94,18 +87,15 @@ class PersistentDaemonManager(private val context: Context) {
             ladb.execShell("chmod 700 /data/local/tmp/daemon.dex")
             ladb.execShell("chmod 600 /data/local/tmp/shizuwall.token")
             
-            // Cleanup temporary token file to reduce exposure
             if (tokenFile.exists()) {
                 tokenFile.delete()
             }
 
-            // Verify files exist
             val checkFiles = ladb.execShell("ls -l /data/local/tmp/daemon.*").stdout
             Log.d(TAG, "Files in /data/local/tmp/:\n$checkFiles")
             onProgress("Files verified: ${checkFiles.contains("daemon.sh")}")
 
             onProgress("Starting daemon...")
-            // Capture all output from the script
             val result = ladb.execShell("/system/bin/sh /data/local/tmp/daemon.sh 2>&1")
             val scriptOutput = result.stdout
             Log.d(TAG, "Daemon script output:\n$scriptOutput")
@@ -120,7 +110,6 @@ class PersistentDaemonManager(private val context: Context) {
             val running = isDaemonRunning()
             if (running) {
                 onProgress("Daemon is running!")
-                // Verify connection works with a ping
                 val pingResult = executeCommand("ping")
                 if (pingResult.trim() == "pong") {
                     onProgress("Daemon verified and responding!")
@@ -129,7 +118,6 @@ class PersistentDaemonManager(private val context: Context) {
                 }
             } else {
                 onProgress("Daemon failed to start.")
-                // Try to get logs for debugging
                 val logs = ladb.execShell("tail -20 /data/local/tmp/daemon.log 2>/dev/null").stdout
                 if (logs.isNotEmpty()) {
                     onProgress("Daemon logs:\n$logs")
@@ -183,19 +171,15 @@ class PersistentDaemonManager(private val context: Context) {
                 val output = socket.getOutputStream().bufferedWriter()
                 val input = socket.getInputStream().bufferedReader()
                 
-                // Send token
                 val token = getOrGenerateToken()
                 output.write("$token\n")
                 output.flush()
 
-                // Send command
                 output.write("$command\n")
                 output.flush()
                 
-                // Shutdown output to signal we're done sending
                 socket.shutdownOutput()
                 
-                // Read result
                 val result = input.readText()
                 Log.d(TAG, "Received from daemon: $result")
                 return@withContext result
@@ -229,7 +213,6 @@ class PersistentDaemonManager(private val context: Context) {
     }
 
     private fun copyAssetToCache(assetName: String, targetName: String = assetName): String {
-        // Use externalCacheDir so the 'shell' user can access it via /sdcard/Android/data/...
         val cacheDir = context.externalCacheDir ?: context.cacheDir
         val outFile = File(cacheDir, targetName)
         context.assets.open(assetName).use { input ->

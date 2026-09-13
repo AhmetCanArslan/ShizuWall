@@ -284,10 +284,8 @@
     <string name="log_logs_cleared">Registros borrados</string>
     <string name="log_logs_copied">Registros copiados al portapapeles</string>
 
-    <!-- Exit confirmation -->
     <string name="exit_confirm_message">Presiona atrás de nuevo para salir</string>
 
-    <!-- Firewall Mode Selector -->
     <string name="firewall_mode_title">Modo de Firewall</string>
     <string name="firewall_mode_default">Predeterminado</string>
     <string name="firewall_mode_default_description">Firewall tradicional - bloquear apps seleccionadas</string>
@@ -318,7 +316,6 @@
     <string name="whitelist_info_system_apps_warning">Cuando "Mostrar apps del sistema" está desactivado, las apps del sistema no serán bloqueadas por el firewall en modo Lista blanca.\n\nSi has activado "Mostrar apps del sistema" y estás usando el modo Lista blanca, esta combinación no ha sido completamente probada. Úsala con precaución.\n\nLas apps instaladas en un perfil de trabajo o espacio clonado mientras el firewall está activo no se detectan y siguen permitidas hasta que desactives y vuelvas a activar el firewall.</string>
     <string name="firewall_mode_change_disabled">No se puede cambiar el modo de firewall mientras está activado. Por favor, desactiva el firewall primero.</string>
 
-    <!-- Firewall Mode detailed explanations -->
     <string name="firewall_mode_details_button">¿Cómo funcionan estos modos?</string>
     <string name="firewall_mode_details_title">Cómo funcionan los modos de firewall</string>
     <string name="firewall_mode_default_details">Marcas las aplicaciones que quieres bloquear y enciendes el firewall. Solo esas aplicaciones pierden el acceso a la red; el resto sigue conectado. Los cambios en la selección se aplican la próxima vez que apagues y vuelvas a encender el firewall.</string>
@@ -362,7 +359,6 @@
 
     <string name="notification_permission_background_request">Por favor, conceda permiso para seguir ejecutándose en segundo plano.</string>
 
-    <!-- Auto-added missing translations (English fallback) -->
     <string name="screen_lock_mode_notification_channel_name">Modo de bloqueo de pantalla (Servicio)</string>
     <string name="screen_lock_delay_title">Retraso de bloqueo</string>
     <string name="firewall_mode_screen_lock_description">Bloquear aplicaciones seleccionadas al bloquear, desbloquear al desbloquear</string>
@@ -373,7 +369,6 @@
     <string name="screen_lock_mode_notification_channel_description">Servicio en segundo plano para automatización del bloqueo</string>
     <string name="screen_lock_delay_dialog_title">Retraso de bloqueo</string>
 
-    <!-- Floating Button Personalization -->
     <string name="floating_settings_title">Floating Button</string>
     <string name="floating_settings_content_description">Personalize floating button</string>
     <string name="floating_idle_opacity">Idle transparency</string>
@@ -389,7 +384,6 @@
     <string name="floating_seconds_format">%1$d s</string>
     <string name="floating_disable_dim">No atenuar</string>
     <string name="floating_disable_dim_desc">Mantén el botón totalmente visible y nunca lo atenúes ni lo oculte en el borde cuando esté inactivo</string>
-        <!-- Profiles -->
     <string name="profiles">Perfiles</string>
     <string name="profiles_subtitle">Cambia de contexto de firewall con un toque</string>
     <string name="profile_auto_enable_firewall">Activar el firewall al activar un perfil</string>
@@ -437,8 +431,6 @@
     <string name="profile_automation_desc">Cambia a este perfil desde una app de macros (Tasker, MacroDroid, Automate) o adb. En la app de macros, añade una acción \"Enviar difusión\" dirigida al receptor de abajo. Toca cualquier valor para copiarlo.</string>
     <string name="profile_automation_adb_label">Comando ADB</string>
 
-
-    <!-- App info dialog / tracker detection -->
     <string name="app_info_icon_content_description">Detalles de %1$s</string>
     <string name="app_info_version">Versión %1$s</string>
     <string name="app_info_installed">Instalada %1$s</string>

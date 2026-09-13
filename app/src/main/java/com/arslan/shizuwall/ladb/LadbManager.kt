@@ -111,13 +111,11 @@ class LadbManager private constructor(private val context: Context) {
         try {
             getPrefs().edit().putString(KEY_LAST_ERROR_LOG, log).apply()
         } catch (_: Exception) {
-            // ignore
         }
 
         try {
             LadbLogStore.append(context, "LADB error: $operation failed (${e::class.java.simpleName}: ${e.message})")
         } catch (_: Exception) {
-            // ignore
         }
     }
 
@@ -126,18 +124,15 @@ class LadbManager private constructor(private val context: Context) {
     private val connectionMutex = Mutex()
 
     init {
-        // Prefer Conscrypt for modern TLS on older devices.
         if (Security.getProvider("Conscrypt") == null) {
             Security.insertProviderAt(Conscrypt.newProvider(), 1)
         }
 
-        // Provide RSA/ECB/NoPadding, cert utilities, etc.
         if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
             Security.addProvider(BouncyCastleProvider())
         }
     }
 
-    // Cache for SharedPreferences to avoid repeated initialization.
     @Volatile
     private var cachedPrefs: SharedPreferences? = null
     private val prefsLock = Any()
@@ -148,8 +143,6 @@ class LadbManager private constructor(private val context: Context) {
         synchronized(prefsLock) {
             cachedPrefs?.let { return it }
             
-            // Use regular SharedPreferences - LADB config (host/port) is not highly sensitive
-            // and Android already protects app private data from other apps
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             cachedPrefs = prefs
             return prefs
@@ -212,7 +205,6 @@ class LadbManager private constructor(private val context: Context) {
         val cert = createSelfSignedCertificate(kp.private, kp.public)
         val created = kp.private to cert
 
-        // Best-effort persistence; failure shouldn't crash the app.
         try {
             privFile.writeBytes(kp.private.encoded)
             certFile.writeBytes(cert.encoded)
@@ -249,9 +241,6 @@ class LadbManager private constructor(private val context: Context) {
             publicKey
         )
 
-        // Do not force provider "BC" here.
-        // On Android, the built-in "BC" provider is a stripped-down fork and may not expose
-        // SHA256withRSA; letting the platform pick a provider is the most compatible.
         val signer = JcaContentSignerBuilder("SHA256withRSA").build(privateKey)
 
         return JcaX509CertificateConverter().getCertificate(builder.build(signer))
@@ -274,13 +263,11 @@ class LadbManager private constructor(private val context: Context) {
                 return@withContext false
             }
 
-            // Save pairing configuration (connect host/port is configured separately).
             getPrefs().edit()
                 .putString(KEY_HOST, host)
                 .putInt(KEY_PAIRING_PORT, port)
                 .apply()
 
-            // Perform Wireless Debugging pairing so the device trusts our key/cert.
             val (privateKey, certificate) = getOrCreateKeyMaterial()
             val ctx = PairingConnectionCtx(
                 host,
@@ -408,7 +395,6 @@ class LadbManager private constructor(private val context: Context) {
     }
 
     private suspend fun connectLocked(host: String? = null, port: Int? = null): Boolean {
-        // Check if already connected to avoid redundant connection attempts
         if (state == State.CONNECTED && connectionRef.get() != null) {
             return true
         }
@@ -430,15 +416,11 @@ class LadbManager private constructor(private val context: Context) {
             return false
         }
 
-        // Close any existing connection before creating a new one
         try {
             connectionRef.getAndSet(null)?.close()
         } catch (_: Exception) {
-            // ignore
         }
 
-        // Snapshot the current end of our own logcat so the diagnostic below only reports the
-        // library lines emitted during THIS connect attempt (see captureHandshakeDiagnostic).
         clearLibraryLogcat()
         val startMs = System.currentTimeMillis()
 
@@ -475,9 +457,6 @@ class LadbManager private constructor(private val context: Context) {
             _state.set(State.PAIRED)
             false
         } catch (e: io.github.muntashirakon.adb.AdbAuthenticationFailedException) {
-            // Peer has never seen our RSA key (e.g. a foreign/manual ADB WiFi daemon that was
-            // never paired with this app) and rejected it outright. Same remedy as an explicit
-            // pairing-required response: the user needs to pair first.
             recordError("connect", targetHost, targetPort, e)
             logHandshakeDiagnostic("auth-failed", startMs)
             _state.set(State.PAIRED)
@@ -571,7 +550,6 @@ class LadbManager private constructor(private val context: Context) {
             try {
                 connectionRef.getAndSet(null)?.close()
             } catch (_: Exception) {
-                // ignore
             }
 
             lastErrorLogRef.set(null)
@@ -597,7 +575,7 @@ class LadbManager private constructor(private val context: Context) {
 
     suspend fun execShell(cmd: String): ShellResult = withContext(Dispatchers.IO) {
         val maxRetries = 1
-        val timeoutMs = 15_000L // 15 seconds
+        val timeoutMs = 15_000L
 
         for (attempt in 0..maxRetries) {
             connectionMutex.lock()

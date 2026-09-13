@@ -6,13 +6,6 @@ import com.arslan.shizuwall.shell.ShellExecutor
 import com.arslan.shizuwall.shell.ShellResult
 import kotlinx.coroutines.delay
 
-/**
- * Shell executor that runs commands via the persistent background daemon.
- * Features:
- * - Automatic retry with exponential backoff
- * - Proper error code extraction
- * - Connection health checking
- */
 class DaemonShellExecutor(private val context: Context) : ShellExecutor {
     private val daemonManager = PersistentDaemonManager(context)
     
@@ -29,28 +22,24 @@ class DaemonShellExecutor(private val context: Context) : ShellExecutor {
         repeat(MAX_RETRIES) { attempt ->
             val result = daemonManager.executeCommand(command).trim()
             
-            // Check for connection errors (should retry)
             if (result.startsWith("Error: Daemon not responding")) {
                 lastError = result
                 Log.w(TAG, "Attempt ${attempt + 1}/$MAX_RETRIES failed: $result")
                 if (attempt < MAX_RETRIES - 1) {
                     delay(delayMs)
-                    delayMs *= 2 // Exponential backoff
+                    delayMs *= 2
                 }
                 return@repeat
             }
             
-            // Check for authorization errors (don't retry)
             if (result == "Error: Unauthorized") {
                 Log.e(TAG, "Unauthorized - token mismatch")
                 return ShellResult(exitCode = 126, stdout = "", stderr = result)
             }
             
-            // Parse command result
             return parseResult(result)
         }
         
-        // All retries failed
         return ShellResult(
             exitCode = 255,
             stdout = "",
@@ -59,7 +48,6 @@ class DaemonShellExecutor(private val context: Context) : ShellExecutor {
     }
     
     private fun parseResult(result: String): ShellResult {
-        // Check for explicit error patterns from daemon
         val errorPattern = Regex("""Error \(code (\d+)\): (.*)""")
         val match = errorPattern.find(result)
         if (match != null) {
@@ -68,12 +56,10 @@ class DaemonShellExecutor(private val context: Context) : ShellExecutor {
             return ShellResult(exitCode = code, stdout = "", stderr = message)
         }
         
-        // Check for generic "Error:" prefix
         if (result.startsWith("Error:")) {
             return ShellResult(exitCode = 1, stdout = "", stderr = result.removePrefix("Error:").trim())
         }
         
-        // Check for "Command finished with exit code X" pattern
         val exitCodePattern = Regex("""Command finished with exit code (\d+)""")
         val exitMatch = exitCodePattern.find(result)
         if (exitMatch != null) {
@@ -86,7 +72,6 @@ class DaemonShellExecutor(private val context: Context) : ShellExecutor {
             }
         }
         
-        // Success case
         return ShellResult(exitCode = 0, stdout = result, stderr = "")
     }
 }

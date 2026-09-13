@@ -51,7 +51,6 @@ class ErrorDetailsAdapter(
                         if (appIcon.tag == iconKey) appIcon.setImageBitmap(bitmap)
                     }
                 } catch (_: Exception) {
-                    // ignore
                 }
             }
         }

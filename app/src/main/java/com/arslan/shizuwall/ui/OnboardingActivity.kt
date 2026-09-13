@@ -47,7 +47,7 @@ class OnboardingActivity : BaseActivity() {
                 message = getString(R.string.welcome_message),
                 buttonText = getString(R.string.next),
                 onButtonClick = { goToNextPage() },
-                imageResId = R.mipmap.ic_launcher // app icon
+                imageResId = R.mipmap.ic_launcher
             )
         )
 
@@ -113,10 +113,8 @@ class OnboardingActivity : BaseActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // Permission granted, move to next page
             goToNextPage()
         } else {
-            // Permission denied, still move to next page
             goToNextPage()
         }
     }
@@ -128,16 +126,13 @@ class OnboardingActivity : BaseActivity() {
                     this,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED -> {
-                    // Permission already granted
                     goToNextPage()
                 }
                 else -> {
-                    // Request permission
                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
         } else {
-            // No permission needed for Android 12 and below
             goToNextPage()
         }
     }
@@ -158,7 +153,6 @@ class OnboardingActivity : BaseActivity() {
     }
 
     fun finishOnboarding() {
-        // Save that onboarding is complete
         getSharedPreferences("app_prefs", MODE_PRIVATE)
             .edit()
             .putBoolean("onboarding_complete", true)
@@ -171,7 +165,6 @@ class OnboardingActivity : BaseActivity() {
             .putBoolean(MainActivity.KEY_SKIP_ENABLE_CONFIRM, true)
             .apply()
 
-        // Navigate to MainActivity
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
@@ -188,7 +181,6 @@ class OnboardingActivity : BaseActivity() {
             } catch (ignore: Exception) {}
         }
 
-        // Update the last page based on the selected mode
         val lastPageIndex = pages.size - 1
         if (mode == "LADB") {
             pages[lastPageIndex] = OnboardingPage(

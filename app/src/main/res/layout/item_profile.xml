@@ -27,7 +27,6 @@
         android:paddingEnd="6dp"
         android:paddingBottom="14dp">
 
-        <!-- Leading avatar: profile glyph, swaps to a check ring when active -->
         <FrameLayout
             android:id="@+id/profileAvatar"
             android:layout_width="44dp"

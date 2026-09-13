@@ -57,11 +57,9 @@ class ShizukuSlideAdapter(
                     imageView.layoutParams = lp
                     return
                 } catch (_: IOException) {
-                    // ignore and fallback
                 }
             }
 
-            // Fallback icon
             imageView.setImageResource(R.drawable.ic_shizuku_black)
         }
     }

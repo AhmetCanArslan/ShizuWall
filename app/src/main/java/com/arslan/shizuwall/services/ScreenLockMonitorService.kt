@@ -72,7 +72,6 @@ class ScreenLockMonitorService : Service() {
                 stopSelf()
             }
         } else if (key == MainActivity.KEY_APP_MODES) {
-            // Reconcile when app modes change in Hybrid mode
             if (isModeActive()) {
                 reconcileCurrentState()
             }
@@ -99,7 +98,6 @@ class ScreenLockMonitorService : Service() {
 
                 Intent.ACTION_SCREEN_ON -> {
                     pendingLockJob?.cancel()
-                    // Some OEM builds may skip USER_PRESENT; poll keyguard state after SCREEN_ON.
                     startUnlockPolling()
                 }
             }
