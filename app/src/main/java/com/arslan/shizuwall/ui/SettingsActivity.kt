@@ -356,6 +356,7 @@ class SettingsActivity : BaseActivity() {
                                 MainActivity.KEY_FIREWALL_SAVED_ELAPSED,
                                 MainActivity.KEY_FIREWALL_UPDATE_TS,
                                 MainActivity.KEY_SMART_FOREGROUND_APP,
+                                MainActivity.KEY_SHIZUKU_SERVER_ID,
                                 AppLock.KEY_ENABLED,
                                 AppLock.KEY_PIN,
                                 AppLock.KEY_BIOMETRIC,

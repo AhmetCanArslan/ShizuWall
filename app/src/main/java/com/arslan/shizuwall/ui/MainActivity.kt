@@ -53,7 +53,6 @@ import com.arslan.shizuwall.utils.WhitelistFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
@@ -107,6 +106,7 @@ class MainActivity : BaseActivity() {
         const val DEFAULT_SCREEN_LOCK_DELAY_SECONDS = 2
         const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
+        const val KEY_SHIZUKU_SERVER_ID = "shizuku_server_id"
         const val KEY_APPLY_ROOT_RULES_AFTER_REBOOT = "apply_root_rules_after_reboot"
         const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"
         const val KEY_WORKING_MODE = "working_mode"
@@ -198,73 +198,36 @@ class MainActivity : BaseActivity() {
     }
 
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
-        val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
-        if (workingMode != WorkingMode.SHIZUKU.name) return@OnBinderReceivedListener
-
-        val autoEnable = sharedPreferences.getBoolean(KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
-        if (!autoEnable) {
+        if (currentWorkingMode() != WorkingMode.SHIZUKU) return@OnBinderReceivedListener
+        if (!sharedPreferences.getBoolean(KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)) {
             checkShizukuPermission()
             return@OnBinderReceivedListener
         }
+        if (!loadFirewallEnabled() && lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) autoEnableOnShizukuStart()
+    }
 
-        if (loadFirewallEnabled()) return@OnBinderReceivedListener
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            var binderReady = false
-            for (attempt in 1..10) {
-                try {
-                    if (Shizuku.pingBinder()) {
-                        binderReady = true
-                        break
-                    }
-                } catch (_: Throwable) {}
-                if (attempt < 10) delay(300L)
+    private fun autoEnableOnShizukuStart(selectedPkgs: List<String> = loadSelectedApps().toList()) {
+        if (selectedPkgs.isEmpty() && !firewallMode.allowsDynamicSelection()) return
+        val granted = runCatching { Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED }.getOrDefault(false)
+        if (!granted) {
+            pendingAutoEnable = true
+            pendingAutoEnableSelectedApps = selectedPkgs
+            try {
+                Shizuku.requestPermission(SHIZUKU_PERMISSION_REQUEST_CODE)
+            } catch (_: Exception) {
+                checkShizukuPermission()
             }
-
-            if (!binderReady) {
-                withContext(Dispatchers.Main) { checkShizukuPermission() }
-                return@launch
-            }
-
-            val selectedPkgs = loadSelectedApps().toList()
-            if (selectedPkgs.isEmpty() && !firewallMode.allowsDynamicSelection()) {
-                return@launch
-            }
-            if (loadFirewallEnabled()) return@launch
-
-            val hasPermission = try {
-                Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
-            } catch (e: Exception) {
-                false
-            }
-
-            withContext(Dispatchers.Main) {
-                if (!hasPermission) {
-                    pendingAutoEnable = true
-                    pendingAutoEnableSelectedApps = selectedPkgs
-                    try {
-                        Shizuku.requestPermission(SHIZUKU_PERMISSION_REQUEST_CODE)
-                    } catch (_: Exception) {
-                        checkShizukuPermission()
-                    }
-                    return@withContext
-                }
-
-                val skipConfirm = sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)
-                val targetPkgs = getTargetPackagesToBlock(selectedPkgs)
-                if (skipConfirm) {
-                    applyFirewallState(true, targetPkgs)
-                    return@withContext
-                }
-
-                val selectedAppsList = appList.filter { targetPkgs.contains(it.packageName) }
-                if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                    val allowPkgs = getWhitelistAllowPackages(selectedPkgs)
-                    showFirewallConfirmDialog(if (selectedAppsList.isNotEmpty()) selectedAppsList else emptyList(), targetPkgs, allowPkgs)
-                } else {
-                    pendingAutoEnable = true
-                    pendingAutoEnableSelectedApps = selectedPkgs
-                }
+            return
+        }
+        val targetPkgs = getTargetPackagesToBlock(selectedPkgs)
+        val allowPkgs = getWhitelistAllowPackages(selectedPkgs)
+        when {
+            sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false) -> applyFirewallState(true, targetPkgs, allowPkgs)
+            lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) ->
+                showFirewallConfirmDialog(appList.filter { targetPkgs.contains(it.packageName) }, targetPkgs, allowPkgs)
+            else -> {
+                pendingAutoEnable = true
+                pendingAutoEnableSelectedApps = selectedPkgs
             }
         }
     }
@@ -501,34 +464,10 @@ class MainActivity : BaseActivity() {
         loadInstalledApps(showLoadingIfListEmpty = !hasWarmCache)
 
         try {
-            val autoPref = sharedPreferences.getBoolean(KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
-            if (autoPref && !loadFirewallEnabled()) {
-                if (Shizuku.pingBinder()) {
-                    if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-                        if (!pendingAutoEnable) {
-                            val pkgs = loadSelectedApps().toList()
-                            if (pkgs.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
-                                val targetPkgs = getTargetPackagesToBlock(pkgs)
-                                val allowPkgs = getWhitelistAllowPackages(pkgs)
-                                if (sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
-                                    applyFirewallState(true, targetPkgs, allowPkgs)
-                                } else if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                                    val selectedAppsList = appList.filter { targetPkgs.contains(it.packageName) }
-                                    runOnUiThread {
-                                        showFirewallConfirmDialog(if (selectedAppsList.isNotEmpty()) selectedAppsList else emptyList(), targetPkgs, allowPkgs)
-                                    }
-                                } else {
-                                    pendingAutoEnable = true
-                                    pendingAutoEnableSelectedApps = pkgs
-                                }
-                            }
-                        }
-                    } else {
-                        pendingAutoEnable = true
-                        pendingAutoEnableSelectedApps = loadSelectedApps().toList()
-                        Shizuku.requestPermission(SHIZUKU_PERMISSION_REQUEST_CODE)
-                    }
-                }
+            if (sharedPreferences.getBoolean(KEY_AUTO_ENABLE_ON_SHIZUKU_START, false) &&
+                !loadFirewallEnabled() && !pendingAutoEnable && Shizuku.pingBinder()
+            ) {
+                autoEnableOnShizukuStart()
             }
         } catch (_: Exception) {
         }
@@ -571,6 +510,13 @@ class MainActivity : BaseActivity() {
 
         if (!::firewallToggle.isInitialized) {
             return
+        }
+
+        if (pendingAutoEnable && runCatching { Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED }.getOrDefault(false)) {
+            pendingAutoEnable = false
+            val pkgs = pendingAutoEnableSelectedApps ?: loadSelectedApps().toList()
+            pendingAutoEnableSelectedApps = null
+            firewallToggle.post { if (!loadFirewallEnabled()) autoEnableOnShizukuStart(pkgs) }
         }
 
         if (!isFirewallProcessRunning) {
@@ -718,21 +664,7 @@ class MainActivity : BaseActivity() {
                         pendingAutoEnable = false
                         val pkgs = pendingAutoEnableSelectedApps ?: appList.filter { it.isSelected }.map { it.key }
                         pendingAutoEnableSelectedApps = null
-                        if (pkgs.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
-                            val targetPkgs = getTargetPackagesToBlock(pkgs)
-                            val allowPkgs = getWhitelistAllowPackages(pkgs)
-                            val selectedApps = appList.filter { targetPkgs.contains(it.packageName) }
-                            if (sharedPreferences.getBoolean(KEY_SKIP_ENABLE_CONFIRM, false)) {
-                                applyFirewallState(true, targetPkgs, allowPkgs)
-                            } else if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                                if (selectedApps.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
-                                    showFirewallConfirmDialog(selectedApps, targetPkgs, allowPkgs)
-                                }
-                            } else {
-                                pendingAutoEnable = true
-                                pendingAutoEnableSelectedApps = pkgs
-                            }
-                        }
+                        autoEnableOnShizukuStart(pkgs)
                     }
                 } else {
                     pendingToggleEnable = false
