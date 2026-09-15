@@ -104,8 +104,8 @@
     <string name="grant_shizuku_permission_settings">Lütfen ayarlarınızda Shizuku izni verin</string>
     <string name="search_app">Uygulama ara</string>
     <string name="unselect_all">Tümünü Seçimi Kaldır</string>
-    <string name="deselect_all_apps">Tüm uygulamaların seçimi kaldırılsın mı?</string>
-    <string name="unselect">Seçimi Kaldır</string>
+    <string name="bulk_only_filtered">Yalnızca filtrelenen %d</string>
+    <string name="bulk_all_apps">Tüm %d uygulama</string>
     <string name="select_at_least_one_app">Lütfen en az bir uygulama seçin</string>
     <string name="enable">Etkinleştir</string>
     <string name="enable_firewall_confirm">Aşağıda listelenen %d uygulama için güvenlik duvarını etkinleştirmek istiyor musunuz?</string>
@@ -338,8 +338,6 @@
     <string name="floating_button_content_description">Güvenlik duvarını değiştir</string>
     <string name="overlay_permission_required">Yüzen buton için üzerine yazma izni gereklidir</string>
     <string name="scroll_to_top">Yukarı kaydır</string>
-    <string name="select">Seç</string>
-    <string name="select_all_apps_confirm">%d uygulama seçilsin mi?</string>
     <string name="apply_root_rules_after_reboot">Yeniden başlatma sonrası güvenlik duvarı kurallarını uygula</string>
     <string name="apply_root_rules_after_reboot_description">Önyükleme tamamlandıktan sonra son etkin güvenlik duvarı kurallarını root ile yeniden uygula</string>
     <string name="working_mode_root">Root (su)</string>

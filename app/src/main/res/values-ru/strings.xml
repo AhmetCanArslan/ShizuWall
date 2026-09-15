@@ -103,8 +103,8 @@
     <string name="grant_shizuku_permission_settings">Пожалуйста, предоставьте разрешение Shizuku в настройках</string>
     <string name="search_app">Поиск приложения</string>
     <string name="unselect_all">Снять выделение со всех</string>
-    <string name="deselect_all_apps">Снять выделение со всех приложений?</string>
-    <string name="unselect">Снять выделение</string>
+    <string name="bulk_only_filtered">Только отфильтрованные (%d)</string>
+    <string name="bulk_all_apps">Все приложения (%d)</string>
     <string name="select_at_least_one_app">Пожалуйста, выберите хотя бы одно приложение</string>
     <string name="enable">Включить</string>
     <string name="enable_firewall_confirm">Вы хотите включить брандмауэр для %d приложений, перечисленных ниже?</string>
@@ -340,8 +340,6 @@
     <string name="floating_button_content_description">Переключить брандмауэр</string>
     <string name="overlay_permission_required">Для плавающей кнопки требуется разрешение на отображение поверх других окон</string>
     <string name="scroll_to_top">Прокрутить вверх</string>
-    <string name="select">Выбрать</string>
-    <string name="select_all_apps_confirm">Выбрать %d приложений?</string>
     <string name="apply_root_rules_after_reboot">Применять правила брандмауэра после перезагрузки</string>
     <string name="apply_root_rules_after_reboot_description">Повторно применить последние активные правила брандмауэра с root после завершения загрузки</string>
     <string name="working_mode_root">Root (su)</string>

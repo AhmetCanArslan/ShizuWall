@@ -106,10 +106,8 @@
     <string name="grant_shizuku_permission_settings">कृपया सेटिंग्स में Shizuku अनुमति दें</string>
     <string name="search_app">ऐप खोजें</string>
     <string name="unselect_all">सभी अचयनित करें</string>
-    <string name="deselect_all_apps">सभी ऐप्स अचयनित करें?</string>
-    <string name="unselect">अचयनित करें</string>
-    <string name="select">चुनें</string>
-    <string name="select_all_apps_confirm">%d ऐप्स चुनें?</string>
+    <string name="bulk_only_filtered">केवल %d फ़िल्टर किए गए</string>
+    <string name="bulk_all_apps">सभी %d ऐप्स</string>
     <string name="select_at_least_one_app">कृपया कम से कम एक ऐप चुनें</string>
     <string name="enable">चालू करें</string>
     <string name="enable_firewall_confirm">क्या आप नीचे सूचीबद्ध %d ऐप्स के लिए फ़ायरवॉल चालू करना चाहते हैं?</string>

@@ -103,8 +103,8 @@
     <string name="grant_shizuku_permission_settings">設定で Shizuku の権限を許可してください</string>
     <string name="search_app">アプリを検索</string>
     <string name="unselect_all">すべての選択を解除</string>
-    <string name="deselect_all_apps">すべてのアプリの選択を解除しますか？</string>
-    <string name="unselect">選択解除</string>
+    <string name="bulk_only_filtered">絞り込み中の %d 件のみ</string>
+    <string name="bulk_all_apps">すべてのアプリ（%d 件）</string>
     <string name="select_at_least_one_app">少なくとも 1 つのアプリを選択してください</string>
     <string name="enable">有効化</string>
     <string name="enable_firewall_confirm">以下の %d 個のアプリに対してファイアウォールを有効にしますか？</string>
@@ -340,8 +340,6 @@
     <string name="floating_button_content_description">ファイアウォールを切り替え</string>
     <string name="overlay_permission_required">フローティングボタンにはオーバーレイ権限が必要です</string>
     <string name="scroll_to_top">一番上へスクロール</string>
-    <string name="select">選択</string>
-    <string name="select_all_apps_confirm">%d 個のアプリを選択しますか？</string>
     <string name="apply_root_rules_after_reboot">再起動後にファイアウォールルールを適用</string>
     <string name="apply_root_rules_after_reboot_description">起動完了後、最後に有効だったファイアウォールルールを root で再適用します</string>
     <string name="working_mode_root">Root (su)</string>

@@ -104,8 +104,8 @@
     <string name="grant_shizuku_permission_settings">يرجى منح إذن Shizuku في الإعدادات</string>
     <string name="search_app">البحث عن تطبيق</string>
     <string name="unselect_all">إلغاء تحديد الكل</string>
-    <string name="deselect_all_apps">إلغاء تحديد جميع التطبيقات؟</string>
-    <string name="unselect">إلغاء التحديد</string>
+    <string name="bulk_only_filtered">المفلترة فقط (%d)</string>
+    <string name="bulk_all_apps">كل التطبيقات (%d)</string>
     <string name="select_at_least_one_app">يرجى تحديد تطبيق واحد على الأقل</string>
     <string name="enable">تفعيل</string>
     <string name="enable_firewall_confirm">هل تريد تفعيل الجدار الناري لـ %d من التطبيقات المدرجة أدناه؟</string>
@@ -340,8 +340,6 @@
     <string name="floating_button_content_description">تغيير حالة الجدار الناري</string>
     <string name="overlay_permission_required">إذن العرض فوق التطبيقات الأخرى مطلوب للزر العائم</string>
     <string name="scroll_to_top">التمرير إلى الأعلى</string>
-    <string name="select">اختيار</string>
-    <string name="select_all_apps_confirm">هل تريد اختيار %d تطبيقات؟</string>
     <string name="apply_root_rules_after_reboot">تطبيق قواعد الجدار الناري بعد إعادة التشغيل</string>
     <string name="apply_root_rules_after_reboot_description">إعادة تطبيق آخر قواعد جدار ناري كانت نشطة بعد اكتمال الإقلاع باستخدام root</string>
     <string name="working_mode_root">Root (su)</string>

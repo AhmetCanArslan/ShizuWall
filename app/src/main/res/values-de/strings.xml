@@ -104,8 +104,8 @@
     <string name="grant_shizuku_permission_settings">Bitte erteilen Sie Shizuku-Berechtigung in den Einstellungen</string>
     <string name="search_app">App suchen</string>
     <string name="unselect_all">Alle abwählen</string>
-    <string name="deselect_all_apps">Alle Apps abwählen?</string>
-    <string name="unselect">Abwählen</string>
+    <string name="bulk_only_filtered">Nur %d gefilterte</string>
+    <string name="bulk_all_apps">Alle %d Apps</string>
     <string name="select_at_least_one_app">Bitte wählen Sie mindestens eine App aus</string>
     <string name="enable">Aktivieren</string>
     <string name="enable_firewall_confirm">Möchten Sie die Firewall für die unten aufgeführten %d Apps aktivieren?</string>
@@ -338,8 +338,6 @@
     <string name="floating_button_content_description">Firewall umschalten</string>
     <string name="overlay_permission_required">Überlagerungsberechtigung ist für die schwebende Schaltfläche erforderlich</string>
     <string name="scroll_to_top">Nach oben scrollen</string>
-    <string name="select">Auswählen</string>
-    <string name="select_all_apps_confirm">%d Apps auswählen?</string>
     <string name="apply_root_rules_after_reboot">Firewall-Regeln nach dem Neustart anwenden</string>
     <string name="apply_root_rules_after_reboot_description">Die zuletzt aktiven Firewall-Regeln nach abgeschlossenem Start mit Root erneut anwenden</string>
     <string name="working_mode_root">Root (su)</string>

@@ -104,8 +104,8 @@
     <string name="grant_shizuku_permission_settings">Por favor, conceda permissão Shizuku nas configurações</string>
     <string name="search_app">Buscar app</string>
     <string name="unselect_all">Desmarcar Todos</string>
-    <string name="deselect_all_apps">Desmarcar todos os apps?</string>
-    <string name="unselect">Desmarcar</string>
+    <string name="bulk_only_filtered">Apenas %d filtrados</string>
+    <string name="bulk_all_apps">Todos os %d apps</string>
     <string name="select_at_least_one_app">Por favor, selecione pelo menos um app</string>
     <string name="enable">Ativar</string>
     <string name="enable_firewall_confirm">Você quer ativar o firewall para %d apps listados abaixo?</string>
@@ -338,8 +338,6 @@
     <string name="floating_button_content_description">Alternar firewall</string>
     <string name="overlay_permission_required">A permissão de sobreposição é necessária para o botão flutuante</string>
     <string name="scroll_to_top">Rolar para o topo</string>
-    <string name="select">Selecionar</string>
-    <string name="select_all_apps_confirm">Selecionar %d aplicativos?</string>
     <string name="apply_root_rules_after_reboot">Aplicar regras do firewall após reiniciar</string>
     <string name="apply_root_rules_after_reboot_description">Reaplicar as últimas regras ativas do firewall com root depois que a inicialização terminar</string>
     <string name="working_mode_root">Root (su)</string>

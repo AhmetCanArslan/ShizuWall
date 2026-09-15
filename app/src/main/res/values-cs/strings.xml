@@ -105,8 +105,8 @@
     <string name="grant_shizuku_permission_settings">Prosím, udělte Shizuku oprávnění v nastavení</string>
     <string name="search_app">Vyhledávání</string>
     <string name="unselect_all">Zrušit oznašení aplikací</string>
-    <string name="deselect_all_apps">Přejete si zrušit označení všech aplikací?</string>
-    <string name="unselect">Zrušit označení</string>
+    <string name="bulk_only_filtered">Jen %d filtrovaných</string>
+    <string name="bulk_all_apps">Všech %d aplikací</string>
     <string name="select_at_least_one_app">Prosím vyberte aspoň jednu aplikaci</string>
     <string name="enable">Povolit</string>
     <string name="enable_firewall_confirm">Chcete povolit bránu firewall pro %d aplikací uvedených níže?</string>
@@ -355,8 +355,6 @@
     <string name="floating_button_notification_title">Plovoucí tlačítko firewallu</string>
     <string name="floating_button_content_description">Přepnout firewall</string>
     <string name="overlay_permission_required">Pro plovoucí tlačítko je vyžadováno oprávnění k překrytí</string>
-    <string name="select">Vybrat</string>
-    <string name="select_all_apps_confirm">Vybrat %d aplikací?</string>
     <string name="double_tap_or_long_press">Dvojitým klepnutím vyberete vše, dlouhým stiskem zrušíte výběr všeho</string>
 
     <string name="screen_lock_delay_title">Zpoždění uzamčení</string>

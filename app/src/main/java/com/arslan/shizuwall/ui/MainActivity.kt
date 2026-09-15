@@ -787,31 +787,12 @@ class MainActivity : BaseActivity() {
                     && !checkPermission(SHIZUKU_PERMISSION_REQUEST_CODE)
                 ) return true
 
-                val allSelected = selectableFilteredApps().all { it.isSelected }
-                if (allSelected) return true
-
-                showSelectAllConfirmDialog()
+                showBulkSelectDialog(select = true)
                 return true
             }
 
             override fun onLongPress(e: MotionEvent) {
-                if (!selectedCountText.isEnabled) return
-                if (appList.any { it.isSelected }) {
-                    MaterialAlertDialogBuilder(this@MainActivity)
-                        .setTitle(getString(R.string.unselect_all))
-                        .setMessage(getString(R.string.deselect_all_apps))
-                        .setPositiveButton(getString(R.string.unselect)) { _, _ ->
-                            val previouslySelected = appList.filter { it.isSelected }.map { it.key }
-                            for (i in appList.indices) appList[i] = appList[i].copy(isSelected = false)
-                            updateSelectedCount()
-                            saveSelectedApps()
-                            sortAndFilterApps(preserveScrollPosition = true)
-
-                            applyBulkNetworking(previouslySelected, isSelected = false, revertOnFail = false, failToastRes = R.string.failed_to_unblock_count)
-                        }
-                        .setNegativeButton(getString(R.string.cancel), null)
-                        .show()
-                }
+                if (selectedCountText.isEnabled) showBulkSelectDialog(select = false)
             }
         })
 
@@ -912,32 +893,27 @@ class MainActivity : BaseActivity() {
     private fun selectableFilteredApps(): List<AppInfo> =
         filteredAppList.filter { AppIds.isBlockable(it.uid) }
 
-    private fun showSelectAllConfirmDialog() {
-        val selectable = selectableFilteredApps()
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.select_all))
-            .setMessage(getString(R.string.select_all_apps_confirm, selectable.count { !it.isSelected }))
-            .setPositiveButton(getString(R.string.select)) { _, _ ->
-                val isChecked = true
-                val changedApps = selectable.filter { it.isSelected != isChecked }
-                if (changedApps.isNotEmpty()) {
-                    val packagesToUpdate = changedApps.map { it.key }
-                    val filteredKeys = selectable.map { it.key }.toSet()
-                    for (i in appList.indices) {
-                        val ai = appList[i]
-                        if (ai.key in filteredKeys) {
-                            appList[i] = ai.copy(isSelected = isChecked)
-                        }
-                    }
-                    updateSelectedCount()
-                    saveSelectedApps()
-                    sortAndFilterApps(preserveScrollPosition = true)
-
-                    applyBulkNetworking(packagesToUpdate, isSelected = true, revertOnFail = true, failToastRes = R.string.failed_to_update_rules_count)
-                }
-            }
+    private fun showBulkSelectDialog(select: Boolean) {
+        val filtered = selectableFilteredApps().filter { it.isSelected != select }
+        val all = appList.filter { it.isSelected != select && AppIds.isBlockable(it.uid) && (showSystemApps || !it.isSystem || it.isSelected) }
+        if (all.isEmpty()) return
+        val apply = { changed: List<AppInfo> ->
+            val keys = changed.map { it.key }.toSet()
+            for (i in appList.indices) if (appList[i].key in keys) appList[i] = appList[i].copy(isSelected = select)
+            updateSelectedCount()
+            saveSelectedApps()
+            sortAndFilterApps(preserveScrollPosition = true)
+            applyBulkNetworking(keys.toList(), isSelected = select, revertOnFail = select,
+                failToastRes = if (select) R.string.failed_to_update_rules_count else R.string.failed_to_unblock_count)
+        }
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(getString(if (select) R.string.select_all else R.string.unselect_all))
+            .setPositiveButton(getString(R.string.bulk_all_apps, all.size)) { _, _ -> apply(all) }
             .setNegativeButton(getString(R.string.cancel), null)
-            .show()
+        if (filtered.isNotEmpty() && filtered.size < all.size) {
+            dialog.setNeutralButton(getString(R.string.bulk_only_filtered, filtered.size)) { _, _ -> apply(filtered) }
+        }
+        dialog.show()
     }
 
     private fun applyBulkNetworking(keys: List<String>, isSelected: Boolean, revertOnFail: Boolean, failToastRes: Int) {

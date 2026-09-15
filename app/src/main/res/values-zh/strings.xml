@@ -104,8 +104,8 @@
     <string name="grant_shizuku_permission_settings">请在设置中授予 Shizuku 权限</string>
     <string name="search_app">搜索应用</string>
     <string name="unselect_all">取消全选</string>
-    <string name="deselect_all_apps">取消选择所有应用？</string>
-    <string name="unselect">取消选择</string>
+    <string name="bulk_only_filtered">仅筛选的 %d 个</string>
+    <string name="bulk_all_apps">全部 %d 个应用</string>
     <string name="select_at_least_one_app">请至少选择一个应用</string>
     <string name="enable">启用</string>
     <string name="enable_firewall_confirm">您要为下面列出的 %d 个应用启用防火墙吗？</string>
@@ -338,8 +338,6 @@
     <string name="floating_button_content_description">切换防火墙</string>
     <string name="overlay_permission_required">悬浮按钮需要悬浮窗权限</string>
     <string name="scroll_to_top">滚动到顶部</string>
-    <string name="select">选择</string>
-    <string name="select_all_apps_confirm">选择 %d 个应用吗？</string>
     <string name="apply_root_rules_after_reboot">重启后应用防火墙规则</string>
     <string name="apply_root_rules_after_reboot_description">设备启动完成后，通过 root 重新应用上一次生效的防火墙规则</string>
     <string name="working_mode_root">Root (su)</string>
