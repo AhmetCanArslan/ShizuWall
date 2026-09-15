@@ -16,6 +16,18 @@ object LadbLogStore {
             .getBoolean(KEY_LOGGING_ENABLED, false)
     }
 
+    fun setEnabled(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .edit().putBoolean(KEY_LOGGING_ENABLED, enabled).apply()
+    }
+
+    fun read(context: Context): String =
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).getString(KEY_LOGS, "") ?: ""
+
+    fun clear(context: Context) {
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().remove(KEY_LOGS).apply()
+    }
+
     fun append(context: Context, message: String) {
         if (!isEnabled(context)) return
 

@@ -18,6 +18,7 @@ import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.arslan.shizuwall.ladb.LadbLogStore
 import com.arslan.shizuwall.ladb.LadbManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -176,45 +177,15 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     }
 
     private fun appendLog(message: String) {
-        if (!getLoggingEnabled()) return
-        
-        runOnUiThread {
-            val timestamp = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date())
-            val logEntry = "[$timestamp] $message\n"
-            val currentLogs = tvLadbLogs.text.toString()
-            val newLogs = currentLogs + logEntry
-            
-            val lines = newLogs.split("\n")
-            val trimmedLogs = if (lines.size > 1000) {
-                lines.takeLast(1000).joinToString("\n") + "\n"
-            } else {
-                newLogs
-            }
-            
-            tvLadbLogs.text = trimmedLogs
-            
-            saveLogs(trimmedLogs)
-            
-            val scrollView = tvLadbLogs.parent as? NestedScrollView
-            scrollView?.post {
-                scrollView.fullScroll(View.FOCUS_DOWN)
-            }
-        }
+        if (!LadbLogStore.isEnabled(this)) return
+        LadbLogStore.append(this, message)
+        runOnUiThread { showLogs(LadbLogStore.read(this)) }
     }
 
-    private fun saveLogs(logs: String) {
-        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
-        prefs.edit().putString("logs", logs).apply()
-    }
-
-    private fun loadLogs(): String {
-        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
-        return prefs.getString("logs", "") ?: ""
-    }
-
-    private fun getLoggingEnabled(): Boolean {
-        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
-        return prefs.getBoolean("logging_enabled", false)
+    private fun showLogs(logs: String) {
+        tvLadbLogs.text = logs
+        val scrollView = tvLadbLogs.parent as? NestedScrollView
+        scrollView?.post { scrollView.fullScroll(View.FOCUS_DOWN) }
     }
 
     private fun animateLogsContainer(show: Boolean) {
@@ -237,12 +208,12 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 .setListener(object : android.animation.Animator.AnimatorListener {
                     override fun onAnimationStart(animation: android.animation.Animator) {}
                     override fun onAnimationEnd(animation: android.animation.Animator) {
-                        if (!getLoggingEnabled()) {
+                        if (!LadbLogStore.isEnabled(this@LadbSetupActivity)) {
                             logsContainer.visibility = View.GONE
                         }
                     }
                     override fun onAnimationCancel(animation: android.animation.Animator) {
-                        if (!getLoggingEnabled()) {
+                        if (!LadbLogStore.isEnabled(this@LadbSetupActivity)) {
                             logsContainer.visibility = View.GONE
                             logsContainer.alpha = 0f
                         }
@@ -251,11 +222,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 })
                 .start()
         }
-    }
-
-    private fun setLoggingEnabled(enabled: Boolean) {
-        val prefs = getSharedPreferences("ladb_logs", Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("logging_enabled", enabled).apply()
     }
 
     private fun showLadbErrorDialog(title: String, logs: String) {
@@ -416,12 +382,12 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         btnCheckAndConnect.setOnClickListener { handleCheckAndConnect() }
 
         setupDaemonCommandsDropdown()
-        switchEnableLogs.isChecked = getLoggingEnabled()
+        switchEnableLogs.isChecked = LadbLogStore.isEnabled(this)
         
-        logsContainer.visibility = if (getLoggingEnabled()) View.VISIBLE else View.GONE
+        logsContainer.visibility = if (LadbLogStore.isEnabled(this)) View.VISIBLE else View.GONE
 
         switchEnableLogs.setOnCheckedChangeListener { _, isChecked ->
-            setLoggingEnabled(isChecked)
+            LadbLogStore.setEnabled(this, isChecked)
             animateLogsContainer(isChecked)
             if (isChecked) {
                 appendLog(getString(R.string.log_logging_enabled))
@@ -464,14 +430,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             switchAdvancedMode.isChecked = !switchAdvancedMode.isChecked
         }
 
-        val savedLogs = loadLogs()
-        if (savedLogs.isNotEmpty()) {
-            tvLadbLogs.text = savedLogs
-            val scrollView = tvLadbLogs.parent as? NestedScrollView
-            scrollView?.post {
-                scrollView.fullScroll(View.FOCUS_DOWN)
-            }
-        }
+        LadbLogStore.read(this).takeIf { it.isNotEmpty() }?.let { showLogs(it) }
 
         ladbManager = LadbManager.getInstance(this)
         daemonManager = PersistentDaemonManager(this)
@@ -594,7 +553,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
         btnClearLogs.setOnClickListener {
             tvLadbLogs.text = ""
-            saveLogs("")
+            LadbLogStore.clear(this)
             Snackbar.make(rootView, R.string.log_logs_cleared, Snackbar.LENGTH_SHORT).show()
         }
 
