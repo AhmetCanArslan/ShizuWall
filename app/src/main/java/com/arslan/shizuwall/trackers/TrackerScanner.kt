@@ -1,7 +1,9 @@
 package com.arslan.shizuwall.trackers
 
 import android.content.Context
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import com.arslan.shizuwall.utils.CrossUserAppInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.DataInputStream
@@ -18,16 +20,19 @@ object TrackerScanner {
 
     private const val CACHE_PREFIX = "scan:"
 
-    fun cachedResult(context: Context, packageName: String): ScanResult? {
+    private fun packageInfo(context: Context, packageName: String, userId: Int): PackageInfo? = try {
+        context.packageManager.getPackageInfo(packageName, 0)
+    } catch (_: PackageManager.NameNotFoundException) {
+        CrossUserAppInfo.applicationInfo(context, packageName, userId)?.sourceDir?.let { path ->
+            context.packageManager.getPackageArchiveInfo(path, 0)?.apply { applicationInfo?.sourceDir = path }
+        }
+    }
+
+    fun cachedResult(context: Context, packageName: String, userId: Int = 0): ScanResult? {
         val definitions = TrackerRegistry.trackersIfLoaded() ?: return null
         if (definitions.isEmpty()) return null
 
-        val versionCode = try {
-            @Suppress("DEPRECATION")
-            context.packageManager.getPackageInfo(packageName, 0).longVersionCode
-        } catch (_: PackageManager.NameNotFoundException) {
-            return null
-        }
+        val versionCode = packageInfo(context, packageName, userId)?.longVersionCode ?: return null
 
         val ids = cachedIds(context, packageName, versionCode, TrackerRegistry.stamp(context)) ?: return null
         return ScanResult.Success(definitions.filter { it.id in ids }.sortedBy { it.name.lowercase() })
@@ -41,20 +46,13 @@ object TrackerScanner {
         return parts[2].split(',').mapNotNull { it.toIntOrNull() }.toSet()
     }
 
-    suspend fun scan(context: Context, packageName: String): ScanResult =
+    suspend fun scan(context: Context, packageName: String, userId: Int = 0): ScanResult =
         withContext(Dispatchers.IO) {
             val definitions = TrackerRegistry.trackers(context)
             if (definitions.isEmpty()) return@withContext ScanResult.Failed
 
-            val pm = context.packageManager
-            val packageInfo = try {
-                @Suppress("DEPRECATION")
-                pm.getPackageInfo(packageName, 0)
-            } catch (_: PackageManager.NameNotFoundException) {
-                return@withContext ScanResult.Failed
-            }
+            val packageInfo = packageInfo(context, packageName, userId) ?: return@withContext ScanResult.Failed
 
-            @Suppress("DEPRECATION")
             val versionCode = packageInfo.longVersionCode
             val stamp = TrackerRegistry.stamp(context)
             val cacheKey = "$CACHE_PREFIX$packageName"

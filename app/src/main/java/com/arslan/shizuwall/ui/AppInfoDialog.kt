@@ -50,7 +50,7 @@ object AppInfoDialog {
         iconView.setImageDrawable(CrossUserAppInfo.icon(context, packageName, userId))
         metaView.text = buildMeta(context, packageInfo)
 
-        val cachedResult = TrackerScanner.cachedResult(context, packageName)
+        val cachedResult = TrackerScanner.cachedResult(context, packageName, userId)
         if (cachedResult != null) {
             renderTrackers(context, cachedResult, loadingView, summaryView, listView, noteView)
         }
@@ -67,7 +67,7 @@ object AppInfoDialog {
         if (cachedResult != null) return
 
         owner.lifecycleScope.launch {
-            val result = TrackerScanner.scan(context, packageName)
+            val result = TrackerScanner.scan(context, packageName, userId)
             if (!dialog.isShowing) return@launch
             renderTrackers(context, result, loadingView, summaryView, listView, noteView)
         }
