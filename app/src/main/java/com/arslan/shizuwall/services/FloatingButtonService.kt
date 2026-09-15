@@ -7,19 +7,11 @@ import android.os.IBinder
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
-import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
-import com.arslan.shizuwall.shell.ShellExecutorBlocking
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.FirewallUtils
-import com.arslan.shizuwall.utils.ShizukuPackageResolver
-import com.arslan.shizuwall.utils.WhitelistFilter
 import kotlinx.coroutines.*
-import com.arslan.shizuwall.firewall.FirewallCommands
-import com.arslan.shizuwall.firewall.FirewallTargets
 
 class FloatingButtonService : Service() {
 
@@ -154,7 +146,7 @@ class FloatingButtonService : Service() {
 
     private fun showFloatingButton() {
         if (!android.provider.Settings.canDrawOverlays(this)) {
-            Toast.makeText(this, getString(R.string.overlay_permission_required), Toast.LENGTH_SHORT).show()
+            android.widget.Toast.makeText(this, getString(R.string.overlay_permission_required), android.widget.Toast.LENGTH_SHORT).show()
             stopSelf()
             return
         }
@@ -356,175 +348,21 @@ class FloatingButtonService : Service() {
     }
 
     private fun onFabClicked() {
-        try {
-            val enabled = loadFirewallEnabled()
-            if (enabled) {
-                if (!checkBackendReady()) return
-                scope.launch {
-                    try {
-                        applyDisableFirewall()
-                    } catch (e: Exception) {
-                        Toast.makeText(this@FloatingButtonService, getString(R.string.failed_to_disable_firewall), Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } else {
-                val selectedApps = loadSelectedApps()
-                val firewallMode = FirewallMode.fromName(
-                    sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
-                )
-                val targetApps: List<String>
-                val whitelistAllowApps: List<String>
-                if (firewallMode == FirewallMode.WHITELIST) {
-                val showSystem = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
-                val result = WhitelistFilter.compute(this, selectedApps, showSystem)
-                    targetApps = result.toBlock
-                    whitelistAllowApps = result.toAllow
-                } else {
-                    targetApps = selectedApps
-                    whitelistAllowApps = emptyList()
-                }
-                if (targetApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
-                    Toast.makeText(this, getString(R.string.no_apps_selected), Toast.LENGTH_SHORT).show()
-                    return
-                }
-                if (!checkBackendReady()) return
-                scope.launch {
-                    try {
-                        applyEnableFirewall(targetApps, whitelistAllowApps)
-                    } catch (e: Exception) {
-                        Toast.makeText(this@FloatingButtonService, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()
-                    }
-                }
+        if (loadFirewallEnabled()) {
+            if (!FirewallUtils.checkBackendReady(this)) return
+            scope.launch {
+                FirewallUtils.disable(this@FloatingButtonService, sharedPreferences)
+                updateFabAppearance()
             }
-        } catch (e: Exception) {
-            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val targets = FirewallUtils.enableTargets(this, sharedPreferences) ?: return
+        if (!FirewallUtils.checkBackendReady(this)) return
+        scope.launch {
+            FirewallUtils.enable(this@FloatingButtonService, sharedPreferences, targets)
+            updateFabAppearance()
         }
     }
 
     private fun loadFirewallEnabled(): Boolean = FirewallUtils.loadFirewallEnabled(sharedPreferences)
-
-    private fun loadSelectedApps(): List<String> = FirewallUtils.loadSelectedApps(this, sharedPreferences)
-
-    private fun loadActivePackages(): Set<String> = FirewallUtils.loadActivePackages(sharedPreferences)
-
-    private fun checkBackendReady(): Boolean = FirewallUtils.checkBackendReady(this)
-
-    private suspend fun applyEnableFirewall(packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()) {
-        val firewallMode = FirewallMode.fromName(
-            sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
-        )
-
-        if (firewallMode.requiresForegroundDetection()) {
-            ForegroundDetectionService.start(this@FloatingButtonService)
-        }
-
-        withContext(Dispatchers.IO) {
-            val successful = enableFirewall(packageNames, whitelistAllowApps)
-            if (successful.isNotEmpty() || firewallMode.allowsDynamicSelection()) {
-                saveFirewallEnabled(true)
-                saveActivePackages(successful.toSet())
-                
-                withContext(Dispatchers.Main) {
-                    if (sharedPreferences.getBoolean(KEY_FLOATING_BUTTON_ENABLED, false)) {
-                        start(this@FloatingButtonService)
-                    }
-                }
-            } else {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@FloatingButtonService, getString(R.string.failed_to_enable_firewall), Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-        updateFabAppearance()
-    }
-
-    private suspend fun applyDisableFirewall() {
-        val active = loadActivePackages()
-        withContext(Dispatchers.IO) {
-            val ok = disableFirewall(active.toList())
-            if (ok) {
-                saveFirewallEnabled(false)
-                saveActivePackages(emptySet())
-            } else {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@FloatingButtonService, getString(R.string.failed_to_disable_firewall), Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-        updateFabAppearance()
-    }
-
-    private fun enableFirewall(packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()): List<String> {
-        val successful = mutableListOf<String>()
-        if (!ShellExecutorBlocking.runBlockingSuccess(this, FirewallCommands.CHAIN3_ENABLE)) return successful
-
-        val firewallMode = FirewallMode.fromName(
-            sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
-        )
-        val effectiveTargets = FirewallTargets.effectiveBlockList(
-            firewallMode,
-            packageNames,
-            ScreenLockModeReceiver.isDeviceLocked(this),
-            FirewallTargets.parseAppModes(sharedPreferences.getString(MainActivity.KEY_APP_MODES, "{}"))
-        )
-
-        val selfPkg = packageName
-        val toBlock = effectiveTargets.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
-        val toAllow = whitelistAllowApps.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
-
-        val blockResults = ShellExecutorBlocking.execBatchBlocking(
-            this,
-            FirewallCommands.blockAll(toBlock)
-        )
-        toBlock.forEachIndexed { index, pkg ->
-            if (blockResults[index].isEffectivelySuccess) successful.add(pkg)
-        }
-
-        ShellExecutorBlocking.execBatchBlocking(
-            this,
-            FirewallCommands.unblockAll(toAllow)
-        )
-
-        return successful
-    }
-
-    private fun disableFirewall(packageNames: List<String>): Boolean {
-        var chainDisabled = false
-        val selfPkg = packageName
-        val toUnblock = packageNames.toMutableList()
-
-        val firewallMode = FirewallMode.fromName(
-            sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
-        )
-        if (firewallMode.requiresForegroundDetection()) {
-            val currentFgApp = sharedPreferences.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
-            if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) {
-                toUnblock.add(currentFgApp)
-            }
-        }
-
-        ShellExecutorBlocking.execBatchBlocking(
-            this,
-            toUnblock.filterNot { it == selfPkg || ShizukuPackageResolver.isShizukuPackage(this, it) }
-                .map { FirewallCommands.unblock(it) }
-        )
-        chainDisabled = ShellExecutorBlocking.runBlockingSuccess(this, FirewallCommands.CHAIN3_DISABLE)
-
-        if (firewallMode.requiresForegroundDetection()) {
-            sharedPreferences.edit()
-                .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
-                .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
-                .apply()
-        }
-
-        return chainDisabled
-    }
-
-    private fun saveFirewallEnabled(enabled: Boolean) {
-        FirewallUtils.saveFirewallEnabled(this, sharedPreferences, enabled)
-    }
-
-    private fun saveActivePackages(packages: Set<String>) {
-        FirewallUtils.saveActivePackages(sharedPreferences, packages)
-    }
 }

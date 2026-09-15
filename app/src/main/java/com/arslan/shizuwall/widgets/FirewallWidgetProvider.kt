@@ -5,8 +5,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.widget.RemoteViews
 import android.widget.Toast
 import com.arslan.shizuwall.FirewallMode
@@ -32,16 +30,15 @@ class FirewallWidgetProvider : AppWidgetProvider() {
         super.onReceive(context, intent)
         if (intent.action == ACTION_WIDGET_CLICK) {
             val sharedPreferences = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-            val isEnabled = loadFirewallEnabled(sharedPreferences)
-            val newState = !isEnabled
+            val newState = !FirewallUtils.loadFirewallEnabled(sharedPreferences)
 
-            if (!checkShizukuPermission(context)) {
+            if (!FirewallUtils.checkBackendReady(context)) {
                 return
             }
 
             var selectedApps: List<String> = emptyList()
             if (newState) {
-                selectedApps = loadSelectedApps(context, sharedPreferences)
+                selectedApps = FirewallUtils.loadSelectedApps(context, sharedPreferences)
                 val firewallMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
 
                 if (selectedApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
@@ -78,8 +75,7 @@ class FirewallWidgetProvider : AppWidgetProvider() {
 
         fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
             val sharedPreferences = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-            val isEnabled = loadFirewallEnabled(sharedPreferences)
-            updateAppWidgetOptimistic(context, appWidgetManager, appWidgetId, isEnabled)
+            updateAppWidgetOptimistic(context, appWidgetManager, appWidgetId, FirewallUtils.loadFirewallEnabled(sharedPreferences))
         }
 
         private fun updateAppWidgetOptimistic(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, isEnabled: Boolean) {
@@ -100,11 +96,5 @@ class FirewallWidgetProvider : AppWidgetProvider() {
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
-
-        private fun loadFirewallEnabled(sharedPreferences: SharedPreferences): Boolean = FirewallUtils.loadFirewallEnabled(sharedPreferences)
-
-        private fun loadSelectedApps(context: Context, sharedPreferences: SharedPreferences): List<String> = FirewallUtils.loadSelectedApps(context, sharedPreferences)
-
-        private fun checkShizukuPermission(context: Context): Boolean = FirewallUtils.checkBackendReady(context)
     }
 }
