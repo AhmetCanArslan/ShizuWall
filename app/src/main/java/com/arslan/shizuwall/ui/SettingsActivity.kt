@@ -312,12 +312,9 @@ class SettingsActivity : BaseActivity() {
             ok = false
         }
 
-        ok = deleteChildren(filesDir) && ok
-        ok = deleteChildren(cacheDir) && ok
-        ok = deleteChildren(codeCacheDir) && ok
-        ok = deleteChildren(noBackupFilesDir) && ok
-        ok = deleteChildren(externalCacheDir) && ok
-        ok = deleteChildren(getExternalFilesDir(null)) && ok
+        for (dir in listOf(filesDir, cacheDir, codeCacheDir, noBackupFilesDir, externalCacheDir, getExternalFilesDir(null))) {
+            ok = (dir?.listFiles()?.all { it.deleteRecursively() } ?: true) && ok
+        }
 
         return ok
     }
@@ -343,28 +340,6 @@ class SettingsActivity : BaseActivity() {
             }
         }
         return ok
-    }
-
-    private fun deleteChildren(dir: File?): Boolean {
-        if (dir == null || !dir.exists()) return true
-        var ok = true
-        val children = dir.listFiles() ?: return true
-        for (child in children) {
-            if (!deleteRecursively(child)) ok = false
-        }
-        return ok
-    }
-
-    private fun deleteRecursively(file: File): Boolean {
-        if (file.isDirectory) {
-            val children = file.listFiles()
-            if (children != null) {
-                for (child in children) {
-                    if (!deleteRecursively(child)) return false
-                }
-            }
-        }
-        return file.delete() || !file.exists()
     }
 
     private suspend fun exportToUri(uri: Uri) {
@@ -424,17 +399,11 @@ class SettingsActivity : BaseActivity() {
                 } ?: throw IllegalStateException("Unable to open input stream")
 
                 val obj = JSONObject(content)
-                if (obj.optString("schema") == EXPORT_SCHEMA && obj.has("files")) {
-                    val version = obj.optInt("version", 1)
-                    if (version <= EXPORT_VERSION) {
-                        if (!importStructuredBackup(obj)) {
-                            android.util.Log.w("SettingsActivity", "Structured import completed with warnings")
-                        }
-                    } else {
-                        importLegacyBackup(obj)
-                    }
-                } else {
-                    importLegacyBackup(obj)
+                if (obj.optString("schema") != EXPORT_SCHEMA || obj.optInt("version", 1) > EXPORT_VERSION) {
+                    throw IllegalArgumentException("Unsupported backup format")
+                }
+                if (!importStructuredBackup(obj)) {
+                    android.util.Log.w("SettingsActivity", "Structured import completed with warnings")
                 }
 
                 val sp = getSharedPreferences(MainActivity.PREF_NAME, MODE_PRIVATE)
@@ -553,69 +522,6 @@ class SettingsActivity : BaseActivity() {
         return success
     }
 
-    private fun importLegacyBackup(obj: JSONObject) {
-        val sp = getSharedPreferences(MainActivity.PREF_NAME, MODE_PRIVATE)
-        val editor = sp.edit()
-
-        val selectedKey = if (obj.has("selected")) "selected" else MainActivity.KEY_SELECTED_APPS
-        val selectedJson = obj.optJSONArray(selectedKey)
-        if (selectedJson != null) {
-            editor.putStringSet(MainActivity.KEY_SELECTED_APPS, jsonArrayToStringSet(selectedJson))
-        }
-
-        val favoritesKey = if (obj.has("favorites")) "favorites" else MainActivity.KEY_FAVORITE_APPS
-        val favoritesJson = obj.optJSONArray(favoritesKey)
-        if (favoritesJson != null) {
-            editor.putStringSet(MainActivity.KEY_FAVORITE_APPS, jsonArrayToStringSet(favoritesJson))
-        }
-
-        val reserved = setOf(
-            "schema",
-            "files",
-            "version",
-            "exported_at",
-            "selected",
-            "favorites",
-            "ladb_config"
-        )
-
-        val keys = obj.keys()
-        while (keys.hasNext()) {
-            val key = keys.next()
-            if (key in reserved || key in APP_LOCK_KEYS) continue
-
-            val value = obj.opt(key)
-            when (value) {
-                is Boolean -> editor.putBoolean(key, value)
-                is String -> editor.putString(key, value)
-                is Int -> editor.putInt(key, value)
-                is Long -> editor.putLong(key, value)
-                is Double -> editor.putFloat(key, value.toFloat())
-                is JSONArray -> editor.putStringSet(key, jsonArrayToStringSet(value))
-            }
-        }
-
-        editor.apply()
-
-        val ladbObj = obj.optJSONObject("ladb_config")
-        if (ladbObj != null) {
-            val ladbEditor = getSharedPreferences(LadbManager.PREFS_NAME, MODE_PRIVATE).edit()
-            val ladbKeys = ladbObj.keys()
-            while (ladbKeys.hasNext()) {
-                val key = ladbKeys.next()
-                when (val value = ladbObj.opt(key)) {
-                    is Boolean -> ladbEditor.putBoolean(key, value)
-                    is String -> ladbEditor.putString(key, value)
-                    is Int -> ladbEditor.putInt(key, value)
-                    is Long -> ladbEditor.putLong(key, value)
-                    is Double -> ladbEditor.putFloat(key, value.toFloat())
-                    is JSONArray -> ladbEditor.putStringSet(key, jsonArrayToStringSet(value))
-                }
-            }
-            ladbEditor.apply()
-        }
-    }
-
     private fun applyPreferenceEntry(editor: SharedPreferences.Editor, entry: JSONObject) {
         val key = entry.optString("key", "")
         if (key.isEmpty()) return
@@ -648,15 +554,11 @@ class SettingsActivity : BaseActivity() {
     private fun sanitizeSelectedApps(sp: SharedPreferences) {
         val selected = sp.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
         val filtered = selected
-            .filterNot { isShizukuPackage(it) }
+            .filterNot { ShizukuPackageResolver.isShizukuPackage(this, it) }
             .filterTo(mutableSetOf()) { PerUidFirewall.isBlockableKey(this, it) }
         sp.edit()
             .putStringSet(MainActivity.KEY_SELECTED_APPS, filtered)
             .putInt(MainActivity.KEY_SELECTED_COUNT, filtered.size)
             .apply()
-    }
-
-    private fun isShizukuPackage(pkg: String): Boolean {
-        return ShizukuPackageResolver.isShizukuPackage(this, pkg)
     }
 }
