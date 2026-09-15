@@ -57,7 +57,6 @@ class OnboardingActivity : BaseActivity() {
                 message = getString(R.string.notification_permission_message),
                 buttonText = getString(R.string.grant_permission),
                 onButtonClick = { requestNotificationPermission() },
-                isPermissionPage = true,
                 imageResId = R.drawable.ic_notification
             )
         )
@@ -92,9 +91,7 @@ class OnboardingActivity : BaseActivity() {
                 onSecondaryButtonClick = { setWorkingMode("LADB") },
                 tertiaryButtonText = getString(R.string.use_root),
                 onTertiaryButtonClick = { setWorkingMode("ROOT") },
-                isModeSelectionPage = true,
-                imageResId = R.drawable.ic_settings,
-                isSecondaryButtonEnabled = true
+                imageResId = R.drawable.ic_settings
             )
         )
 
@@ -111,13 +108,7 @@ class OnboardingActivity : BaseActivity() {
 
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            goToNextPage()
-        } else {
-            goToNextPage()
-        }
-    }
+    ) { goToNextPage() }
 
     private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -218,13 +209,9 @@ data class OnboardingPage(
     val message: String,
     val buttonText: String,
     val onButtonClick: () -> Unit,
-    val isPermissionPage: Boolean = false,
-    val isModeSelectionPage: Boolean = false,
     val secondaryButtonText: String? = null,
     val onSecondaryButtonClick: (() -> Unit)? = null,
     val tertiaryButtonText: String? = null,
     val onTertiaryButtonClick: (() -> Unit)? = null,
-    val imageResId: Int? = null,
-    val isSecondaryButtonEnabled: Boolean = true,
-    val isTertiaryButtonEnabled: Boolean = true
+    val imageResId: Int? = null
 )

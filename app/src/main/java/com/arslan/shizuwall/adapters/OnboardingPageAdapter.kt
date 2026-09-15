@@ -50,13 +50,7 @@ class OnboardingPageAdapter(
             if (page.secondaryButtonText != null && page.onSecondaryButtonClick != null) {
                 secondaryButton.visibility = View.VISIBLE
                 secondaryButton.text = page.secondaryButtonText
-                secondaryButton.isEnabled = page.isSecondaryButtonEnabled
-                secondaryButton.alpha = if (page.isSecondaryButtonEnabled) 1.0f else 0.5f
-                secondaryButton.setOnClickListener { 
-                    if (page.isSecondaryButtonEnabled) {
-                        page.onSecondaryButtonClick.invoke()
-                    }
-                }
+                secondaryButton.setOnClickListener { page.onSecondaryButtonClick.invoke() }
             } else {
                 secondaryButton.visibility = View.GONE
             }
@@ -64,13 +58,7 @@ class OnboardingPageAdapter(
             if (page.tertiaryButtonText != null && page.onTertiaryButtonClick != null) {
                 tertiaryButton.visibility = View.VISIBLE
                 tertiaryButton.text = page.tertiaryButtonText
-                tertiaryButton.isEnabled = page.isTertiaryButtonEnabled
-                tertiaryButton.alpha = if (page.isTertiaryButtonEnabled) 1.0f else 0.5f
-                tertiaryButton.setOnClickListener { 
-                    if (page.isTertiaryButtonEnabled) {
-                        page.onTertiaryButtonClick.invoke()
-                    }
-                }
+                tertiaryButton.setOnClickListener { page.onTertiaryButtonClick.invoke() }
             } else {
                 tertiaryButton.visibility = View.GONE
             }
