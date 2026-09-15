@@ -320,6 +320,19 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         showPairingCodeNotification()
     }
 
+    override fun dispatchTouchEvent(ev: android.view.MotionEvent): Boolean {
+        val focused = currentFocus
+        if (ev.action == android.view.MotionEvent.ACTION_DOWN && focused is android.widget.EditText) {
+            val r = android.graphics.Rect().also { focused.getGlobalVisibleRect(it) }
+            if (!r.contains(ev.rawX.toInt(), ev.rawY.toInt())) {
+                focused.clearFocus()
+                getSystemService(android.view.inputmethod.InputMethodManager::class.java)
+                    ?.hideSoftInputFromWindow(focused.windowToken, 0)
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
