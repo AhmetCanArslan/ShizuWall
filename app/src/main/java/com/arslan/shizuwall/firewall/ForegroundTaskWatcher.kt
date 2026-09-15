@@ -23,7 +23,9 @@ object ForegroundTaskWatcher {
     var isActive = false
         private set
 
-    private var mode: WorkingMode? = null
+    @Volatile
+    var mode: WorkingMode? = null
+        private set
     private var socket: Socket? = null
     private var reader: Thread? = null
     private var shizukuListener: IShizuWallForegroundListener? = null

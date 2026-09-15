@@ -37,9 +37,9 @@ class FirewallTargetsTest {
     }
 
     @Test
-    fun smartForegroundBlocksNothingAtEnableTime() {
-        assertEquals(emptyList<String>(), block(FirewallMode.SMART_FOREGROUND, locked = true))
-        assertEquals(emptyList<String>(), block(FirewallMode.SMART_FOREGROUND, locked = false))
+    fun smartForegroundBlocksAllSelectedAtEnableTime() {
+        assertEquals(candidates, block(FirewallMode.SMART_FOREGROUND, locked = true))
+        assertEquals(candidates, block(FirewallMode.SMART_FOREGROUND, locked = false))
     }
 
     @Test
@@ -88,9 +88,9 @@ class FirewallTargetsTest {
     }
 
     @Test
-    fun onlyForegroundModesSkipBlockingAtEnable() {
+    fun onlyFocusTrackerSkipsBlockingAtEnable() {
         val skipping = FirewallMode.entries.filter { FirewallTargets.skipsBlockingAtEnable(it) }
-        assertEquals(listOf(FirewallMode.SMART_FOREGROUND, FirewallMode.FOCUS_TRACKER), skipping)
+        assertEquals(listOf(FirewallMode.FOCUS_TRACKER), skipping)
     }
 
     @Test

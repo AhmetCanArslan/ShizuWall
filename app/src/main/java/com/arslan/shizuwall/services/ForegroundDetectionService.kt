@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.app.NotificationCompat
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.shell.ShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
@@ -32,6 +33,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import android.util.Log
 import com.arslan.shizuwall.firewall.ForegroundTaskProbe
 import com.arslan.shizuwall.firewall.ForegroundTaskWatcher
@@ -39,6 +41,7 @@ import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.firewall.FirewallCommands
+import com.arslan.shizuwall.firewall.FirewallTargets
 
 class ForegroundDetectionService : Service() {
 
@@ -86,11 +89,7 @@ class ForegroundDetectionService : Service() {
             "com.touchtype.swiftkey",
             "org.futo.inputmethod.latin"
         )
-        
-        const val ACTION_FOREGROUND_APP_CHANGED = "com.arslan.shizuwall.FOREGROUND_APP_CHANGED"
-        const val EXTRA_PACKAGE_NAME = "package_name"
-        const val EXTRA_PREVIOUS_PACKAGE = "previous_package"
-        
+
         fun start(context: Context) {
             try {
                 context.startForegroundService(Intent(context, ForegroundDetectionService::class.java))
@@ -99,19 +98,20 @@ class ForegroundDetectionService : Service() {
             }
         }
 
-        fun stop(context: Context) {
-            try {
-                context.stopService(Intent(context, ForegroundDetectionService::class.java))
-            } catch (e: Exception) {
-                Log.w(TAG, "Failed to stop ForegroundDetectionService", e)
+        fun sync(context: Context) {
+            val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+            val mode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, null))
+            if (prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false) && mode.requiresForegroundDetection()) {
+                start(context)
+                return
             }
+            runCatching { context.stopService(Intent(context, ForegroundDetectionService::class.java)) }
         }
     }
 
     @Volatile private var currentForegroundPackage: String? = null
     @Volatile private var lastManagedPackage: String? = null
     @Volatile private var isShizuWallFocused: Boolean? = null
-    @Volatile private var lastObservedForegroundPackage: String? = null
 
     @Volatile private var pendingBlockPackage: String? = null
 
@@ -119,6 +119,7 @@ class ForegroundDetectionService : Service() {
     private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
 
     private var pollJob: Job? = null
+    private val reconcile = Channel<Unit>(Channel.CONFLATED)
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -157,85 +158,40 @@ class ForegroundDetectionService : Service() {
         when (key) {
             MainActivity.KEY_FIREWALL_ENABLED -> {
                 cachedFirewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
-
-                if (!cachedFirewallEnabled) {
-                    try {
-                        stopForeground(STOP_FOREGROUND_REMOVE)
-                    } catch (e: Exception) {
-                        Log.w(TAG, "Failed to stop foreground on disable", e)
-                    }
-
-                    currentForegroundPackage = null
-                    lastManagedPackage = null
-                    pendingBlockPackage = null
-                    isShizuWallFocused = null
-                    sharedPreferences.edit()
-                        .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
-                        .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
-                        .apply()
-                    stopSelf()
-                } else if (cachedFirewallMode.requiresForegroundDetection()) {
-                    startForegroundService()
-                }
+                reconcile.trySend(Unit)
             }
             MainActivity.KEY_FIREWALL_MODE -> {
-                val modeName = prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
-                cachedFirewallMode = FirewallMode.fromName(modeName)
-
-                if (!cachedFirewallMode.requiresForegroundDetection()) {
-                    try {
-                        stopForeground(STOP_FOREGROUND_REMOVE)
-                    } catch (e: Exception) {
-                        Log.w(TAG, "Failed to stop foreground on mode change", e)
-                    }
-                    currentForegroundPackage = null
-                    lastManagedPackage = null
-                    pendingBlockPackage = null
-                    isShizuWallFocused = null
-                    sharedPreferences.edit()
-                        .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
-                        .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
-                        .apply()
-                    stopSelf()
-                } else if (cachedFirewallEnabled && cachedFirewallMode.requiresForegroundDetection()) {
-                    try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                            startForeground(
-                                NOTIFICATION_ID,
-                                buildNotification(null),
-                                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-                            )
-                        } else {
-                            startForeground(NOTIFICATION_ID, buildNotification(null))
-                        }
-                    } catch (e: IllegalStateException) {
-                        Log.w(TAG, "Failed to start foreground - already in foreground state", e)
-                    } catch (e: Exception) {
-                        Log.w(TAG, "Failed to start foreground", e)
-                    }
-                }
+                cachedFirewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, null))
+                reconcile.trySend(Unit)
             }
             MainActivity.KEY_WORKING_MODE -> {
                 synchronized(executorLock) { cachedShellExecutor = null }
+                reconcile.trySend(Unit)
             }
             MainActivity.KEY_SELECTED_APPS -> {
                 selectedPackages = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
             }
             MainActivity.KEY_APP_MODES -> {
-                cachedAppModes = parseAppModes(prefs.getString(MainActivity.KEY_APP_MODES, "{}"))
+                cachedAppModes = FirewallTargets.parseAppModes(prefs.getString(MainActivity.KEY_APP_MODES, "{}"))
             }
         }
     }
 
-    private fun parseAppModes(modesStr: String?): Map<String, Int> {
-        val map = mutableMapOf<String, Int>()
+    private fun stopDetection() {
         try {
-            val json = org.json.JSONObject(modesStr ?: "{}")
-            for (key in json.keys()) {
-                map[key] = json.optInt(key, 0)
-            }
-        } catch (_: Exception) {}
-        return map
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to stop foreground", e)
+        }
+        currentForegroundPackage = null
+        lastManagedPackage = null
+        pendingBlockPackage = null
+        isShizuWallFocused = null
+        sharedPreferences.edit()
+            .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
+            .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+            .apply()
+        stopSelf()
     }
 
     private val packageReceiver = object : BroadcastReceiver() {
@@ -262,10 +218,9 @@ class ForegroundDetectionService : Service() {
         if (!restoredApp.isNullOrEmpty()) {
             lastManagedPackage = restoredApp
         }
-        lastObservedForegroundPackage = sharedPreferences.getString(MainActivity.KEY_LAST_FOREGROUND_APP, null)
 
         selectedPackages = sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
-        cachedAppModes = parseAppModes(sharedPreferences.getString(MainActivity.KEY_APP_MODES, "{}"))
+        cachedAppModes = FirewallTargets.parseAppModes(sharedPreferences.getString(MainActivity.KEY_APP_MODES, "{}"))
 
         serviceScope.launch(Dispatchers.IO) {
             dynamicSkipPackages = resolveDynamicSkipPackages()
@@ -289,6 +244,7 @@ class ForegroundDetectionService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForegroundService()
         startPolling()
+        reconcile.trySend(Unit)
         return START_STICKY
     }
 
@@ -320,20 +276,26 @@ class ForegroundDetectionService : Service() {
             }
             try {
                 while (isActive) {
+                    if (!cachedFirewallEnabled || !cachedFirewallMode.requiresForegroundDetection()) {
+                        stopDetection()
+                        return@launch
+                    }
                     try {
-                        if (cachedFirewallEnabled && cachedFirewallMode.requiresForegroundDetection()) {
-                            if (!ForegroundTaskWatcher.isActive) {
-                                ForegroundTaskWatcher.start(applicationContext) { samples.trySend(it) }
-                            }
-                            val key = ForegroundTaskProbe.query(applicationContext)
-                            if (key != null) samples.trySend(key)
+                        val working = WorkingMode.fromName(sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, null))
+                        if (!ForegroundTaskWatcher.isActive || ForegroundTaskWatcher.mode != working) {
+                            ForegroundTaskWatcher.start(applicationContext) { samples.trySend(it) }
                         }
+                        val executor = getShellExecutor()
+                        if (!executor.exec("cmd connectivity get-chain3-enabled").stdout.trim().equals("true", ignoreCase = true)) {
+                            executor.exec(FirewallCommands.CHAIN3_ENABLE)
+                        }
+                        ForegroundTaskProbe.query(applicationContext)?.let { samples.trySend(it) }
                     } catch (e: CancellationException) {
                         throw e
                     } catch (e: Exception) {
                         Log.w(TAG, "Reconcile iteration failed", e)
                     }
-                    delay(RECONCILE_INTERVAL_MS)
+                    withTimeoutOrNull(RECONCILE_INTERVAL_MS) { reconcile.receive() }
                 }
             } finally {
                 consumer.cancel()
@@ -352,8 +314,6 @@ class ForegroundDetectionService : Service() {
             return
         }
 
-        publishObservedForegroundApp(packageName)
-
         if (cachedFirewallMode == FirewallMode.FOCUS_TRACKER) {
             processFocusTracker(packageName)
             return
@@ -363,7 +323,7 @@ class ForegroundDetectionService : Service() {
 
         delay(SETTLE_RECHECK_MS)
         val confirm = ForegroundTaskProbe.query(applicationContext)
-        if (confirm != packageName) return
+        if (confirm != null && confirm != packageName) return
         processPackageChange(packageName)
     }
 
@@ -424,9 +384,7 @@ class ForegroundDetectionService : Service() {
     
         serviceScope.launch(Dispatchers.IO) {
             try {
-                val executor = getShellExecutor()
-                ensureChain3Enabled(executor)
-                applyFocusTrackerRules(executor, isNowFocused)
+                applyFocusTrackerRules(getShellExecutor(), isNowFocused)
                 Log.d(TAG, "ShizuWall Focused: $isNowFocused")
             } catch (e: Exception) {
                 Log.e(TAG, "Focus Tracker rule update failed", e)
@@ -483,24 +441,6 @@ class ForegroundDetectionService : Service() {
         lastManagedPackage = newPackage
 
         handleForegroundAppChange(previous, newPackage)
-    }
-
-    private fun publishObservedForegroundApp(packageName: String) {
-        if (packageName == lastObservedForegroundPackage) return
-        if (shouldAlwaysSkipPackage(packageName)) return
-        val previous = lastObservedForegroundPackage
-        lastObservedForegroundPackage = packageName
-        sharedPreferences.edit().putString(MainActivity.KEY_LAST_FOREGROUND_APP, packageName).apply()
-        sendBroadcast(Intent(ACTION_FOREGROUND_APP_CHANGED).apply {
-            putExtra(EXTRA_PACKAGE_NAME, packageName)
-            putExtra(EXTRA_PREVIOUS_PACKAGE, previous)
-        })
-    }
-
-    private fun shouldSkipPackage(packageName: String): Boolean {
-        if (shouldAlwaysSkipPackage(packageName)) return true
-        if (!isPackageSelected(packageName)) return true
-        return false
     }
 
     private fun isPackageSelected(key: String): Boolean {
@@ -575,13 +515,8 @@ class ForegroundDetectionService : Service() {
                 .apply()
 
             updateNotification(newPackage)
-
-            sendBroadcast(Intent(ACTION_FOREGROUND_APP_CHANGED).apply {
-                putExtra(EXTRA_PACKAGE_NAME, newPackage)
-                putExtra(EXTRA_PREVIOUS_PACKAGE, previousPackage)
-            })
         } else {
-            if (previousPackage != null && !shouldSkipPackage(previousPackage)) {
+            if (previousPackage != null && isPackageSelected(previousPackage) && !shouldAlwaysSkipPackage(previousPackage)) {
                 lastManagedPackage = previousPackage
                 currentForegroundPackage = previousPackage
             } else {
@@ -594,10 +529,7 @@ class ForegroundDetectionService : Service() {
     private suspend fun blockPackage(packageName: String) {
         withContext(Dispatchers.IO) {
             try {
-                val executor = getShellExecutor()
-                ensureChain3Enabled(executor)
-
-                val result = execWithRetry(executor, FirewallCommands.block(packageName))
+                val result = execWithRetry(getShellExecutor(), FirewallCommands.block(packageName))
                 if (!result.success) {
                     Log.w(TAG, "Failed to block $packageName: ${result.stderr}")
                 } else {
@@ -613,11 +545,6 @@ class ForegroundDetectionService : Service() {
                     .apply()
 
                 withContext(Dispatchers.Main) { updateNotification(null) }
-
-                sendBroadcast(Intent(ACTION_FOREGROUND_APP_CHANGED).apply {
-                    putExtra(EXTRA_PACKAGE_NAME, "")
-                    putExtra(EXTRA_PREVIOUS_PACKAGE, packageName)
-                })
             } catch (e: Exception) {
                 Log.e(TAG, "Error blocking $packageName", e)
             }
@@ -738,35 +665,10 @@ class ForegroundDetectionService : Service() {
         }
     }
 
-    private suspend fun ensureChain3Enabled(executor: ShellExecutor) {
-        try {
-            val checkResult = executor.exec("cmd connectivity get-chain3-enabled")
-            val isEnabled = checkResult.stdout.trim().equals("true", ignoreCase = true)
-            if (!isEnabled) {
-                Log.w(TAG, "chain3 was not enabled — re-enabling")
-                executor.exec(FirewallCommands.CHAIN3_ENABLE)
-            }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Log.d(TAG, "chain3 enable check/set failed (non-fatal)", e)
-            try {
-                executor.exec(FirewallCommands.CHAIN3_ENABLE)
-            } catch (e3: CancellationException) {
-                throw e3
-            } catch (e2: Exception) {
-                Log.d(TAG, "chain3 fallback re-enable also failed (non-fatal)", e2)
-            }
-        }
-    }
-
-    
     private suspend fun updateFirewallRules(previousPackage: String?, newPackage: String): Boolean {
         return withContext(Dispatchers.IO) {
             try {
                 val executor = getShellExecutor()
-
-                ensureChain3Enabled(executor)
                 val allowResult = execWithRetry(executor, FirewallCommands.unblock(newPackage))
                 val allowOk = allowResult.isEffectivelySuccess
                 if (!allowOk) {

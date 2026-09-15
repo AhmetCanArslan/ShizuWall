@@ -326,6 +326,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                 updateIntent.action = MainActivity.ACTION_FIREWALL_STATE_CHANGED
                 context.sendBroadcast(updateIntent)
                 ScreenLockMonitorService.sync(context)
+                com.arslan.shizuwall.services.ForegroundDetectionService.sync(context)
 
             } catch (t: Throwable) {
                 withContext(Dispatchers.Main) {

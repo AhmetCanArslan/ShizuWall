@@ -38,12 +38,11 @@ object FirewallTargets {
         FirewallMode.HYBRID -> candidates.filter {
             hybridBlocks(appModes[it] ?: APP_MODE_INHERIT, isDeviceLocked)
         }
-        FirewallMode.SMART_FOREGROUND, FirewallMode.FOCUS_TRACKER -> emptyList()
+        FirewallMode.FOCUS_TRACKER -> emptyList()
         else -> candidates
     }
 
-    fun skipsBlockingAtEnable(mode: FirewallMode): Boolean =
-        mode == FirewallMode.SMART_FOREGROUND || mode == FirewallMode.FOCUS_TRACKER
+    fun skipsBlockingAtEnable(mode: FirewallMode): Boolean = mode == FirewallMode.FOCUS_TRACKER
 
     fun shouldBlockOnToggle(mode: FirewallMode, isSelected: Boolean): Boolean =
         if (mode == FirewallMode.WHITELIST) !isSelected else isSelected

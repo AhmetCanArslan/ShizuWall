@@ -109,7 +109,6 @@ class MainActivity : BaseActivity() {
         const val KEY_SCREEN_LOCK_DELAY_SECONDS = "screen_lock_delay_seconds"
         const val DEFAULT_SCREEN_LOCK_DELAY_SECONDS = 2
         const val KEY_SMART_FOREGROUND_APP = "smart_foreground_app"
-        const val KEY_LAST_FOREGROUND_APP = "last_foreground_app"
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
         const val KEY_APPLY_ROOT_RULES_AFTER_REBOOT = "apply_root_rules_after_reboot"
         const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"
@@ -615,11 +614,7 @@ class MainActivity : BaseActivity() {
             }
         }
         
-        if (isFirewallEnabled && firewallMode.requiresForegroundDetection()) {
-            ForegroundDetectionService.start(this)
-        } else if (!isFirewallEnabled && firewallMode.requiresForegroundDetection()) {
-            ForegroundDetectionService.stop(this)
-        }
+        ForegroundDetectionService.sync(this)
 
     }
 
@@ -3027,12 +3022,6 @@ class MainActivity : BaseActivity() {
                 activeFirewallPackages.addAll(successful)
                 saveActivePackages(activeFirewallPackages)
                 saveFirewallEnabled(true)
-
-                if (firewallMode.requiresForegroundDetection()) {
-                    ForegroundDetectionService.start(this@MainActivity)
-                } else {
-                    ForegroundDetectionService.stop(this@MainActivity)
-                }
 
                 profilesBottomSheet?.notifyActivated(profile.id)
             } catch (t: Throwable) {
