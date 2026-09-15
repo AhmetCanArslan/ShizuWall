@@ -6,11 +6,17 @@ import com.arslan.shizuwall.shell.ShellResult
 import io.github.muntashirakon.adb.AdbConnection
 import io.github.muntashirakon.adb.AdbStream
 import io.github.muntashirakon.adb.PairingConnectionCtx
+import io.github.muntashirakon.adb.AdbAuthenticationFailedException
 import io.github.muntashirakon.adb.AdbPairingRequiredException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.io.IOException
 import org.conscrypt.Conscrypt
 import org.bouncycastle.asn1.x500.X500Name
 import org.bouncycastle.cert.X509v3CertificateBuilder
@@ -358,27 +364,9 @@ class LadbManager private constructor(private val context: Context) {
         }
     }
 
-    suspend fun saveHost(host: String): Boolean = withContext(Dispatchers.IO) {
-        return@withContext try {
-            if (host.isBlank()) {
-                val e = IllegalArgumentException("Host is blank")
-                recordError("save_host", host, null, e)
-                false
-            } else {
-                getPrefs().edit()
-                    .putString(KEY_HOST, host)
-                    .apply()
-                true
-            }
-        } catch (e: Exception) {
-            recordError("save_host", host, null, e)
-            false
-        }
-    }
-
     suspend fun clearPairingPort(): Boolean = withContext(Dispatchers.IO) {
         return@withContext try {
-            getPrefs().edit().remove(KEY_PAIRING_PORT).apply()
+            getPrefs().edit().remove(KEY_PAIRING_PORT).remove(KEY_IS_PAIRED).apply()
             true
         } catch (e: Exception) {
             false
@@ -435,7 +423,7 @@ class LadbManager private constructor(private val context: Context) {
                         .setPrivateKey(privateKey)
                         .setCertificate(certificate)
                         .build()
-                    val ok = c.connect(60, java.util.concurrent.TimeUnit.SECONDS, false)
+                    val ok = c.connect(60, TimeUnit.SECONDS, false)
                     c to ok
                 }
             }
@@ -451,12 +439,12 @@ class LadbManager private constructor(private val context: Context) {
                 _state.set(State.CONNECTED)
                 true
             }
-        } catch (e: io.github.muntashirakon.adb.AdbPairingRequiredException) {
+        } catch (e: AdbPairingRequiredException) {
             recordError("connect", targetHost, targetPort, e)
             logHandshakeDiagnostic("pairing-required", startMs)
             _state.set(State.PAIRED)
             false
-        } catch (e: io.github.muntashirakon.adb.AdbAuthenticationFailedException) {
+        } catch (e: AdbAuthenticationFailedException) {
             recordError("connect", targetHost, targetPort, e)
             logHandshakeDiagnostic("auth-failed", startMs)
             _state.set(State.PAIRED)
@@ -574,83 +562,60 @@ class LadbManager private constructor(private val context: Context) {
     }
 
     suspend fun execShell(cmd: String): ShellResult = withContext(Dispatchers.IO) {
-        val maxRetries = 1
-        val timeoutMs = 15_000L
-
-        for (attempt in 0..maxRetries) {
-            connectionMutex.lock()
-            val conn = try {
-                var currentConn = connectionRef.get()
-                if (currentConn == null || state != State.CONNECTED) {
-                    val ok = connectLocked()
-                    if (!ok) {
-                        return@withContext ShellResult(-1, "", "Not connected")
-                    }
-                    currentConn = connectionRef.get()
+        for (attempt in 0..1) {
+            val conn = connectionMutex.withLock {
+                if (connectionRef.get() == null || state != State.CONNECTED) {
+                    if (!connectLocked()) return@withContext ShellResult(-1, "", "Not connected")
                 }
-                currentConn
-            } finally {
-                connectionMutex.unlock()
-            }
+                connectionRef.get()
+            } ?: return@withContext ShellResult(-1, "", "Failed to establish connection")
 
-            if (conn == null) return@withContext ShellResult(-1, "", "Failed to establish connection")
-
+            var stream: AdbStream? = null
             try {
-                val stream: AdbStream = conn.open("shell:$cmd")
-                val input = stream.openInputStream()
-
-                val buf = ByteArray(8 * 1024)
-                val out = StringBuilder()
-
-                try {
-                    withTimeout(timeoutMs) {
-                        while (true) {
-                            val n = try {
-                                input.read(buf)
-                            } catch (e: Exception) {
-                                val msg = e.message?.lowercase().orEmpty()
-                                if (msg.contains("stream closed") || msg.contains("socket closed")) {
-                                    if (stream.isClosed()) break
-                                }
-                                throw e
-                            }
-                            if (n <= 0) break
-                            out.append(String(buf, 0, n, Charsets.UTF_8))
-                        }
-                    }
-                } catch (e: Exception) {
-                    if (e is kotlinx.coroutines.TimeoutCancellationException) {
-                        try {
-                            stream.close()
-                        } catch (_: Exception) {
-                        }
-                        return@withContext ShellResult(-1, out.toString(), "timeout")
-                    }
-                    throw e
-                } finally {
-                    try {
-                        stream.close()
-                    } catch (_: Exception) {
-                    }
+                val out = withTimeout(15_000L) {
+                    runInterruptible { readAll(conn.open("shell:$cmd").also { stream = it }) }
                 }
-
-                return@withContext ShellResult(0, out.toString(), "")
+                return@withContext ShellResult(0, out, "")
+            } catch (e: TimeoutCancellationException) {
+                if (stream == null) dropConnection(conn)
+                return@withContext ShellResult(-1, "", "timeout")
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                if (attempt < maxRetries) {
-                    connectionMutex.lock()
-                    try {
-                        _state.set(State.DISCONNECTED)
-                        connectionRef.set(null)
-                    } finally {
-                        connectionMutex.unlock()
-                    }
-                    continue
-                } else {
-                    return@withContext ShellResult(-1, "", e.message ?: "Error executing command")
-                }
+                dropConnection(conn)
+                if (attempt == 1) return@withContext ShellResult(-1, "", e.message ?: "Error executing command")
+            } finally {
+                runCatching { stream?.close() }
             }
         }
-        return@withContext ShellResult(-1, "", "Failed to execute command")
+        ShellResult(-1, "", "Failed to execute command")
+    }
+
+    private fun readAll(stream: AdbStream): String {
+        val input = stream.openInputStream()
+        val buf = ByteArray(8 * 1024)
+        val out = StringBuilder()
+        while (true) {
+            val n = try {
+                input.read(buf)
+            } catch (e: IOException) {
+                (e.cause as? InterruptedException)?.let { throw it }
+                if (stream.isClosed()) break
+                throw e
+            }
+            if (n <= 0) break
+            out.append(String(buf, 0, n, Charsets.UTF_8))
+        }
+        return out.toString()
+    }
+
+    private suspend fun dropConnection(conn: AdbConnection) {
+        connectionMutex.withLock {
+            if (connectionRef.compareAndSet(conn, null)) {
+                _state.set(State.DISCONNECTED)
+                runCatching { conn.close() }
+            }
+        }
     }
 
     fun isConnected(): Boolean {

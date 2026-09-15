@@ -3,7 +3,6 @@ package com.arslan.shizuwall.daemon
 import android.content.Context
 import android.util.Log
 import com.arslan.shizuwall.ladb.LadbManager
-import com.arslan.shizuwall.shell.ShellResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
@@ -14,7 +13,6 @@ import java.io.FileOutputStream
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.util.UUID
-import java.util.concurrent.atomic.AtomicReference
 
 class PersistentDaemonManager(private val context: Context) {
 
@@ -29,11 +27,7 @@ class PersistentDaemonManager(private val context: Context) {
         private val connectionMutex = Mutex()
     }
     
-    private val daemonPort = DAEMON_PORT
-
-    fun currentToken(): String = getOrGenerateToken()
-
-    private fun getOrGenerateToken(): String {
+    fun token(): String {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         var token = prefs.getString(KEY_TOKEN, null)
         if (token == null) {
@@ -64,36 +58,32 @@ class PersistentDaemonManager(private val context: Context) {
 
             onProgress("Connecting to LADB...")
             val ladb = LadbManager.getInstance(context)
-            if (!ladb.isConnected()) {
+            if (!ladb.connect()) {
                 onProgress("LADB not connected. Please pair first.")
                 return@withContext false
             }
 
-            val token = regenerateToken()
             val tokenFile = File(context.externalCacheDir ?: context.cacheDir, "token")
-            FileOutputStream(tokenFile).use { it.write(token.toByteArray()) }
-            val tokenPath = tokenFile.absolutePath
-            
-            onProgress("Stopping existing daemon...")
-            ladb.execShell("pkill -f 'com.arslan.shizuwall.daemon.SystemDaemon' 2>/dev/null || true")
-            delay(500)
-            
-            onProgress("Moving files to /data/local/tmp/...")
-            ladb.execShell("cat $dexPath > /data/local/tmp/daemon.dex")
-            ladb.execShell("cat $scriptPath > /data/local/tmp/daemon.sh")
-            ladb.execShell("cat $tokenPath > /data/local/tmp/shizuwall.token")
-            
-            ladb.execShell("chmod 700 /data/local/tmp/daemon.sh")
-            ladb.execShell("chmod 700 /data/local/tmp/daemon.dex")
-            ladb.execShell("chmod 600 /data/local/tmp/shizuwall.token")
-            
-            if (tokenFile.exists()) {
-                tokenFile.delete()
-            }
+            FileOutputStream(tokenFile).use { it.write(regenerateToken().toByteArray()) }
 
-            val checkFiles = ladb.execShell("ls -l /data/local/tmp/daemon.*").stdout
-            Log.d(TAG, "Files in /data/local/tmp/:\n$checkFiles")
-            onProgress("Files verified: ${checkFiles.contains("daemon.sh")}")
+            onProgress("Stopping existing daemon...")
+            ladb.execShell("pkill -f 'com.arslan.shizuwall.daemon.[S]ystemDaemon' 2>/dev/null || true")
+            delay(500)
+
+            onProgress("Moving files to /data/local/tmp/...")
+            val steps = listOf(
+                "cat $dexPath > /data/local/tmp/daemon.dex",
+                "cat $scriptPath > /data/local/tmp/daemon.sh",
+                "cat ${tokenFile.absolutePath} > /data/local/tmp/shizuwall.token",
+                "chmod 700 /data/local/tmp/daemon.sh /data/local/tmp/daemon.dex",
+                "chmod 600 /data/local/tmp/shizuwall.token"
+            )
+            val failed = steps.firstNotNullOfOrNull { cmd -> ladb.execShell(cmd).takeIf { it.exitCode != 0 }?.let { "$cmd: ${it.stderr}" } }
+            tokenFile.delete()
+            if (failed != null) {
+                onProgress("Failed: $failed")
+                return@withContext false
+            }
 
             onProgress("Starting daemon...")
             val result = ladb.execShell("/system/bin/sh /data/local/tmp/daemon.sh 2>&1")
@@ -137,7 +127,7 @@ class PersistentDaemonManager(private val context: Context) {
             val future = java.util.concurrent.Executors.newSingleThreadExecutor().submit(java.util.concurrent.Callable {
                 try {
                     val socket = Socket()
-                    socket.connect(InetSocketAddress("127.0.0.1", daemonPort), 500)
+                    socket.connect(InetSocketAddress("127.0.0.1", DAEMON_PORT), 500)
                     socket.close()
                     true
                 } catch (e: Exception) {
@@ -152,10 +142,10 @@ class PersistentDaemonManager(private val context: Context) {
 
     fun openStreamingCommand(command: String): Socket {
         val socket = Socket()
-        socket.connect(InetSocketAddress("127.0.0.1", daemonPort), CONNECT_TIMEOUT_MS)
+        socket.connect(InetSocketAddress("127.0.0.1", DAEMON_PORT), CONNECT_TIMEOUT_MS)
         socket.soTimeout = 0
         val output = socket.getOutputStream().bufferedWriter()
-        output.write("${getOrGenerateToken()}\n")
+        output.write("${token()}\n")
         output.write("$command\n")
         output.flush()
         return socket
@@ -165,13 +155,13 @@ class PersistentDaemonManager(private val context: Context) {
         withContext(Dispatchers.IO) {
             val socket = Socket()
             try {
-                socket.connect(InetSocketAddress("127.0.0.1", daemonPort), CONNECT_TIMEOUT_MS)
+                socket.connect(InetSocketAddress("127.0.0.1", DAEMON_PORT), CONNECT_TIMEOUT_MS)
                 socket.soTimeout = SOCKET_TIMEOUT_MS
                 
                 val output = socket.getOutputStream().bufferedWriter()
                 val input = socket.getInputStream().bufferedReader()
                 
-                val token = getOrGenerateToken()
+                val token = token()
                 output.write("$token\n")
                 output.flush()
 

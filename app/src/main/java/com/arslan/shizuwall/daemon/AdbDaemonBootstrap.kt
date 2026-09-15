@@ -20,7 +20,7 @@ class AdbDaemonBootstrap(private val context: Context) {
         }
         dexFile.setReadable(true, false)
 
-        val token = PersistentDaemonManager(context).currentToken()
+        val token = PersistentDaemonManager(context).token()
         val scriptFile = File(cacheDir, SCRIPT_NAME)
         scriptFile.writeText(buildScript(dexFile.absolutePath, token))
         scriptFile.setReadable(true, false)
@@ -30,11 +30,6 @@ class AdbDaemonBootstrap(private val context: Context) {
     }
 
     fun buildCommand(scriptPath: String): String = "adb shell sh $scriptPath"
-
-    fun cachedCommand(): String {
-        val cacheDir = context.externalCacheDir ?: context.cacheDir
-        return buildCommand(File(cacheDir, SCRIPT_NAME).absolutePath)
-    }
 
     private fun buildScript(dexSource: String, token: String): String = """
         #!/system/bin/sh

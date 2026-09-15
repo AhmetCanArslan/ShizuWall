@@ -47,6 +47,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import com.arslan.shizuwall.daemon.AdbDaemonBootstrap
 import com.arslan.shizuwall.daemon.PersistentDaemonManager
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 
 class LadbSetupActivity : BaseActivity(), AdbPortListener {
@@ -94,6 +95,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     private var lastShownErrorHash: Int? = null
     private var mPermissionCallback: (() -> Unit)? = null
     private var isDaemonRunning = false
+    private var setupJob: Job? = null
 
     private fun updateStatus() {
         runOnUiThread {
@@ -476,9 +478,10 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         }
 
         updateStatus()
+        getSharedPreferences(LadbManager.PREFS_NAME, MODE_PRIVATE).registerOnSharedPreferenceChangeListener(pairedListener)
 
         if (ladbManager.isPaired() && ladbManager.state != LadbManager.State.CONNECTED) {
-            initializeConnectionComponents()
+            initializePortFinder()
         }
 
         btnPair.setOnClickListener {
@@ -497,11 +500,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             val isConnected = state == LadbManager.State.CONNECTED
 
             if (isConnected) {
-                if (!isDaemonRunning) {
-                    lifecycleScope.launch {
-                        performDaemonStart()
-                    }
-                }
+                if (!isDaemonRunning) runSetup { startDaemon() }
             } else if (isPaired) {
                 performConnection()
             } else {
@@ -514,15 +513,13 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 appendLog(getString(R.string.log_daemon_already_running))
                 return@setOnClickListener
             }
-            lifecycleScope.launch {
-                performDaemonStart()
-            }
+            runSetup { startDaemon() }
         }
 
         btnKillDaemon.setOnClickListener {
             appendLog(getString(R.string.log_killing_daemon))
             lifecycleScope.launch {
-                val cmd = "kill \$(cat /data/local/tmp/daemon.pid 2>/dev/null) 2>/dev/null; pkill -f 'com.arslan.shizuwall.daemon.SystemDaemon'"
+                val cmd = "kill \$(cat /data/local/tmp/daemon.pid 2>/dev/null) 2>/dev/null; pkill -f 'com.arslan.shizuwall.daemon.[S]ystemDaemon'"
                 val result = withContext(Dispatchers.IO) {
                     ladbManager.execShell(cmd)
                 }
@@ -573,7 +570,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     }
 
     private fun handlePairingClick() {
-        initializePairingComponents()
+        initializePortFinder()
         
         lifecycleScope.launch {
             ladbManager.clearPairingPort()
@@ -595,14 +592,10 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     }
 
     private fun performConnection() {
-        initializeConnectionComponents()
+        initializePortFinder()
 
-        appendLog(getString(R.string.log_starting_connection))
-        lifecycleScope.launch {
-            btnConnect.isEnabled = false
-            btnPairSimple.isEnabled = false
-            connectProgress.visibility = View.VISIBLE
-            connectProgressSimple.visibility = View.VISIBLE
+        runSetup {
+            appendLog(getString(R.string.log_starting_connection))
             var savedHost = ladbManager.getSavedHost()
             var savedConnectPort = ladbManager.getSavedConnectPort()
 
@@ -643,17 +636,11 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             if (savedHost.isNullOrBlank() || savedConnectPort <= 0) {
                 appendLog(getString(R.string.log_no_connect_config_final))
                 Snackbar.make(rootView, R.string.no_connection_config_found, Snackbar.LENGTH_LONG).show()
-                btnConnect.isEnabled = true
-                btnPairSimple.isEnabled = true
-                connectProgress.visibility = View.GONE
-                connectProgressSimple.visibility = View.GONE
-                return@launch
+                return@runSetup
             }
 
-            val ok = withContext(Dispatchers.IO) {
-                appendLog(getString(R.string.log_connecting_to, savedHost, savedConnectPort))
-                ladbManager.connect(savedHost, savedConnectPort)
-            }
+            appendLog(getString(R.string.log_connecting_to, savedHost, savedConnectPort))
+            val ok = withContext(Dispatchers.IO) { ladbManager.connect(savedHost, savedConnectPort) }
             updateStatus()
             if (!ok) {
                 val logs = ladbManager.getLastErrorLog()
@@ -671,18 +658,30 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 showLadbErrorDialog(getString(R.string.ladb_error_title), errorMessage)
             } else {
                 appendLog(getString(R.string.log_connection_success))
-                if (!isDaemonRunning) {
-                    delay(2000)
-                    performDaemonStart()
-                } else {
-                    appendLog(getString(R.string.log_daemon_running_skipping))
-                }
+                if (isDaemonRunning) appendLog(getString(R.string.log_daemon_running_skipping)) else startDaemon()
             }
-            btnConnect.isEnabled = true
-            btnPairSimple.isEnabled = true
-            connectProgress.visibility = View.GONE
-            connectProgressSimple.visibility = View.GONE
         }
+    }
+
+    private fun runSetup(block: suspend () -> Unit) {
+        if (setupJob?.isActive == true) return
+        setupJob = lifecycleScope.launch {
+            setBusy(true)
+            try {
+                block()
+            } finally {
+                setBusy(false)
+                updateStatus()
+            }
+        }
+    }
+
+    private fun setBusy(busy: Boolean) {
+        btnConnect.isEnabled = !busy
+        btnPairSimple.isEnabled = !busy
+        btnStartDaemon.isEnabled = !busy
+        connectProgress.visibility = if (busy) View.VISIBLE else View.GONE
+        connectProgressSimple.visibility = if (busy) View.VISIBLE else View.GONE
     }
 
     private fun handleCheckAndConnect() {
@@ -774,8 +773,15 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         }
     }
 
+    private val pairedListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key != LadbManager.KEY_IS_PAIRED || !ladbManager.isPaired()) return@OnSharedPreferenceChangeListener
+        updateStatus()
+        ladbManager.getSavedHost()?.let { scanForOpenPort(it) }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        getSharedPreferences(LadbManager.PREFS_NAME, MODE_PRIVATE).unregisterOnSharedPreferenceChangeListener(pairedListener)
         handler.removeCallbacksAndMessages(null)
         adbPortFinder?.stopDiscovery()
     }
@@ -786,7 +792,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
         lifecycleScope.launch(Dispatchers.IO) {
             ladbManager.clearConnectPort()
-            ladbManager.saveHost(host)
             val success = ladbManager.savePairingConfig(host, port)
             withContext(Dispatchers.Main) {
                 appendLog(if (success) "Pairing config saved" else "Failed to save pairing config")
@@ -820,21 +825,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             return -1
         }
 
-        var realPort = -1
-        for (port in ports) {
-            try {
-                val socket = Socket()
-                withContext(Dispatchers.IO) {
-                    socket.connect(InetSocketAddress(host, port), 200)
-                }
-                if (socket.isConnected) {
-                    realPort = port
-                    socket.close()
-                    break
-                }
-            } catch (e: Exception) {
-            }
-        }
+        val realPort = withContext(Dispatchers.IO) { firstOpenPort(host, ports) }
         if (realPort != -1) {
             withContext(Dispatchers.Main) { appendLog("Real connect port found: $realPort") }
             val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 && ladbManager.getSavedHost() != null
@@ -855,31 +846,28 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         return realPort
     }
 
+    private fun firstOpenPort(host: String, ports: List<Int>): Int {
+        for (port in ports) {
+            try {
+                Socket().use { it.connect(InetSocketAddress(host, port), 200) }
+                return port
+            } catch (_: Exception) {
+            }
+        }
+        return -1
+    }
+
     private fun scanForOpenPort(host: String) {
         lifecycleScope.launch(Dispatchers.IO) {
             val ports = synchronized(detectedConnectPorts) {
                 detectedConnectPorts.filter { it.first == host }.map { it.second }.sorted()
             }
-            
-            var realPort = -1
-            for (port in ports) {
-                try {
-                    val socket = Socket()
-                    socket.connect(InetSocketAddress(host, port), 200)
-                    if (socket.isConnected) {
-                        realPort = port
-                        socket.close()
-                        break
-                    }
-                } catch (e: Exception) {
-                }
-            }
+            val realPort = firstOpenPort(host, ports)
             withContext(Dispatchers.Main) {
                 if (realPort != -1) {
                     appendLog("Real connect port found: $realPort")
                     lifecycleScope.launch {
-                        val hasPairingConfig = ladbManager.getSavedPairingPort() > 0 || ladbManager.isPaired()
-                        if (hasPairingConfig && ladbManager.getSavedHost() != null) {
+                        if (ladbManager.isPaired() && ladbManager.getSavedHost() != null) {
                             val success = ladbManager.saveConnectConfig(host, realPort)
                             if (success) {
                                 appendLog("Connect config saved")
@@ -901,43 +889,15 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         }
     }
 
-    private suspend fun performDaemonStart() {
-        withContext(Dispatchers.Main) {
-            appendLog("Starting daemon installation...")
-            btnStartDaemon.isEnabled = false
-            btnPairSimple.isEnabled = false
-            btnStartDaemon.text = getString(R.string.daemon_installing)
-            connectProgressSimple.visibility = View.VISIBLE
-            
-            delay(500)
-            
-            val success = withContext(Dispatchers.IO) {
-                try {
-                    val pidResult = daemonManager.executeCommand("cat /data/local/tmp/daemon.pid 2>/dev/null")
-                    if (pidResult.isNotBlank()) {
-                        val pid = pidResult.trim()
-                        daemonManager.executeCommand("kill $pid 2>/dev/null || kill -9 $pid 2>/dev/null || true")
-                    }
-                } catch (e: Exception) {
-                }
-                
-                daemonManager.installDaemon { progress ->
-                    appendLog("Daemon: $progress")
-                }
-            }
-            
-            if (success) {
-                appendLog("Daemon started successfully!")
-                isDaemonRunning = true
-            } else {
-                appendLog("Daemon failed to start. Check LADB connection.")
-                isDaemonRunning = false
-            }
-            
+    private suspend fun startDaemon() {
+        appendLog("Starting daemon installation...")
+        btnStartDaemon.text = getString(R.string.daemon_installing)
+        try {
+            isDaemonRunning = daemonManager.installDaemon { appendLog("Daemon: $it") }
+            appendLog(if (isDaemonRunning) "Daemon started successfully!" else "Daemon failed to start. Check LADB connection.")
+            if (!isDaemonRunning) Snackbar.make(rootView, R.string.daemon_not_running, Snackbar.LENGTH_LONG).show()
+        } finally {
             btnStartDaemon.text = getString(R.string.daemon_start)
-            btnPairSimple.isEnabled = true
-            connectProgressSimple.visibility = View.GONE
-            updateStatus()
         }
     }
 
@@ -1008,27 +968,11 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             if (cmd == "ping") {
                 isDaemonRunning = result.contains("✓")
                 updateStatus()
-            } else if (cmd == "kill daemon") {
-                isDaemonRunning = false
-                updateStatus()
             }
         }
     }
 
-    private fun initializePairingComponents() {
-        if (localIp == null) {
-            localIp = detectLocalIpv4OrNull()
-        }
-        if (adbPortFinder == null) {
-            adbPortFinder = AdbPortFinder(this, this)
-            synchronized(detectedConnectPorts) {
-                detectedConnectPorts.clear()
-            }
-            adbPortFinder?.startDiscovery()
-        }
-    }
-
-    private fun initializeConnectionComponents() {
+    private fun initializePortFinder() {
         if (localIp == null) {
             localIp = detectLocalIpv4OrNull()
         }
