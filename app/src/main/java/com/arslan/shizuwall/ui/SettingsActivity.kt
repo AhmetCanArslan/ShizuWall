@@ -9,16 +9,12 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.menu.MenuBuilder
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.ladb.LadbManager
@@ -75,26 +71,14 @@ class SettingsActivity : BaseActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
 
-        if (sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)) {
-            findViewById<View>(R.id.settingsRoot).setBackgroundColor(android.graphics.Color.BLACK)
-        }
-
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        setupSettingsChrome(R.id.settingsRoot, toolbar)
         setupToolbarMenu(toolbar)
         toolbar.setNavigationOnClickListener {
             if (isTaskRoot) {
                 startActivity(Intent(this, MainActivity::class.java))
             }
             finish()
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settingsRoot)) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val toolbarParams = toolbar.layoutParams as ViewGroup.MarginLayoutParams
-            toolbarParams.topMargin = systemBars.top
-            toolbar.layoutParams = toolbarParams
-            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
-            insets
         }
 
         findViewById<LinearLayout>(R.id.rowAppearance).setOnClickListener {

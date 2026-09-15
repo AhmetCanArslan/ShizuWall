@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Selection
 import android.text.Spannable
@@ -22,8 +21,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.core.text.HtmlCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.utils.AppKey
@@ -73,21 +70,8 @@ class FirewallSettingsActivity : BaseActivity() {
         setContentView(R.layout.activity_settings_firewall)
 
         rootView = findViewById(R.id.firewallSettingsRoot)
-        if (sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)) {
-            rootView.setBackgroundColor(Color.BLACK)
-        }
-
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        toolbar.setNavigationOnClickListener { finish() }
-
-        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val toolbarParams = toolbar.layoutParams as ViewGroup.MarginLayoutParams
-            toolbarParams.topMargin = systemBars.top
-            toolbar.layoutParams = toolbarParams
-            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
-            insets
-        }
+        setupSettingsChrome(R.id.firewallSettingsRoot, toolbar)
 
         initializeViews()
         loadSettings()
@@ -159,13 +143,12 @@ class FirewallSettingsActivity : BaseActivity() {
     }
 
     private fun loadSettings() {
-        switchSkipConfirm.isChecked = sharedPreferences.getBoolean("skip_enable_confirm", false)
+        switchSkipConfirm.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_SKIP_ENABLE_CONFIRM, false)
         switchSkipErrorDialog.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, false)
         switchKeepErrorAppsSelected.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false)
         switchRememberDeletedApps.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_REMEMBER_DISABLED_APPS, true)
         cardKeepErrorApps.visibility = if (switchSkipErrorDialog.isChecked) View.VISIBLE else View.GONE
 
-        migrateAdaptiveModeToFirewallMode(sharedPreferences)
         val firewallMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
 
         when (firewallMode) {
@@ -263,17 +246,6 @@ class FirewallSettingsActivity : BaseActivity() {
             .show()
     }
 
-    private fun migrateAdaptiveModeToFirewallMode(sharedPreferences: SharedPreferences) {
-        if (sharedPreferences.contains(MainActivity.KEY_ADAPTIVE_MODE) && !sharedPreferences.contains(MainActivity.KEY_FIREWALL_MODE)) {
-            val adaptiveMode = sharedPreferences.getBoolean(MainActivity.KEY_ADAPTIVE_MODE, false)
-            val newMode = if (adaptiveMode) FirewallMode.ADAPTIVE else FirewallMode.DEFAULT
-            sharedPreferences.edit()
-                .putString(MainActivity.KEY_FIREWALL_MODE, newMode.name)
-                .remove(MainActivity.KEY_ADAPTIVE_MODE)
-                .apply()
-        }
-    }
-
     private fun commitFirewallMode(newMode: FirewallMode) {
         sharedPreferences.edit().putString(MainActivity.KEY_FIREWALL_MODE, newMode.name).apply()
         setResult(RESULT_OK)
@@ -315,7 +287,7 @@ class FirewallSettingsActivity : BaseActivity() {
 
         if (mode != FirewallMode.DEFAULT && !switchSkipConfirm.isChecked) {
             switchSkipConfirm.isChecked = true
-            sharedPreferences.edit().putBoolean("skip_enable_confirm", true).apply()
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_SKIP_ENABLE_CONFIRM, true).apply()
         }
     }
 
@@ -362,7 +334,7 @@ class FirewallSettingsActivity : BaseActivity() {
         }
 
         switchSkipConfirm.setOnCheckedChangeListener { _, isChecked ->
-            sharedPreferences.edit().putBoolean("skip_enable_confirm", isChecked).apply()
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_SKIP_ENABLE_CONFIRM, isChecked).apply()
         }
 
         switchSkipErrorDialog.setOnCheckedChangeListener { _, isChecked ->
@@ -437,24 +409,6 @@ class FirewallSettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchSkipErrorDialog)
         makeCardClickableForSwitch(switchKeepErrorAppsSelected)
         makeCardClickableForSwitch(switchRememberDeletedApps)
-    }
-
-    private fun makeCardClickableForSwitch(switch: androidx.appcompat.widget.SwitchCompat) {
-        try {
-            val parent = switch.parent as? View ?: return
-            val typedValue = android.util.TypedValue()
-            if (theme.resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true)) {
-                parent.setBackgroundResource(typedValue.resourceId)
-            }
-            parent.isClickable = true
-            parent.isFocusable = true
-            parent.setOnClickListener {
-                if (switch.isEnabled) {
-                    switch.isChecked = !switch.isChecked
-                }
-            }
-        } catch (e: Exception) {
-        }
     }
 
     private fun updateScreenLockDelaySummary() {

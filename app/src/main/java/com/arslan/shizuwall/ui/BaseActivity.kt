@@ -7,10 +7,15 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.graphics.ColorUtils
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.security.AppLock
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 
@@ -62,7 +67,31 @@ open class BaseActivity : AppCompatActivity() {
         applyRecentsAppearance()
     }
 
-    protected fun applyRecentsPrivacy() {
+    protected fun setupSettingsChrome(rootId: Int, toolbar: MaterialToolbar) {
+        val root = findViewById<View>(rootId)
+        if (currentAmoledBlack) root.setBackgroundColor(Color.BLACK)
+        toolbar.setNavigationOnClickListener { finish() }
+        ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = systemBars.top
+            toolbar.requestLayout()
+            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
+            insets
+        }
+    }
+
+    protected fun makeCardClickableForSwitch(switch: SwitchCompat) {
+        val parent = switch.parent as? View ?: return
+        val typedValue = android.util.TypedValue()
+        if (theme.resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true)) {
+            parent.setBackgroundResource(typedValue.resourceId)
+        }
+        parent.isClickable = true
+        parent.isFocusable = true
+        parent.setOnClickListener { if (switch.isEnabled) switch.toggle() }
+    }
+
+    private fun applyRecentsPrivacy() {
         if (android.os.Build.VERSION.SDK_INT >= 33) {
             setRecentsScreenshotEnabled(!AppLock.isEnabled(this))
         }

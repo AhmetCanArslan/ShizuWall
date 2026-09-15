@@ -1,16 +1,12 @@
 package com.arslan.shizuwall.ui
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.security.AppLock
 import com.google.android.material.appbar.MaterialToolbar
@@ -45,23 +41,8 @@ class SecuritySettingsActivity : BaseActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings_security)
 
-        val root = findViewById<View>(R.id.securitySettingsRoot)
-        if (getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-                .getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
-        ) {
-            root.setBackgroundColor(android.graphics.Color.BLACK)
-        }
-
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        toolbar.setNavigationOnClickListener { finish() }
-        ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = bars.top
-            toolbar.requestLayout()
-            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, bars.bottom)
-            insets
-        }
-
+        setupSettingsChrome(R.id.securitySettingsRoot, toolbar)
         switchAppLock = findViewById(R.id.switchAppLock)
         switchBiometrics = findViewById(R.id.switchBiometrics)
 

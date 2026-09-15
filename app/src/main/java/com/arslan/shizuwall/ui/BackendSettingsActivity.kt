@@ -3,7 +3,6 @@ package com.arslan.shizuwall.ui
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.TransitionManager
@@ -13,8 +12,6 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.shell.RootShellExecutor
@@ -50,21 +47,8 @@ class BackendSettingsActivity : BaseActivity() {
         setContentView(R.layout.activity_settings_backend)
 
         rootView = findViewById(R.id.backendSettingsRoot)
-        if (sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)) {
-            rootView.setBackgroundColor(Color.BLACK)
-        }
-
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        toolbar.setNavigationOnClickListener { finish() }
-
-        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val toolbarParams = toolbar.layoutParams as ViewGroup.MarginLayoutParams
-            toolbarParams.topMargin = systemBars.top
-            toolbar.layoutParams = toolbarParams
-            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
-            insets
-        }
+        setupSettingsChrome(R.id.backendSettingsRoot, toolbar)
 
         radioGroupWorkingMode = findViewById(R.id.radioGroupWorkingMode)
         radioShizukuMode = findViewById(R.id.radioShizukuMode)
@@ -154,24 +138,6 @@ class BackendSettingsActivity : BaseActivity() {
 
         makeCardClickableForSwitch(switchAutoEnableOnShizukuStart)
         makeCardClickableForSwitch(switchApplyRootRulesAfterReboot)
-    }
-
-    private fun makeCardClickableForSwitch(switch: androidx.appcompat.widget.SwitchCompat) {
-        try {
-            val parent = switch.parent as? View ?: return
-            val typedValue = android.util.TypedValue()
-            if (theme.resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true)) {
-                parent.setBackgroundResource(typedValue.resourceId)
-            }
-            parent.isClickable = true
-            parent.isFocusable = true
-            parent.setOnClickListener {
-                if (switch.isEnabled) {
-                    switch.isChecked = !switch.isChecked
-                }
-            }
-        } catch (e: Exception) {
-        }
     }
 
     private fun showRootNotFoundDialog() {

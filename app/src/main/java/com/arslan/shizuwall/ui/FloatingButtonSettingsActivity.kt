@@ -2,14 +2,9 @@ package com.arslan.shizuwall.ui
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.services.FloatingButtonService
 import com.google.android.material.appbar.MaterialToolbar
@@ -38,21 +33,8 @@ class FloatingButtonSettingsActivity : BaseActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_floating_button_settings)
 
-        if (sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)) {
-            findViewById<View>(R.id.floatingSettingsRoot).setBackgroundColor(Color.BLACK)
-        }
-
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        toolbar.setNavigationOnClickListener { finish() }
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.floatingSettingsRoot)) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val toolbarParams = toolbar.layoutParams as ViewGroup.MarginLayoutParams
-            toolbarParams.topMargin = systemBars.top
-            toolbar.layoutParams = toolbarParams
-            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
-            insets
-        }
+        setupSettingsChrome(R.id.floatingSettingsRoot, toolbar)
 
         sliderOpacity = findViewById(R.id.sliderOpacity)
         sliderSize = findViewById(R.id.sliderSize)

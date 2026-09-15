@@ -3,17 +3,12 @@ package com.arslan.shizuwall.ui
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.FloatingButtonService
@@ -23,7 +18,6 @@ import com.google.android.material.button.MaterialButton
 class NotificationsSettingsActivity : BaseActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var rootView: View
 
     private lateinit var switchAppMonitor: androidx.appcompat.widget.SwitchCompat
     private lateinit var switchAutoFirewallNewApps: androidx.appcompat.widget.SwitchCompat
@@ -38,22 +32,8 @@ class NotificationsSettingsActivity : BaseActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings_notifications)
 
-        rootView = findViewById(R.id.notificationsSettingsRoot)
-        if (sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)) {
-            rootView.setBackgroundColor(Color.BLACK)
-        }
-
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        toolbar.setNavigationOnClickListener { finish() }
-
-        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val toolbarParams = toolbar.layoutParams as ViewGroup.MarginLayoutParams
-            toolbarParams.topMargin = systemBars.top
-            toolbar.layoutParams = toolbarParams
-            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
-            insets
-        }
+        setupSettingsChrome(R.id.notificationsSettingsRoot, toolbar)
 
         switchAppMonitor = findViewById(R.id.switchAppMonitor)
         switchAutoFirewallNewApps = findViewById(R.id.switchAutoFirewallNewApps)
@@ -158,35 +138,12 @@ class NotificationsSettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchFloatingButton)
     }
 
-    private fun makeCardClickableForSwitch(switch: androidx.appcompat.widget.SwitchCompat) {
-        try {
-            val parent = switch.parent as? View ?: return
-            val typedValue = android.util.TypedValue()
-            if (theme.resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true)) {
-                parent.setBackgroundResource(typedValue.resourceId)
-            }
-            parent.isClickable = true
-            parent.isFocusable = true
-            parent.setOnClickListener {
-                if (switch.isEnabled) {
-                    switch.isChecked = !switch.isChecked
-                }
-            }
-        } catch (e: Exception) {
-        }
-    }
-
-    private fun startAppMonitorService() {
-        val intent = Intent(this, AppMonitorService::class.java)
-        startForegroundService(intent)
-    }
-
     private fun syncAppMonitorService() {
         val anyEnabled = sharedPreferences.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false) ||
             sharedPreferences.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false) ||
             sharedPreferences.getBoolean(MainActivity.KEY_SHOW_FIREWALL_STATUS_NOTIFICATION, false)
         if (anyEnabled) {
-            startAppMonitorService()
+            startForegroundService(Intent(this, AppMonitorService::class.java))
         } else {
             stopService(Intent(this, AppMonitorService::class.java))
         }

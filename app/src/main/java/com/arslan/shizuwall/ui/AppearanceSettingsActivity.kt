@@ -2,22 +2,16 @@ package com.arslan.shizuwall.ui
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.widget.SwitchCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.R
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import android.util.TypedValue
-
 class AppearanceSettingsActivity : BaseActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -37,21 +31,8 @@ class AppearanceSettingsActivity : BaseActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_settings_appearance)
 
-        if (sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)) {
-            findViewById<View>(R.id.appearanceSettingsRoot).setBackgroundColor(Color.BLACK)
-        }
-
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        toolbar.setNavigationOnClickListener { finish() }
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.appearanceSettingsRoot)) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val toolbarParams = toolbar.layoutParams as ViewGroup.MarginLayoutParams
-            toolbarParams.topMargin = systemBars.top
-            toolbar.layoutParams = toolbarParams
-            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
-            insets
-        }
+        setupSettingsChrome(R.id.appearanceSettingsRoot, toolbar)
 
         switchMoveSelectedTop = findViewById(R.id.switchMoveSelectedTop)
         switchUseDynamicColor = findViewById(R.id.switchUseDynamicColor)
@@ -97,24 +78,6 @@ class AppearanceSettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchMoveSelectedTop)
         makeCardClickableForSwitch(switchUseDynamicColor)
         makeCardClickableForSwitch(switchUseAmoledBlack)
-    }
-
-    private fun makeCardClickableForSwitch(switch: SwitchCompat) {
-        try {
-            val parent = switch.parent as? View ?: return
-            val typedValue = TypedValue()
-            if (theme.resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true)) {
-                parent.setBackgroundResource(typedValue.resourceId)
-            }
-            parent.isClickable = true
-            parent.isFocusable = true
-            parent.setOnClickListener {
-                if (switch.isEnabled) {
-                    switch.isChecked = !switch.isChecked
-                }
-            }
-        } catch (e: Exception) {
-        }
     }
 
     private fun showFontSelectorDialog() {
