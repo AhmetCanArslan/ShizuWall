@@ -10,22 +10,15 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.android.material.button.MaterialButton
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.arslan.shizuwall.model.AppInfo
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import com.arslan.shizuwall.R
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.color.MaterialColors
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
-import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.AppIds
 import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.UiUtils
@@ -105,31 +98,8 @@ class AppListAdapter(
 
         fun bind(appInfo: AppInfo) {
             val pkg = appInfo.packageName
-            val iconKey = appInfo.key
-            appIcon.tag = iconKey
-            appIcon.setImageDrawable(null)
 
-            val cached = iconCache.get(iconKey)
-            if (cached != null) {
-                appIcon.setImageBitmap(cached)
-            } else {
-                UiUtils.getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
-                    try {
-                        val context = itemView.context
-                        val drawable = CrossUserAppInfo.icon(context, pkg, appInfo.userId)
-                            ?: ContextCompat.getDrawable(context, android.R.drawable.sym_def_app_icon)
-                            ?: return@launch
-                        val bitmap = UiUtils.drawableToBitmap(drawable)
-                        iconCache.put(iconKey, bitmap)
-                        withContext(Dispatchers.Main) {
-                            if (appIcon.tag == iconKey) {
-                                appIcon.setImageBitmap(bitmap)
-                            }
-                        }
-                    } catch (_: Exception) {
-                    }
-                }
-            }
+            UiUtils.loadAppIcon(appIcon, pkg, appInfo.userId, iconCache)
 
             appName.text = appInfo.appName
             packageName.text = appInfo.packageName
@@ -293,7 +263,7 @@ class AppListAdapter(
         popupMenu.menu.add(0, 0, 0, anchor.context.getString(R.string.hybrid_mode_default_block)).setIcon(R.drawable.wifi_off_24px)
         popupMenu.menu.add(0, 1, 1, anchor.context.getString(R.string.hybrid_mode_smart_foreground)).setIcon(R.drawable.intelligence_24px)
         popupMenu.menu.add(0, 2, 2, anchor.context.getString(R.string.hybrid_mode_screen_lock)).setIcon(R.drawable.mobile_lock_portrait_24px)
-        forcePopupMenuIcons(popupMenu)
+        popupMenu.setForceShowIcon(true)
         popupMenu.setOnMenuItemClickListener { menuItem ->
             if (appInfo.appFirewallMode != menuItem.itemId) {
                 onAppClick(appInfo.copy(appFirewallMode = menuItem.itemId))
@@ -301,20 +271,6 @@ class AppListAdapter(
             true
         }
         popupMenu.show()
-    }
-
-    private fun forcePopupMenuIcons(popupMenu: android.widget.PopupMenu) {
-        try {
-            for (field in popupMenu.javaClass.declaredFields) {
-                if ("mPopup" == field.name) {
-                    field.isAccessible = true
-                    val menuPopupHelper = field.get(popupMenu)
-                    val clazz = Class.forName(menuPopupHelper.javaClass.name)
-                    clazz.getMethod("setForceShowIcon", java.lang.Boolean.TYPE).invoke(menuPopupHelper, true)
-                    break
-                }
-            }
-        } catch (_: Exception) {}
     }
 
     override fun onBindViewHolder(holder: AppViewHolder, position: Int) {

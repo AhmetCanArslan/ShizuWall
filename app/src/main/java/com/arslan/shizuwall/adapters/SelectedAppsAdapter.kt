@@ -5,16 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.arslan.shizuwall.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import com.arslan.shizuwall.model.AppInfo
-import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.UiUtils
 
@@ -28,27 +21,7 @@ class SelectedAppsAdapter(
         val profileBadge: TextView = itemView.findViewById(R.id.profileBadge)
 
         fun bind(appInfo: AppInfo) {
-            val pkg = appInfo.packageName
-            val iconKey = appInfo.key
-            appIcon.tag = iconKey
-            appIcon.setImageDrawable(null)
-
-            UiUtils.getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
-                try {
-                    val context = itemView.context
-                    val drawable = CrossUserAppInfo.icon(context, pkg, appInfo.userId)
-                        ?: ContextCompat.getDrawable(context, android.R.drawable.sym_def_app_icon)
-                        ?: return@launch
-                    val bitmap = UiUtils.drawableToBitmap(drawable)
-                    withContext(Dispatchers.Main) {
-                        if (appIcon.tag == iconKey) {
-                            appIcon.setImageBitmap(bitmap)
-                        }
-                    }
-                } catch (e: Exception) {
-                }
-            }
-
+            UiUtils.loadAppIcon(appIcon, appInfo.packageName, appInfo.userId)
             appName.text = appInfo.appName
 
             if (appInfo.userId != 0) {

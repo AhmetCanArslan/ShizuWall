@@ -5,15 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.arslan.shizuwall.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.UiUtils
 
 data class ErrorEntry(
@@ -33,26 +26,9 @@ class ErrorDetailsAdapter(
         val errorText: TextView = itemView.findViewById(R.id.errorText)
 
         fun bind(entry: ErrorEntry) {
-            val pkg = entry.packageName
-            val iconKey = "${entry.userId}:$pkg"
-            appIcon.tag = iconKey
-            appIcon.setImageDrawable(null)
+            UiUtils.loadAppIcon(appIcon, entry.packageName, entry.userId)
             appName.text = entry.appName
             errorText.text = entry.errorText
-
-            UiUtils.getLifecycleOwner(itemView.context)?.lifecycleScope?.launch(Dispatchers.IO) {
-                try {
-                    val context = itemView.context
-                    val drawable = CrossUserAppInfo.icon(context, pkg, entry.userId)
-                        ?: ContextCompat.getDrawable(context, android.R.drawable.sym_def_app_icon)
-                        ?: return@launch
-                    val bitmap = UiUtils.drawableToBitmap(drawable)
-                    withContext(Dispatchers.Main) {
-                        if (appIcon.tag == iconKey) appIcon.setImageBitmap(bitmap)
-                    }
-                } catch (_: Exception) {
-                }
-            }
         }
     }
 
