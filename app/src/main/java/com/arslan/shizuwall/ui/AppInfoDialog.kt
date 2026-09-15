@@ -10,13 +10,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.trackers.TrackerScanner
 import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.util.Date
 
@@ -55,14 +59,7 @@ object AppInfoDialog {
             .setView(view)
             .setPositiveButton(R.string.close, null)
             .setNeutralButton(R.string.app_info_open_settings) { _, _ ->
-                try {
-                    context.startActivity(
-                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            .setData(Uri.fromParts("package", packageName, null))
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
-                } catch (_: Exception) {
-                }
+                openDetails(context, owner, packageName, userId)
             }
             .create()
         dialog.show()
@@ -73,6 +70,31 @@ object AppInfoDialog {
             val result = TrackerScanner.scan(context, packageName)
             if (!dialog.isShowing) return@launch
             renderTrackers(context, result, loadingView, summaryView, listView, noteView)
+        }
+    }
+
+    private fun openDetails(context: Context, owner: LifecycleOwner, packageName: String, userId: Int) {
+        if (userId == 0) {
+            try {
+                context.startActivity(
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        .setData(Uri.fromParts("package", packageName, null))
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+            } catch (_: Exception) {
+            }
+            return
+        }
+        owner.lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching {
+                    ShellExecutorProvider.forContext(context)
+                        .exec("am start --user $userId -a android.settings.APPLICATION_DETAILS_SETTINGS -d package:$packageName")
+                }.getOrNull()
+            }
+            if (result?.success != true || result.stdout.contains("Error")) {
+                Toast.makeText(context, R.string.app_info_unavailable, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
