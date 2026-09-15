@@ -20,11 +20,11 @@ import com.arslan.shizuwall.services.ForegroundDetectionService
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
+import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import com.arslan.shizuwall.firewall.FirewallCommands
 
 class BootReceiver : BroadcastReceiver() {
@@ -33,7 +33,7 @@ class BootReceiver : BroadcastReceiver() {
         private const val CHANNEL_ID = "shizuwall_boot_channel"
         private const val NOTIFICATION_ID = 1001
         private const val TAG = "BootReceiver"
-        private val PACKAGE_NAME_REGEX = Regex("^[a-zA-Z0-9_.]+$")
+        private val PACKAGE_NAME_REGEX = Regex("^(\\d+:)?[a-zA-Z0-9_.]+$")
     }
 
     override fun onReceive(context: Context, intent: Intent?) {
@@ -180,35 +180,17 @@ class BootReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun readBoolean(
-        primary: SharedPreferences,
-        fallback: SharedPreferences?,
-        key: String,
-        defaultValue: Boolean
-    ): Boolean {
-        return if (primary.contains(key)) primary.getBoolean(key, defaultValue)
-        else fallback?.getBoolean(key, defaultValue) ?: defaultValue
-    }
+    private fun source(primary: SharedPreferences, fallback: SharedPreferences?, key: String): SharedPreferences? =
+        if (primary.contains(key)) primary else fallback
 
-    private fun readLong(
-        primary: SharedPreferences,
-        fallback: SharedPreferences?,
-        key: String,
-        defaultValue: Long
-    ): Long {
-        return if (primary.contains(key)) primary.getLong(key, defaultValue)
-        else fallback?.getLong(key, defaultValue) ?: defaultValue
-    }
+    private fun readBoolean(primary: SharedPreferences, fallback: SharedPreferences?, key: String, defaultValue: Boolean): Boolean =
+        source(primary, fallback, key)?.getBoolean(key, defaultValue) ?: defaultValue
 
-    private fun readString(
-        primary: SharedPreferences,
-        fallback: SharedPreferences?,
-        key: String,
-        defaultValue: String
-    ): String {
-        return if (primary.contains(key)) primary.getString(key, defaultValue) ?: defaultValue
-        else fallback?.getString(key, defaultValue) ?: defaultValue
-    }
+    private fun readLong(primary: SharedPreferences, fallback: SharedPreferences?, key: String, defaultValue: Long): Long =
+        source(primary, fallback, key)?.getLong(key, defaultValue) ?: defaultValue
+
+    private fun readString(primary: SharedPreferences, fallback: SharedPreferences?, key: String, defaultValue: String): String =
+        source(primary, fallback, key)?.getString(key, defaultValue) ?: defaultValue
 
     private fun loadActivePackages(
         context: Context,
@@ -216,17 +198,14 @@ class BootReceiver : BroadcastReceiver() {
         fallback: SharedPreferences?,
         selfPackage: String
     ): List<String> {
-        val active = if (primary.contains(MainActivity.KEY_ACTIVE_PACKAGES)) {
-            primary.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
-        } else {
-            fallback?.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
-        } ?: emptySet()
+        val active = source(primary, fallback, MainActivity.KEY_ACTIVE_PACKAGES)
+            ?.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
 
         return active
             .map { it.trim() }
             .filter { it.isNotEmpty() }
-            .filterNot { it == selfPackage }
-            .filterNot { ShizukuPackageResolver.isShizukuPackage(context, it) }
+            .filterNot { AppKey.packageOf(it) == selfPackage }
+            .filterNot { ShizukuPackageResolver.isShizukuPackage(context, AppKey.packageOf(it)) }
             .filter { PACKAGE_NAME_REGEX.matches(it) }
             .distinct()
     }
