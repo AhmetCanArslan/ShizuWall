@@ -2485,6 +2485,7 @@ class MainActivity : BaseActivity() {
         failedPackages: List<String>,
         errorDetails: MutableMap<String, String>
     ): Boolean {
+        if (sharedPreferences.getString(KEY_WORKING_MODE, null) != WorkingMode.LADB.name) return false
         val daemonLogs = loadRecentDaemonLogsForDiagnostics()
         if (!daemonLogs.isNullOrBlank()) {
             errorDetails["_daemon_log"] = daemonLogs
