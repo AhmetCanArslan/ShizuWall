@@ -26,7 +26,7 @@
     <string name="enable_firewall">Firewall</string>
     <string name="font_default">Standard</string>
     <string name="font_ndot">Ndot</string>
-    <string name="select_all">Alle auswählen</string>
+    <string name="select_all">Mehrere Apps auswählen</string>
     <string name="cat_favorites">Favoriten</string>
     <string name="made_by">Mit ❤️ gemacht von Ahmet Can Arslan</string>
     <string name="reset_app_menu">App zurücksetzen</string>
@@ -103,7 +103,7 @@
     <string name="shizuku_version_old_toast">Shizuku-Version ist zu alt, bitte aktualisieren</string>
     <string name="grant_shizuku_permission_settings">Bitte erteilen Sie Shizuku-Berechtigung in den Einstellungen</string>
     <string name="search_app">App suchen</string>
-    <string name="unselect_all">Alle abwählen</string>
+    <string name="unselect_all">Mehrere Apps abwählen</string>
     <string name="bulk_only_filtered">Nur %d gefilterte</string>
     <string name="bulk_all_apps">Alle %d Apps</string>
     <string name="select_at_least_one_app">Bitte wählen Sie mindestens eine App aus</string>
@@ -342,7 +342,7 @@
     <string name="apply_root_rules_after_reboot_description">Die zuletzt aktiven Firewall-Regeln nach abgeschlossenem Start mit Root erneut anwenden</string>
     <string name="working_mode_root">Root (su)</string>
     <string name="root_not_found_message">Root wurde nicht gefunden. Bitte erlauben Sie ShizuWall den Zugriff auf Root-Berechtigungen.</string>
-    <string name="double_tap_or_long_press">Doppeltippen, um alles auszuwählen, lange drücken, um alles abzuwählen</string>
+    <string name="double_tap_or_long_press">Doppeltippen, um mehrere Apps auszuwählen, lange drücken, um mehrere Apps abzuwählen</string>
     <string name="ladb_daemon_restart_required_title">LADB-Daemon neu starten</string>
     <string name="ladb_daemon_restart_required_message">Die Firewall konnte nicht aktiviert werden, weil die Autorisierung des LADB-Daemons fehlgeschlagen ist oder er nicht mehr reagiert. Öffnen Sie die LADB-Einrichtung, aktivieren Sie den erweiterten Modus und verwenden Sie dann Daemon beenden und Daemon starten.</string>
     <string name="ladb_daemon_restart_reason_prefix">Erkannte Probleme:</string>

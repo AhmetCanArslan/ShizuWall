@@ -25,7 +25,7 @@
     <string name="enable_firewall">Брандмауэр</string>
     <string name="font_default">По умолчанию</string>
     <string name="font_ndot">Ndot</string>
-    <string name="select_all">Выбрать все</string>
+    <string name="select_all">Выбрать несколько приложений</string>
     <string name="cat_favorites">Избранное</string>
     <string name="made_by">Сделано с ❤️ Ахметом Джаном Арсланом</string>
     <string name="reset_app_menu">Сбросить приложение</string>
@@ -102,7 +102,7 @@
     <string name="shizuku_version_old_toast">Версия Shizuku слишком устарела, пожалуйста, обновите ее</string>
     <string name="grant_shizuku_permission_settings">Пожалуйста, предоставьте разрешение Shizuku в настройках</string>
     <string name="search_app">Поиск приложения</string>
-    <string name="unselect_all">Снять выделение со всех</string>
+    <string name="unselect_all">Снять выделение с нескольких приложений</string>
     <string name="bulk_only_filtered">Только отфильтрованные (%d)</string>
     <string name="bulk_all_apps">Все приложения (%d)</string>
     <string name="select_at_least_one_app">Пожалуйста, выберите хотя бы одно приложение</string>
@@ -344,7 +344,7 @@
     <string name="apply_root_rules_after_reboot_description">Повторно применить последние активные правила брандмауэра с root после завершения загрузки</string>
     <string name="working_mode_root">Root (su)</string>
     <string name="root_not_found_message">Root не найден. Пожалуйста, разрешите ShizuWall доступ к root-правам.</string>
-    <string name="double_tap_or_long_press">Дважды нажмите, чтобы выбрать все, удерживайте, чтобы снять выделение со всего</string>
+    <string name="double_tap_or_long_press">Дважды нажмите, чтобы выбрать несколько приложений, удерживайте, чтобы снять выделение с нескольких приложений</string>
     <string name="ladb_daemon_restart_required_title">Перезапустить демон LADB</string>
     <string name="ladb_daemon_restart_required_message">Не удалось включить брандмауэр, потому что демон LADB не прошел авторизацию или перестал отвечать. Откройте настройку LADB, включите расширенный режим, затем используйте Остановить демон и Запустить демон.</string>
     <string name="ladb_daemon_restart_reason_prefix">Обнаруженные проблемы:</string>

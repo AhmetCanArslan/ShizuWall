@@ -25,7 +25,7 @@
     <string name="enable_firewall">ファイアウォール</string>
     <string name="font_default">デフォルト</string>
     <string name="font_ndot">Ndot</string>
-    <string name="select_all">すべて選択</string>
+    <string name="select_all">複数のアプリを選択</string>
     <string name="cat_favorites">お気に入り</string>
     <string name="made_by">Made with ❤️ by Ahmet Can Arslan</string>
     <string name="reset_app_menu">アプリをリセット</string>
@@ -102,7 +102,7 @@
     <string name="shizuku_version_old_toast">Shizuku のバージョンが古すぎます。アップデートしてください</string>
     <string name="grant_shizuku_permission_settings">設定で Shizuku の権限を許可してください</string>
     <string name="search_app">アプリを検索</string>
-    <string name="unselect_all">すべての選択を解除</string>
+    <string name="unselect_all">複数のアプリの選択を解除</string>
     <string name="bulk_only_filtered">絞り込み中の %d 件のみ</string>
     <string name="bulk_all_apps">すべてのアプリ（%d 件）</string>
     <string name="select_at_least_one_app">少なくとも 1 つのアプリを選択してください</string>
@@ -344,7 +344,7 @@
     <string name="apply_root_rules_after_reboot_description">起動完了後、最後に有効だったファイアウォールルールを root で再適用します</string>
     <string name="working_mode_root">Root (su)</string>
     <string name="root_not_found_message">Root が見つかりません。ShizuWall に root 権限へのアクセスを許可してください。</string>
-    <string name="double_tap_or_long_press">ダブルタップで全選択、長押しで全選択解除</string>
+    <string name="double_tap_or_long_press">ダブルタップで複数のアプリを選択、長押しで複数のアプリの選択を解除</string>
     <string name="ladb_daemon_restart_required_title">LADB デーモンを再起動</string>
     <string name="ladb_daemon_restart_required_message">LADB デーモンの認証に失敗したか応答しなくなったため、ファイアウォールを有効にできませんでした。LADB セットアップを開き、詳細モードを有効にしてから、デーモン停止 と デーモン開始 を使用してください。</string>
     <string name="ladb_daemon_restart_reason_prefix">検出された問題:</string>

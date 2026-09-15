@@ -26,7 +26,7 @@
     <string name="enable_firewall">防火墙</string>
     <string name="font_default">默认</string>
     <string name="font_ndot">Ndot</string>
-    <string name="select_all">全选</string>
+    <string name="select_all">选择多个应用</string>
     <string name="cat_favorites">收藏</string>
     <string name="made_by">由 Ahmet Can Arslan 用 ❤️ 制作</string>
     <string name="reset_app_menu">重置应用</string>
@@ -103,7 +103,7 @@
     <string name="shizuku_version_old_toast">Shizuku 版本太旧，请更新</string>
     <string name="grant_shizuku_permission_settings">请在设置中授予 Shizuku 权限</string>
     <string name="search_app">搜索应用</string>
-    <string name="unselect_all">取消全选</string>
+    <string name="unselect_all">取消选择多个应用</string>
     <string name="bulk_only_filtered">仅筛选的 %d 个</string>
     <string name="bulk_all_apps">全部 %d 个应用</string>
     <string name="select_at_least_one_app">请至少选择一个应用</string>
@@ -342,7 +342,7 @@
     <string name="apply_root_rules_after_reboot_description">设备启动完成后，通过 root 重新应用上一次生效的防火墙规则</string>
     <string name="working_mode_root">Root (su)</string>
     <string name="root_not_found_message">未找到 Root，请允许 ShizuWall 获取 Root 权限。</string>
-    <string name="double_tap_or_long_press">双击可全选，长按可取消全选</string>
+    <string name="double_tap_or_long_press">双击可选择多个应用，长按可取消选择多个应用</string>
     <string name="ladb_daemon_restart_required_title">重启 LADB 守护进程</string>
     <string name="ladb_daemon_restart_required_message">由于 LADB 守护进程授权失败或停止响应，无法启用防火墙。请打开 LADB 设置，启用高级模式，然后使用 停止守护进程 和 启动守护进程。</string>
     <string name="ladb_daemon_restart_reason_prefix">检测到的问题：</string>

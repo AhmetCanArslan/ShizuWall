@@ -26,7 +26,7 @@
     <string name="enable_firewall">Güvenlik Duvarı</string>
     <string name="font_default">Varsayılan</string>
     <string name="font_ndot">Ndot</string>
-    <string name="select_all">Tümünü seç</string>
+    <string name="select_all">Birden fazla uygulama seç</string>
     <string name="cat_favorites">Favoriler</string>
     <string name="made_by">Ahmet Can Arslan tarafından ❤️ ile yapıldı</string>
     <string name="reset_app_menu">Uygulamayı Sıfırla</string>
@@ -103,7 +103,7 @@
     <string name="shizuku_version_old_toast">Shizuku sürümü çok eski, lütfen güncelleyin</string>
     <string name="grant_shizuku_permission_settings">Lütfen ayarlarınızda Shizuku izni verin</string>
     <string name="search_app">Uygulama ara</string>
-    <string name="unselect_all">Tümünü Seçimi Kaldır</string>
+    <string name="unselect_all">Birden fazla uygulamanın seçimini kaldır</string>
     <string name="bulk_only_filtered">Yalnızca filtrelenen %d</string>
     <string name="bulk_all_apps">Tüm %d uygulama</string>
     <string name="select_at_least_one_app">Lütfen en az bir uygulama seçin</string>
@@ -342,7 +342,7 @@
     <string name="apply_root_rules_after_reboot_description">Önyükleme tamamlandıktan sonra son etkin güvenlik duvarı kurallarını root ile yeniden uygula</string>
     <string name="working_mode_root">Root (su)</string>
     <string name="root_not_found_message">Root bulunamadı, lütfen ShizuWall için root erişim izni verin.</string>
-    <string name="double_tap_or_long_press">Tümünü seçmek için çift dokunun, tüm seçimleri kaldırmak için uzun basın</string>
+    <string name="double_tap_or_long_press">Birden fazla uygulama seçmek için çift dokunun, seçimi kaldırmak için uzun basın</string>
     <string name="ladb_daemon_restart_required_title">LADB daemonunu yeniden başlat</string>
     <string name="ladb_daemon_restart_required_message">LADB daemonu yetkilendirme hatası verdiği veya yanıt vermeyi durdurduğu için güvenlik duvarı etkinleştirilemedi. LADB kurulumunu açın, Gelişmiş Modu etkinleştirin, ardından Daemonu Durdur ve Daemonu Başlat seçeneklerini kullanın.</string>
     <string name="ladb_daemon_restart_reason_prefix">Algılanan sorunlar:</string>

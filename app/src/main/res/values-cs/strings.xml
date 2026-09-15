@@ -25,7 +25,7 @@
     <string name="enable_firewall">Brána firewall</string>
     <string name="font_default">Základní</string>
     <string name="font_ndot">Ndot</string>
-    <string name="select_all">Vybrat vše</string>
+    <string name="select_all">Vybrat více aplikací</string>
     <string name="scroll_to_top">Přejít nahoru</string>
     <string name="cat_favorites">Oblíbené</string>
     <string name="made_by">Vytvořil s ❤️ Ahmet Can Arslan</string>
@@ -104,7 +104,7 @@
     <string name="shizuku_version_old_toast">Shizuku version je zastaralá. Prosíme, aktualizujte Shizuku.</string>
     <string name="grant_shizuku_permission_settings">Prosím, udělte Shizuku oprávnění v nastavení</string>
     <string name="search_app">Vyhledávání</string>
-    <string name="unselect_all">Zrušit oznašení aplikací</string>
+    <string name="unselect_all">Zrušit označení více aplikací</string>
     <string name="bulk_only_filtered">Jen %d filtrovaných</string>
     <string name="bulk_all_apps">Všech %d aplikací</string>
     <string name="select_at_least_one_app">Prosím vyberte aspoň jednu aplikaci</string>
@@ -355,7 +355,7 @@
     <string name="floating_button_notification_title">Plovoucí tlačítko firewallu</string>
     <string name="floating_button_content_description">Přepnout firewall</string>
     <string name="overlay_permission_required">Pro plovoucí tlačítko je vyžadováno oprávnění k překrytí</string>
-    <string name="double_tap_or_long_press">Dvojitým klepnutím vyberete vše, dlouhým stiskem zrušíte výběr všeho</string>
+    <string name="double_tap_or_long_press">Dvojitým klepnutím vyberete více aplikací, dlouhým stiskem zrušíte označení více aplikací</string>
 
     <string name="screen_lock_delay_title">Zpoždění uzamčení</string>
     <string name="screen_lock_delay_value">Povolit po %1$d sekundách od uzamčení</string>

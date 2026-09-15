@@ -25,7 +25,7 @@
     <string name="enable_firewall">फ़ायरवॉल</string>
     <string name="font_default">डिफ़ॉल्ट</string>
     <string name="font_ndot">Ndot</string>
-    <string name="select_all">सभी चुनें</string>
+    <string name="select_all">कई ऐप्स चुनें</string>
     <string name="scroll_to_top">ऊपर जाएँ</string>
     <string name="cat_favorites">पसंदीदा</string>
     <string name="made_by">Ahmet Can Arslan द्वारा ❤️ से बनाया गया</string>
@@ -105,7 +105,7 @@
     <string name="shizuku_version_old_toast">Shizuku संस्करण बहुत पुराना है, कृपया अपडेट करें</string>
     <string name="grant_shizuku_permission_settings">कृपया सेटिंग्स में Shizuku अनुमति दें</string>
     <string name="search_app">ऐप खोजें</string>
-    <string name="unselect_all">सभी अचयनित करें</string>
+    <string name="unselect_all">कई ऐप्स अचयनित करें</string>
     <string name="bulk_only_filtered">केवल %d फ़िल्टर किए गए</string>
     <string name="bulk_all_apps">सभी %d ऐप्स</string>
     <string name="select_at_least_one_app">कृपया कम से कम एक ऐप चुनें</string>
@@ -178,7 +178,7 @@
     <string name="github_description">सोर्स कोड देखें और योगदान करें</string>
     <string name="settings">सेटिंग्स</string>
     <string name="selected_count_zero">0</string>
-    <string name="double_tap_or_long_press">सभी चुनने के लिए दो बार टैप करें, सभी अचयनित करने के लिए देर तक दबाएँ</string>
+    <string name="double_tap_or_long_press">कई ऐप्स चुनने के लिए दो बार टैप करें, कई ऐप्स अचयनित करने के लिए देर तक दबाएँ</string>
     <string name="loading_apps">ऐप्स लोड हो रहे हैं</string>
 
     <string name="shizuku_setup_guide">Shizuku सेटअप मार्गदर्शिका</string>

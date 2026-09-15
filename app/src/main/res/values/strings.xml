@@ -25,7 +25,7 @@
     <string name="enable_firewall">Firewall</string>
     <string name="font_default">Default</string>
     <string name="font_ndot">Ndot</string>
-    <string name="select_all">Select all</string>
+    <string name="select_all">Select multiple apps</string>
     <string name="scroll_to_top">Scroll to top</string>
     <string name="cat_favorites">Favorites</string>
     <string name="made_by">Made with ❤️ by Ahmet Can Arslan</string>
@@ -105,7 +105,7 @@
     <string name="shizuku_version_old_toast">Shizuku version is too old, please update</string>
     <string name="grant_shizuku_permission_settings">Please grant Shizuku permission in settings</string>
     <string name="search_app">Search app</string>
-    <string name="unselect_all">Unselect All</string>
+    <string name="unselect_all">Unselect multiple apps</string>
     <string name="bulk_only_filtered">Only %d filtered</string>
     <string name="bulk_all_apps">All %d apps</string>
     <string name="select_at_least_one_app">Please select at least one app</string>
@@ -178,7 +178,7 @@
     <string name="github_description">View source code and contribute</string>
     <string name="settings">Settings</string>
     <string name="selected_count_zero">0</string>
-    <string name="double_tap_or_long_press">Double tap to select all, Long press to unselect all</string>
+    <string name="double_tap_or_long_press">Double tap to select multiple apps, long press to unselect multiple apps</string>
     <string name="loading_apps">Loading apps</string>
 
     <string name="shizuku_setup_guide">Shizuku Setup Guide</string>

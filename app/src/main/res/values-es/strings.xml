@@ -25,7 +25,7 @@
     <string name="enable_firewall">Cortafuegos</string>
     <string name="font_default">Predeterminado</string>
     <string name="font_ndot">Ndot</string>
-    <string name="select_all">Seleccionar todo</string>
+    <string name="select_all">Seleccionar varias aplicaciones</string>
     <string name="cat_favorites">Favoritos</string>
     <string name="made_by">Hecho con ❤️ por Ahmet Can Arslan</string>
     <string name="reset_app_menu">Restablecer aplicación</string>
@@ -102,7 +102,7 @@
     <string name="shizuku_version_old_toast">Versión de Shizuku antigua, por favor actualiza</string>
     <string name="grant_shizuku_permission_settings">Por favor, otorga permiso a Shizuku en los ajustes</string>
     <string name="search_app">Buscar aplicación</string>
-    <string name="unselect_all">Deseleccionar todo</string>
+    <string name="unselect_all">Deseleccionar varias aplicaciones</string>
     <string name="bulk_only_filtered">Solo %d filtradas</string>
     <string name="bulk_all_apps">Las %d aplicaciones</string>
     <string name="select_at_least_one_app">Por favor, selecciona al menos una aplicación</string>
@@ -344,7 +344,7 @@
     <string name="apply_root_rules_after_reboot_description">Volver a aplicar las últimas reglas activas del firewall con root cuando termine el arranque</string>
     <string name="working_mode_root">Root (su)</string>
     <string name="root_not_found_message">No se encontró acceso root. Permite a ShizuWall acceder a los permisos root.</string>
-    <string name="double_tap_or_long_press">Doble toque para seleccionar todo, pulsación larga para deseleccionar todo</string>
+    <string name="double_tap_or_long_press">Doble toque para seleccionar varias aplicaciones, pulsación larga para deseleccionar varias aplicaciones</string>
     <string name="ladb_daemon_restart_required_title">Reiniciar el daemon de LADB</string>
     <string name="ladb_daemon_restart_required_message">No se pudo activar el firewall porque el daemon de LADB falló en la autorización o dejó de responder. Abre la configuración de LADB, activa el Modo avanzado y luego usa Detener daemon e Iniciar daemon.</string>
     <string name="ladb_daemon_restart_reason_prefix">Problemas detectados:</string>

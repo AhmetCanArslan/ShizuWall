@@ -25,7 +25,7 @@
     <string name="enable_firewall">جدار ناري</string>
     <string name="font_default">الافتراضي</string>
     <string name="font_ndot">Ndot</string>
-    <string name="select_all">تحديد الكل</string>
+    <string name="select_all">تحديد عدة تطبيقات</string>
     <string name="cat_favorites">المفضلة</string>
     <string name="made_by">صنع بـ ❤️ بواسطة Ahmet Can Arslan</string>
     <string name="reset_app_menu">إعادة تعيين التطبيق</string>
@@ -103,7 +103,7 @@
     <string name="shizuku_version_old_toast">إصدار Shizuku قديم جدًا، يرجى التحديث</string>
     <string name="grant_shizuku_permission_settings">يرجى منح إذن Shizuku في الإعدادات</string>
     <string name="search_app">البحث عن تطبيق</string>
-    <string name="unselect_all">إلغاء تحديد الكل</string>
+    <string name="unselect_all">إلغاء تحديد عدة تطبيقات</string>
     <string name="bulk_only_filtered">المفلترة فقط (%d)</string>
     <string name="bulk_all_apps">كل التطبيقات (%d)</string>
     <string name="select_at_least_one_app">يرجى تحديد تطبيق واحد على الأقل</string>
@@ -344,7 +344,7 @@
     <string name="apply_root_rules_after_reboot_description">إعادة تطبيق آخر قواعد جدار ناري كانت نشطة بعد اكتمال الإقلاع باستخدام root</string>
     <string name="working_mode_root">Root (su)</string>
     <string name="root_not_found_message">لم يتم العثور على root. يرجى السماح لتطبيق ShizuWall بالوصول إلى صلاحيات root.</string>
-    <string name="double_tap_or_long_press">انقر نقراً مزدوجاً لتحديد الكل، واضغط مطولاً لإلغاء تحديد الكل</string>
+    <string name="double_tap_or_long_press">انقر نقراً مزدوجاً لتحديد عدة تطبيقات، واضغط مطولاً لإلغاء تحديد عدة تطبيقات</string>
     <string name="ladb_daemon_restart_required_title">إعادة تشغيل خدمة LADB</string>
     <string name="ladb_daemon_restart_required_message">تعذر تفعيل الجدار الناري لأن خدمة LADB فشلت في التفويض أو توقفت عن الاستجابة. افتح إعداد LADB، فعّل الوضع المتقدم، ثم استخدم إيقاف الخدمة وبدء الخدمة.</string>
     <string name="ladb_daemon_restart_reason_prefix">المشكلات المكتشفة:</string>
