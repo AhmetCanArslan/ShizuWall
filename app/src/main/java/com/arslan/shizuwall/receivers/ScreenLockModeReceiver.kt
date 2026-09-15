@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.arslan.shizuwall.FirewallMode
+import com.arslan.shizuwall.firewall.FirewallTargets
 import com.arslan.shizuwall.ui.MainActivity
 
 class ScreenLockModeReceiver {
@@ -72,41 +73,19 @@ class ScreenLockModeReceiver {
         return prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
     }
 
-    private fun activePackagesCsv(prefs: android.content.SharedPreferences): String {
-        val active = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
-        val mode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
-        
-        if (mode == FirewallMode.HYBRID) {
-            val appModesStr = prefs.getString(MainActivity.KEY_APP_MODES, "{}")
-            val appModes = try { org.json.JSONObject(appModesStr!!) } catch (e: Exception) { org.json.JSONObject() }
-            return active
-                .map { it.trim() }
-                .filter { it.isNotEmpty() && appModes.optInt(it, 0) == 2 }
-                .joinToString(",")
-        }
-        
-        return active
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .joinToString(",")
-    }
+    private fun activePackagesCsv(prefs: android.content.SharedPreferences): String =
+        packagesCsv(prefs, MainActivity.KEY_ACTIVE_PACKAGES)
 
-    private fun selectedPackagesCsv(prefs: android.content.SharedPreferences): String {
-        val selected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
-        val mode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
-        
-        if (mode == FirewallMode.HYBRID) {
-            val appModesStr = prefs.getString(MainActivity.KEY_APP_MODES, "{}")
-            val appModes = try { org.json.JSONObject(appModesStr!!) } catch (e: Exception) { org.json.JSONObject() }
-            return selected
-                .map { it.trim() }
-                .filter { it.isNotEmpty() && appModes.optInt(it, 0) == 2 }
-                .joinToString(",")
-        }
+    private fun selectedPackagesCsv(prefs: android.content.SharedPreferences): String =
+        packagesCsv(prefs, MainActivity.KEY_SELECTED_APPS)
 
-        return selected
+    private fun packagesCsv(prefs: android.content.SharedPreferences, key: String): String {
+        val packages = prefs.getStringSet(key, emptySet()) ?: emptySet()
+        val screenLockOnly = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)) == FirewallMode.HYBRID
+        val appModes = FirewallTargets.parseAppModes(prefs.getString(MainActivity.KEY_APP_MODES, "{}"))
+        return packages
             .map { it.trim() }
-            .filter { it.isNotEmpty() }
+            .filter { it.isNotEmpty() && (!screenLockOnly || appModes[it] == FirewallTargets.APP_MODE_SCREEN_LOCK) }
             .joinToString(",")
     }
 

@@ -25,8 +25,6 @@ class LadbPairingCodeReceiver : BroadcastReceiver() {
         val results = RemoteInput.getResultsFromIntent(intent) ?: return
 
         val rawDetails = results.getCharSequence(KEY_REMOTE_INPUT_DETAILS)?.toString()?.trim().orEmpty()
-        val legacyCode = results.getCharSequence(KEY_REMOTE_INPUT_CODE)?.toString()?.trim().orEmpty()
-        val legacyPortStr = results.getCharSequence(KEY_REMOTE_INPUT_PORT)?.toString()?.trim().orEmpty()
 
         val pendingResult = goAsync()
 
@@ -83,13 +81,8 @@ class LadbPairingCodeReceiver : BroadcastReceiver() {
             try {
                 val ladb = LadbManager.getInstance(context)
 
-                val (detailsPort, detailsCode) = parseDetails(rawDetails)
-                val port = detailsPort
-                    ?: legacyPortStr.toIntOrNull()?.takeIf { it > 0 }
-                val code = detailsCode
-                    ?.takeIf { it.isNotBlank() }
-                    ?: legacyCode.takeIf { it.isNotBlank() }
-                    ?: rawDetails.takeIf { it.isNotBlank() }
+                val (port, detailsCode) = parseDetails(rawDetails)
+                val code = detailsCode?.takeIf { it.isNotBlank() } ?: rawDetails.takeIf { it.isNotBlank() }
 
                 if (code.isNullOrBlank()) {
                     postResultNotification(
@@ -140,8 +133,6 @@ class LadbPairingCodeReceiver : BroadcastReceiver() {
     companion object {
         const val ACTION_LADB_PAIRING_CODE = "com.arslan.shizuwall.ACTION_LADB_PAIRING_CODE"
         const val KEY_REMOTE_INPUT_DETAILS = "pairing_details"
-        const val KEY_REMOTE_INPUT_PORT = "pairing_port"
-        const val KEY_REMOTE_INPUT_CODE = "pairing_code"
         const val NOTIFICATION_ID = 2201
         const val PAIRING_CHANNEL_ID = "ladb_pairing"
     }

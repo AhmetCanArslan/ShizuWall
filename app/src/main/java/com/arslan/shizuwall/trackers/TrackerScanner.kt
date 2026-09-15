@@ -29,17 +29,16 @@ object TrackerScanner {
             return null
         }
 
+        val ids = cachedIds(context, packageName, versionCode, TrackerRegistry.stamp(context)) ?: return null
+        return ScanResult.Success(definitions.filter { it.id in ids }.sortedBy { it.name.lowercase() })
+    }
+
+    private fun cachedIds(context: Context, packageName: String, versionCode: Long, stamp: String): Set<Int>? {
         val cached = context.getSharedPreferences(TrackerRegistry.PREFS_NAME, Context.MODE_PRIVATE)
             .getString("$CACHE_PREFIX$packageName", null) ?: return null
         val parts = cached.split('|')
-        if (parts.size != 3 || parts[0] != versionCode.toString() ||
-            parts[1] != TrackerRegistry.stamp(context)
-        ) {
-            return null
-        }
-
-        val ids = parts[2].split(',').mapNotNull { it.toIntOrNull() }.toSet()
-        return ScanResult.Success(definitions.filter { it.id in ids }.sortedBy { it.name.lowercase() })
+        if (parts.size != 3 || parts[0] != versionCode.toString() || parts[1] != stamp) return null
+        return parts[2].split(',').mapNotNull { it.toIntOrNull() }.toSet()
     }
 
     suspend fun scan(context: Context, packageName: String): ScanResult =
@@ -61,14 +60,8 @@ object TrackerScanner {
             val cacheKey = "$CACHE_PREFIX$packageName"
             val prefs = context.getSharedPreferences(TrackerRegistry.PREFS_NAME, Context.MODE_PRIVATE)
 
-            prefs.getString(cacheKey, null)?.let { cached ->
-                val parts = cached.split('|')
-                if (parts.size == 3 && parts[0] == versionCode.toString() && parts[1] == stamp) {
-                    val ids = parts[2].split(',').mapNotNull { it.toIntOrNull() }.toSet()
-                    return@withContext ScanResult.Success(
-                        definitions.filter { it.id in ids }.sortedBy { it.name.lowercase() }
-                    )
-                }
+            cachedIds(context, packageName, versionCode, stamp)?.let { ids ->
+                return@withContext ScanResult.Success(definitions.filter { it.id in ids }.sortedBy { it.name.lowercase() })
             }
 
             val appInfo = packageInfo.applicationInfo ?: return@withContext ScanResult.Failed

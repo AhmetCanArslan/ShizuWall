@@ -11,7 +11,6 @@ import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import com.arslan.shizuwall.firewall.FirewallCommands
 
 class NotificationActionReceiver : BroadcastReceiver() {
@@ -45,13 +44,8 @@ class NotificationActionReceiver : BroadcastReceiver() {
             }
         }
 
-        if (notificationId != -1) {
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.cancel(notificationId)
-        } else {
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.cancel(3000 + packageName.hashCode())
-        }
+        (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+            .cancel(if (notificationId != -1) notificationId else 3000 + packageName.hashCode())
     }
 
     private fun firewallApp(context: Context, packageName: String) {

@@ -40,9 +40,8 @@ class AppMonitorService : Service() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == Intent.ACTION_PACKAGE_ADDED) {
                 val packageName = intent.data?.schemeSpecificPart ?: return
-                val isReplacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
-                if (!isReplacing) {
-                    showNewAppNotification(context, packageName, isReplacing)
+                if (!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
+                    showNewAppNotification(context, packageName)
                 }
             }
         }
@@ -143,7 +142,7 @@ class AppMonitorService : Service() {
         }
     }
 
-    private fun showNewAppNotification(context: Context, packageName: String, isReplacing: Boolean = false) {
+    private fun showNewAppNotification(context: Context, packageName: String) {
         val pm = context.packageManager
         val appInfo = try {
             pm.getApplicationInfo(packageName, 0)
@@ -163,34 +162,22 @@ class AppMonitorService : Service() {
         val firewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
         val autoFirewallEnabled = prefs.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false)
 
-        val wasAutoFirewalled = if (!isReplacing) {
-            isFirewallEnabled && autoFirewallEnabled && firewallMode != FirewallMode.WHITELIST
-        } else {
-            false
-        }
-        if (!isReplacing) {
-            if (isFirewallEnabled && firewallMode == FirewallMode.WHITELIST) {
-                val blockIntent = Intent(context, FirewallControlReceiver::class.java).apply {
-                    action = MainActivity.ACTION_FIREWALL_CONTROL
-                    putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)
-                    putExtra(MainActivity.EXTRA_PACKAGES_CSV, packageName)
-                }
-                context.sendBroadcast(blockIntent)
-            } else if (wasAutoFirewalled) {
-                val selected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
-                if (selected.add(packageName)) {
-                    prefs.edit()
-                        .putStringSet(MainActivity.KEY_SELECTED_APPS, selected)
-                        .putInt(MainActivity.KEY_SELECTED_COUNT, selected.size)
-                        .apply()
-                }
-                val blockIntent = Intent(context, FirewallControlReceiver::class.java).apply {
-                    action = MainActivity.ACTION_FIREWALL_CONTROL
-                    putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)
-                    putExtra(MainActivity.EXTRA_PACKAGES_CSV, packageName)
-                }
-                context.sendBroadcast(blockIntent)
+        val wasAutoFirewalled = isFirewallEnabled && autoFirewallEnabled && firewallMode != FirewallMode.WHITELIST
+        if (wasAutoFirewalled) {
+            val selected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
+            if (selected.add(packageName)) {
+                prefs.edit()
+                    .putStringSet(MainActivity.KEY_SELECTED_APPS, selected)
+                    .putInt(MainActivity.KEY_SELECTED_COUNT, selected.size)
+                    .apply()
             }
+        }
+        if (wasAutoFirewalled || (isFirewallEnabled && firewallMode == FirewallMode.WHITELIST)) {
+            context.sendBroadcast(Intent(context, FirewallControlReceiver::class.java).apply {
+                action = MainActivity.ACTION_FIREWALL_CONTROL
+                putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)
+                putExtra(MainActivity.EXTRA_PACKAGES_CSV, packageName)
+            })
         }
 
         if (!notificationsEnabled && !wasAutoFirewalled) return
