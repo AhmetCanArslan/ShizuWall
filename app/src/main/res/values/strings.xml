@@ -106,7 +106,7 @@
     <string name="grant_shizuku_permission_settings">Please grant Shizuku permission in settings</string>
     <string name="search_app">Search app</string>
     <string name="unselect_all">Unselect All</string>
-    <string name="deselect_all_apps">Deselect all apps?</string>
+    <string name="deselect_all_apps">Unselect all apps?</string>
     <string name="unselect">Unselect</string>
     <string name="select">Select</string>
     <string name="select_all_apps_confirm">Select %d apps?</string>
@@ -180,7 +180,7 @@
     <string name="github_description">View source code and contribute</string>
     <string name="settings">Settings</string>
     <string name="selected_count_zero">0</string>
-    <string name="double_tap_or_long_press">Double tap to select all, Long press to deselect all</string>
+    <string name="double_tap_or_long_press">Double tap to select all, Long press to unselect all</string>
     <string name="loading_apps">Loading apps</string>
 
     <string name="shizuku_setup_guide">Shizuku Setup Guide</string>
