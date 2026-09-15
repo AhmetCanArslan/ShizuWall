@@ -349,13 +349,4 @@ object MultiUserApps {
             null
         }
     }
-
-    fun clearCache(context: Context) {
-        memoryCache = null
-        invalidate()
-        prefs(context).edit()
-            .remove(KEY_CACHE)
-            .remove("secondary_user_apps_cache_at")
-            .apply()
-    }
 }

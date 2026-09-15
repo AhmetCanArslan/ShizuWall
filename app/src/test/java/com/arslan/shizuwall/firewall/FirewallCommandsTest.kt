@@ -10,12 +10,12 @@ class FirewallCommandsTest {
 
     @Test
     fun chain3EnableMatchesLegacyWireFormat() {
-        assertEquals("cmd connectivity set-chain3-enabled true", FirewallCommands.chain3(true))
+        assertEquals("cmd connectivity set-chain3-enabled true", FirewallCommands.CHAIN3_ENABLE)
     }
 
     @Test
     fun chain3DisableMatchesLegacyWireFormat() {
-        assertEquals("cmd connectivity set-chain3-enabled false", FirewallCommands.chain3(false))
+        assertEquals("cmd connectivity set-chain3-enabled false", FirewallCommands.CHAIN3_DISABLE)
     }
 
     @Test

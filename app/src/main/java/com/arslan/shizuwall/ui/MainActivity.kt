@@ -94,7 +94,6 @@ class MainActivity : BaseActivity() {
         const val KEY_ACTIVE_PACKAGES = "active_packages"
         const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed"
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
-        private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1002
         const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
         const val KEY_SKIP_ERROR_DIALOG = "skip_error_dialog"
         const val KEY_SKIP_ANDROID11_INFO = "skip_android11_info"
@@ -106,7 +105,6 @@ class MainActivity : BaseActivity() {
         const val KEY_SELECTED_FONT = "selected_font"
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
         const val KEY_USE_AMOLED_BLACK = "use_amoled_black"
-        const val KEY_ADAPTIVE_MODE = "adaptive_mode" 
         const val KEY_FIREWALL_MODE = "firewall_mode"
         const val KEY_SCREEN_LOCK_DELAY_SECONDS = "screen_lock_delay_seconds"
         const val DEFAULT_SCREEN_LOCK_DELAY_SECONDS = 2
@@ -120,7 +118,6 @@ class MainActivity : BaseActivity() {
 
         const val ACTION_FIREWALL_STATE_CHANGED = "com.arslan.shizuwall.ACTION_FIREWALL_STATE_CHANGED"
         const val EXTRA_FIREWALL_ENABLED = "state" 
-        const val EXTRA_ACTIVE_PACKAGES = "com.arslan.shizuwall.EXTRA_ACTIVE_PACKAGES"
 
         const val ACTION_FIREWALL_CONTROL = "shizuwall.CONTROL" 
         const val EXTRA_PACKAGES_CSV = "apps"
@@ -415,7 +412,7 @@ class MainActivity : BaseActivity() {
         val profileButton: View? = findViewById(R.id.profileButton)
         profileButton?.setOnClickListener { showProfilesSheet() }
         updateProfileButtonIcon()
-        com.arslan.shizuwall.profiles.ProfileTileSlots.sync(this)
+        com.arslan.shizuwall.profiles.ProfileTileSlots.refreshTiles(this)
 
         val sortButton: View? = findViewById(R.id.sortButton)
         sortButton?.setOnClickListener { showSortDialog() }
@@ -775,13 +772,6 @@ class MainActivity : BaseActivity() {
                         .setCancelable(true)
                         .create()
                     d.show()
-                }
-            }
-            NOTIFICATION_PERMISSION_REQUEST_CODE -> {
-                if (granted) {
-                    Toast.makeText(this, getString(R.string.notification_permission_granted), Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, getString(R.string.notification_permission_denied), Toast.LENGTH_LONG).show()
                 }
             }
         }

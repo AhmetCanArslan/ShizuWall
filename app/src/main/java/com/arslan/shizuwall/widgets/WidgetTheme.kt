@@ -26,11 +26,10 @@ enum class WidgetTheme(
 
         private fun keyFor(appWidgetId: Int) = "widget_theme_$appWidgetId"
 
-        fun fromKey(key: String?): WidgetTheme =
-            entries.firstOrNull { it.key == key } ?: DEFAULT
-
-        fun of(context: Context, appWidgetId: Int): WidgetTheme =
-            fromKey(prefs(context).getString(keyFor(appWidgetId), null))
+        fun of(context: Context, appWidgetId: Int): WidgetTheme {
+            val key = prefs(context).getString(keyFor(appWidgetId), null)
+            return entries.firstOrNull { it.key == key } ?: DEFAULT
+        }
 
         fun set(context: Context, appWidgetId: Int, theme: WidgetTheme) {
             prefs(context).edit().putString(keyFor(appWidgetId), theme.key).apply()

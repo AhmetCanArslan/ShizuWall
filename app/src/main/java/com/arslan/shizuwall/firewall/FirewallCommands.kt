@@ -12,8 +12,6 @@ object FirewallCommands {
 
     data class Networking(val key: String, val networkingEnabled: Boolean)
 
-    fun chain3(enabled: Boolean): String = if (enabled) CHAIN3_ENABLE else CHAIN3_DISABLE
-
     fun networking(key: String, networkingEnabled: Boolean): String = "$NETWORKING $networkingEnabled $key"
 
     fun block(key: String): String = networking(key, false)

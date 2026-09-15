@@ -72,8 +72,6 @@ object ProfileTileSlots {
         }
     }
 
-    fun sync(context: Context) = refreshTiles(context)
-
     fun refreshTiles(context: Context) {
         val appContext = context.applicationContext
         val claimed = ProfilesStore.getProfiles(appContext).map { it.tileSlot }.toSet()

@@ -12,11 +12,6 @@ object ShizukuPackageResolver {
         "moe.shizuku.api.permission.SHIZUKU"
     )
     
-    private val SHIZUKU_PROVIDER_AUTHORITIES = listOf(
-        "moe.shizuku.privileged.api",
-        "moe.shizuku.manager"
-    )
-    
     private val FALLBACK_PACKAGES = listOf(
         "moe.shizuku.privileged.api",
         "moe.shizuku.manager"
@@ -50,7 +45,7 @@ object ShizukuPackageResolver {
                 }
             }
             
-            for (authority in SHIZUKU_PROVIDER_AUTHORITIES) {
+            for (authority in FALLBACK_PACKAGES) {
                 try {
                     val providerInfo = pm.resolveContentProvider(authority, 0)
                     if (providerInfo != null) {

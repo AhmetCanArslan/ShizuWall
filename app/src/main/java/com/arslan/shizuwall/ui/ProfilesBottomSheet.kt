@@ -104,7 +104,7 @@ class ProfilesBottomSheet(
         adapter.setActiveProfileId(activeId, animate = false)
         adapter.submitList(profiles)
 
-        ProfileTileSlots.sync(context)
+        ProfileTileSlots.refreshTiles(context)
         ProfileWidgetProvider.refreshAll(context)
 
         val isEmpty = profiles.isEmpty()
@@ -357,10 +357,5 @@ class ProfilesBottomSheet(
             }
         }
         alert.show()
-    }
-
-    companion object {
-        @Suppress("unused")
-        private const val TAG = "ProfilesBottomSheet"
     }
 }

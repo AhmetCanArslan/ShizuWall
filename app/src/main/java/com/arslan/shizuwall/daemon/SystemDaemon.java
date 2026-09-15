@@ -124,15 +124,11 @@ public class SystemDaemon {
         }
 
         logD("Daemon starting...");
-        System.out.println("SystemDaemon: Starting...");
-        System.out.flush();
         try {
             executeCommand("id");
             
             startSocketServer();
             logD("TCP server started on port " + PORT);
-            System.out.println("SystemDaemon: TCP server started on port " + PORT);
-            System.out.flush();
             
             while(running) {
                 Thread.sleep(30000);
@@ -207,7 +203,6 @@ public class SystemDaemon {
             String token = reader.readLine();
             if (!safeEquals(token, authToken)) {
                 logW("Unauthorized access attempt");
-                System.out.println("SystemDaemon: Unauthorized access attempt");
                 writer.println("Error: Unauthorized");
                 return;
             }
@@ -235,8 +230,6 @@ public class SystemDaemon {
             }
             
             logD("Received command: [" + command + "]");
-            System.out.println("SystemDaemon: Received command: [" + command + "]");
-            System.out.flush();
 
             String result;
             if (command.trim().equalsIgnoreCase("ping")) {
@@ -277,8 +270,6 @@ public class SystemDaemon {
             }
 
             logD("Sending result: " + result.substring(0, Math.min(100, result.length())));
-            System.out.println("SystemDaemon: Sending result (" + result.length() + " chars)");
-            System.out.flush();
             
             writer.print(result);
             writer.flush();
@@ -287,8 +278,6 @@ public class SystemDaemon {
             logW("Command interrupted: " + command);
         } catch (Exception e) {
             logE("Client handler error for command: " + command, e);
-            System.err.println("SystemDaemon: Client handler error");
-            e.printStackTrace();
         } finally {
             try {
                 socket.close();
@@ -621,8 +610,6 @@ public class SystemDaemon {
             return result;
         } catch (Exception e) {
             logE("Execution error", e);
-            System.err.println("SystemDaemon: Exception executing command");
-            e.printStackTrace();
             return "Error: " + e.getMessage();
         } finally {
             if (p != null && p.isAlive()) {
