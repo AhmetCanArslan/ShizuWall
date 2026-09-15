@@ -11,6 +11,7 @@ class MultiUserAppsParseTest {
     private val output = """
         Package [com.foo]
         appId=10234
+        codePath=/data/app/~~a==/com.foo-b==
         pkgFlags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]
         privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE ]
         User 0:
@@ -116,6 +117,13 @@ class MultiUserAppsParseTest {
         assertEquals(1010234, app.uid)
         assertEquals(10, app.userId)
         assertEquals("10:com.foo", app.key)
+    }
+
+    @Test
+    fun capturesCodePath() {
+        val apps = parse(setOf(10)).getValue(10).associateBy { it.packageName }
+        assertEquals("/data/app/~~a==/com.foo-b==", apps.getValue("com.foo").apkPath)
+        assertEquals(null, apps.getValue("com.sys").apkPath)
     }
 
     @Test

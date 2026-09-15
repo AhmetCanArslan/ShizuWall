@@ -16,9 +16,10 @@ object MultiUserApps {
     private const val TAG = "MultiUserApps"
 
     private val USER_LINE = Regex("""UserInfo\{(\d+):([^:]*):""")
-    private val PACKAGE_LINE = Regex("""^package:(\S+)\s+uid:(\d+)$""")
+    private val PACKAGE_LINE = Regex("""^package:(?:(\S+)=)?([\w.]+)\s+uid:(\d+)$""")
     private val DUMPSYS_PACKAGE_TOKEN = Regex("""^Package \[([^\]]+)]$""")
     private val DUMPSYS_APP_ID_TOKEN = Regex("""^(?:appId|userId)=(\d+)$""")
+    private val DUMPSYS_CODE_PATH_TOKEN = Regex("""^codePath=(\S+)$""")
     private val DUMPSYS_FLAGS_TOKEN = Regex("""^pkgFlags=\[(.*)]$""")
     private val DUMPSYS_PRIVATE_FLAGS_TOKEN = Regex("""^privateFlags=\[(.*)]$""")
     private val DUMPSYS_USER_TOKEN = Regex("""^User (\d+):$""")
@@ -29,14 +30,15 @@ object MultiUserApps {
     private val DISABLED_STATES = setOf(2, 3, 4)
 
     private const val DUMPSYS_COMMAND = "dumpsys package packages | grep -oE " +
-        "'Package \\[[^]]+]|appId=[0-9]+|userId=[0-9]+|pkgFlags=\\[[^]]*]|" +
+        "'Package \\[[^]]+]|appId=[0-9]+|userId=[0-9]+|codePath=[^ ]+|pkgFlags=\\[[^]]*]|" +
         "privateFlags=\\[[^]]*]|User [0-9]+:|installed=[a-z]+|enabled=[0-9]+|Shared users:'"
 
     data class SecondaryApp(
         val userId: Int,
         val packageName: String,
         val uid: Int,
-        val isSystem: Boolean = false
+        val isSystem: Boolean = false,
+        val apkPath: String? = null
     ) {
         val key: String get() = AppKey.of(userId, packageName)
     }
@@ -131,8 +133,8 @@ object MultiUserApps {
             val results = try {
                 executor.execBatch(
                     listOf(
-                        "pm list packages -3 -e -U --user $userId",
-                        "pm list packages -s -e -U --user $userId"
+                        "pm list packages -3 -e -f -U --user $userId",
+                        "pm list packages -s -e -f -U --user $userId"
                     )
                 )
             } catch (t: Throwable) {
@@ -153,13 +155,13 @@ object MultiUserApps {
                 val isSystem = index == 1
                 listResult.stdout.lineSequence().forEach inner@{ line ->
                     val match = PACKAGE_LINE.matchEntire(line.trim()) ?: return@inner
-                    val pkg = match.groupValues[1]
-                    val uid = match.groupValues[2].toIntOrNull() ?: return@inner
+                    val pkg = match.groupValues[2]
+                    val uid = match.groupValues[3].toIntOrNull() ?: return@inner
 
                     found++
                     if (pkg == selfPkg) return@inner
                     if (ShizukuPackageResolver.isShizukuPackage(context, pkg)) return@inner
-                    apps.add(SecondaryApp(userId, pkg, uid, isSystem))
+                    apps.add(SecondaryApp(userId, pkg, uid, isSystem, match.groupValues[1].ifEmpty { null }))
                 }
             }
             if (found == 0) empty.add(userId)
@@ -214,6 +216,7 @@ object MultiUserApps {
         var appId = -1
         var skip = false
         var isSystem = false
+        var codePath: String? = null
         var pendingUser = -1
         var pending: SecondaryApp? = null
 
@@ -237,6 +240,7 @@ object MultiUserApps {
                 pkg = name
                 appId = -1
                 isSystem = false
+                codePath = null
                 pendingUser = -1
                 skip = !seen.add(name) || exclude(name)
                 return@forEach
@@ -244,6 +248,12 @@ object MultiUserApps {
             val current = pkg ?: return@forEach
             if (skip) return@forEach
 
+            DUMPSYS_CODE_PATH_TOKEN.matchEntire(token)?.let { match ->
+                flush()
+                codePath = match.groupValues[1]
+                pendingUser = -1
+                return@forEach
+            }
             DUMPSYS_APP_ID_TOKEN.matchEntire(token)?.let { match ->
                 flush()
                 if (appId < 0) appId = match.groupValues[1].toIntOrNull() ?: -1
@@ -275,7 +285,7 @@ object MultiUserApps {
                 if (match.groupValues[1] != "true") return@forEach
                 if (userId !in userIds) return@forEach
                 val uid = userId * AppIds.PER_USER_RANGE + AppIds.appIdOf(appId)
-                pending = SecondaryApp(userId, current, uid, isSystem)
+                pending = SecondaryApp(userId, current, uid, isSystem, codePath)
                 return@forEach
             }
             DUMPSYS_ENABLED_TOKEN.matchEntire(token)?.let { match ->
@@ -297,6 +307,7 @@ object MultiUserApps {
                     put("p", app.packageName)
                     put("uid", app.uid)
                     put("s", app.isSystem)
+                    app.apkPath?.let { put("a", it) }
                 }
             )
         }
@@ -310,7 +321,7 @@ object MultiUserApps {
             val pkg = obj.optString("p")
             if (pkg.isBlank()) continue
             apps.add(
-                SecondaryApp(obj.optInt("u"), pkg, obj.optInt("uid"), obj.optBoolean("s", false))
+                SecondaryApp(obj.optInt("u"), pkg, obj.optInt("uid"), obj.optBoolean("s", false), obj.optString("a").ifEmpty { null })
             )
         }
         return apps

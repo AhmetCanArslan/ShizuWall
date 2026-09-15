@@ -6,6 +6,7 @@ import android.content.pm.LauncherApps
 import android.graphics.drawable.Drawable
 import android.os.UserHandle
 import android.os.UserManager
+import java.io.File
 
 object CrossUserAppInfo {
 
@@ -60,6 +61,22 @@ object CrossUserAppInfo {
         }
         return try {
             context.packageManager.getApplicationInfo(packageName, 0)
+        } catch (_: Exception) {
+            archiveInfo(context, packageName, userId)
+        }
+    }
+
+    private fun archiveInfo(context: Context, packageName: String, userId: Int): ApplicationInfo? {
+        val path = MultiUserApps.cachedSnapshot(context).apps
+            .firstOrNull { it.userId == userId && it.packageName == packageName }?.apkPath ?: return null
+        val dir = File(path)
+        val apk = dir.takeIf { it.isFile } ?: File(dir, "base.apk").takeIf { it.isFile }
+            ?: dir.listFiles { f -> f.name.endsWith(".apk") }?.firstOrNull() ?: return null
+        return try {
+            context.packageManager.getPackageArchiveInfo(apk.path, 0)?.applicationInfo?.apply {
+                sourceDir = apk.path
+                publicSourceDir = apk.path
+            }
         } catch (_: Exception) {
             null
         }
