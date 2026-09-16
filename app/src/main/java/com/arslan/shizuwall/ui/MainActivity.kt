@@ -910,10 +910,15 @@ class MainActivity : BaseActivity() {
         }
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(if (select) R.string.select_all else R.string.unselect_all))
-            .setPositiveButton(getString(R.string.bulk_all_apps, all.size)) { _, _ -> apply(all) }
             .setNegativeButton(getString(R.string.cancel), null)
-        if (filtered.isNotEmpty() && filtered.size < all.size) {
-            dialog.setNeutralButton(getString(R.string.bulk_only_filtered, filtered.size)) { _, _ -> apply(filtered) }
+        val narrowed = filtered.isNotEmpty() && (currentQuery.isNotEmpty() || currentCategory != Category.NONE)
+        if (narrowed) {
+            dialog.setPositiveButton(getString(R.string.bulk_only_filtered, filtered.size)) { _, _ -> apply(filtered) }
+            if (all.size > filtered.size) {
+                dialog.setNeutralButton(getString(R.string.bulk_all_apps, all.size)) { _, _ -> apply(all) }
+            }
+        } else {
+            dialog.setPositiveButton(getString(R.string.bulk_all_apps, all.size)) { _, _ -> apply(all) }
         }
         dialog.show()
     }
