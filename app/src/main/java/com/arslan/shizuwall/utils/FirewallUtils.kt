@@ -12,6 +12,7 @@ import com.arslan.shizuwall.daemon.PersistentDaemonManager
 import com.arslan.shizuwall.firewall.FirewallCommands
 import com.arslan.shizuwall.firewall.FirewallTargets
 import com.arslan.shizuwall.profiles.ProfileTileSlots
+import com.arslan.shizuwall.receivers.FirewallControlReceiver
 import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.services.FloatingButtonService
 import com.arslan.shizuwall.services.ForegroundDetectionService
@@ -45,6 +46,32 @@ object FirewallUtils {
         return prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())
             ?.filterNot { ShizukuPackageResolver.isShizukuPackage(context, it) || it == selfPkg }
             ?.toList() ?: emptyList()
+    }
+
+    fun applyNewAppPolicy(context: Context, packageName: String): Boolean {
+        val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        val enabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
+        val mode = firewallMode(prefs)
+        val autoFirewalled = enabled &&
+            prefs.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false) &&
+            mode != FirewallMode.WHITELIST
+        if (autoFirewalled) {
+            val selected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
+            if (selected.add(packageName)) {
+                prefs.edit()
+                    .putStringSet(MainActivity.KEY_SELECTED_APPS, selected)
+                    .putInt(MainActivity.KEY_SELECTED_COUNT, selected.size)
+                    .apply()
+            }
+        }
+        if (autoFirewalled || (enabled && mode == FirewallMode.WHITELIST)) {
+            context.sendBroadcast(Intent(context, FirewallControlReceiver::class.java).apply {
+                action = MainActivity.ACTION_FIREWALL_CONTROL
+                putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)
+                putExtra(MainActivity.EXTRA_PACKAGES_CSV, packageName)
+            })
+        }
+        return autoFirewalled
     }
 
     fun loadActivePackages(prefs: SharedPreferences): Set<String> {

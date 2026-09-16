@@ -126,6 +126,14 @@
         </receiver>
 
         <receiver
+            android:name=".receivers.AppInstalledReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="shizuwall.APP_INSTALLED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
             android:name=".receivers.NotificationActionReceiver"
             android:exported="false" />
 

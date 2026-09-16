@@ -11,9 +11,9 @@ import androidx.core.app.NotificationCompat
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.profiles.ProfilesStore
-import com.arslan.shizuwall.receivers.FirewallControlReceiver
 import com.arslan.shizuwall.receivers.NotificationActionReceiver
 import com.arslan.shizuwall.ui.MainActivity
+import com.arslan.shizuwall.utils.FirewallUtils
 import com.arslan.shizuwall.utils.UiUtils
 
 class AppMonitorService : Service() {
@@ -160,25 +160,7 @@ class AppMonitorService : Service() {
         val notificationsEnabled = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
         val isFirewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
         val firewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
-        val autoFirewallEnabled = prefs.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false)
-
-        val wasAutoFirewalled = isFirewallEnabled && autoFirewallEnabled && firewallMode != FirewallMode.WHITELIST
-        if (wasAutoFirewalled) {
-            val selected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet())?.toMutableSet() ?: mutableSetOf()
-            if (selected.add(packageName)) {
-                prefs.edit()
-                    .putStringSet(MainActivity.KEY_SELECTED_APPS, selected)
-                    .putInt(MainActivity.KEY_SELECTED_COUNT, selected.size)
-                    .apply()
-            }
-        }
-        if (wasAutoFirewalled || (isFirewallEnabled && firewallMode == FirewallMode.WHITELIST)) {
-            context.sendBroadcast(Intent(context, FirewallControlReceiver::class.java).apply {
-                action = MainActivity.ACTION_FIREWALL_CONTROL
-                putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)
-                putExtra(MainActivity.EXTRA_PACKAGES_CSV, packageName)
-            })
-        }
+        val wasAutoFirewalled = FirewallUtils.applyNewAppPolicy(context, packageName)
 
         if (!notificationsEnabled && !wasAutoFirewalled) return
 

@@ -141,6 +141,8 @@ class MainActivity : BaseActivity() {
                 .take(16)
         }
 
+        const val ACTION_APP_INSTALLED = "shizuwall.APP_INSTALLED"
+
         const val ACTION_PROFILE_CONTROL = "shizuwall.PROFILE"
         const val EXTRA_PROFILE_NAME = "profile"
         const val EXTRA_PROFILE_ID = "profile_id"
