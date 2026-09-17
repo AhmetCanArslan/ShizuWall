@@ -23,6 +23,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.text.HtmlCompat
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.utils.AppKey
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -36,6 +37,7 @@ class FirewallSettingsActivity : BaseActivity() {
     private lateinit var cardKeepErrorApps: com.google.android.material.card.MaterialCardView
     private lateinit var switchKeepErrorAppsSelected: androidx.appcompat.widget.SwitchCompat
     private lateinit var switchRememberDeletedApps: androidx.appcompat.widget.SwitchCompat
+    private lateinit var switchAutoFirewallNewApps: androidx.appcompat.widget.SwitchCompat
     private lateinit var switchShowSystemApps: com.google.android.material.materialswitch.MaterialSwitch
     private lateinit var switchShowOtherProfiles: com.google.android.material.materialswitch.MaterialSwitch
     private lateinit var cardShowSystemApps: com.google.android.material.card.MaterialCardView
@@ -94,6 +96,7 @@ class FirewallSettingsActivity : BaseActivity() {
         cardKeepErrorApps = findViewById(R.id.cardKeepErrorApps)
         switchKeepErrorAppsSelected = findViewById(R.id.switchKeepErrorAppsSelected)
         switchRememberDeletedApps = findViewById(R.id.switchRememberDeletedApps)
+        switchAutoFirewallNewApps = findViewById(R.id.switchAutoFirewallNewApps)
         layoutAdbBroadcastUsage = findViewById(R.id.layoutAdbBroadcastUsage)
         switchShowSystemApps = findViewById(R.id.switchShowSystemApps)
         switchShowOtherProfiles = findViewById(R.id.switchShowOtherProfiles)
@@ -147,6 +150,7 @@ class FirewallSettingsActivity : BaseActivity() {
         switchSkipErrorDialog.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_SKIP_ERROR_DIALOG, false)
         switchKeepErrorAppsSelected.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, false)
         switchRememberDeletedApps.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_REMEMBER_DISABLED_APPS, true)
+        switchAutoFirewallNewApps.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false)
         cardKeepErrorApps.visibility = if (switchSkipErrorDialog.isChecked) View.VISIBLE else View.GONE
 
         val firewallMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
@@ -353,6 +357,12 @@ class FirewallSettingsActivity : BaseActivity() {
             sharedPreferences.edit().putBoolean(MainActivity.KEY_REMEMBER_DISABLED_APPS, isChecked).apply()
         }
 
+        switchAutoFirewallNewApps.setOnCheckedChangeListener { _, isChecked ->
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, isChecked).apply()
+            setResult(RESULT_OK)
+            AppMonitorService.sync(this)
+        }
+
         switchKeepErrorAppsSelected.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit().putBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, isChecked).apply()
         }
@@ -409,6 +419,7 @@ class FirewallSettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchSkipErrorDialog)
         makeCardClickableForSwitch(switchKeepErrorAppsSelected)
         makeCardClickableForSwitch(switchRememberDeletedApps)
+        makeCardClickableForSwitch(switchAutoFirewallNewApps)
     }
 
     private fun updateScreenLockDelaySummary() {

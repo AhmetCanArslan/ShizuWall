@@ -25,6 +25,15 @@ class AppMonitorService : Service() {
         const val FOREGROUND_NOTIFICATION_ID = 2001
         const val APP_INSTALL_NOTIFICATION_ID_BASE = 3000
 
+        fun sync(context: Context) {
+            val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+            val intent = Intent(context, AppMonitorService::class.java)
+            val wanted = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false) ||
+                prefs.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false) ||
+                prefs.getBoolean(MainActivity.KEY_SHOW_FIREWALL_STATUS_NOTIFICATION, false)
+            if (wanted) context.startForegroundService(intent) else context.stopService(intent)
+        }
+
         fun showNewAppNotification(context: Context, key: String) {
             val packageName = AppKey.packageOf(key)
             val pm = context.packageManager

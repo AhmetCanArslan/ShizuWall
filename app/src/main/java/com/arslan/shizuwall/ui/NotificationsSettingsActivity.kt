@@ -20,7 +20,6 @@ class NotificationsSettingsActivity : BaseActivity() {
     private lateinit var sharedPreferences: SharedPreferences
 
     private lateinit var switchAppMonitor: androidx.appcompat.widget.SwitchCompat
-    private lateinit var switchAutoFirewallNewApps: androidx.appcompat.widget.SwitchCompat
     private lateinit var switchFirewallStatusNotification: androidx.appcompat.widget.SwitchCompat
     private lateinit var switchFloatingButton: androidx.appcompat.widget.SwitchCompat
 
@@ -36,7 +35,6 @@ class NotificationsSettingsActivity : BaseActivity() {
         setupSettingsChrome(R.id.notificationsSettingsRoot, toolbar)
 
         switchAppMonitor = findViewById(R.id.switchAppMonitor)
-        switchAutoFirewallNewApps = findViewById(R.id.switchAutoFirewallNewApps)
         switchFirewallStatusNotification = findViewById(R.id.switchFirewallStatusNotification)
         switchFloatingButton = findViewById(R.id.switchFloatingButton)
         findViewById<MaterialButton>(R.id.btnFloatingButtonSettings).setOnClickListener {
@@ -62,7 +60,6 @@ class NotificationsSettingsActivity : BaseActivity() {
 
     private fun loadSettings() {
         switchAppMonitor.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
-        switchAutoFirewallNewApps.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false)
         switchFirewallStatusNotification.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_FIREWALL_STATUS_NOTIFICATION, false)
         switchFloatingButton.isChecked = sharedPreferences.getBoolean(FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)
     }
@@ -93,13 +90,7 @@ class NotificationsSettingsActivity : BaseActivity() {
                 }
             }
             sharedPreferences.edit().putBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, isChecked).apply()
-            syncAppMonitorService()
-        }
-
-        switchAutoFirewallNewApps.setOnCheckedChangeListener { _, isChecked ->
-            sharedPreferences.edit().putBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, isChecked).apply()
-            setResult(RESULT_OK)
-            syncAppMonitorService()
+            AppMonitorService.sync(this)
         }
 
         switchFirewallStatusNotification.setOnCheckedChangeListener { _, isChecked ->
@@ -108,7 +99,7 @@ class NotificationsSettingsActivity : BaseActivity() {
             }
             sharedPreferences.edit().putBoolean(MainActivity.KEY_SHOW_FIREWALL_STATUS_NOTIFICATION, isChecked).apply()
             setResult(RESULT_OK)
-            syncAppMonitorService()
+            AppMonitorService.sync(this)
         }
 
         switchFloatingButton.setOnCheckedChangeListener { _, isChecked ->
@@ -133,19 +124,8 @@ class NotificationsSettingsActivity : BaseActivity() {
         }
 
         makeCardClickableForSwitch(switchAppMonitor)
-        makeCardClickableForSwitch(switchAutoFirewallNewApps)
         makeCardClickableForSwitch(switchFirewallStatusNotification)
         makeCardClickableForSwitch(switchFloatingButton)
     }
 
-    private fun syncAppMonitorService() {
-        val anyEnabled = sharedPreferences.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false) ||
-            sharedPreferences.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false) ||
-            sharedPreferences.getBoolean(MainActivity.KEY_SHOW_FIREWALL_STATUS_NOTIFICATION, false)
-        if (anyEnabled) {
-            startForegroundService(Intent(this, AppMonitorService::class.java))
-        } else {
-            stopService(Intent(this, AppMonitorService::class.java))
-        }
-    }
 }
