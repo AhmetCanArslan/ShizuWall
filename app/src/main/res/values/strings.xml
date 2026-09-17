@@ -63,7 +63,7 @@
     <string name="adb_broadcast_dev_disable_framework">Disable firewall framework</string>
     <string name="adb_broadcast_extras_summary" formatted="false">%1$s (boolean): true = enable, false = disable
 
-%2$s (string, optional): comma-separated package list. If omitted, the app uses selected packages saved in ShizuWall.</string>
+%2$s (string, optional): comma-separated app list. If omitted, the firewall is turned on or off as a whole using the apps selected in ShizuWall. If given, only those apps are blocked or unblocked. Prefix an app with a user id for work profile or clone apps, for example 150:com.example.app.</string>
     <string name="ok">OK</string>
     <string name="no_apps_selected">No apps selected</string>
     <string name="shizuku_not_running">Shizuku not running</string>

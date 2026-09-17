@@ -55,6 +55,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
             action = MainActivity.ACTION_FIREWALL_CONTROL
             putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)
             putExtra(MainActivity.EXTRA_PACKAGES_CSV, packageName)
+            putExtra(FirewallControlReceiver.EXTRA_AUTOMATION_EVENT, true)
         }
         context.sendBroadcast(controlIntent)
         Toast.makeText(context, context.getString(R.string.firewalling_app, packageName), Toast.LENGTH_SHORT).show()

@@ -48,6 +48,22 @@ class AppKeyTest {
     }
 
     @Test
+    fun normalize_stripsRedundantPrimaryUserPrefix() {
+        assertEquals("com.foo", AppKey.normalize("0:com.foo"))
+        assertEquals("com.foo", AppKey.normalize("com.foo"))
+    }
+
+    @Test
+    fun normalize_keepsSecondaryUserPrefix() {
+        assertEquals("150:com.foo", AppKey.normalize("150:com.foo"))
+    }
+
+    @Test
+    fun normalize_leavesNonNumericPrefixAlone() {
+        assertEquals("work:com.foo", AppKey.normalize("work:com.foo"))
+    }
+
+    @Test
     fun roundTrip_preservesUserAndPackage() {
         val key = AppKey.of(10, "com.foo")
         assertEquals(10, AppKey.userIdOf(key))

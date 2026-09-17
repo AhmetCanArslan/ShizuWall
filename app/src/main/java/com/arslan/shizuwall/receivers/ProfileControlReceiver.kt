@@ -6,7 +6,6 @@ import android.content.Intent
 import android.widget.Toast
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.profiles.ProfilesStore
-import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.FirewallUtils
 import com.arslan.shizuwall.widgets.FirewallWidgetProvider
@@ -14,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.arslan.shizuwall.firewall.FirewallCommands
 
 class ProfileControlReceiver : BroadcastReceiver() {
 
@@ -51,7 +49,6 @@ class ProfileControlReceiver : BroadcastReceiver() {
 
                 val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
                 val wasEnabled = FirewallUtils.loadFirewallEnabled(prefs)
-                val oldActive = prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())?.toList() ?: emptyList()
 
                 ProfilesStore.writeSelectionFromProfile(context, profile)
 
@@ -59,13 +56,6 @@ class ProfileControlReceiver : BroadcastReceiver() {
                 val forceEnable = intent.getBooleanExtra(EXTRA_FORCE_ENABLE, false)
 
                 if (wasEnabled || autoEnable || forceEnable) {
-                    try {
-                        ShellExecutorProvider.forContext(context).execBatch(
-                            FirewallCommands.unblockAll(oldActive)
-                        )
-                    } catch (_: Throwable) {
-                    }
-
                     val enableIntent = Intent(context, FirewallControlReceiver::class.java).apply {
                         action = MainActivity.ACTION_FIREWALL_CONTROL
                         putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)

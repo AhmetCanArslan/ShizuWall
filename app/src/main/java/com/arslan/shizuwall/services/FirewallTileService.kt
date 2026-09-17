@@ -47,18 +47,9 @@ class FirewallTileService : TileService() {
 
     override fun onClick() {
         super.onClick()
-        if (FirewallUtils.loadFirewallEnabled(sharedPreferences)) {
-            if (!FirewallUtils.checkBackendReady(this)) return
-            scope.launch {
-                FirewallUtils.disable(this@FirewallTileService, sharedPreferences)
-                updateTile()
-            }
-            return
-        }
-        val targets = FirewallUtils.enableTargets(this, sharedPreferences) ?: return
-        if (!FirewallUtils.checkBackendReady(this)) return
+        val enable = !FirewallUtils.loadFirewallEnabled(sharedPreferences)
         scope.launch {
-            FirewallUtils.enable(this@FirewallTileService, sharedPreferences, targets)
+            FirewallUtils.toggle(this@FirewallTileService, sharedPreferences, enable)
             updateTile()
         }
     }

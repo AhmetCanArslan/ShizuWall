@@ -18,4 +18,6 @@ object AppKey {
     }
 
     fun isSecondary(key: String): Boolean = userIdOf(key) != 0
+
+    fun normalize(key: String): String = of(userIdOf(key), packageOf(key))
 }

@@ -36,9 +36,8 @@ class FirewallWidgetProvider : AppWidgetProvider() {
                 return
             }
 
-            var selectedApps: List<String> = emptyList()
             if (newState) {
-                selectedApps = FirewallUtils.loadSelectedApps(context, sharedPreferences)
+                val selectedApps = FirewallUtils.loadSelectedApps(context, sharedPreferences)
                 val firewallMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
 
                 if (selectedApps.isEmpty() && !firewallMode.allowsDynamicSelection()) {
@@ -57,9 +56,6 @@ class FirewallWidgetProvider : AppWidgetProvider() {
             val toggleIntent = Intent(context, FirewallControlReceiver::class.java).apply {
                 action = MainActivity.ACTION_FIREWALL_CONTROL
                 putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, newState)
-                if (newState) {
-                    putExtra(MainActivity.EXTRA_PACKAGES_CSV, selectedApps.joinToString(","))
-                }
             }
             context.sendBroadcast(toggleIntent)
         } else if (intent.action == MainActivity.ACTION_FIREWALL_STATE_CHANGED) {

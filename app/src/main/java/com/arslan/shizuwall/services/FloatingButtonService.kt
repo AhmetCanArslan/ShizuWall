@@ -348,18 +348,9 @@ class FloatingButtonService : Service() {
     }
 
     private fun onFabClicked() {
-        if (loadFirewallEnabled()) {
-            if (!FirewallUtils.checkBackendReady(this)) return
-            scope.launch {
-                FirewallUtils.disable(this@FloatingButtonService, sharedPreferences)
-                updateFabAppearance()
-            }
-            return
-        }
-        val targets = FirewallUtils.enableTargets(this, sharedPreferences) ?: return
-        if (!FirewallUtils.checkBackendReady(this)) return
+        val enable = !loadFirewallEnabled()
         scope.launch {
-            FirewallUtils.enable(this@FloatingButtonService, sharedPreferences, targets)
+            FirewallUtils.toggle(this@FloatingButtonService, sharedPreferences, enable)
             updateFabAppearance()
         }
     }

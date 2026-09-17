@@ -38,6 +38,7 @@ import android.util.Log
 import com.arslan.shizuwall.firewall.ForegroundTaskProbe
 import com.arslan.shizuwall.firewall.ForegroundTaskWatcher
 import com.arslan.shizuwall.utils.AppKey
+import com.arslan.shizuwall.utils.FirewallUtils
 import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.firewall.FirewallCommands
@@ -189,7 +190,7 @@ class ForegroundDetectionService : Service() {
         isShizuWallFocused = null
         sharedPreferences.edit()
             .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
-            .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
+            .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, FirewallUtils.loadExternalPackages(sharedPreferences))
             .apply()
         stopSelf()
     }
@@ -590,7 +591,8 @@ class ForegroundDetectionService : Service() {
             )
         }
 
-        val activePkgs = if (!isFocused) selectedPackages else emptySet()
+        val external = FirewallUtils.loadExternalPackages(sharedPreferences)
+        val activePkgs = if (!isFocused) selectedPackages + external else external
         sharedPreferences.edit()
             .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, activePkgs)
             .apply()
@@ -628,7 +630,8 @@ class ForegroundDetectionService : Service() {
         val blocked = sharedPreferences.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
         if (blocked.isEmpty()) return
 
-        val stale = blocked.filter { !selectedPackages.contains(it) }.toSet()
+        val external = FirewallUtils.loadExternalPackages(sharedPreferences)
+        val stale = blocked.filter { !selectedPackages.contains(it) && !external.contains(it) }.toSet()
         if (stale.isEmpty()) return
 
         try {
