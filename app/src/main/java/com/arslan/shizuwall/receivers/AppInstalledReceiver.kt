@@ -3,8 +3,8 @@ package com.arslan.shizuwall.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.ui.MainActivity
-import com.arslan.shizuwall.utils.FirewallUtils
 
 class AppInstalledReceiver : BroadcastReceiver() {
 
@@ -14,6 +14,6 @@ class AppInstalledReceiver : BroadcastReceiver() {
         csv.split(",")
             .map { it.trim() }
             .filter { it.isNotEmpty() }
-            .forEach { FirewallUtils.applyNewAppPolicy(context, it) }
+            .forEach { AppMonitorService.showNewAppNotification(context, it) }
     }
 }

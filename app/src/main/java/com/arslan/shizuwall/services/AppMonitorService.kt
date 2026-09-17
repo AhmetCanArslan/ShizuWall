@@ -13,16 +13,96 @@ import com.arslan.shizuwall.R
 import com.arslan.shizuwall.profiles.ProfilesStore
 import com.arslan.shizuwall.receivers.NotificationActionReceiver
 import com.arslan.shizuwall.ui.MainActivity
+import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.FirewallUtils
 import com.arslan.shizuwall.utils.UiUtils
 
 class AppMonitorService : Service() {
 
-    private companion object {
+    companion object {
         const val CHANNEL_ID_SILENT = "app_monitor_channel_silent"
         const val CHANNEL_ID_LOUD = "app_monitor_channel_loud"
         const val FOREGROUND_NOTIFICATION_ID = 2001
         const val APP_INSTALL_NOTIFICATION_ID_BASE = 3000
+
+        fun showNewAppNotification(context: Context, key: String) {
+            val packageName = AppKey.packageOf(key)
+            val pm = context.packageManager
+            val appInfo = try {
+                pm.getApplicationInfo(packageName, 0)
+            } catch (e: PackageManager.NameNotFoundException) {
+                return
+            }
+            val appName = pm.getApplicationLabel(appInfo).toString()
+            val appIcon = pm.getApplicationIcon(appInfo)
+
+            if (pm.checkPermission(Manifest.permission.INTERNET, packageName) != PackageManager.PERMISSION_GRANTED) {
+                return
+            }
+
+            val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+            val notificationsEnabled = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
+            val isFirewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
+            val firewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+            val wasAutoFirewalled = FirewallUtils.applyNewAppPolicy(context, key)
+
+            if (!notificationsEnabled && !wasAutoFirewalled) return
+
+            val (actionText, action) = if (isFirewallEnabled) {
+                when {
+                    wasAutoFirewalled ->
+                        context.getString(R.string.allow_app) to NotificationActionReceiver.ACTION_ALLOW_AND_UNSELECT
+                    firewallMode == FirewallMode.WHITELIST ->
+                        context.getString(R.string.allow_app) to NotificationActionReceiver.ACTION_WHITELIST_APP
+                    else ->
+                        context.getString(R.string.firewall_app) to NotificationActionReceiver.ACTION_FIREWALL_APP
+                }
+            } else {
+                context.getString(R.string.add_to_selected_list) to NotificationActionReceiver.ACTION_ADD_TO_LIST
+            }
+
+            val notificationId = APP_INSTALL_NOTIFICATION_ID_BASE + key.hashCode()
+
+            val actionIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+                this.action = action
+                putExtra(NotificationActionReceiver.EXTRA_PACKAGE_NAME, AppKey.normalize(key))
+                putExtra("notification_id", notificationId)
+            }
+
+            val pendingActionIntent = PendingIntent.getBroadcast(
+                context,
+                key.hashCode(),
+                actionIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val notification = NotificationCompat.Builder(context, CHANNEL_ID_LOUD)
+                .setContentTitle(context.getString(R.string.new_app_installed, appName))
+                .setContentText(packageName)
+                .setSmallIcon(R.drawable.ic_quick_tile)
+                .setLargeIcon(UiUtils.drawableToBitmap(appIcon))
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .addAction(0, actionText, pendingActionIntent)
+                .build()
+
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            createLoudChannel(context, notificationManager)
+            notificationManager.notify(notificationId, notification)
+        }
+
+        private fun createLoudChannel(context: Context, manager: NotificationManager) {
+            manager.createNotificationChannel(
+                NotificationChannel(
+                    CHANNEL_ID_LOUD,
+                    context.getString(R.string.app_installed_notification_channel_name),
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = context.getString(R.string.app_installed_notification_channel_description)
+                    enableVibration(true)
+                }
+            )
+        }
     }
 
     private lateinit var prefs: SharedPreferences
@@ -89,13 +169,7 @@ class AppMonitorService : Service() {
         }
         notificationManager.createNotificationChannel(silentChannel)
 
-        val loudName = getString(R.string.app_installed_notification_channel_name)
-        val loudDesc = getString(R.string.app_installed_notification_channel_description)
-        val loudChannel = NotificationChannel(CHANNEL_ID_LOUD, loudName, NotificationManager.IMPORTANCE_DEFAULT).apply {
-            description = loudDesc
-            enableVibration(true)
-        }
-        notificationManager.createNotificationChannel(loudChannel)
+        createLoudChannel(this, notificationManager)
     }
 
     private fun createForegroundNotification(): Notification {
@@ -140,69 +214,5 @@ class AppMonitorService : Service() {
             notificationManager.notify(FOREGROUND_NOTIFICATION_ID, createForegroundNotification())
         } catch (_: Exception) {
         }
-    }
-
-    private fun showNewAppNotification(context: Context, packageName: String) {
-        val pm = context.packageManager
-        val appInfo = try {
-            pm.getApplicationInfo(packageName, 0)
-        } catch (e: PackageManager.NameNotFoundException) {
-            return
-        }
-        val appName = pm.getApplicationLabel(appInfo).toString()
-        val appIcon = pm.getApplicationIcon(appInfo)
-
-        if (pm.checkPermission(Manifest.permission.INTERNET, packageName) != PackageManager.PERMISSION_GRANTED) {
-            return
-        }
-
-        val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        val notificationsEnabled = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
-        val isFirewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
-        val firewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
-        val wasAutoFirewalled = FirewallUtils.applyNewAppPolicy(context, packageName)
-
-        if (!notificationsEnabled && !wasAutoFirewalled) return
-
-        val (actionText, action) = if (isFirewallEnabled) {
-            when {
-                wasAutoFirewalled ->
-                    context.getString(R.string.allow_app) to NotificationActionReceiver.ACTION_ALLOW_AND_UNSELECT
-                firewallMode == FirewallMode.WHITELIST ->
-                    context.getString(R.string.allow_app) to NotificationActionReceiver.ACTION_WHITELIST_APP
-                else ->
-                    context.getString(R.string.firewall_app) to NotificationActionReceiver.ACTION_FIREWALL_APP
-            }
-        } else {
-            context.getString(R.string.add_to_selected_list) to NotificationActionReceiver.ACTION_ADD_TO_LIST
-        }
-
-        val notificationId = APP_INSTALL_NOTIFICATION_ID_BASE + packageName.hashCode()
-
-        val actionIntent = Intent(context, NotificationActionReceiver::class.java).apply {
-            this.action = action
-            putExtra(NotificationActionReceiver.EXTRA_PACKAGE_NAME, packageName)
-            putExtra("notification_id", notificationId)
-        }
-
-        val pendingActionIntent = PendingIntent.getBroadcast(
-            context,
-            packageName.hashCode(),
-            actionIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID_LOUD)
-            .setContentTitle(context.getString(R.string.new_app_installed, appName))
-            .setContentText(packageName)
-            .setSmallIcon(R.drawable.ic_quick_tile)
-            .setLargeIcon(UiUtils.drawableToBitmap(appIcon))
-            .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .addAction(0, actionText, pendingActionIntent)
-            .build()
-
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(notificationId, notification)
     }
 }
