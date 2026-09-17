@@ -56,6 +56,7 @@
     <string name="adb_broadcast_example_enable_csv">Firewall für bestimmte Pakete aktivieren (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">Firewall für bestimmte Pakete deaktivieren (CSV)</string>
     <string name="adb_broadcast_example_app_installed">Neu installierte App melden</string>
+    <string name="adb_broadcast_example_app_installed_profile">In einem anderen Profil installierte App melden</string>
     <string name="adb_broadcast_developer_section_title">Für Entwickler</string>
     <string name="adb_broadcast_dev_enable_framework">Firewall-Framework aktivieren</string>
     <string name="adb_broadcast_dev_block_package">Bestimmte App blockieren</string>

@@ -56,6 +56,7 @@
     <string name="adb_broadcast_example_enable_csv">تفعيل الجدار الناري لحزم محددة (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">تعطيل الجدار الناري لحزم محددة (CSV)</string>
     <string name="adb_broadcast_example_app_installed">الإبلاغ عن تطبيق مثبَّت حديثًا</string>
+    <string name="adb_broadcast_example_app_installed_profile">الإبلاغ عن تطبيق مثبَّت في ملف تعريف آخر</string>
     <string name="adb_broadcast_developer_section_title">للمطورين</string>
     <string name="adb_broadcast_dev_enable_framework">تفعيل إطار عمل الجدار الناري</string>
     <string name="adb_broadcast_dev_block_package">حظر تطبيق محدد</string>

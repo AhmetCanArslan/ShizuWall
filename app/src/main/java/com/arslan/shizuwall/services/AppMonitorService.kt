@@ -15,6 +15,7 @@ import com.arslan.shizuwall.receivers.NotificationActionReceiver
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.FirewallUtils
+import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.UiUtils
 
 class AppMonitorService : Service() {
@@ -40,12 +41,9 @@ class AppMonitorService : Service() {
             val appInfo = try {
                 pm.getApplicationInfo(packageName, 0)
             } catch (e: PackageManager.NameNotFoundException) {
-                return
+                null
             }
-            val appName = pm.getApplicationLabel(appInfo).toString()
-            val appIcon = pm.getApplicationIcon(appInfo)
-
-            if (pm.checkPermission(Manifest.permission.INTERNET, packageName) != PackageManager.PERMISSION_GRANTED) {
+            if (appInfo != null && pm.checkPermission(Manifest.permission.INTERNET, packageName) != PackageManager.PERMISSION_GRANTED) {
                 return
             }
 
@@ -86,10 +84,10 @@ class AppMonitorService : Service() {
             )
 
             val notification = NotificationCompat.Builder(context, CHANNEL_ID_LOUD)
-                .setContentTitle(context.getString(R.string.new_app_installed, appName))
-                .setContentText(packageName)
+                .setContentTitle(context.getString(R.string.new_app_installed, appInfo?.let { pm.getApplicationLabel(it).toString() } ?: packageName))
+                .setContentText(if (AppKey.isSecondary(key)) "$packageName · ${MultiUserApps.userLabel(context, AppKey.userIdOf(key))}" else packageName)
                 .setSmallIcon(R.drawable.ic_quick_tile)
-                .setLargeIcon(UiUtils.drawableToBitmap(appIcon))
+                .setLargeIcon(appInfo?.let { UiUtils.drawableToBitmap(pm.getApplicationIcon(it)) })
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .addAction(0, actionText, pendingActionIntent)

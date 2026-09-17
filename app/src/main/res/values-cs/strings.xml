@@ -57,6 +57,7 @@
     <string name="adb_broadcast_example_enable_csv">Povolit firewall pro konkrétní balíčky (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">Zakázat firewall pro konkrétní balíčky (CSV)</string>
     <string name="adb_broadcast_example_app_installed">Nahlásit nově nainstalovanou aplikaci</string>
+    <string name="adb_broadcast_example_app_installed_profile">Nahlásit aplikaci nainstalovanou v jiném profilu</string>
     <string name="adb_broadcast_developer_section_title">Pro vývojáře</string>
     <string name="adb_broadcast_dev_enable_framework">Povolit framework firewallu</string>
     <string name="adb_broadcast_dev_block_package">Blokovat konkrétní aplikaci</string>

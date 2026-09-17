@@ -55,6 +55,7 @@
     <string name="adb_broadcast_example_enable_csv">Включить брандмауэр для определенных пакетов (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">Выключить брандмауэр для определенных пакетов (CSV)</string>
     <string name="adb_broadcast_example_app_installed">Сообщить о новом установленном приложении</string>
+    <string name="adb_broadcast_example_app_installed_profile">Сообщить о приложении, установленном в другом профиле</string>
     <string name="adb_broadcast_developer_section_title">Для разработчиков</string>
     <string name="adb_broadcast_dev_enable_framework">Включить фреймворк брандмауэра</string>
     <string name="adb_broadcast_dev_block_package">Заблокировать конкретное приложение</string>

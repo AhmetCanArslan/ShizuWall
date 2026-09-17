@@ -55,6 +55,7 @@
     <string name="adb_broadcast_example_enable_csv">特定パッケージのファイアウォールを有効化 (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">特定パッケージのファイアウォールを無効化 (CSV)</string>
     <string name="adb_broadcast_example_app_installed">新しくインストールされたアプリを通知</string>
+    <string name="adb_broadcast_example_app_installed_profile">別のプロファイルにインストールされたアプリを通知</string>
     <string name="adb_broadcast_developer_section_title">開発者向け</string>
     <string name="adb_broadcast_dev_enable_framework">ファイアウォール フレームワークを有効化</string>
     <string name="adb_broadcast_dev_block_package">特定のアプリをブロック</string>

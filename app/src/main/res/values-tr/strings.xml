@@ -56,6 +56,7 @@
     <string name="adb_broadcast_example_enable_csv">Belirli paketler için güvenlik duvarını etkinleştir (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">Belirli paketler için güvenlik duvarını devre dışı bırak (CSV)</string>
     <string name="adb_broadcast_example_app_installed">Yeni yüklenen bir uygulamayı bildir</string>
+    <string name="adb_broadcast_example_app_installed_profile">Başka bir profilde yüklenen uygulamayı bildir</string>
     <string name="adb_broadcast_developer_section_title">Geliştiriciler İçin</string>
     <string name="adb_broadcast_dev_enable_framework">Güvenlik duvarı altyapısını etkinleştir</string>
     <string name="adb_broadcast_dev_block_package">Belirli bir uygulamayı engelle</string>
