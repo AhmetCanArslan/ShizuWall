@@ -482,6 +482,8 @@ class FirewallSettingsActivity : BaseActivity() {
         val cmdDisableSelected = "adb shell am broadcast -a $action -n $component --ez $extraEnabled false"
         val cmdEnableCsv = "adb shell am broadcast -a $action -n $component --ez $extraEnabled true --es $extraCsv \"com.example.app1,com.example.app2\""
         val cmdDisableCsv = "adb shell am broadcast -a $action -n $component --ez $extraEnabled false --es $extraCsv \"com.example.app1,com.example.app2\""
+        val installedComponent = "$pkg/${com.arslan.shizuwall.receivers.AppInstalledReceiver::class.java.name}"
+        val cmdAppInstalled = "adb shell am broadcast -a ${MainActivity.ACTION_APP_INSTALLED} -n $installedComponent --es $extraCsv \"com.example.newapp\""
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_adb_broadcast_usage, null)
 
@@ -491,6 +493,7 @@ class FirewallSettingsActivity : BaseActivity() {
         val tvCmdDisableSelected = dialogView.findViewById<TextView>(R.id.tvCmdDisableSelected)
         val tvCmdEnableCsv = dialogView.findViewById<TextView>(R.id.tvCmdEnableCsv)
         val tvCmdDisableCsv = dialogView.findViewById<TextView>(R.id.tvCmdDisableCsv)
+        val tvCmdAppInstalled = dialogView.findViewById<TextView>(R.id.tvCmdAppInstalled)
         val tvBroadcastExtras = dialogView.findViewById<TextView>(R.id.tvBroadcastExtrasValue)
         val tvDevCmdEnableFramework = dialogView.findViewById<TextView>(R.id.tvDevCmdEnableFramework)
         val tvDevCmdBlockPackage = dialogView.findViewById<TextView>(R.id.tvDevCmdBlockPackage)
@@ -502,6 +505,7 @@ class FirewallSettingsActivity : BaseActivity() {
         val btnCopyCmdDisableSelected = dialogView.findViewById<View>(R.id.btnCopyCmdDisableSelected)
         val btnCopyCmdEnableCsv = dialogView.findViewById<View>(R.id.btnCopyCmdEnableCsv)
         val btnCopyCmdDisableCsv = dialogView.findViewById<View>(R.id.btnCopyCmdDisableCsv)
+        val btnCopyCmdAppInstalled = dialogView.findViewById<View>(R.id.btnCopyCmdAppInstalled)
         val btnCopyDevCmdEnableFramework = dialogView.findViewById<View>(R.id.btnCopyDevCmdEnableFramework)
         val btnCopyDevCmdBlockPackage = dialogView.findViewById<View>(R.id.btnCopyDevCmdBlockPackage)
         val btnCopyDevCmdUnblockPackage = dialogView.findViewById<View>(R.id.btnCopyDevCmdUnblockPackage)
@@ -513,6 +517,7 @@ class FirewallSettingsActivity : BaseActivity() {
         tvCmdDisableSelected.text = cmdDisableSelected
         tvCmdEnableCsv.text = cmdEnableCsv
         tvCmdDisableCsv.text = cmdDisableCsv
+        tvCmdAppInstalled.text = cmdAppInstalled
 
         tvBroadcastExtras.text = getString(
             R.string.adb_broadcast_extras_summary,
@@ -527,6 +532,7 @@ class FirewallSettingsActivity : BaseActivity() {
             tvCmdDisableSelected,
             tvCmdEnableCsv,
             tvCmdDisableCsv,
+            tvCmdAppInstalled,
             tvDevCmdEnableFramework,
             tvDevCmdBlockPackage,
             tvDevCmdUnblockPackage,
@@ -551,6 +557,7 @@ class FirewallSettingsActivity : BaseActivity() {
         btnCopyCmdDisableSelected.enableCopyFrom(tvCmdDisableSelected, "adb_disable_selected")
         btnCopyCmdEnableCsv.enableCopyFrom(tvCmdEnableCsv, "adb_enable_csv")
         btnCopyCmdDisableCsv.enableCopyFrom(tvCmdDisableCsv, "adb_disable_csv")
+        btnCopyCmdAppInstalled.enableCopyFrom(tvCmdAppInstalled, "adb_app_installed")
         btnCopyDevCmdEnableFramework.enableCopyFrom(tvDevCmdEnableFramework, "dev_enable_firewall_framework")
         btnCopyDevCmdBlockPackage.enableCopyFrom(tvDevCmdBlockPackage, "dev_block_specific_app")
         btnCopyDevCmdUnblockPackage.enableCopyFrom(tvDevCmdUnblockPackage, "dev_unblock_specific_app")

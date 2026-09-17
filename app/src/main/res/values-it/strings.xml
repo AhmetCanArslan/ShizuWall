@@ -56,6 +56,7 @@
     <string name="adb_broadcast_example_disable_selected">Disattiva il firewall per le app selezionate</string>
     <string name="adb_broadcast_example_enable_csv">Attiva il firewall per pacchetti specifici (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">Disattiva il firewall per pacchetti specifici (CSV)</string>
+    <string name="adb_broadcast_example_app_installed">Segnala un\'app appena installata</string>
     <string name="adb_broadcast_developer_section_title">Per gli sviluppatori</string>
     <string name="adb_broadcast_dev_enable_framework">Attiva il framework del firewall</string>
     <string name="adb_broadcast_dev_block_package">Blocca un\'app specifica</string>

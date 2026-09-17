@@ -56,6 +56,7 @@
     <string name="adb_broadcast_example_disable_selected">Disable firewall for selected apps</string>
     <string name="adb_broadcast_example_enable_csv">Enable firewall for specific packages (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">Disable firewall for specific packages (CSV)</string>
+    <string name="adb_broadcast_example_app_installed">Report a newly installed app</string>
     <string name="adb_broadcast_developer_section_title">For developers</string>
     <string name="adb_broadcast_dev_enable_framework">Enable firewall framework</string>
     <string name="adb_broadcast_dev_block_package">Block specific app</string>
@@ -63,7 +64,7 @@
     <string name="adb_broadcast_dev_disable_framework">Disable firewall framework</string>
     <string name="adb_broadcast_extras_summary" formatted="false">%1$s (boolean): true = enable, false = disable
 
-%2$s (string, optional): comma-separated app list. If omitted, the firewall is turned on or off as a whole using the apps selected in ShizuWall. If given, only those apps are blocked or unblocked. Prefix an app with a user id for work profile or clone apps, for example 150:com.example.app.</string>
+%2$s (string, optional): comma-separated app list. If omitted, the firewall is turned on or off as a whole using the apps selected in ShizuWall. If given, only those apps are blocked or unblocked. Prefix an app with a user id for work profile or clone apps, for example 150:com.example.app. Apps sent this way are handled separately: they are not marked as selected and the firewall switch in ShizuWall stays as it is.</string>
     <string name="ok">OK</string>
     <string name="no_apps_selected">No apps selected</string>
     <string name="shizuku_not_running">Shizuku not running</string>
