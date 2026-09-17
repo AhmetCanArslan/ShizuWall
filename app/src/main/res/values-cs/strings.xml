@@ -151,10 +151,10 @@
     <string name="root_not_found_message">Root nenalezen, prosím povolte ShizuWall přístup k rootu.</string>
     <string name="app_monitor_service">Oznámení o nových aplikacích</string>
     <string name="app_monitor_service_description">Zobrazit oznámení při instalaci nové aplikace</string>
-    <string name="app_monitor_whitelist_dependency">V režimu whitelist je to také tato služba, která blokuje nově nainstalované aplikace. Pokud jsou oznámení o nových aplikacích, automatický firewall pro nové aplikace i oznámení o stavu firewallu vypnuté, služba se zastaví a nové aplikace zůstanou povolené, dokud firewall nevypnete a znovu nezapnete.</string>
+    <string name="app_monitor_whitelist_dependency">V režimu whitelist je to právě tato služba, která blokuje i nově nainstalované aplikace. Pokud jsou oznámení o nových aplikacích, automatické blokování nových aplikací i oznámení o stavu firewallu vypnutá, služba se zastaví a nové aplikace zůstanou povolené, dokud firewall nevypnete a znovu nezapnete nebo dokud automatizační aplikace nenahlásí instalaci broadcastem shizuwall.APP_INSTALLED.</string>
     <string name="auto_firewall_new_apps">Automaticky blokovat nové aplikace</string>
     <string name="auto_firewall_new_apps_description">Automaticky blokovat nově nainstalované aplikace (kromě režimu whitelist)</string>
-    <string name="new_app_monitor_main_profile_only">Detekce nových aplikací se týká pouze hlavního profilu. Aplikace nainstalované v pracovním profilu nebo klonovaném prostoru nejsou zjištěny.</string>
+    <string name="new_app_monitor_main_profile_only">Detekce nových aplikací pokrývá pouze hlavní profil a vyžaduje službu sledování na pozadí, která běží, dokud je tato volba zapnutá. Instalace v pracovním profilu, klonovaném nebo soukromém prostoru lze přesto nahlásit broadcastem shizuwall.APP_INSTALLED.</string>
     <string name="firewall_status_notification">Oznámení o stavu firewallu</string>
     <string name="firewall_status_notification_description">Zobrazit trvalé oznámení s aktuálním stavem firewallu</string>
     <string name="firewall_status_notification_enabled_title">Firewall zapnut</string>

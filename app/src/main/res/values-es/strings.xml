@@ -144,10 +144,10 @@
     <string name="working_mode_ladb">LADB</string>
     <string name="app_monitor_service">Notificaciones de nuevas apps</string>
     <string name="app_monitor_service_description">Mostrar una notificación cuando se instala una nueva app</string>
-    <string name="app_monitor_whitelist_dependency">En modo lista blanca, este servicio también es el que bloquea las apps recién instaladas. Si las notificaciones de apps nuevas, el firewall automático para apps nuevas y la notificación de estado del firewall están todos desactivados, el servicio se detiene y las apps nuevas siguen permitidas hasta que desactives y vuelvas a activar el firewall.</string>
+    <string name="app_monitor_whitelist_dependency">En modo lista blanca este servicio es también el que bloquea las apps recién instaladas. Si las notificaciones de apps nuevas, el bloqueo automático de apps nuevas y la notificación de estado del firewall están desactivados, el servicio se detiene y las apps nuevas siguen permitidas hasta que el firewall se apague y se encienda de nuevo, o hasta que una app de automatización notifique la instalación con el broadcast shizuwall.APP_INSTALLED.</string>
     <string name="auto_firewall_new_apps">Bloquear nuevas apps automáticamente</string>
     <string name="auto_firewall_new_apps_description">Bloquear automáticamente las apps recién instaladas (excepto en modo lista blanca)</string>
-    <string name="new_app_monitor_main_profile_only">La detección de apps nuevas solo cubre el perfil principal. Las apps instaladas en un perfil de trabajo o espacio clonado no se detectan.</string>
+    <string name="new_app_monitor_main_profile_only">La detección de apps nuevas solo cubre el perfil principal y necesita el servicio de monitor en segundo plano, que sigue activo mientras esta opción esté activada. Las instalaciones en un perfil de trabajo, espacio clonado o espacio privado aún se pueden notificar con el broadcast shizuwall.APP_INSTALLED.</string>
     <string name="firewall_status_notification">Notificación de estado del cortafuegos</string>
     <string name="firewall_status_notification_description">Mostrar una notificación permanente con el estado actual del cortafuegos</string>
     <string name="firewall_status_notification_enabled_title">Cortafuegos activado</string>

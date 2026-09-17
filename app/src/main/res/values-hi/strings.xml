@@ -152,10 +152,10 @@
     <string name="root_not_found_message">रूट नहीं मिला, कृपया ShizuWall को रूट अनुमतियाँ प्रदान करें।</string>
     <string name="app_monitor_service">नए ऐप की सूचनाएँ</string>
     <string name="app_monitor_service_description">नया ऐप इंस्टॉल होने पर सूचना दिखाएँ</string>
-    <string name="app_monitor_whitelist_dependency">व्हाइटलिस्ट मोड में नए इंस्टॉल किए गए ऐप्स को भी यही सेवा ब्लॉक करती है। यदि नए ऐप की सूचनाएँ, नए ऐप्स के लिए स्वतः फ़ायरवॉल और फ़ायरवॉल स्थिति सूचना तीनों बंद हैं, तो सेवा रुक जाती है और फ़ायरवॉल बंद करके दोबारा चालू करने तक नए ऐप्स अनुमत रहते हैं।</string>
+    <string name="app_monitor_whitelist_dependency">व्हाइटलिस्ट मोड में नए इंस्टॉल किए गए ऐप्स को भी यही सेवा ब्लॉक करती है। यदि नए ऐप की सूचनाएँ, नए ऐप्स पर स्वतः फ़ायरवॉल और फ़ायरवॉल स्थिति सूचना सभी बंद हैं, तो सेवा रुक जाती है और नए ऐप्स तब तक अनुमत रहते हैं जब तक फ़ायरवॉल बंद करके फिर चालू न किया जाए, या कोई ऑटोमेशन ऐप shizuwall.APP_INSTALLED ब्रॉडकास्ट से इंस्टॉल की सूचना न दे।</string>
     <string name="auto_firewall_new_apps">नए ऐप्स पर स्वतः फ़ायरवॉल</string>
     <string name="auto_firewall_new_apps_description">नए इंस्टॉल किए गए ऐप्स को स्वतः ब्लॉक करें (व्हाइटलिस्ट मोड को छोड़कर)</string>
-    <string name="new_app_monitor_main_profile_only">नए ऐप की पहचान केवल मुख्य प्रोफ़ाइल के लिए होती है। वर्क प्रोफ़ाइल या क्लोन स्पेस में इंस्टॉल किए गए ऐप्स का पता नहीं चलता।</string>
+    <string name="new_app_monitor_main_profile_only">नए ऐप की पहचान केवल मुख्य प्रोफ़ाइल को कवर करती है और इसके लिए बैकग्राउंड मॉनिटर सेवा चाहिए, जो यह विकल्प चालू रहने तक चलती रहती है। वर्क प्रोफ़ाइल, क्लोन स्पेस या प्राइवेट स्पेस में हुए इंस्टॉल shizuwall.APP_INSTALLED ब्रॉडकास्ट से बताए जा सकते हैं।</string>
     <string name="firewall_status_notification">फ़ायरवॉल स्थिति सूचना</string>
     <string name="firewall_status_notification_description">वर्तमान फ़ायरवॉल स्थिति के साथ स्थायी सूचना दिखाएँ</string>
     <string name="firewall_status_notification_enabled_title">फ़ायरवॉल चालू</string>

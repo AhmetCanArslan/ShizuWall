@@ -139,10 +139,10 @@
     <string name="working_mode_ladb">LADB</string>
     <string name="app_monitor_service">Yeni Uygulama Bildirimleri</string>
     <string name="app_monitor_service_description">Yeni bir uygulama yüklendiğinde bildirim göster</string>
-    <string name="app_monitor_whitelist_dependency">Beyaz Liste modunda yeni kurulan uygulamaları engelleyen de bu servistir. Yeni uygulama bildirimleri, yeni uygulamalar için otomatik güvenlik duvarı ve güvenlik duvarı durum bildirimi birlikte kapalıysa servis durur ve yeni uygulamalar, güvenlik duvarı kapatılıp yeniden açılana kadar izinli kalır.</string>
+    <string name="app_monitor_whitelist_dependency">Beyaz Liste modunda yeni yüklenen uygulamaları engelleyen de bu servistir. Yeni uygulama bildirimleri, yeni uygulamaları otomatik engelleme ve firewall durum bildirimi kapalıysa servis durur ve yeni uygulamalar, firewall kapatılıp tekrar açılana ya da bir otomasyon uygulaması kurulumu shizuwall.APP_INSTALLED yayınıyla bildirene kadar izinli kalır.</string>
     <string name="auto_firewall_new_apps">Yeni Uygulamaları Otomatik Engelle</string>
     <string name="auto_firewall_new_apps_description">Yeni yüklenen uygulamaları otomatik olarak engelle (Beyaz Liste modu hariç)</string>
-    <string name="new_app_monitor_main_profile_only">Yeni uygulama algılama yalnızca ana profili kapsar. İş profiline veya klon alana kurulan uygulamalar algılanmaz.</string>
+    <string name="new_app_monitor_main_profile_only">Yeni uygulama algılama yalnızca ana profili kapsar ve bu seçenek açıkken çalışmaya devam eden arka plan uygulama izleme servisine ihtiyaç duyar. İş profili, klon alanı veya özel alandaki kurulumlar shizuwall.APP_INSTALLED yayını ile yine de bildirilebilir.</string>
     <string name="firewall_status_notification">Güvenlik Duvarı Durumu Bildirimi</string>
     <string name="firewall_status_notification_description">Geçerli güvenlik duvarı durumunu kalıcı bir bildirimde göster</string>
     <string name="firewall_status_notification_enabled_title">Güvenlik duvarı etkin</string>

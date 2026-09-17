@@ -139,10 +139,10 @@
     <string name="working_mode_ladb">LADB</string>
     <string name="app_monitor_service">Benachrichtigungen für neue Apps</string>
     <string name="app_monitor_service_description">Benachrichtigung anzeigen, wenn eine neue App installiert wird</string>
-    <string name="app_monitor_whitelist_dependency">Im Whitelist-Modus blockiert dieser Dienst auch neu installierte Apps. Sind Benachrichtigungen zu neuen Apps, die automatische Firewall für neue Apps und die Firewall-Statusbenachrichtigung alle aus, wird der Dienst beendet und neue Apps bleiben erlaubt, bis die Firewall aus- und wieder eingeschaltet wird.</string>
+    <string name="app_monitor_whitelist_dependency">Im Whitelist-Modus blockiert dieser Dienst auch neu installierte Apps. Wenn Benachrichtigungen für neue Apps, die automatische Blockierung neuer Apps und die Firewall-Statusbenachrichtigung alle aus sind, stoppt der Dienst und neue Apps bleiben erlaubt, bis die Firewall aus- und wieder eingeschaltet wird oder eine Automatisierungs-App die Installation per shizuwall.APP_INSTALLED-Broadcast meldet.</string>
     <string name="auto_firewall_new_apps">Neue Apps automatisch blockieren</string>
     <string name="auto_firewall_new_apps_description">Neu installierte Apps automatisch blockieren (außer im Whitelist-Modus)</string>
-    <string name="new_app_monitor_main_profile_only">Die Erkennung neuer Apps gilt nur für das Hauptprofil. Apps, die in einem Arbeitsprofil oder Klonbereich installiert werden, werden nicht erkannt.</string>
+    <string name="new_app_monitor_main_profile_only">Die Erkennung neuer Apps deckt nur das Hauptprofil ab und benötigt den App-Monitor-Dienst im Hintergrund, der läuft, solange diese Option aktiv ist. Installationen in einem Arbeitsprofil, Klonbereich oder privaten Bereich können weiterhin per shizuwall.APP_INSTALLED-Broadcast gemeldet werden.</string>
     <string name="firewall_status_notification">Firewall-Status-Benachrichtigung</string>
     <string name="firewall_status_notification_description">Eine dauerhafte Benachrichtigung mit dem aktuellen Firewall-Status anzeigen</string>
     <string name="firewall_status_notification_enabled_title">Firewall aktiviert</string>

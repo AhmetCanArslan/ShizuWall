@@ -139,10 +139,10 @@
     <string name="working_mode_ladb">LADB</string>
     <string name="app_monitor_service">Notificações de Novos Apps</string>
     <string name="app_monitor_service_description">Mostrar uma notificação quando um novo app é instalado</string>
-    <string name="app_monitor_whitelist_dependency">No modo lista branca, é também este serviço que bloqueia os apps recém-instalados. Se as notificações de novos apps, a firewall automática para novos apps e a notificação de estado da firewall estiverem todas desligadas, o serviço para e os novos apps continuam permitidos até desligar e voltar a ligar a firewall.</string>
+    <string name="app_monitor_whitelist_dependency">No modo lista branca é este serviço que também bloqueia os apps recém-instalados. Se as notificações de novos apps, o bloqueio automático de novos apps e a notificação de status do firewall estiverem todos desligados, o serviço para e os novos apps continuam permitidos até o firewall ser desligado e ligado novamente, ou até um app de automação informar a instalação com o broadcast shizuwall.APP_INSTALLED.</string>
     <string name="auto_firewall_new_apps">Bloquear novos apps automaticamente</string>
     <string name="auto_firewall_new_apps_description">Bloquear automaticamente apps recém-instalados (exceto no modo lista branca)</string>
-    <string name="new_app_monitor_main_profile_only">A deteção de novos apps abrange apenas o perfil principal. Apps instalados num perfil de trabalho ou espaço clonado não são detetados.</string>
+    <string name="new_app_monitor_main_profile_only">A detecção de novos apps cobre apenas o perfil principal e precisa do serviço de monitoramento em segundo plano, que fica ativo enquanto esta opção estiver ligada. Instalações em um perfil de trabalho, espaço clonado ou espaço privado ainda podem ser informadas com o broadcast shizuwall.APP_INSTALLED.</string>
     <string name="firewall_status_notification">Notificação de status do firewall</string>
     <string name="firewall_status_notification_description">Mostrar uma notificação permanente com o status atual do firewall</string>
     <string name="firewall_status_notification_enabled_title">Firewall ativado</string>

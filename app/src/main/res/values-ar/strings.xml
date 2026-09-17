@@ -145,10 +145,10 @@
     <string name="working_mode_ladb">LADB</string>
     <string name="app_monitor_service">إشعارات التطبيقات الجديدة</string>
     <string name="app_monitor_service_description">إظهار إشعار عند تثبيت تطبيق جديد</string>
-    <string name="app_monitor_whitelist_dependency">في وضع القائمة البيضاء، هذه الخدمة هي التي تحظر أيضًا التطبيقات المثبتة حديثًا. إذا كانت إشعارات التطبيقات الجديدة والجدار الناري التلقائي للتطبيقات الجديدة وإشعار حالة الجدار الناري كلها متوقفة، تتوقف الخدمة وتظل التطبيقات الجديدة مسموحة حتى تُوقف الجدار الناري ثم تُشغّله مجددًا.</string>
+    <string name="app_monitor_whitelist_dependency">في وضع القائمة البيضاء، هذه الخدمة هي أيضًا ما يحظر التطبيقات المثبَّتة حديثًا. إذا كانت إشعارات التطبيقات الجديدة والحظر التلقائي للتطبيقات الجديدة وإشعار حالة الجدار الناري كلها متوقفة، فستتوقف الخدمة وتبقى التطبيقات الجديدة مسموحة حتى يتم إيقاف الجدار الناري وتشغيله مجددًا، أو حتى يُبلغ تطبيق أتمتة عن التثبيت عبر بث shizuwall.APP_INSTALLED.</string>
     <string name="auto_firewall_new_apps">حظر التطبيقات الجديدة تلقائيًا</string>
     <string name="auto_firewall_new_apps_description">حظر التطبيقات المثبتة حديثًا تلقائيًا (إلا في وضع القائمة البيضاء)</string>
-    <string name="new_app_monitor_main_profile_only">يشمل اكتشاف التطبيقات الجديدة الملف الشخصي الرئيسي فقط. لا يتم اكتشاف التطبيقات المثبتة في ملف عمل أو مساحة مستنسخة.</string>
+    <string name="new_app_monitor_main_profile_only">يقتصر اكتشاف التطبيقات الجديدة على الملف الشخصي الرئيسي ويحتاج إلى خدمة المراقبة في الخلفية، التي تظل تعمل طالما كان هذا الخيار مفعّلاً. ما زال بالإمكان الإبلاغ عن عمليات التثبيت في ملف العمل أو المساحة المستنسخة أو المساحة الخاصة عبر بث shizuwall.APP_INSTALLED.</string>
     <string name="firewall_status_notification">إشعار حالة الجدار الناري</string>
     <string name="firewall_status_notification_description">إظهار إشعار دائم بحالة الجدار الناري الحالية</string>
     <string name="firewall_status_notification_enabled_title">الجدار الناري مُفعّل</string>

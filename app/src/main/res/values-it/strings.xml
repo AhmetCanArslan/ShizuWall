@@ -152,10 +152,10 @@
     <string name="root_not_found_message">Root non trovato, consenti a ShizuWall di accedere ai permessi di root.</string>
     <string name="app_monitor_service">Notifiche nuove app</string>
     <string name="app_monitor_service_description">Mostra una notifica quando viene installata una nuova app</string>
-    <string name="app_monitor_whitelist_dependency">In modalità Whitelist è questo servizio a bloccare anche le app appena installate. Se le notifiche di nuove app, il firewall automatico per le nuove app e la notifica di stato del firewall sono tutti disattivati, il servizio si arresta e le nuove app restano consentite finché non spegni e riaccendi il firewall.</string>
+    <string name="app_monitor_whitelist_dependency">In modalità Whitelist è questo servizio a bloccare anche le app appena installate. Se le notifiche per le nuove app, il firewall automatico per le nuove app e la notifica di stato del firewall sono tutti disattivati, il servizio si ferma e le nuove app restano consentite finché il firewall non viene spento e riacceso, o finché un\'app di automazione non segnala l\'installazione con il broadcast shizuwall.APP_INSTALLED.</string>
     <string name="auto_firewall_new_apps">Firewall automatico per le nuove app</string>
     <string name="auto_firewall_new_apps_description">Blocca automaticamente le app appena installate (tranne in modalità Whitelist)</string>
-    <string name="new_app_monitor_main_profile_only">Il rilevamento di nuove app riguarda solo il profilo principale. Le app installate in un profilo di lavoro o in uno spazio clonato non vengono rilevate.</string>
+    <string name="new_app_monitor_main_profile_only">Il rilevamento delle nuove app copre solo il profilo principale e richiede il servizio di monitoraggio in background, attivo finché questa opzione è attiva. Le installazioni in un profilo di lavoro, spazio clonato o spazio privato possono comunque essere segnalate con il broadcast shizuwall.APP_INSTALLED.</string>
     <string name="firewall_status_notification">Notifica di stato del firewall</string>
     <string name="firewall_status_notification_description">Mostra una notifica permanente con lo stato attuale del firewall</string>
     <string name="firewall_status_notification_enabled_title">Firewall attivo</string>
