@@ -16,6 +16,7 @@ import com.arslan.shizuwall.adapters.ProfileAdapter
 import com.arslan.shizuwall.model.Profile
 import com.arslan.shizuwall.profiles.ProfileTileSlots
 import com.arslan.shizuwall.profiles.ProfilesStore
+import com.arslan.shizuwall.receivers.ProfileControlReceiver
 import com.arslan.shizuwall.widgets.ProfileWidgetProvider
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -247,8 +248,10 @@ class ProfilesBottomSheet(
 
     private fun showAutomationDialog(profile: Profile) {
         val action = MainActivity.ACTION_PROFILE_CONTROL
-        val component = "${context.packageName}/${com.arslan.shizuwall.receivers.ProfileControlReceiver::class.java.name}"
-        val extra = "${MainActivity.EXTRA_PROFILE_NAME}=${profile.name}"
+        val component = "${context.packageName}/${ProfileControlReceiver::class.java.name}"
+        val extra = "${MainActivity.EXTRA_PROFILE_NAME}=${profile.name}\n" +
+            "${MainActivity.EXTRA_PROFILE_ID}=${profile.id}\n" +
+            "${ProfileControlReceiver.EXTRA_FORCE_ENABLE}=true"
         val adbCmd = "adb shell am broadcast -a $action -n $component " +
             "--es ${MainActivity.EXTRA_PROFILE_NAME} \"${profile.name}\""
 

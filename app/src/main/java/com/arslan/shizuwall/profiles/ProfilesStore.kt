@@ -2,6 +2,7 @@ package com.arslan.shizuwall.profiles
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.firewall.FirewallTargets
 import com.arslan.shizuwall.firewall.PerUidFirewall
 import com.arslan.shizuwall.model.Profile
@@ -149,6 +150,7 @@ object ProfilesStore {
             putString(MainActivity.KEY_APP_MODES, profile.appModesJson)
             putBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, profile.showSystemApps)
             putString(MainActivity.KEY_ACTIVE_PROFILE_ID, profile.id)
+            if (profile.firewallMode != FirewallMode.DEFAULT.name) putBoolean(MainActivity.KEY_SKIP_ENABLE_CONFIRM, true)
             apply()
         }
     }
