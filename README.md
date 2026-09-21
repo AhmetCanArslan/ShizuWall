@@ -125,7 +125,7 @@ You can control ShizuWall from scripts and automation tools.
 **Extras**
 
 - `state` (boolean, required): `true` = enable, `false` = disable
-- `apps` (string, optional): CSV package list. If omitted, ShizuWall uses saved selected apps.
+- `apps` (string, optional): CSV app key list. If omitted, ShizuWall uses saved selected apps. An entry may carry a profile prefix — `150:com.example.app` targets the work-profile/clone copy, a bare package name targets user 0.
 
 ### Examples
 
@@ -141,7 +141,66 @@ adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.F
 
 # Disable firewall for specific packages
 adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state false --es apps "com.example.app1,com.example.app2"
+
+# Enable firewall for an app in user 0 and its work-profile clone
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true --es apps "com.example.app,150:com.example.app"
 ```
+
+> Clones are handled automatically unless **Show other profiles** is on: with that setting off, a bare package name mirrors its rule to every clone, and with it on each profile is addressed separately through its prefix.
+
+> A broadcast carrying `apps` runs on its own track: those apps are blocked or unblocked without being marked as selected in ShizuWall, and the in-app firewall switch stays as it was. Chain 3 is turned on for them automatically and is only turned off again once every externally blocked app has been released.
+
+### New App Installed
+
+Automation apps (MacroDroid, Tasker, etc.) can notify ShizuWall about a freshly installed package, so the new-app policy and the new-app notification are applied to it exactly as if ShizuWall's own app monitor had seen the install.
+
+**Action**: `shizuwall.APP_INSTALLED`  
+**Component**: `com.arslan.shizuwall/.receivers.AppInstalledReceiver`
+
+**Extras**
+
+- `apps` (string, required): CSV app key list of the newly installed apps. As with `shizuwall.CONTROL`, an entry may carry a profile prefix — `150:com.example.app` reports an install inside a work profile, clone space or private space.
+
+```bash
+adb shell am broadcast -a shizuwall.APP_INSTALLED -n com.arslan.shizuwall/.receivers.AppInstalledReceiver --es apps "com.example.newapp"
+
+# An app installed in a work profile / clone space
+adb shell am broadcast --user 0 -a shizuwall.APP_INSTALLED -n com.arslan.shizuwall/.receivers.AppInstalledReceiver --es apps "150:com.example.newapp"
+```
+
+This is the supported way to cover the other profiles: ShizuWall itself only sees `ACTION_PACKAGE_ADDED` for the profile it runs in, so an automation app that can watch the other profiles (Tasker, MacroDroid, a shell script) reports the install and ShizuWall applies the same policy and notification to it. Send it with `--user 0` when the sender runs outside the main profile.
+
+The broadcast is handled by a manifest receiver, so it works even when the app monitor service is stopped — that service is only needed for ShizuWall's own detection of installs in its profile. The package is handled according to the active firewall mode: in `WHITELIST` it is blocked immediately, in the other modes it is blocked and added to the selected apps only when *Auto firewall new apps* is on. No rule is applied while the firewall is off.
+
+A notification with a one-tap action (allow, firewall or add to the selected list, depending on the current state) is posted when *New app notifications* is on, or whenever the app was auto-firewalled. Apps that the main profile can resolve and that hold no `INTERNET` permission are ignored; an app that only exists in another profile is reported by its key, without a label or icon.
+
+### Profile Switch
+
+A saved profile can be activated from a macro app (Tasker, MacroDroid, Automate) or from adb. Activating a profile writes its app selection, firewall mode, per-app modes and *Show system apps* setting, and then re-applies the firewall.
+
+**Action**: `shizuwall.PROFILE`  
+**Component**: `com.arslan.shizuwall/.receivers.ProfileControlReceiver`
+
+**Extras**
+
+- `profile` (string): profile name, as shown in the profiles sheet.
+- `profile_id` (string): the profile's internal id. Checked before `profile`, and unaffected by renames — the per-profile **Automation** dialog in the app shows the ready-made command for the profile you are looking at.
+- `force_enable` (boolean, optional): turn the firewall on after switching even if it was off and *Turn on firewall when activating a profile* is off.
+
+One of `profile` or `profile_id` is required; if neither resolves to a saved profile, nothing is changed and a toast reports the name that was not found.
+
+```bash
+# Switch to a profile by name
+adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.ProfileControlReceiver --es profile "Work"
+
+# Switch to a profile by id
+adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.ProfileControlReceiver --es profile_id "f2c1a0e4-..."
+
+# Switch and turn the firewall on even if it was off
+adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.ProfileControlReceiver --es profile "Work" --ez force_enable true
+```
+
+The firewall is re-applied with the new selection when it was already on, when *Turn on firewall when activating a profile* is on, or when `force_enable` is set; otherwise only the selection is written and the widgets and tiles are refreshed. A profile carrying a firewall mode other than `DEFAULT` also turns off the enable-confirmation dialog, which only exists for `DEFAULT`.
 
 > One of the control backends (Shizuku, local ADB daemon or Root) must be active for broadcasts to succeed.
 
