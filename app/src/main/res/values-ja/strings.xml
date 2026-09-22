@@ -50,8 +50,8 @@
     <string name="adb_broadcast_field_component">コンポーネント</string>
     <string name="adb_broadcast_field_extras">エクストラ</string>
     <string name="adb_broadcast_examples_title">よく使うコマンド</string>
-    <string name="adb_broadcast_example_enable_selected">選択したアプリのファイアウォールを有効化</string>
-    <string name="adb_broadcast_example_disable_selected">選択したアプリのファイアウォールを無効化</string>
+    <string name="adb_broadcast_example_enable_selected">ファイアウォールを有効化</string>
+    <string name="adb_broadcast_example_disable_selected">ファイアウォールを無効化</string>
     <string name="adb_broadcast_example_enable_csv">特定パッケージのファイアウォールを有効化 (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">特定パッケージのファイアウォールを無効化 (CSV)</string>
     <string name="adb_broadcast_example_app_installed">新しくインストールされたアプリを通知</string>

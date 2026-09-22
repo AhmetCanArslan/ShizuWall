@@ -52,8 +52,8 @@
     <string name="adb_broadcast_field_component">Componente</string>
     <string name="adb_broadcast_field_extras">Extra</string>
     <string name="adb_broadcast_examples_title">Comandi comuni</string>
-    <string name="adb_broadcast_example_enable_selected">Attiva il firewall per le app selezionate</string>
-    <string name="adb_broadcast_example_disable_selected">Disattiva il firewall per le app selezionate</string>
+    <string name="adb_broadcast_example_enable_selected">Attiva il firewall</string>
+    <string name="adb_broadcast_example_disable_selected">Disattiva il firewall</string>
     <string name="adb_broadcast_example_enable_csv">Attiva il firewall per pacchetti specifici (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">Disattiva il firewall per pacchetti specifici (CSV)</string>
     <string name="adb_broadcast_example_app_installed">Segnala un\'app appena installata</string>

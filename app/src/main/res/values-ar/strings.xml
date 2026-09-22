@@ -51,8 +51,8 @@
     <string name="adb_broadcast_field_component">المكون</string>
     <string name="adb_broadcast_field_extras">الإضافات</string>
     <string name="adb_broadcast_examples_title">الأوامر الشائعة</string>
-    <string name="adb_broadcast_example_enable_selected">تفعيل الجدار الناري للتطبيقات المحددة</string>
-    <string name="adb_broadcast_example_disable_selected">تعطيل الجدار الناري للتطبيقات المحددة</string>
+    <string name="adb_broadcast_example_enable_selected">تفعيل الجدار الناري</string>
+    <string name="adb_broadcast_example_disable_selected">تعطيل الجدار الناري</string>
     <string name="adb_broadcast_example_enable_csv">تفعيل الجدار الناري لحزم محددة (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">تعطيل الجدار الناري لحزم محددة (CSV)</string>
     <string name="adb_broadcast_example_app_installed">الإبلاغ عن تطبيق مثبَّت حديثًا</string>

@@ -50,8 +50,8 @@
     <string name="adb_broadcast_field_component">Компонент</string>
     <string name="adb_broadcast_field_extras">Дополнительно</string>
     <string name="adb_broadcast_examples_title">Частые команды</string>
-    <string name="adb_broadcast_example_enable_selected">Включить брандмауэр для выбранных приложений</string>
-    <string name="adb_broadcast_example_disable_selected">Выключить брандмауэр для выбранных приложений</string>
+    <string name="adb_broadcast_example_enable_selected">Включить брандмауэр</string>
+    <string name="adb_broadcast_example_disable_selected">Выключить брандмауэр</string>
     <string name="adb_broadcast_example_enable_csv">Включить брандмауэр для определенных пакетов (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">Выключить брандмауэр для определенных пакетов (CSV)</string>
     <string name="adb_broadcast_example_app_installed">Сообщить о новом установленном приложении</string>

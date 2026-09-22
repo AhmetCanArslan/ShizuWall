@@ -52,8 +52,8 @@
     <string name="adb_broadcast_field_component">कंपोनेंट</string>
     <string name="adb_broadcast_field_extras">एक्स्ट्रा</string>
     <string name="adb_broadcast_examples_title">सामान्य कमांड</string>
-    <string name="adb_broadcast_example_enable_selected">चयनित ऐप्स के लिए फ़ायरवॉल चालू करें</string>
-    <string name="adb_broadcast_example_disable_selected">चयनित ऐप्स के लिए फ़ायरवॉल बंद करें</string>
+    <string name="adb_broadcast_example_enable_selected">फ़ायरवॉल चालू करें</string>
+    <string name="adb_broadcast_example_disable_selected">फ़ायरवॉल बंद करें</string>
     <string name="adb_broadcast_example_enable_csv">विशिष्ट पैकेजों के लिए फ़ायरवॉल चालू करें (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">विशिष्ट पैकेजों के लिए फ़ायरवॉल बंद करें (CSV)</string>
     <string name="adb_broadcast_example_app_installed">नए इंस्टॉल किए गए ऐप की सूचना दें</string>

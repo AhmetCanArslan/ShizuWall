@@ -51,8 +51,8 @@
     <string name="adb_broadcast_field_component">Bileşen</string>
     <string name="adb_broadcast_field_extras">Ekstralar</string>
     <string name="adb_broadcast_examples_title">Yaygın komutlar</string>
-    <string name="adb_broadcast_example_enable_selected">Seçili uygulamalar için güvenlik duvarını etkinleştir</string>
-    <string name="adb_broadcast_example_disable_selected">Seçili uygulamalar için güvenlik duvarını devre dışı bırak</string>
+    <string name="adb_broadcast_example_enable_selected">Güvenlik duvarını etkinleştir</string>
+    <string name="adb_broadcast_example_disable_selected">Güvenlik duvarını devre dışı bırak</string>
     <string name="adb_broadcast_example_enable_csv">Belirli paketler için güvenlik duvarını etkinleştir (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">Belirli paketler için güvenlik duvarını devre dışı bırak (CSV)</string>
     <string name="adb_broadcast_example_app_installed">Yeni yüklenen bir uygulamayı bildir</string>

@@ -51,8 +51,8 @@
     <string name="adb_broadcast_field_component">组件</string>
     <string name="adb_broadcast_field_extras">附加参数</string>
     <string name="adb_broadcast_examples_title">常用命令</string>
-    <string name="adb_broadcast_example_enable_selected">为所选应用启用防火墙</string>
-    <string name="adb_broadcast_example_disable_selected">为所选应用禁用防火墙</string>
+    <string name="adb_broadcast_example_enable_selected">启用防火墙</string>
+    <string name="adb_broadcast_example_disable_selected">禁用防火墙</string>
     <string name="adb_broadcast_example_enable_csv">为指定包启用防火墙 (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">为指定包禁用防火墙 (CSV)</string>
     <string name="adb_broadcast_example_app_installed">报告新安装的应用</string>

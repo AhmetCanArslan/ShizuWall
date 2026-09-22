@@ -51,8 +51,8 @@
     <string name="adb_broadcast_field_component">Komponente</string>
     <string name="adb_broadcast_field_extras">Extras</string>
     <string name="adb_broadcast_examples_title">Häufige Befehle</string>
-    <string name="adb_broadcast_example_enable_selected">Firewall für ausgewählte Apps aktivieren</string>
-    <string name="adb_broadcast_example_disable_selected">Firewall für ausgewählte Apps deaktivieren</string>
+    <string name="adb_broadcast_example_enable_selected">Firewall aktivieren</string>
+    <string name="adb_broadcast_example_disable_selected">Firewall deaktivieren</string>
     <string name="adb_broadcast_example_enable_csv">Firewall für bestimmte Pakete aktivieren (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">Firewall für bestimmte Pakete deaktivieren (CSV)</string>
     <string name="adb_broadcast_example_app_installed">Neu installierte App melden</string>

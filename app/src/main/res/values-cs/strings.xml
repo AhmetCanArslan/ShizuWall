@@ -52,8 +52,8 @@
     <string name="adb_broadcast_field_component">Komponenta</string>
     <string name="adb_broadcast_field_extras">Doplňky</string>
     <string name="adb_broadcast_examples_title">Běžné příkazy</string>
-    <string name="adb_broadcast_example_enable_selected">Povolit firewall pro vybrané aplikace</string>
-    <string name="adb_broadcast_example_disable_selected">Zakázat firewall pro vybrané aplikace</string>
+    <string name="adb_broadcast_example_enable_selected">Povolit firewall</string>
+    <string name="adb_broadcast_example_disable_selected">Zakázat firewall</string>
     <string name="adb_broadcast_example_enable_csv">Povolit firewall pro konkrétní balíčky (CSV)</string>
     <string name="adb_broadcast_example_disable_csv">Zakázat firewall pro konkrétní balíčky (CSV)</string>
     <string name="adb_broadcast_example_app_installed">Nahlásit nově nainstalovanou aplikaci</string>
