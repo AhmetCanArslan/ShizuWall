@@ -1,6 +1,8 @@
 package com.arslan.shizuwall.widgets
 
 import android.content.Context
+import android.os.Build
+import android.widget.RemoteViews
 import androidx.core.content.ContextCompat
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.ui.MainActivity
@@ -17,6 +19,17 @@ enum class WidgetTheme(
     TRANSPARENT("transparent", R.string.widget_theme_transparent, R.drawable.widget_bg_transparent, R.color.widget_content_dark);
 
     fun contentColor(context: Context): Int = ContextCompat.getColor(context, contentColorRes)
+
+    fun applyContent(context: Context, views: RemoteViews, iconId: Int, textId: Int = 0) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            views.setColorStateList(iconId, "setImageTintList", contentColorRes)
+            if (textId != 0) views.setColorStateList(textId, "setTextColor", contentColorRes)
+            return
+        }
+        val color = contentColor(context)
+        views.setInt(iconId, "setColorFilter", color)
+        if (textId != 0) views.setTextColor(textId, color)
+    }
 
     companion object {
         val DEFAULT = SYSTEM

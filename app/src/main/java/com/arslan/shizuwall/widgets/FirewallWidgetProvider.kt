@@ -82,7 +82,7 @@ class FirewallWidgetProvider : AppWidgetProvider() {
                 R.id.widget_icon,
                 if (isEnabled) R.drawable.ic_widget_network_blocked else R.drawable.ic_widget_network_allowed
             )
-            views.setInt(R.id.widget_icon, "setColorFilter", theme.contentColor(context))
+            theme.applyContent(context, views, R.id.widget_icon)
 
             val intent = Intent(context, FirewallWidgetProvider::class.java).apply {
                 action = ACTION_WIDGET_CLICK

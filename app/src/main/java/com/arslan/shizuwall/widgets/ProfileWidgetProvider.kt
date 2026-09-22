@@ -67,19 +67,17 @@ class ProfileWidgetProvider : AppWidgetProvider() {
             val profile = profileFor(context, appWidgetId)
             val views = RemoteViews(context.packageName, R.layout.widget_profile)
             val theme = WidgetTheme.of(context, appWidgetId)
-            val contentColor = theme.contentColor(context)
 
             views.setInt(R.id.widget_profile_layout, "setBackgroundResource", theme.backgroundRes)
             views.setImageViewResource(
                 R.id.widget_profile_icon,
                 if (profile == null) R.drawable.ic_profiles_24px else ProfileIcons.resFor(profile.icon)
             )
-            views.setInt(R.id.widget_profile_icon, "setColorFilter", contentColor)
             views.setTextViewText(
                 R.id.widget_profile_name,
                 profile?.name ?: context.getString(R.string.profile_tile_unassigned)
             )
-            views.setTextColor(R.id.widget_profile_name, contentColor)
+            theme.applyContent(context, views, R.id.widget_profile_icon, R.id.widget_profile_name)
 
             val intent = Intent(context, ProfileWidgetProvider::class.java).apply {
                 action = ACTION_WIDGET_CLICK
