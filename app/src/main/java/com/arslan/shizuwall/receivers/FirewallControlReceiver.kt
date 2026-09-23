@@ -57,7 +57,7 @@ class FirewallControlReceiver : BroadcastReceiver() {
                     FirewallUtils.checkBackendReady(context, showToast = !automationEvent)
                 }
                 if (!ready) return@launch
-                val ok = FirewallUtils.applyDelta(context, prefs, keys, enabled, external = !automationEvent)
+                val ok = FirewallUtils.applyDelta(context, prefs, keys, enabled, syncSelection = !automationEvent)
                 if (!ok && automationEvent) {
                     warnScreenLockFailure(context, FirewallUtils.firewallMode(prefs))
                 }

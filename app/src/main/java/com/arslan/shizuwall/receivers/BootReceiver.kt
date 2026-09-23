@@ -77,8 +77,7 @@ class BootReceiver : BroadcastReceiver() {
             com.arslan.shizuwall.services.FloatingButtonService.start(context)
         }
 
-        val hasRules = enabled || readStringSet(dpPrefs, normalPrefs, MainActivity.KEY_EXTERNAL_PACKAGES).isNotEmpty()
-        val rebootDetected = hasRules && savedElapsed > 0L && SystemClock.elapsedRealtime() < savedElapsed
+        val rebootDetected = enabled && savedElapsed > 0L && SystemClock.elapsedRealtime() < savedElapsed
         if (!rebootDetected) {
             Log.d(TAG, "No reboot detected (currentElapsed >= savedElapsed)")
             if (enabled && action == Intent.ACTION_BOOT_COMPLETED) {
@@ -256,7 +255,6 @@ class BootReceiver : BroadcastReceiver() {
             remove(MainActivity.KEY_FIREWALL_ENABLED)
             remove(MainActivity.KEY_FIREWALL_SAVED_ELAPSED)
             remove(MainActivity.KEY_ACTIVE_PACKAGES)
-            remove(MainActivity.KEY_EXTERNAL_PACKAGES)
             apply()
         }
     }

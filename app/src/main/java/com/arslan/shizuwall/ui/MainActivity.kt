@@ -88,7 +88,6 @@ class MainActivity : BaseActivity() {
         const val KEY_FAVORITE_APPS = "favorite_apps"
         const val KEY_FIREWALL_ENABLED = "firewall_enabled"
         const val KEY_ACTIVE_PACKAGES = "active_packages"
-        const val KEY_EXTERNAL_PACKAGES = "external_packages"
         const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed"
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
         const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
@@ -1999,9 +1998,6 @@ class MainActivity : BaseActivity() {
 
     private fun loadActivePackages(): Set<String> = FirewallUtils.loadActivePackages(sharedPreferences)
 
-    private val externalPackages: Set<String>
-        get() = FirewallUtils.loadExternalPackages(sharedPreferences)
-
     private fun applyFirewallState(enable: Boolean, packageNames: List<String>, whitelistAllowApps: List<String> = emptyList()) {
         if (enable && packageNames.isEmpty() && !firewallMode.allowsDynamicSelection()) return
 
@@ -2018,9 +2014,9 @@ class MainActivity : BaseActivity() {
                 packageNames,
                 ScreenLockModeReceiver.isDeviceLocked(this),
                 FirewallTargets.parseAppModes(sharedPreferences.getString(KEY_APP_MODES, "{}"))
-            ) + externalPackages).distinct()
+            )).distinct()
         } else {
-            packageNames - externalPackages
+            packageNames
         }
 
         isFirewallProcessRunning = true
@@ -2092,7 +2088,7 @@ class MainActivity : BaseActivity() {
                     applyListInteractionState()
 
                     if (installed.isEmpty()) {
-                        activeFirewallPackages.retainAll(externalPackages)
+                        activeFirewallPackages.clear()
                         saveActivePackages(activeFirewallPackages)
                     }
                 } else {
@@ -2237,13 +2233,12 @@ class MainActivity : BaseActivity() {
                 lastOperationErrorDetails[packageName] = res.stderr.ifEmpty { res.stdout }
             }
         }
-        val external = externalPackages
-        if (external.isEmpty()) runCommandDetailed(FirewallCommands.CHAIN3_DISABLE)
+        runCommandDetailed(FirewallCommands.CHAIN3_DISABLE)
 
         if (firewallMode.requiresForegroundDetection()) {
             sharedPreferences.edit()
                 .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
-                .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, external)
+                .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
                 .apply()
         }
 
@@ -2727,8 +2722,7 @@ class MainActivity : BaseActivity() {
                     appModes
                 )
 
-                val external = externalPackages
-                val blockTarget = (effectiveTarget + external).distinct()
+                val blockTarget = effectiveTarget.distinct()
                 val toUnblock = oldActive.filterNot { blockTarget.contains(it) }
 
                 val successful = withContext(Dispatchers.IO) {

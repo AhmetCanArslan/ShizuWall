@@ -148,7 +148,7 @@ adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.F
 
 > Clones are handled automatically unless **Show other profiles** is on: with that setting off, a bare package name mirrors its rule to every clone, and with it on each profile is addressed separately through its prefix.
 
-> A broadcast carrying `apps` runs on its own track: those apps are blocked or unblocked without being marked as selected in ShizuWall, and the in-app firewall switch stays as it was. Chain 3 is turned on for them automatically and is only turned off again once every externally blocked app has been released.
+> A broadcast carrying `apps` keeps ShizuWall in sync: `state true` selects those apps and turns the firewall on if it was off, `state false` unselects them and leaves the firewall on. In whitelist mode `apps` addresses the allow list, so the two states are reversed. Without `apps` the broadcast is a global toggle.
 
 ### New App Installed
 

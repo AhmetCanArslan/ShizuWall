@@ -87,10 +87,6 @@ object FirewallUtils {
         return prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
     }
 
-    fun loadExternalPackages(prefs: SharedPreferences): Set<String> {
-        return prefs.getStringSet(MainActivity.KEY_EXTERNAL_PACKAGES, emptySet()) ?: emptySet()
-    }
-
     fun saveFirewallEnabled(context: Context, prefs: SharedPreferences, enabled: Boolean) {
         val elapsed = SystemClock.elapsedRealtime()
         val now = System.currentTimeMillis()
@@ -162,7 +158,7 @@ object FirewallUtils {
         prefs: SharedPreferences,
         keys: List<String>,
         block: Boolean,
-        external: Boolean = false
+        syncSelection: Boolean = false
     ): Boolean = withContext(Dispatchers.IO) {
         val candidates = keys.map { AppKey.normalize(it) }.filterNot { isSelfOrBackend(context, it) }
         val targets = if (block) candidates.filter { PerUidFirewall.isBlockableKey(context, it) } else candidates
@@ -175,30 +171,35 @@ object FirewallUtils {
             val results = executor.execBatch(FirewallCommands.networkingAll(targets, !block))
             logFailures(context, targets, results)
             val applied = targets.filterIndexed { index, _ -> results[index].isEffectivelySuccess }
-            writeSets(prefs, applied, block, external)
-            if (!block && loadExternalPackages(prefs).isEmpty() && !loadFirewallEnabled(prefs)) {
+            writeSets(prefs, applied, block, syncSelection)
+            if (block && syncSelection && !loadFirewallEnabled(prefs)) {
+                saveFirewallEnabled(context, prefs, true)
+            }
+            if (!block && !loadFirewallEnabled(prefs)) {
                 executor.exec(FirewallCommands.CHAIN3_DISABLE)
             }
             applied.size == targets.size
         }
     }
 
-    private fun writeSets(prefs: SharedPreferences, applied: List<String>, block: Boolean, external: Boolean) {
+    private fun writeSets(prefs: SharedPreferences, applied: List<String>, block: Boolean, syncSelection: Boolean) {
         val active = loadActivePackages(prefs).toMutableSet()
-        val owned = loadExternalPackages(prefs).toMutableSet()
-        if (block) {
-            active.addAll(applied)
-            if (external) owned.addAll(applied)
-        } else {
-            active.removeAll(applied.toSet())
-            owned.removeAll(applied.toSet())
-        }
-        prefs.edit()
+        if (block) active.addAll(applied) else active.removeAll(applied.toSet())
+        val edit = prefs.edit()
             .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, active)
-            .putStringSet(MainActivity.KEY_EXTERNAL_PACKAGES, owned)
             .putLong(MainActivity.KEY_FIREWALL_SAVED_ELAPSED, SystemClock.elapsedRealtime())
             .putLong(MainActivity.KEY_FIREWALL_UPDATE_TS, System.currentTimeMillis())
-            .apply()
+        if (syncSelection) {
+            val selected = (prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()).toMutableSet()
+            if (block != (firewallMode(prefs) == FirewallMode.WHITELIST)) {
+                selected.addAll(applied)
+            } else {
+                selected.removeAll(applied.toSet())
+            }
+            edit.putStringSet(MainActivity.KEY_SELECTED_APPS, selected)
+                .putInt(MainActivity.KEY_SELECTED_COUNT, selected.size)
+        }
+        edit.apply()
     }
 
     private suspend fun enable(context: Context, prefs: SharedPreferences, targets: EnableTargets): Boolean = withContext(Dispatchers.IO) {
@@ -213,8 +214,7 @@ object FirewallUtils {
                     ScreenLockModeReceiver.isDeviceLocked(context),
                     FirewallTargets.parseAppModes(prefs.getString(MainActivity.KEY_APP_MODES, "{}"))
                 )
-                val external = loadExternalPackages(prefs)
-                val toBlock = (effective + external).distinct().filterNot { isSelfOrBackend(context, it) }
+                val toBlock = effective.distinct().filterNot { isSelfOrBackend(context, it) }
                 val toAllow = targets.allow.filterNot { isSelfOrBackend(context, it) }
                 val stale = loadActivePackages(prefs) - toBlock.toSet()
                 executor.execBatch(FirewallCommands.unblockAll(stale.toList() + toAllow))
@@ -242,8 +242,7 @@ object FirewallUtils {
     private suspend fun disable(context: Context, prefs: SharedPreferences): Boolean = withContext(Dispatchers.IO) {
         val mode = firewallMode(prefs)
         stateLock.withLock {
-            val external = loadExternalPackages(prefs)
-            val toUnblock = (loadActivePackages(prefs) - external).toMutableList()
+            val toUnblock = loadActivePackages(prefs).toMutableList()
             if (mode.requiresForegroundDetection()) {
                 val currentFgApp = prefs.getString(MainActivity.KEY_SMART_FOREGROUND_APP, null)
                 if (!currentFgApp.isNullOrEmpty() && !toUnblock.contains(currentFgApp)) toUnblock.add(currentFgApp)
@@ -252,19 +251,18 @@ object FirewallUtils {
             val targets = toUnblock.filterNot { isSelfOrBackend(context, it) }
             val results = executor.execBatch(FirewallCommands.unblockAll(targets))
             logFailures(context, targets, results)
-            val chainOk = external.isNotEmpty() ||
-                executor.exec(FirewallCommands.CHAIN3_DISABLE).isEffectivelySuccess
+            val chainOk = executor.exec(FirewallCommands.CHAIN3_DISABLE).isEffectivelySuccess
             if (mode.requiresForegroundDetection()) {
                 prefs.edit()
                     .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
-                    .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, external)
+                    .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
                     .apply()
             }
 
             val ok = chainOk && results.all { it.isEffectivelySuccess }
             if (ok) {
                 saveFirewallEnabled(context, prefs, false)
-                saveActivePackages(prefs, external)
+                saveActivePackages(prefs, emptySet())
             } else {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, context.getString(R.string.failed_to_disable_firewall), Toast.LENGTH_SHORT).show()

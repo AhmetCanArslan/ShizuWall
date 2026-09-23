@@ -190,7 +190,7 @@ class ForegroundDetectionService : Service() {
         isShizuWallFocused = null
         sharedPreferences.edit()
             .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
-            .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, FirewallUtils.loadExternalPackages(sharedPreferences))
+            .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
             .apply()
         stopSelf()
     }
@@ -591,8 +591,7 @@ class ForegroundDetectionService : Service() {
             )
         }
 
-        val external = FirewallUtils.loadExternalPackages(sharedPreferences)
-        val activePkgs = if (!isFocused) selectedPackages + external else external
+        val activePkgs = if (!isFocused) selectedPackages else emptySet()
         sharedPreferences.edit()
             .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, activePkgs)
             .apply()
@@ -630,8 +629,7 @@ class ForegroundDetectionService : Service() {
         val blocked = sharedPreferences.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
         if (blocked.isEmpty()) return
 
-        val external = FirewallUtils.loadExternalPackages(sharedPreferences)
-        val stale = blocked.filter { !selectedPackages.contains(it) && !external.contains(it) }.toSet()
+        val stale = blocked.filter { !selectedPackages.contains(it) }.toSet()
         if (stale.isEmpty()) return
 
         try {
