@@ -163,26 +163,35 @@ object FirewallUtils {
         val candidates = keys.map { AppKey.normalize(it) }.filterNot { isSelfOrBackend(context, it) }
         val targets = if (block) candidates.filter { PerUidFirewall.isBlockableKey(context, it) } else candidates
         if (targets.isEmpty()) return@withContext false
+        val toApply = if (block && syncSelection) modeAdapted(context, prefs, targets) else targets
         stateLock.withLock {
             val executor = ShellExecutorProvider.forContext(context)
             if (block && !executor.exec(FirewallCommands.CHAIN3_ENABLE).isEffectivelySuccess) {
                 return@withLock false
             }
-            val results = executor.execBatch(FirewallCommands.networkingAll(targets, !block))
-            logFailures(context, targets, results)
-            val applied = targets.filterIndexed { index, _ -> results[index].isEffectivelySuccess }
-            writeSets(prefs, applied, block, syncSelection)
+            val results = executor.execBatch(FirewallCommands.networkingAll(toApply, !block))
+            logFailures(context, toApply, results)
+            val applied = toApply.filterIndexed { index, _ -> results[index].isEffectivelySuccess }
+            writeSets(prefs, applied, targets - (toApply - applied.toSet()).toSet(), block, syncSelection)
             if (block && syncSelection && !loadFirewallEnabled(prefs)) {
                 saveFirewallEnabled(context, prefs, true)
             }
             if (!block && !loadFirewallEnabled(prefs)) {
                 executor.exec(FirewallCommands.CHAIN3_DISABLE)
             }
-            applied.size == targets.size
+            applied.size == toApply.size
         }
     }
 
-    private fun writeSets(prefs: SharedPreferences, applied: List<String>, block: Boolean, syncSelection: Boolean) {
+    private fun modeAdapted(context: Context, prefs: SharedPreferences, keys: List<String>): List<String> =
+        FirewallTargets.effectiveBlockList(
+            firewallMode(prefs),
+            keys,
+            ScreenLockModeReceiver.isDeviceLocked(context),
+            FirewallTargets.parseAppModes(prefs.getString(MainActivity.KEY_APP_MODES, "{}"))
+        )
+
+    private fun writeSets(prefs: SharedPreferences, applied: List<String>, selection: List<String>, block: Boolean, syncSelection: Boolean) {
         val active = loadActivePackages(prefs).toMutableSet()
         if (block) active.addAll(applied) else active.removeAll(applied.toSet())
         val edit = prefs.edit()
@@ -192,9 +201,9 @@ object FirewallUtils {
         if (syncSelection) {
             val selected = (prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()).toMutableSet()
             if (block != (firewallMode(prefs) == FirewallMode.WHITELIST)) {
-                selected.addAll(applied)
+                selected.addAll(selection)
             } else {
-                selected.removeAll(applied.toSet())
+                selected.removeAll(selection.toSet())
             }
             edit.putStringSet(MainActivity.KEY_SELECTED_APPS, selected)
                 .putInt(MainActivity.KEY_SELECTED_COUNT, selected.size)
@@ -208,13 +217,7 @@ object FirewallUtils {
         val successful = mutableListOf<String>()
         stateLock.withLock {
             if (executor.exec(FirewallCommands.CHAIN3_ENABLE).isEffectivelySuccess) {
-                val effective = FirewallTargets.effectiveBlockList(
-                    mode,
-                    targets.block,
-                    ScreenLockModeReceiver.isDeviceLocked(context),
-                    FirewallTargets.parseAppModes(prefs.getString(MainActivity.KEY_APP_MODES, "{}"))
-                )
-                val toBlock = effective.distinct().filterNot { isSelfOrBackend(context, it) }
+                val toBlock = modeAdapted(context, prefs, targets.block).distinct().filterNot { isSelfOrBackend(context, it) }
                 val toAllow = targets.allow.filterNot { isSelfOrBackend(context, it) }
                 val stale = loadActivePackages(prefs) - toBlock.toSet()
                 executor.execBatch(FirewallCommands.unblockAll(stale.toList() + toAllow))
