@@ -16,10 +16,11 @@ class PerUidRoutingExecutor(
     override suspend fun exec(command: String): ShellResult {
         val trimmed = command.trim()
         if (trimmed == CHAIN3_DISABLE) {
-            val result = delegate.exec(command)
+            val result = setChain(command, false)
             clearSecondaryRules()
             return result
         }
+        if (trimmed == FirewallCommands.CHAIN3_ENABLE) return setChain(command, true)
         if (!isFirewallCommand(trimmed)) return delegate.exec(command)
         return execBatch(listOf(command)).first()
     }
@@ -63,6 +64,12 @@ class PerUidRoutingExecutor(
             resultsByKey[cloneKey] = resultsByKey.getValue(parentKey)
         }
         return requested.map { resultsByKey.getValue(it.first) }
+    }
+
+    private suspend fun setChain(command: String, enabled: Boolean): ShellResult {
+        val result = delegate.exec(command)
+        if (result.success || !PerUidFirewall.setChainEnabled(context, enabled)) return result
+        return CHAIN_FALLBACK_SUCCESS
     }
 
     private fun usesShellPath(key: String, uidBatchMode: Boolean): Boolean {
@@ -152,6 +159,7 @@ class PerUidRoutingExecutor(
         const val CHAIN3_DISABLE = FirewallCommands.CHAIN3_DISABLE
 
         val PER_UID_SUCCESS = ShellResult(exitCode = 0, stdout = "per-uid rule applied", stderr = "")
+        val CHAIN_FALLBACK_SUCCESS = ShellResult(exitCode = 0, stdout = "chain set via binder", stderr = "")
 
         fun isFirewallCommand(trimmed: String): Boolean =
             FirewallCommands.isNetworkingCommand(trimmed)

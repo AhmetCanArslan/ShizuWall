@@ -24,6 +24,7 @@ object PerUidFirewall {
     const val RULE_DENY = 2
     // Keep in sync with SystemDaemon.FW_UID_RULES_COMMAND.
     private const val DAEMON_BATCH_COMMAND = "fw-uid-rules"
+    private const val DAEMON_CHAIN_COMMAND = "fw-chain"
     // Keep in sync with SystemDaemon.MAX_COMMAND_LENGTH.
     private const val MAX_BATCH_COMMAND_LENGTH = 4096
     private const val DAEMON_ASSET_NAME = "daemon.bin"
@@ -51,6 +52,18 @@ object PerUidFirewall {
             rule.uid to applied.getOrElse(index) { RuleOutcome(false, NO_RESULT_ERROR) }
         }.toMap()
         prepared.map { outcomeOf(it, resultPerUid) }
+    }
+
+    suspend fun setChainEnabled(context: Context, enabled: Boolean): Boolean = withContext(Dispatchers.IO) {
+        val command = "$DAEMON_CHAIN_COMMAND ${if (enabled) 1 else 0}"
+        val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        runCatching {
+            when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
+                WorkingMode.SHIZUKU -> ShizukuUserServiceManager.obtain()?.setFirewallChainEnabled(enabled)
+                WorkingMode.LADB -> PersistentDaemonManager(context).executeCommand(command)
+                WorkingMode.ROOT -> RootUidFirewallSession.execute(extractHelperDex(context).absolutePath, command)
+            }
+        }.onFailure { Log.w(TAG, "Chain fallback failed", it) }.getOrNull()?.trim() == "OK"
     }
 
     fun requiresUidPath(context: Context, key: String): Boolean {

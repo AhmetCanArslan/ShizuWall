@@ -9,4 +9,5 @@ interface IShizuWallUserService {
     String getForegroundTask() = 3;
     void startForegroundWatch(IShizuWallForegroundListener listener) = 4;
     void stopForegroundWatch() = 5;
+    String setFirewallChainEnabled(boolean enabled) = 6;
 }

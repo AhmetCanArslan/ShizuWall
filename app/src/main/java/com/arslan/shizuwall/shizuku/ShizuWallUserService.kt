@@ -39,6 +39,8 @@ class ShizuWallUserService : IShizuWallUserService.Stub {
 
     override fun getForegroundTask(): String = SystemDaemon.foregroundTask()
 
+    override fun setFirewallChainEnabled(enabled: Boolean): String = SystemDaemon.setChainEnabled(enabled)
+
     override fun startForegroundWatch(listener: IShizuWallForegroundListener?) {
         if (listener == null) return
         stopForegroundWatch()

@@ -39,6 +39,7 @@ public class SystemDaemon {
     private static final int MAX_COMMAND_LENGTH = 4096;
     private static final String FW_UID_RULES_COMMAND = "fw-uid-rules";
     private static final String FW_UID_SERVER_COMMAND = "fw-uid-server";
+    private static final String FW_CHAIN_COMMAND = "fw-chain";
     private static final String FG_TASK_COMMAND = "fg-task";
     private static final String FG_WATCH_COMMAND = "fg-watch";
     private static final long FG_DEBOUNCE_MS = 150;
@@ -238,6 +239,8 @@ public class SystemDaemon {
                 result = setUidFirewallRules(
                         command.trim().substring(FW_UID_RULES_COMMAND.length() + 1)
                 );
+            } else if (command.trim().startsWith(FW_CHAIN_COMMAND + " ")) {
+                result = setChainEnabled(command.trim().endsWith(" 1"));
             } else if (command.trim().equalsIgnoreCase(FG_WATCH_COMMAND)) {
                 final PrintWriter sink = writer;
                 watchForegroundTask(new ForegroundEmitter() {
@@ -295,6 +298,21 @@ public class SystemDaemon {
         return Class.forName("android.net.IConnectivityManager$Stub")
                 .getMethod("asInterface", Class.forName("android.os.IBinder"))
                 .invoke(null, binder);
+    }
+
+    public static String setChainEnabled(boolean enabled) {
+        try {
+            Object service = connectivityService();
+            if (service == null) return "Error (code 1): connectivity service unavailable";
+            service.getClass()
+                    .getMethod("setFirewallChainEnabled", int.class, boolean.class)
+                    .invoke(service, FIREWALL_CHAIN_OEM_DENY_3, enabled);
+            return "OK";
+        } catch (Throwable t) {
+            Throwable cause = (t.getCause() != null) ? t.getCause() : t;
+            logE("setFirewallChainEnabled failed", cause);
+            return "Error (code 1): " + cause;
+        }
     }
 
     private static String setUidFirewallRules(String encodedRules) {
@@ -553,6 +571,8 @@ public class SystemDaemon {
                 String result;
                 if (command.startsWith(FW_UID_RULES_COMMAND + " ")) {
                     result = setUidFirewallRules(command.substring(FW_UID_RULES_COMMAND.length() + 1));
+                } else if (command.startsWith(FW_CHAIN_COMMAND + " ")) {
+                    result = setChainEnabled(command.endsWith(" 1"));
                 } else if (FG_TASK_COMMAND.equals(command)) {
                     result = foregroundTask();
                 } else {
