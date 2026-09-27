@@ -19,7 +19,6 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.color.MaterialColors
 import androidx.core.graphics.ColorUtils
-import com.arslan.shizuwall.utils.AppIds
 import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.UiUtils
 
@@ -183,6 +182,7 @@ class AppListAdapter(
                 itemView.setOnLongClickListener(null)
             }
 
+            card.getChildAt(0).alpha = if (appInfo.isSelectable) 1f else 0.5f
             bindInteractions(appInfo, selectionEnabled)
         }
 
@@ -221,7 +221,7 @@ class AppListAdapter(
         }
 
         private fun bindInteractions(appInfo: AppInfo, selectionEnabled: Boolean) {
-            val blockable = AppIds.isBlockable(appInfo.uid)
+            val blockable = appInfo.isSelectable
             if (selectionEnabled && blockable) {
                 val toggled = appInfo.copy(isSelected = !appInfo.isSelected)
                 appSwitch.isEnabled = true
@@ -241,7 +241,7 @@ class AppListAdapter(
             itemView.isClickable = explainUnsupported
             if (explainUnsupported) {
                 itemView.setOnClickListener {
-                    Snackbar.make(itemView, R.string.app_unsupported_system_uid, Snackbar.LENGTH_LONG)
+                    Snackbar.make(itemView, if (appInfo.hasInternet) R.string.app_unsupported_system_uid else R.string.app_info_internet_no, Snackbar.LENGTH_LONG)
                         .setTextMaxLines(4)
                         .setAction(R.string.ok) { }
                         .show()

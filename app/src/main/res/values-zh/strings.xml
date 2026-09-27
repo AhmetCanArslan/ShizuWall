@@ -79,7 +79,7 @@
     <string name="favorites_title">收藏夹</string>
     <string name="favorites_message">长按应用以将其添加到收藏夹以快速访问。</string>
     <string name="sorting_onboarding_title">排序与筛选</string>
-    <string name="sorting_onboarding_message">点击排序图标即可更改应用的排列方式。没有网络权限的应用不会显示，你也可以在这里选择是否显示系统应用和配置文件应用。</string>
+    <string name="sorting_onboarding_message">点击排序图标即可更改应用的排列方式。你也可以在这里选择是否显示系统应用和配置文件应用。</string>
     <string name="shizuku_required_title">Shizuku 模式</string>
     <string name="shizuku_required_message">开发者不对任何负面后果负责。请在继续之前安装并激活 Shizuku。</string>
     <string name="onboarding_mode_selection_title">选择工作模式</string>
@@ -240,7 +240,6 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">最新安装优先</string>
-    <string name="app_filtering_note">未获得互联网访问权限的应用不会显示在列表中。</string>
     <string name="failed_to_update_rules_count">无法更新 %d 个应用的规则</string>
     <string name="failed_to_unblock_count">无法取消阻止 %d 个应用</string>
     <string name="failed_to_unblock_app">无法取消阻止 %s</string>
@@ -521,4 +520,5 @@
     <string name="changelog_message">• 应用锁：使用 PIN 或生物识别保护 ShizuWall\n• 设置菜单：导出、导入或重置配置\n• 更新后显示更新内容对话框，也可在设置中查看\n• 显示系统应用和其他配置文件的开关移至防火墙行为页面\n• 空列表与后端提示横幅，说明下一步操作\n• Shizuku 模式在重启后自动重新启用防火墙\n• 工作资料和安全文件夹中已停用的应用不再列出\n• 应用监视器通知更清晰\n• 使用 Snackbar 取代 Toast 提示，设置中新增联系开发者卡片</string>
     <string name="whats_new">新功能</string>
     <string name="whats_new_description">查看此版本的更新内容</string>
+    <string name="dismiss">关闭</string>
 </resources>

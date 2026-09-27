@@ -79,7 +79,7 @@
     <string name="favorites_title">Favoriten</string>
     <string name="favorites_message">Drücken Sie lange auf eine App, um sie zu Ihren Favoriten für schnellen Zugriff hinzuzufügen.</string>
     <string name="sorting_onboarding_title">Sortieren &amp; Filtern</string>
-    <string name="sorting_onboarding_message">Tippen Sie auf das Sortiersymbol, um die Reihenfolge der Apps zu ändern. Apps ohne Internetberechtigung werden nicht aufgeführt, und dort können Sie auswählen, ob System-Apps und Profil-Apps angezeigt werden.</string>
+    <string name="sorting_onboarding_message">Tippen Sie auf das Sortiersymbol, um die Reihenfolge der Apps zu ändern. Dort können Sie auch auswählen, ob System-Apps und Profil-Apps angezeigt werden.</string>
     <string name="shizuku_required_title">Shizuku-Modus</string>
     <string name="shizuku_required_message">Der Entwickler ist nicht verantwortlich für negative Konsequenzen. Bitte installieren und aktivieren Sie Shizuku, bevor Sie fortfahren.</string>
     <string name="onboarding_mode_selection_title">Arbeitsmodus wählen</string>
@@ -240,7 +240,6 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">Neueste zuerst</string>
-    <string name="app_filtering_note">Anwendungen ohne Internetzugriffsberechtigung werden in der Liste nicht angezeigt.</string>
     <string name="failed_to_update_rules_count">Regeln für %d Apps konnten nicht aktualisiert werden</string>
     <string name="failed_to_unblock_count">%d Apps konnten nicht entsperrt werden</string>
     <string name="failed_to_unblock_app">%s konnte nicht entsperrt werden</string>
@@ -522,4 +521,5 @@
     <string name="changelog_message">• App-Sperre: ShizuWall mit PIN oder Biometrie schützen\n• Einstellungsmenü: Konfiguration exportieren, importieren oder zurücksetzen\n• Neuigkeiten-Dialog nach jedem Update, auch in den Einstellungen\n• „Systemapps anzeigen“ und „Andere Profile anzeigen“ sind jetzt im Bildschirm „Firewall-Verhalten“\n• Leerzustand und Backend-Hinweise, die die nächsten Schritte erklären\n• Der Shizuku-Modus aktiviert die Firewall nach einem Neustart selbst\n• Deaktivierte Apps in Arbeitsprofilen und im sicheren Ordner werden nicht mehr aufgelistet\n• Klarere Benachrichtigungen des App-Monitors\n• Snackbar-Rückmeldungen statt Toasts und Karte „Entwickler kontaktieren“ in den Einstellungen</string>
     <string name="whats_new">Neuigkeiten</string>
     <string name="whats_new_description">Änderungen in dieser Version ansehen</string>
+    <string name="dismiss">Schließen</string>
 </resources>

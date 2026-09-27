@@ -78,7 +78,7 @@
     <string name="favorites_title">Избранное</string>
     <string name="favorites_message">Удерживайте приложение, чтобы добавить его в избранное для быстрого доступа.</string>
     <string name="sorting_onboarding_title">Сортировка и фильтры</string>
-    <string name="sorting_onboarding_message">Нажмите значок сортировки, чтобы изменить порядок приложений. Приложения без разрешения на интернет не отображаются, и там же можно выбрать, показывать ли системные приложения и приложения профилей.</string>
+    <string name="sorting_onboarding_message">Нажмите значок сортировки, чтобы изменить порядок приложений. Там же можно выбрать, показывать ли системные приложения и приложения профилей.</string>
     <string name="shizuku_required_title">Режим Shizuku</string>
     <string name="shizuku_required_message">Разработчик не несет ответственности за любые негативные последствия. Пожалуйста, установите и активируйте Shizuku перед продолжением.</string>
     <string name="onboarding_mode_selection_title">Выберите рабочий режим</string>
@@ -242,8 +242,7 @@
     <string name="sort_name_asc">А-Я</string>
     <string name="sort_name_desc">Я-А</string>
     <string name="sort_install_time">Сначала новые приложения</string>
-        <string name="app_filtering_note">Приложения без разрешения на доступ к Интернету не отображаются в списке.</string>
-    <string name="failed_to_update_rules_count">Не удалось обновить правила для %d приложений</string>
+        <string name="failed_to_update_rules_count">Не удалось обновить правила для %d приложений</string>
     <string name="failed_to_unblock_count">Не удалось разблокировать %d приложений</string>
     <string name="failed_to_unblock_app">Не удалось разблокировать %s</string>
     <string name="notification_permission_required_title">Требуется разрешение на уведомления</string>
@@ -526,4 +525,5 @@
     <string name="changelog_message">• Блокировка приложения: защита ShizuWall PIN-кодом или биометрией\n• Меню настроек: экспорт, импорт и сброс конфигурации\n• Окно «Что нового» после каждого обновления, также в настройках\n• Показ системных приложений и других профилей перенесён на экран поведения брандмауэра\n• Пустое состояние и баннеры бэкенда с подсказками\n• Режим Shizuku сам включает брандмауэр после перезагрузки\n• Отключённые приложения в рабочих профилях и защищённой папке больше не отображаются\n• Более понятные уведомления монитора приложений\n• Snackbar вместо всплывающих сообщений и карточка связи с разработчиком в настройках</string>
     <string name="whats_new">Что нового</string>
     <string name="whats_new_description">Посмотреть изменения в этой версии</string>
+    <string name="dismiss">Закрыть</string>
 </resources>

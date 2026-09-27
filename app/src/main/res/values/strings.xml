@@ -81,7 +81,7 @@
     <string name="favorites_title">Favorites</string>
     <string name="favorites_message">Long press on an app to add it to your favorites for quick access.</string>
     <string name="sorting_onboarding_title">Sorting &amp; Filtering</string>
-    <string name="sorting_onboarding_message">Tap the sorting icon to change how apps are ordered. Apps without internet permission are not listed, and you can choose there whether system apps and profile apps are shown.</string>
+    <string name="sorting_onboarding_message">Tap the sorting icon to change how apps are ordered. You can also choose there whether system apps and profile apps are shown.</string>
     <string name="shizuku_required_title">Shizuku Mode</string>
     <string name="shizuku_required_message">The developer is not responsible for any negative consequences. Please install and activate Shizuku before proceeding.</string>
     <string name="onboarding_mode_selection_title">Choose Working Mode</string>
@@ -259,7 +259,6 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">Newest app first</string>
-    <string name="app_filtering_note">Applications without internet access permission are not shown in the list.</string>
     <string name="failed_to_update_rules_count">Failed to update rules for %d apps</string>
     <string name="failed_to_unblock_count">Failed to unblock %d apps</string>
     <string name="failed_to_unblock_app">Failed to unblock %s</string>
@@ -526,4 +525,5 @@
     <string name="changelog_message">• App lock: protect ShizuWall with a PIN or biometrics\n• Settings menu: export, import or reset your configuration\n• What\'s new dialog after every update, also available in settings\n• Show system apps and other profiles moved to the Firewall behaviour screen\n• Empty state and backend banners that explain what to do next\n• Shizuku mode re-enables the firewall by itself after a reboot\n• Disabled apps in work profiles and Secure Folder are no longer listed\n• Clearer app monitor notifications\n• Snackbar feedback instead of toasts, plus a contact developer card in settings</string>
     <string name="whats_new">What\'s new</string>
     <string name="whats_new_description">See the changes in this version</string>
+    <string name="dismiss">Dismiss</string>
 </resources>

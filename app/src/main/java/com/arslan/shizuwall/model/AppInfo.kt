@@ -1,5 +1,6 @@
 package com.arslan.shizuwall.model
 
+import com.arslan.shizuwall.utils.AppIds
 import com.arslan.shizuwall.utils.AppKey
 
 data class AppInfo(
@@ -11,8 +12,11 @@ data class AppInfo(
     val installTime: Long = 0,
     val appFirewallMode: Int = 0,
     val userId: Int = 0,
-    val uid: Int = -1
+    val uid: Int = -1,
+    val hasInternet: Boolean = true
 ) {
+
+    val isSelectable: Boolean get() = hasInternet && AppIds.isBlockable(uid)
 
     val key: String get() = AppKey.of(userId, packageName)
 }

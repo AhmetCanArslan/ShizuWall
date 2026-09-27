@@ -20,6 +20,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
         const val ACTION_ADD_TO_LIST = "com.arslan.shizuwall.ACTION_ADD_TO_LIST"
         const val ACTION_WHITELIST_APP = "com.arslan.shizuwall.ACTION_WHITELIST_APP"
         const val ACTION_ALLOW_AND_UNSELECT = "com.arslan.shizuwall.ACTION_ALLOW_AND_UNSELECT"
+        const val ACTION_DISMISS = "com.arslan.shizuwall.ACTION_DISMISS"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
     }
 

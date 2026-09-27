@@ -81,7 +81,7 @@
     <string name="favorites_title">Preferiti</string>
     <string name="favorites_message">Tieni premuta un\'app per aggiungerla ai preferiti e accedervi rapidamente.</string>
     <string name="sorting_onboarding_title">Ordinamento e filtri</string>
-    <string name="sorting_onboarding_message">Tocca l\'icona di ordinamento per cambiare l\'ordine delle app. Le app senza permesso Internet non vengono elencate e da lì puoi scegliere se mostrare le app di sistema e le app dei profili.</string>
+    <string name="sorting_onboarding_message">Tocca l\'icona di ordinamento per cambiare l\'ordine delle app. Da lì puoi anche scegliere se mostrare le app di sistema e le app dei profili.</string>
     <string name="shizuku_required_title">Modalità Shizuku</string>
     <string name="shizuku_required_message">Lo sviluppatore non è responsabile di eventuali conseguenze negative. Installa e attiva Shizuku prima di procedere.</string>
     <string name="onboarding_mode_selection_title">Scegli la modalità di funzionamento</string>
@@ -259,7 +259,6 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">App più recenti prima</string>
-    <string name="app_filtering_note">Le applicazioni senza autorizzazione di accesso a Internet non vengono mostrate nell\'elenco.</string>
     <string name="failed_to_update_rules_count">Impossibile aggiornare le regole per %d app</string>
     <string name="failed_to_unblock_count">Impossibile sbloccare %d app</string>
     <string name="failed_to_unblock_app">Impossibile sbloccare %s</string>
@@ -523,4 +522,5 @@
     <string name="changelog_message">• Blocco app: proteggi ShizuWall con PIN o biometria\n• Menu impostazioni: esporta, importa o reimposta la configurazione\n• Finestra delle novità dopo ogni aggiornamento, anche nelle impostazioni\n• Mostra app di sistema e altri profili spostati nella schermata del comportamento del firewall\n• Stato vuoto e banner del backend che spiegano cosa fare\n• La modalità Shizuku riattiva il firewall da sola dopo un riavvio\n• Le app disattivate nei profili di lavoro e nella Cartella sicura non vengono più elencate\n• Notifiche del monitor app più chiare\n• Snackbar al posto dei toast e scheda per contattare lo sviluppatore nelle impostazioni</string>
     <string name="whats_new">Novità</string>
     <string name="whats_new_description">Guarda le modifiche di questa versione</string>
+    <string name="dismiss">Ignora</string>
 </resources>

@@ -81,7 +81,7 @@
     <string name="favorites_title">पसंदीदा</string>
     <string name="favorites_message">त्वरित पहुँच के लिए किसी ऐप को पसंदीदा में जोड़ने हेतु उसे देर तक दबाएँ।</string>
     <string name="sorting_onboarding_title">सॉर्टिंग और फ़िल्टरिंग</string>
-    <string name="sorting_onboarding_message">ऐप्स का क्रम बदलने के लिए सॉर्टिंग आइकन पर टैप करें। इंटरनेट अनुमति वाले बिना ऐप्स सूची में नहीं दिखते, और वहीं से आप चुन सकते हैं कि सिस्टम ऐप्स और प्रोफ़ाइल ऐप्स दिखें या नहीं।</string>
+    <string name="sorting_onboarding_message">ऐप्स का क्रम बदलने के लिए सॉर्टिंग आइकन पर टैप करें। वहीं से आप यह भी चुन सकते हैं कि सिस्टम ऐप्स और प्रोफ़ाइल ऐप्स दिखें या नहीं।</string>
     <string name="shizuku_required_title">Shizuku मोड</string>
     <string name="shizuku_required_message">डेवलपर किसी भी नकारात्मक परिणाम के लिए ज़िम्मेदार नहीं है। कृपया आगे बढ़ने से पहले Shizuku इंस्टॉल और सक्रिय करें।</string>
     <string name="onboarding_mode_selection_title">कार्य मोड चुनें</string>
@@ -259,7 +259,6 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">नए ऐप पहले</string>
-    <string name="app_filtering_note">इंटरनेट पहुँच अनुमति के बिना ऐप्स सूची में नहीं दिखाए जाते।</string>
     <string name="failed_to_update_rules_count">%d ऐप्स के नियम अपडेट नहीं हो सके</string>
     <string name="failed_to_unblock_count">%d ऐप्स अनब्लॉक नहीं हो सके</string>
     <string name="failed_to_unblock_app">%s अनब्लॉक नहीं हो सका</string>
@@ -523,4 +522,5 @@
     <string name="changelog_message">• ऐप लॉक: ShizuWall को PIN या बायोमेट्रिक से सुरक्षित करें\n• सेटिंग्स मेन्यू: कॉन्फ़िगरेशन निर्यात, आयात या रीसेट करें\n• हर अपडेट के बाद नया क्या है डायलॉग, सेटिंग्स में भी उपलब्ध\n• सिस्टम ऐप्स और अन्य प्रोफ़ाइल दिखाने के विकल्प अब फ़ायरवॉल व्यवहार स्क्रीन पर\n• खाली सूची और बैकएंड बैनर जो अगला कदम बताते हैं\n• रीबूट के बाद Shizuku मोड फ़ायरवॉल खुद चालू कर देता है\n• वर्क प्रोफ़ाइल और सुरक्षित फ़ोल्डर के बंद ऐप्स अब सूची में नहीं आते\n• ऐप मॉनिटर की अधिक स्पष्ट सूचनाएँ\n• टोस्ट के बजाय Snackbar और सेटिंग्स में डेवलपर से संपर्क कार्ड</string>
     <string name="whats_new">नया क्या है</string>
     <string name="whats_new_description">इस संस्करण के बदलाव देखें</string>
+    <string name="dismiss">खारिज करें</string>
 </resources>

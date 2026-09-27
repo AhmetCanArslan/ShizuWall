@@ -79,7 +79,7 @@
     <string name="favorites_title">المفضلة</string>
     <string name="favorites_message">اضغط مطولًا على تطبيق لإضافته إلى مفضلاتك للوصول السريع.</string>
     <string name="sorting_onboarding_title">الفرز والتصفية</string>
-    <string name="sorting_onboarding_message">اضغط على أيقونة الفرز لتغيير ترتيب التطبيقات. لا تظهر التطبيقات التي لا تملك إذن الإنترنت، ويمكنك من هناك اختيار إظهار تطبيقات النظام وتطبيقات الملفات الشخصية.</string>
+    <string name="sorting_onboarding_message">اضغط على أيقونة الفرز لتغيير ترتيب التطبيقات. ويمكنك من هناك أيضًا اختيار إظهار تطبيقات النظام وتطبيقات الملفات الشخصية.</string>
     <string name="shizuku_required_title">وضع Shizuku</string>
     <string name="shizuku_required_message">المطور غير مسؤول عن أي عواقب سلبية. يرجى تثبيت وتفعيل Shizuku قبل المتابعة.</string>
     <string name="onboarding_mode_selection_title">اختر وضع العمل</string>
@@ -245,8 +245,7 @@
     <string name="sort_install_time">أحدث التطبيقات أولاً</string>
     <string name="failed_to_update_rules_count">فشل تحديث القواعد لـ %d تطبيقات</string>
     <string name="failed_to_unblock_count">فشل إلغاء الحظر لـ %d تطبيقات</string>
-        <string name="app_filtering_note">لا يتم عرض التطبيقات التي لا تملك إذن الوصول إلى الإنترنت في القائمة.</string>
-    <string name="failed_to_unblock_app">فشل إلغاء حظر %s</string>
+        <string name="failed_to_unblock_app">فشل إلغاء حظر %s</string>
     <string name="notification_permission_required_title">إذن الإشعارات مطلوب</string>
     <string name="notification_permission_required_message">يحتاج ShizuWall إلى إذن الإشعارات لإظهار إشعار رمز الإقران.\n\nبدون هذا الإذن، لن تتمكن من إدخال رمز الإقران بسهولة.</string>
     <string name="cannot_continue">لا يمكن الاستمرار</string>
@@ -528,4 +527,5 @@
     <string name="changelog_message">• قفل التطبيق: احمِ ShizuWall برمز PIN أو البصمة\n• قائمة الإعدادات: تصدير الإعدادات أو استيرادها أو إعادة ضبطها\n• نافذة الجديد بعد كل تحديث، وهي متاحة أيضاً من الإعدادات\n• نُقل خيارا إظهار تطبيقات النظام والملفات الشخصية الأخرى إلى شاشة سلوك الجدار الناري\n• حالة فارغة ولافتات للواجهة الخلفية توضح الخطوة التالية\n• وضع Shizuku يعيد تفعيل الجدار الناري تلقائياً بعد إعادة التشغيل\n• لم تعد التطبيقات المعطّلة في ملفات العمل والمجلد الآمن تظهر في القائمة\n• إشعارات أوضح لمراقب التطبيقات\n• Snackbar بدلاً من رسائل Toast وبطاقة للتواصل مع المطوّر في الإعدادات</string>
     <string name="whats_new">الجديد</string>
     <string name="whats_new_description">اطّلع على تغييرات هذا الإصدار</string>
+    <string name="dismiss">تجاهل</string>
 </resources>

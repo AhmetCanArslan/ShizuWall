@@ -78,7 +78,7 @@
     <string name="favorites_title">Favoritos</string>
     <string name="favorites_message">Mantén presionada una app para añadirla a favoritos y acceder rápidamente.</string>
     <string name="sorting_onboarding_title">Ordenar y filtrar</string>
-    <string name="sorting_onboarding_message">Toca el icono de ordenación para cambiar el orden de las apps. Las apps sin permiso de internet no aparecen, y ahí puedes elegir si se muestran las apps del sistema y las apps de perfiles.</string>
+    <string name="sorting_onboarding_message">Toca el icono de ordenación para cambiar el orden de las apps. Ahí también puedes elegir si se muestran las apps del sistema y las apps de perfiles.</string>
     <string name="shizuku_required_title">Modo Shizuku</string>
     <string name="shizuku_required_message">El desarrollador no se hace responsable de consecuencias negativas. Instala y activa Shizuku antes de continuar.</string>
     <string name="onboarding_mode_selection_title">Elige el modo de trabajo</string>
@@ -242,7 +242,6 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">Recientes primero</string>
-    <string name="app_filtering_note">Las aplicaciones sin permiso de acceso a Internet no se muestran en la lista.</string>
     <string name="failed_to_update_rules_count">Error al actualizar reglas para %d apps</string>
     <string name="failed_to_unblock_count">Error al desbloquear %d apps</string>
     <string name="failed_to_unblock_app">Fallo al desbloquear %s</string>
@@ -524,4 +523,5 @@
     <string name="changelog_message">• Bloqueo de app: protege ShizuWall con PIN o biometría\n• Menú de ajustes: exporta, importa o restablece la configuración\n• Ventana de novedades tras cada actualización, también en ajustes\n• Mostrar apps del sistema y otros perfiles se movieron a la pantalla de comportamiento del cortafuegos\n• Estado vacío y avisos del backend que explican qué hacer\n• El modo Shizuku vuelve a activar el cortafuegos solo tras reiniciar\n• Las apps desactivadas en perfiles de trabajo y Carpeta segura ya no aparecen\n• Notificaciones del monitor de apps más claras\n• Snackbar en lugar de toasts y tarjeta para contactar al desarrollador en ajustes</string>
     <string name="whats_new">Novedades</string>
     <string name="whats_new_description">Ver los cambios de esta versión</string>
+    <string name="dismiss">Descartar</string>
 </resources>

@@ -80,7 +80,7 @@
     <string name="favorites_title">Oblíbené</string>
     <string name="favorites_message">Dlouhým stisknutím aplikace ji přidáte do oblíbených pro rychlý přístup.</string>
     <string name="sorting_onboarding_title">Řazení a filtrování</string>
-    <string name="sorting_onboarding_message">Klepnutím na ikonu řazení změníte pořadí aplikací. Aplikace bez oprávnění k internetu se nezobrazují a zde můžete zvolit, zda se mají zobrazovat systémové aplikace a aplikace profilů.</string>
+    <string name="sorting_onboarding_message">Klepnutím na ikonu řazení změníte pořadí aplikací. Zde můžete také zvolit, zda se mají zobrazovat systémové aplikace a aplikace profilů.</string>
     <string name="shizuku_required_title">Shizuku režim</string>
     <string name="shizuku_required_message">Vývojář nenese odpovědnost za žádné negativní důsledky. Před pokračováním nainstalujte a aktivujte Shizuku.</string>
     <string name="onboarding_mode_selection_title">Zvolte Pracovní režim</string>
@@ -257,7 +257,6 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">Nejdřív nejnovější aplikace</string>
-    <string name="app_filtering_note">Aplikace bez oprávnění k přístupu k internetu se v seznamu nezobrazují.</string>
     <string name="failed_to_update_rules_count">Nepodařilo se aktualizovat pravidla pro %d aplikací</string>
     <string name="failed_to_unblock_count">Nepodařilo se odblokovat %d aplikací</string>
     <string name="failed_to_unblock_app">Selhalo odblokování %s</string>
@@ -524,4 +523,5 @@
     <string name="changelog_message">• Zámek aplikace: chraňte ShizuWall PINem nebo biometrikou\n• Nabídka nastavení: export, import nebo reset konfigurace\n• Okno novinek po každé aktualizaci, také v nastavení\n• Zobrazení systémových aplikací a dalších profilů se přesunulo na obrazovku chování firewallu\n• Prázdný stav a bannery backendu s dalším postupem\n• Režim Shizuku po restartu sám znovu zapne firewall\n• Zakázané aplikace v pracovních profilech a Zabezpečené složce se už nezobrazují\n• Srozumitelnější oznámení monitoru aplikací\n• Snackbar místo toastů a karta pro kontakt vývojáře v nastavení</string>
     <string name="whats_new">Novinky</string>
     <string name="whats_new_description">Zobrazit změny v této verzi</string>
+    <string name="dismiss">Zavřít</string>
 </resources>

@@ -38,15 +38,6 @@
                 android:text="@string/sort"
                 android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall.Emphasized"
                 android:textColor="?attr/colorOnSurface" />
-
-            <TextView
-                android:id="@+id/textFilteringNote"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/app_filtering_note"
-                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
 
     </LinearLayout>

@@ -43,29 +43,27 @@ class AppMonitorService : Service() {
             } catch (e: PackageManager.NameNotFoundException) {
                 null
             }
-            if (appInfo != null && pm.checkPermission(Manifest.permission.INTERNET, packageName) != PackageManager.PERMISSION_GRANTED) {
-                return
-            }
+            val hasInternet = appInfo == null || pm.checkPermission(Manifest.permission.INTERNET, packageName) == PackageManager.PERMISSION_GRANTED
 
             val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
             val notificationsEnabled = prefs.getBoolean(MainActivity.KEY_APP_MONITOR_ENABLED, false)
             val isFirewallEnabled = prefs.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
             val firewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
-            val wasAutoFirewalled = FirewallUtils.applyNewAppPolicy(context, key)
+            val wasAutoFirewalled = hasInternet && FirewallUtils.applyNewAppPolicy(context, key)
 
             if (!notificationsEnabled && !wasAutoFirewalled) return
 
-            val (actionText, action) = if (isFirewallEnabled) {
-                when {
-                    wasAutoFirewalled ->
-                        context.getString(R.string.allow_app) to NotificationActionReceiver.ACTION_ALLOW_AND_UNSELECT
-                    firewallMode == FirewallMode.WHITELIST ->
-                        context.getString(R.string.allow_app) to NotificationActionReceiver.ACTION_WHITELIST_APP
-                    else ->
-                        context.getString(R.string.firewall_app) to NotificationActionReceiver.ACTION_FIREWALL_APP
-                }
-            } else {
-                context.getString(R.string.add_to_selected_list) to NotificationActionReceiver.ACTION_ADD_TO_LIST
+            val (actionText, action) = when {
+                !hasInternet ->
+                    context.getString(R.string.dismiss) to NotificationActionReceiver.ACTION_DISMISS
+                !isFirewallEnabled ->
+                    context.getString(R.string.add_to_selected_list) to NotificationActionReceiver.ACTION_ADD_TO_LIST
+                wasAutoFirewalled ->
+                    context.getString(R.string.allow_app) to NotificationActionReceiver.ACTION_ALLOW_AND_UNSELECT
+                firewallMode == FirewallMode.WHITELIST ->
+                    context.getString(R.string.allow_app) to NotificationActionReceiver.ACTION_WHITELIST_APP
+                else ->
+                    context.getString(R.string.firewall_app) to NotificationActionReceiver.ACTION_FIREWALL_APP
             }
 
             val notificationId = APP_INSTALL_NOTIFICATION_ID_BASE + key.hashCode()
@@ -86,6 +84,7 @@ class AppMonitorService : Service() {
             val notification = NotificationCompat.Builder(context, CHANNEL_ID_LOUD)
                 .setContentTitle(context.getString(R.string.new_app_installed, appInfo?.let { pm.getApplicationLabel(it).toString() } ?: packageName))
                 .setContentText(if (AppKey.isSecondary(key)) "$packageName · ${MultiUserApps.userLabel(context, AppKey.userIdOf(key))}" else packageName)
+                .setSubText(if (hasInternet) null else context.getString(R.string.app_info_internet_no))
                 .setSmallIcon(R.drawable.ic_quick_tile)
                 .setLargeIcon(appInfo?.let { UiUtils.drawableToBitmap(pm.getApplicationIcon(it)) })
                 .setAutoCancel(true)

@@ -79,7 +79,7 @@
     <string name="favorites_title">Favoriler</string>
     <string name="favorites_message">Hızlı erişim için bir uygulamaya uzun basın ve favorilerinize ekleyin.</string>
     <string name="sorting_onboarding_title">Sıralama ve Filtreleme</string>
-    <string name="sorting_onboarding_message">Uygulamaların sıralamasını değiştirmek için sıralama simgesine dokunun. İnternet izni olmayan uygulamalar listelenmez; sistem uygulamalarının ve profil uygulamalarının görünüp görünmeyeceğini de buradan ayarlayabilirsiniz.</string>
+    <string name="sorting_onboarding_message">Uygulamaların sıralamasını değiştirmek için sıralama simgesine dokunun. Sistem uygulamalarının ve profil uygulamalarının görünüp görünmeyeceğini de buradan ayarlayabilirsiniz.</string>
     <string name="shizuku_required_title">Shizuku Modu</string>
     <string name="shizuku_required_message">Geliştirici herhangi bir olumsuz sonuçtan sorumlu değildir. Lütfen devam etmeden önce Shizuku\'yu kurun ve etkinleştirin.</string>
     <string name="onboarding_mode_selection_title">Çalışma Modunu Seçin</string>
@@ -238,7 +238,6 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">En yeni önce</string>
-    <string name="app_filtering_note">İnternet erişim izni bulunmayan uygulamalar listede gösterilmez.</string>
     <string name="daemon_kill">Daemon\'ı Durdur</string>
     <string name="daemon_installing">Yükleniyor...</string>
     <string name="failed_to_update_rules_count">%d uygulama için kurallar güncellenemedi</string>
@@ -522,4 +521,5 @@
     <string name="changelog_message">• Uygulama kilidi: ShizuWall\'u PIN veya biyometri ile koruyun\n• Ayarlar menüsü: yapılandırmayı dışa/içe aktarın veya sıfırlayın\n• Her güncellemeden sonra yenilikler penceresi, ayarlardan da açılabilir\n• Sistem uygulamalarını ve diğer profilleri gösterme seçenekleri Güvenlik duvarı davranışı ekranına taşındı\n• Ne yapılacağını anlatan boş liste ve arka uç bilgi kartları\n• Shizuku modu yeniden başlatmadan sonra güvenlik duvarını kendisi açıyor\n• İş profili ve Güvenli Klasör\'deki devre dışı uygulamalar artık listelenmiyor\n• Daha anlaşılır uygulama izleyici bildirimleri\n• Toast yerine Snackbar geri bildirimi ve ayarlarda geliştiriciye ulaşma kartı</string>
     <string name="whats_new">Yenilikler</string>
     <string name="whats_new_description">Bu sürümdeki değişiklikleri gör</string>
+    <string name="dismiss">Kapat</string>
 </resources>

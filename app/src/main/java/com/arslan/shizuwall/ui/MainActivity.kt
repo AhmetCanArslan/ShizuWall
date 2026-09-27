@@ -68,7 +68,6 @@ import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.firewall.ForegroundTaskProbe
 import com.arslan.shizuwall.firewall.FirewallCommands
 import com.arslan.shizuwall.firewall.FirewallTargets
-import com.arslan.shizuwall.utils.AppIds
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.MultiUserApps
@@ -893,11 +892,11 @@ class MainActivity : BaseActivity() {
     }
 
     private fun selectableFilteredApps(): List<AppInfo> =
-        filteredAppList.filter { AppIds.isBlockable(it.uid) }
+        filteredAppList.filter { it.isSelectable }
 
     private fun showBulkSelectDialog(select: Boolean) {
         val filtered = selectableFilteredApps().filter { it.isSelected != select }
-        val all = appList.filter { it.isSelected != select && AppIds.isBlockable(it.uid) && (showSystemApps || !it.isSystem || it.isSelected) }
+        val all = appList.filter { it.isSelected != select && it.isSelectable && (showSystemApps || !it.isSystem || it.isSelected) }
         if (all.isEmpty()) return
         val apply = { changed: List<AppInfo> ->
             val keys = changed.map { it.key }.toSet()
@@ -1608,16 +1607,14 @@ class MainActivity : BaseActivity() {
                             if (ShizukuPackageResolver.isShizukuPackage(this@MainActivity, packageName)) continue
                             if (packageName == selfPkg) continue
 
-                            val hasInternetPermission = packageInfo.requestedPermissions?.contains(Manifest.permission.INTERNET) == true
-                            if (!hasInternetPermission) continue
-
                             val appName = appInfo.loadLabel(pm).toString()
                             val isSelected = savedSelected.contains(packageName)
                             val isFavorite = favoritePackages.contains(packageName)
                             val installTime = packageInfo.firstInstallTime
                             val appMode = modesJson.optInt(packageName, 0)
 
-                            chunkResult.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite, installTime, appMode, uid = appInfo.uid))
+                            val hasInternet = packageInfo.requestedPermissions?.contains(Manifest.permission.INTERNET) == true
+                            chunkResult.add(AppInfo(appName, packageName, isSelected, isSystemApp, isFavorite, installTime, appMode, uid = appInfo.uid, hasInternet = hasInternet))
                         }
                         chunkResult
                     }
@@ -1700,9 +1697,7 @@ class MainActivity : BaseActivity() {
         if (snapshot.apps.isEmpty()) return emptyList()
         val primaryByPackage = primaryApps.associateBy { it.packageName }
 
-        return snapshot.apps.filter { app ->
-            app.packageName in internetPackages || app.packageName !in primaryPackageNames
-        }.map { app ->
+        return snapshot.apps.map { app ->
             val base = primaryByPackage[app.packageName]
             val key = app.key
             AppInfo(
@@ -1716,7 +1711,8 @@ class MainActivity : BaseActivity() {
                 installTime = base?.installTime ?: 0L,
                 appFirewallMode = modesJson.optInt(key, 0),
                 userId = app.userId,
-                uid = app.uid
+                uid = app.uid,
+                hasInternet = app.packageName in internetPackages || app.packageName !in primaryPackageNames
             )
         }
     }
@@ -1748,7 +1744,8 @@ class MainActivity : BaseActivity() {
                         installTime = obj.optLong("installTime", 0L),
                         appFirewallMode = modesJson.optInt(key, 0),
                         userId = userId,
-                        uid = obj.optInt("uid", -1)
+                        uid = obj.optInt("uid", -1),
+                        hasInternet = obj.optBoolean("hasInternet", true)
                     )
                 )
             }
@@ -1779,6 +1776,7 @@ class MainActivity : BaseActivity() {
                     put("appFirewallMode", app.appFirewallMode)
                     put("userId", app.userId)
                     put("uid", app.uid)
+                    put("hasInternet", app.hasInternet)
                 }
             )
         }
@@ -1935,7 +1933,7 @@ class MainActivity : BaseActivity() {
     private fun dropUnsupportedSelections() {
         val dropped = mutableSetOf<String>()
         appList.forEachIndexed { index, app ->
-            if (app.isSelected && !AppIds.isBlockable(app.uid)) {
+            if (app.isSelected && !app.isSelectable) {
                 appList[index] = app.copy(isSelected = false)
                 dropped.add(app.key)
             }
@@ -2322,12 +2320,11 @@ class MainActivity : BaseActivity() {
                     if (!ai.enabled) return@withContext null
                     val isSystemApp = (ai.flags and ApplicationInfo.FLAG_SYSTEM) != 0
                     val hasInternet = pm.checkPermission(Manifest.permission.INTERNET, pkg) == PackageManager.PERMISSION_GRANTED
-                    if (!hasInternet) return@withContext null
                     val appName = pm.getApplicationLabel(ai).toString()
                     val isSelected = loadSelectedApps().contains(pkg)
                     val isFavorite = loadFavoriteApps().contains(pkg)
                     val installTime = pi.firstInstallTime
-                    AppInfo(appName, pkg, isSelected, isSystemApp, isFavorite, installTime, uid = ai.uid)
+                    AppInfo(appName, pkg, isSelected, isSystemApp, isFavorite, installTime, uid = ai.uid, hasInternet = hasInternet)
                 } catch (e: Exception) {
                     null
                 }

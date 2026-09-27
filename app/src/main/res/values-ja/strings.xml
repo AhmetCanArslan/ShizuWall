@@ -78,7 +78,7 @@
     <string name="favorites_title">お気に入り</string>
     <string name="favorites_message">アプリを長押しすると、クイックアクセスのためにお気に入りに追加できます。</string>
     <string name="sorting_onboarding_title">並べ替えとフィルター</string>
-    <string name="sorting_onboarding_message">並べ替えアイコンをタップするとアプリの並び順を変更できます。インターネット権限のないアプリは表示されません。システムアプリやプロファイルアプリを表示するかどうかもここで選べます。</string>
+    <string name="sorting_onboarding_message">並べ替えアイコンをタップするとアプリの並び順を変更できます。システムアプリやプロファイルアプリを表示するかどうかもここで選べます。</string>
     <string name="shizuku_required_title">Shizuku モード</string>
     <string name="shizuku_required_message">開発者は、発生したいかなる悪影響についても責任を負いません。続行する前に Shizuku をインストールして起動してください。</string>
     <string name="onboarding_mode_selection_title">動作モードの選択</string>
@@ -242,7 +242,6 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">新しい順</string>
-    <string name="app_filtering_note">インターネットアクセス権限のないアプリは一覧に表示されません。</string>
     <string name="failed_to_update_rules_count">%d 個のアプリのルールの更新に失敗しました</string>
     <string name="failed_to_unblock_count">%d 個のアプリのブロック解除に失敗しました</string>
     <string name="failed_to_unblock_app">%s のブロック解除に失敗しました</string>
@@ -524,4 +523,5 @@
     <string name="changelog_message">• アプリロック: PIN または生体認証で ShizuWall を保護\n• 設定メニュー: 設定のエクスポート、インポート、リセット\n• 更新後に新機能ダイアログを表示、設定からも確認可能\n• システムアプリと他プロファイルの表示設定をファイアウォール動作画面へ移動\n• 次の操作を示す空状態表示とバックエンドバナー\n• Shizuku モードは再起動後に自動でファイアウォールを再有効化\n• 職場プロファイルやセキュアフォルダの無効なアプリを一覧に表示しないように\n• アプリモニター通知をより分かりやすく\n• トーストではなく Snackbar による通知と、設定の開発者連絡カード</string>
     <string name="whats_new">新機能</string>
     <string name="whats_new_description">このバージョンの変更点を見る</string>
+    <string name="dismiss">閉じる</string>
 </resources>
