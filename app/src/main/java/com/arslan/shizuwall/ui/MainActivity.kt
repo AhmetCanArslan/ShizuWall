@@ -1148,6 +1148,7 @@ class MainActivity : BaseActivity() {
                 updateSelectedCount()
             }
         }
+        FirewallUtils.reapply(this, sharedPreferences)
 
         updateCategoryChips()
     }
@@ -1600,7 +1601,7 @@ class MainActivity : BaseActivity() {
                             val appInfo = packageInfo.applicationInfo ?: continue
                             val isSystemApp = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
 
-                            if (!appInfo.enabled) continue
+                            if (!appInfo.enabled && !rememberDisabled) continue
 
                             val packageName = packageInfo.packageName
 
@@ -1923,10 +1924,7 @@ class MainActivity : BaseActivity() {
 
     private fun enableShowSystemAppsFromEmptyState() {
         if (showSystemApps) return
-        showSystemApps = true
-        sharedPreferences.edit().putBoolean(KEY_SHOW_SYSTEM_APPS, showSystemApps).apply()
-        reconcileActiveProfile()
-        updateCategoryChips()
+        applyShowSystemAppsChange(true)
         sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
     }
 

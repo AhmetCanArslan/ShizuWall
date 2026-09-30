@@ -25,6 +25,7 @@ import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.utils.AppKey
+import com.arslan.shizuwall.utils.FirewallUtils
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONObject
@@ -223,6 +224,7 @@ class FirewallSettingsActivity : BaseActivity() {
     private fun setVisibilityPreference(key: String, value: Boolean) {
         sharedPreferences.edit().putBoolean(key, value).apply()
         setResult(RESULT_OK)
+        FirewallUtils.reapply(this, sharedPreferences)
     }
 
     private fun confirmVisibilityUncheck(

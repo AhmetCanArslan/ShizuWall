@@ -83,6 +83,15 @@ object FirewallUtils {
         return autoFirewalled
     }
 
+    fun reapply(context: Context, prefs: SharedPreferences, key: String? = null) {
+        val selected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()).orEmpty()
+        if (!loadFirewallEnabled(prefs) || (firewallMode(prefs) != FirewallMode.WHITELIST && key !in selected)) return
+        context.sendBroadcast(Intent(context, FirewallControlReceiver::class.java).apply {
+            action = MainActivity.ACTION_FIREWALL_CONTROL
+            putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)
+        })
+    }
+
     fun loadActivePackages(prefs: SharedPreferences): Set<String> {
         return prefs.getStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet()) ?: emptySet()
     }

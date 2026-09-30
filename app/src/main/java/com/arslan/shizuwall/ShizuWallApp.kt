@@ -2,8 +2,10 @@ package com.arslan.shizuwall
 
 import android.app.Activity
 import android.app.Application
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
@@ -31,6 +33,19 @@ class ShizuWallApp : Application() {
             override fun onActivityPaused(activity: Activity) {}
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
             override fun onActivityDestroyed(activity: Activity) {}
+        })
+        registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                val pkg = intent.data?.schemeSpecificPart ?: return
+                val returned = when (intent.action) {
+                    Intent.ACTION_PACKAGE_CHANGED -> intent.getStringArrayExtra(Intent.EXTRA_CHANGED_COMPONENT_NAME_LIST)?.contains(pkg) == true
+                    else -> !intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
+                }
+                if (returned) FirewallUtils.reapply(context, getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE), pkg)
+            }
+        }, IntentFilter(Intent.ACTION_PACKAGE_ADDED).apply {
+            addAction(Intent.ACTION_PACKAGE_CHANGED)
+            addDataScheme("package")
         })
         try {
             Shizuku.addBinderReceivedListenerSticky {
