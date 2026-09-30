@@ -2,6 +2,7 @@ package com.arslan.shizuwall.utils
 
 import android.content.Context
 import android.util.Log
+import com.arslan.shizuwall.R
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
 import kotlinx.coroutines.sync.Mutex
@@ -97,6 +98,7 @@ object MultiUserApps {
     fun cachedSnapshot(context: Context): Snapshot = readCache(context) ?: Snapshot.EMPTY
 
     fun userLabel(context: Context, userId: Int): String {
+        if (userId == 0) return context.getString(R.string.main_profile)
         val name = readCache(context)?.userNames?.get(userId)?.takeIf { it.isNotBlank() }
         return name ?: "User $userId"
     }

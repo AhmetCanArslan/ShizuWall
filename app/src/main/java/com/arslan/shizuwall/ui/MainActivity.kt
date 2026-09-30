@@ -2369,10 +2369,11 @@ class MainActivity : BaseActivity() {
         val userIds = if (showOtherProfiles) {
             appList.asSequence()
                 .map { it.userId }
-                .filter { it != 0 }
                 .distinct()
                 .sorted()
                 .toList()
+                .takeIf { it.size > 1 }
+                .orEmpty()
         } else {
             emptyList()
         }
