@@ -130,10 +130,10 @@ You can control ShizuWall from scripts and automation tools.
 ### Examples
 
 ```bash
-# Enable firewall for saved selected apps
+# Enable firewall
 adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true
 
-# Disable firewall for saved selected apps
+# Disable firewall
 adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state false
 
 # Enable firewall for specific packages
