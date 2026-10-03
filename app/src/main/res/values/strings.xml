@@ -523,7 +523,7 @@
     <string name="contact_developer_description">Send feedback or report a problem</string>
     <string name="contact_developer_no_app">No email app found</string>
     <string name="changelog_title">What\'s new in %1$s</string>
-    <string name="changelog_message">• App lock: protect ShizuWall with a PIN or biometrics\n• Settings menu: export, import or reset your configuration\n• What\'s new dialog after every update, also available in settings\n• Show system apps and other profiles moved to the Firewall behaviour screen\n• Empty state and backend banners that explain what to do next\n• Shizuku mode re-enables the firewall by itself after a reboot\n• Disabled apps in work profiles and Secure Folder are no longer listed\n• Clearer app monitor notifications\n• Snackbar feedback instead of toasts, plus a contact developer card in settings</string>
+    <string name="changelog_message">• “Main profile” category chip\n• Firewall works on ROMs without the chain3 shell command\n• Whitelist mode blocks system apps as soon as they are shown\n• ADB commands support work profile and clone apps\n• Apps without internet permission are listed, greyed out\n• New installs default to Adaptive mode\n• Fixed Smart Foreground from tile, button and widget, Shizuku auto-enable in background, LADB start hang and clone apps after reboot</string>
     <string name="whats_new">What\'s new</string>
     <string name="whats_new_description">See the changes in this version</string>
     <string name="dismiss">Dismiss</string>

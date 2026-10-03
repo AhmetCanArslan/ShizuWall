@@ -519,7 +519,7 @@
     <string name="contact_developer_description">Feedback senden oder Problem melden</string>
     <string name="contact_developer_no_app">Keine E-Mail-App gefunden</string>
     <string name="changelog_title">Neu in %1$s</string>
-    <string name="changelog_message">• App-Sperre: ShizuWall mit PIN oder Biometrie schützen\n• Einstellungsmenü: Konfiguration exportieren, importieren oder zurücksetzen\n• Neuigkeiten-Dialog nach jedem Update, auch in den Einstellungen\n• „Systemapps anzeigen“ und „Andere Profile anzeigen“ sind jetzt im Bildschirm „Firewall-Verhalten“\n• Leerzustand und Backend-Hinweise, die die nächsten Schritte erklären\n• Der Shizuku-Modus aktiviert die Firewall nach einem Neustart selbst\n• Deaktivierte Apps in Arbeitsprofilen und im sicheren Ordner werden nicht mehr aufgelistet\n• Klarere Benachrichtigungen des App-Monitors\n• Snackbar-Rückmeldungen statt Toasts und Karte „Entwickler kontaktieren“ in den Einstellungen</string>
+    <string name="changelog_message">• Kategorie-Chip „Hauptprofil“\n• Die Firewall funktioniert auf ROMs ohne den chain3-Shell-Befehl\n• Der Ausnahmeliste-Modus blockiert Systemapps, sobald sie angezeigt werden\n• ADB-Befehle unterstützen Arbeitsprofil- und Klon-Apps\n• Apps ohne Internetberechtigung werden ausgegraut angezeigt\n• Neue Installationen starten im Adaptiv-Modus\n• Behoben: Smart Vordergrund über Kachel, Button und Widget, Shizuku-Autostart im Hintergrund, Hänger beim LADB-Start und Klon-Apps nach Neustart</string>
     <string name="whats_new">Neuigkeiten</string>
     <string name="whats_new_description">Änderungen in dieser Version ansehen</string>
     <string name="dismiss">Schließen</string>

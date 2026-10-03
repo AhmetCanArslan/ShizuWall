@@ -520,7 +520,7 @@
     <string name="contact_developer_description">Invia un feedback o segnala un problema</string>
     <string name="contact_developer_no_app">Nessuna app email trovata</string>
     <string name="changelog_title">Novità in %1$s</string>
-    <string name="changelog_message">• Blocco app: proteggi ShizuWall con PIN o biometria\n• Menu impostazioni: esporta, importa o reimposta la configurazione\n• Finestra delle novità dopo ogni aggiornamento, anche nelle impostazioni\n• Mostra app di sistema e altri profili spostati nella schermata del comportamento del firewall\n• Stato vuoto e banner del backend che spiegano cosa fare\n• La modalità Shizuku riattiva il firewall da sola dopo un riavvio\n• Le app disattivate nei profili di lavoro e nella Cartella sicura non vengono più elencate\n• Notifiche del monitor app più chiare\n• Snackbar al posto dei toast e scheda per contattare lo sviluppatore nelle impostazioni</string>
+    <string name="changelog_message">• Chip di categoria “Profilo principale”\n• Il firewall funziona sulle ROM senza il comando shell chain3\n• La modalità Whitelist blocca le app di sistema appena vengono mostrate\n• I comandi ADB supportano le app del profilo di lavoro e clonate\n• Le app senza permesso internet vengono elencate in grigio\n• Le nuove installazioni usano la modalità Adattiva\n• Corretti: Primo piano intelligente da riquadro, pulsante e widget, attivazione automatica di Shizuku in background, blocco all\'avvio di LADB e app clonate dopo il riavvio</string>
     <string name="whats_new">Novità</string>
     <string name="whats_new_description">Guarda le modifiche di questa versione</string>
     <string name="dismiss">Ignora</string>

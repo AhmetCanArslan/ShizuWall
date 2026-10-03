@@ -521,7 +521,7 @@
     <string name="contact_developer_description">Enviar comentarios o informar de un problema</string>
     <string name="contact_developer_no_app">No se encontró ninguna aplicación de correo</string>
     <string name="changelog_title">Novedades en %1$s</string>
-    <string name="changelog_message">• Bloqueo de app: protege ShizuWall con PIN o biometría\n• Menú de ajustes: exporta, importa o restablece la configuración\n• Ventana de novedades tras cada actualización, también en ajustes\n• Mostrar apps del sistema y otros perfiles se movieron a la pantalla de comportamiento del cortafuegos\n• Estado vacío y avisos del backend que explican qué hacer\n• El modo Shizuku vuelve a activar el cortafuegos solo tras reiniciar\n• Las apps desactivadas en perfiles de trabajo y Carpeta segura ya no aparecen\n• Notificaciones del monitor de apps más claras\n• Snackbar en lugar de toasts y tarjeta para contactar al desarrollador en ajustes</string>
+    <string name="changelog_message">• Chip de categoría “Perfil principal”\n• El cortafuegos funciona en ROMs sin el comando de shell chain3\n• El modo Lista blanca bloquea las apps del sistema en cuanto se muestran\n• Los comandos ADB admiten apps del perfil de trabajo y clonadas\n• Las apps sin permiso de internet aparecen en gris\n• Las instalaciones nuevas usan el modo Adaptativo por defecto\n• Corregidos: Primer Plano Inteligente desde el mosaico, botón y widget, activación automática de Shizuku en segundo plano, bloqueo al iniciar LADB y apps clonadas tras reiniciar</string>
     <string name="whats_new">Novedades</string>
     <string name="whats_new_description">Ver los cambios de esta versión</string>
     <string name="dismiss">Descartar</string>

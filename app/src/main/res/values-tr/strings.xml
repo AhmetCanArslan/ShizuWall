@@ -519,7 +519,7 @@
     <string name="contact_developer_description">Geri bildirim gönder veya sorun bildir</string>
     <string name="contact_developer_no_app">E-posta uygulaması bulunamadı</string>
     <string name="changelog_title">%1$s sürümündeki yenilikler</string>
-    <string name="changelog_message">• Uygulama kilidi: ShizuWall\'u PIN veya biyometri ile koruyun\n• Ayarlar menüsü: yapılandırmayı dışa/içe aktarın veya sıfırlayın\n• Her güncellemeden sonra yenilikler penceresi, ayarlardan da açılabilir\n• Sistem uygulamalarını ve diğer profilleri gösterme seçenekleri Güvenlik duvarı davranışı ekranına taşındı\n• Ne yapılacağını anlatan boş liste ve arka uç bilgi kartları\n• Shizuku modu yeniden başlatmadan sonra güvenlik duvarını kendisi açıyor\n• İş profili ve Güvenli Klasör\'deki devre dışı uygulamalar artık listelenmiyor\n• Daha anlaşılır uygulama izleyici bildirimleri\n• Toast yerine Snackbar geri bildirimi ve ayarlarda geliştiriciye ulaşma kartı</string>
+    <string name="changelog_message">• “Ana profil” kategori çipi\n• Güvenlik duvarı chain3 kabuk komutu olmayan ROM\'larda da çalışıyor\n• Beyaz Liste modu sistem uygulamalarını gösterildikleri anda engelliyor\n• ADB komutları iş profili ve klon uygulamaları destekliyor\n• İnternet izni olmayan uygulamalar soluk olarak listeleniyor\n• Yeni kurulumlar varsayılan olarak Uyarlanabilir modda başlıyor\n• Düzeltmeler: kutucuk, düğme ve widget\'tan Akıllı Ön Plan, arka planda Shizuku otomatik açma, LADB başlatmada takılma ve yeniden başlatma sonrası klon uygulamalar</string>
     <string name="whats_new">Yenilikler</string>
     <string name="whats_new_description">Bu sürümdeki değişiklikleri gör</string>
     <string name="dismiss">Kapat</string>

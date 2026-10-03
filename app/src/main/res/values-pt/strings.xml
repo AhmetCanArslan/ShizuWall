@@ -519,7 +519,7 @@
     <string name="contact_developer_description">Enviar comentários ou relatar um problema</string>
     <string name="contact_developer_no_app">Nenhuma aplicação de e-mail encontrada</string>
     <string name="changelog_title">Novidades na %1$s</string>
-    <string name="changelog_message">• Bloqueio do app: proteja o ShizuWall com PIN ou biometria\n• Menu de configurações: exportar, importar ou redefinir a configuração\n• Janela de novidades após cada atualização, também nas configurações\n• Mostrar apps do sistema e outros perfis foram movidos para a tela de comportamento do firewall\n• Estado vazio e avisos de backend que explicam o que fazer\n• O modo Shizuku reativa o firewall sozinho após reiniciar\n• Apps desativados em perfis de trabalho e na Pasta segura não são mais listados\n• Notificações do monitor de apps mais claras\n• Snackbar em vez de toasts e cartão para contatar o desenvolvedor nas configurações</string>
+    <string name="changelog_message">• Chip de categoria “Perfil principal”\n• O firewall funciona em ROMs sem o comando de shell chain3\n• O modo Lista branca bloqueia apps do sistema assim que são exibidos\n• Comandos ADB suportam apps do perfil de trabalho e clonados\n• Apps sem permissão de internet aparecem em cinza\n• Novas instalações usam o modo Adaptativo por padrão\n• Corrigidos: Primeiro Plano Inteligente pelo bloco, botão e widget, ativação automática do Shizuku em segundo plano, travamento ao iniciar o LADB e apps clonados após reiniciar</string>
     <string name="whats_new">Novidades</string>
     <string name="whats_new_description">Veja as mudanças desta versão</string>
     <string name="dismiss">Dispensar</string>

@@ -518,7 +518,7 @@
     <string name="contact_developer_description">发送反馈或报告问题</string>
     <string name="contact_developer_no_app">未找到电子邮件应用</string>
     <string name="changelog_title">%1$s 更新内容</string>
-    <string name="changelog_message">• 应用锁：使用 PIN 或生物识别保护 ShizuWall\n• 设置菜单：导出、导入或重置配置\n• 更新后显示更新内容对话框，也可在设置中查看\n• 显示系统应用和其他配置文件的开关移至防火墙行为页面\n• 空列表与后端提示横幅，说明下一步操作\n• Shizuku 模式在重启后自动重新启用防火墙\n• 工作资料和安全文件夹中已停用的应用不再列出\n• 应用监视器通知更清晰\n• 使用 Snackbar 取代 Toast 提示，设置中新增联系开发者卡片</string>
+    <string name="changelog_message">• “主配置文件”分类标签\n• 防火墙可在没有 chain3 shell 命令的 ROM 上运行\n• 白名单模式在系统应用显示时立即拦截\n• ADB 命令支持工作资料和分身应用\n• 没有网络权限的应用以灰色列出\n• 新安装默认使用自适应模式\n• 修复：从磁贴、按钮和小部件使用智能前台，后台自动启用 Shizuku，LADB 启动卡住，以及重启后的分身应用</string>
     <string name="whats_new">新功能</string>
     <string name="whats_new_description">查看此版本的更新内容</string>
     <string name="dismiss">关闭</string>

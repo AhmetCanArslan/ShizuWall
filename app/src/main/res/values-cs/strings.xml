@@ -521,7 +521,7 @@
     <string name="contact_developer_description">Odeslat zpětnou vazbu nebo nahlásit problém</string>
     <string name="contact_developer_no_app">Nebyla nalezena žádná e-mailová aplikace</string>
     <string name="changelog_title">Novinky ve verzi %1$s</string>
-    <string name="changelog_message">• Zámek aplikace: chraňte ShizuWall PINem nebo biometrikou\n• Nabídka nastavení: export, import nebo reset konfigurace\n• Okno novinek po každé aktualizaci, také v nastavení\n• Zobrazení systémových aplikací a dalších profilů se přesunulo na obrazovku chování firewallu\n• Prázdný stav a bannery backendu s dalším postupem\n• Režim Shizuku po restartu sám znovu zapne firewall\n• Zakázané aplikace v pracovních profilech a Zabezpečené složce se už nezobrazují\n• Srozumitelnější oznámení monitoru aplikací\n• Snackbar místo toastů a karta pro kontakt vývojáře v nastavení</string>
+    <string name="changelog_message">• Kategorie „Hlavní profil“\n• Firewall funguje i na ROM bez shellového příkazu chain3\n• Režim Bílá listina blokuje systémové aplikace hned po zobrazení\n• Příkazy ADB podporují aplikace pracovního profilu a klony\n• Aplikace bez oprávnění k internetu se zobrazují šedě\n• Nové instalace začínají v režimu Adaptivní\n• Opraveno: Inteligentní popředí z dlaždice, tlačítka a widgetu, automatické zapnutí Shizuku na pozadí, zaseknutí při startu LADB a klonované aplikace po restartu</string>
     <string name="whats_new">Novinky</string>
     <string name="whats_new_description">Zobrazit změny v této verzi</string>
     <string name="dismiss">Zavřít</string>
