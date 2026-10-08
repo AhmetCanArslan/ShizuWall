@@ -433,6 +433,7 @@
     <string name="app_info_installed">Installiert %1$s</string>
     <string name="app_info_updated">Aktualisiert %1$s</string>
     <string name="app_info_uid">UID %1$d</string>
+    <string name="app_info_sdk">SDK %1$d (min %2$d)</string>
     <string name="app_info_internet_yes">Hat Internetberechtigung</string>
     <string name="app_info_internet_no">Keine Internetberechtigung</string>
     <string name="app_info_unavailable">App-Details nicht verfügbar</string>

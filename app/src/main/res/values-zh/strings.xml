@@ -432,6 +432,7 @@
     <string name="app_info_installed">安装于 %1$s</string>
     <string name="app_info_updated">更新于 %1$s</string>
     <string name="app_info_uid">UID %1$d</string>
+    <string name="app_info_sdk">SDK %1$d (min %2$d)</string>
     <string name="app_info_internet_yes">具有联网权限</string>
     <string name="app_info_internet_no">无联网权限</string>
     <string name="app_info_unavailable">无法获取详情</string>

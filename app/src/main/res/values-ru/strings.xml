@@ -437,6 +437,7 @@
     <string name="app_info_installed">Установлено %1$s</string>
     <string name="app_info_updated">Обновлено %1$s</string>
     <string name="app_info_uid">UID %1$d</string>
+    <string name="app_info_sdk">SDK %1$d (min %2$d)</string>
     <string name="app_info_internet_yes">Есть доступ в интернет</string>
     <string name="app_info_internet_no">Нет доступа в интернет</string>
     <string name="app_info_unavailable">Сведения недоступны</string>

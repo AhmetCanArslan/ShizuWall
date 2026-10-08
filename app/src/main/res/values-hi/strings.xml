@@ -434,6 +434,7 @@
     <string name="app_info_installed">%1$s को इंस्टॉल हुआ</string>
     <string name="app_info_updated">%1$s को अपडेट हुआ</string>
     <string name="app_info_uid">UID %1$d</string>
+    <string name="app_info_sdk">SDK %1$d (min %2$d)</string>
     <string name="app_info_internet_yes">इंटरनेट अनुमति है</string>
     <string name="app_info_internet_no">इंटरनेट अनुमति नहीं है</string>
     <string name="app_info_unavailable">ऐप का विवरण उपलब्ध नहीं है</string>

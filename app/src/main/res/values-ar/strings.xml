@@ -439,6 +439,7 @@
     <string name="app_info_installed">تم التثبيت %1$s</string>
     <string name="app_info_updated">تم التحديث %1$s</string>
     <string name="app_info_uid">UID %1$d</string>
+    <string name="app_info_sdk">SDK %1$d (min %2$d)</string>
     <string name="app_info_internet_yes">لديه إذن الإنترنت</string>
     <string name="app_info_internet_no">لا يوجد إذن إنترنت</string>
     <string name="app_info_unavailable">التفاصيل غير متاحة</string>

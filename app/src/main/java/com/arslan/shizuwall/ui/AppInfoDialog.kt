@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.trackers.TrackerScanner
+import com.arslan.shizuwall.utils.AppIds
 import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -166,6 +167,7 @@ object AppInfoDialog {
         }
         packageInfo.applicationInfo?.let { appInfo ->
             lines.add(context.getString(R.string.app_info_uid, appInfo.uid))
+            lines.add(context.getString(R.string.app_info_sdk, appInfo.targetSdkVersion, appInfo.minSdkVersion))
         }
 
         val hasInternet = packageInfo.requestedPermissions
@@ -175,6 +177,10 @@ object AppInfoDialog {
                 if (hasInternet) R.string.app_info_internet_yes else R.string.app_info_internet_no
             )
         )
+
+        if (hasInternet && packageInfo.applicationInfo?.let { AppIds.isBlockable(it.uid) } == false) {
+            lines.add(context.getString(R.string.app_unsupported_system_uid))
+        }
 
         return lines.joinToString("\n")
     }
