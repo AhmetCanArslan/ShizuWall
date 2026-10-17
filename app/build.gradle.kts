@@ -32,6 +32,9 @@ android {
             )
             isDebuggable = false
             manifestPlaceholders["appLabel"] = "@string/app_name"
+            ndk {
+                abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+            }
         }
         getByName("debug") {
             isMinifyEnabled = false
@@ -39,6 +42,10 @@ android {
             applicationIdSuffix = ".debug"
             manifestPlaceholders["appLabel"] = "ShizuWall Debug"
         }
+    }
+
+    androidResources {
+        localeFilters += listOf("en", "ar", "cs", "de", "es", "hi", "it", "ja", "pt", "ru", "tr", "zh")
     }
 
     packaging {
@@ -55,7 +62,10 @@ android {
                 "META-INF/versions/**",
                 "DebugProbesKt.bin",
                 "META-INF/maven/**",
-                "META-INF/proguard/**"
+                "META-INF/proguard/**",
+                "org/bouncycastle/pqc/**",
+                "org/bouncycastle/x509/*.properties",
+                "org/bouncycastle/pkix/*.properties"
             )
         }
         jniLibs {
