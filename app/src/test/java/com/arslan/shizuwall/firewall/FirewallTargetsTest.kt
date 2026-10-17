@@ -94,6 +94,22 @@ class FirewallTargetsTest {
     }
 
     @Test
+    fun whitelistNeverSwitchesWhileEnabled() {
+        FirewallMode.entries.forEach {
+            assertFalse(FirewallTargets.canSwitchWhileEnabled(FirewallMode.WHITELIST, it, hasSelection = true))
+            assertFalse(FirewallTargets.canSwitchWhileEnabled(it, FirewallMode.WHITELIST, hasSelection = true))
+        }
+    }
+
+    @Test
+    fun onlyDefaultNeedsASelectionToSwitchWhileEnabled() {
+        val live = FirewallMode.entries - FirewallMode.WHITELIST
+        live.forEach { assertTrue(FirewallTargets.canSwitchWhileEnabled(FirewallMode.ADAPTIVE, it, hasSelection = true)) }
+        val withoutSelection = live.filter { FirewallTargets.canSwitchWhileEnabled(FirewallMode.ADAPTIVE, it, hasSelection = false) }
+        assertEquals(live - FirewallMode.DEFAULT, withoutSelection)
+    }
+
+    @Test
     fun whitelistInvertsTheToggleMeaning() {
         assertTrue(FirewallTargets.shouldBlockOnToggle(FirewallMode.WHITELIST, isSelected = false))
         assertFalse(FirewallTargets.shouldBlockOnToggle(FirewallMode.WHITELIST, isSelected = true))

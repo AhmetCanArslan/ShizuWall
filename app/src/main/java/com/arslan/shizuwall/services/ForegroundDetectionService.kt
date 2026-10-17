@@ -163,6 +163,7 @@ class ForegroundDetectionService : Service() {
             }
             MainActivity.KEY_FIREWALL_MODE -> {
                 cachedFirewallMode = FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, null))
+                resetForegroundState()
                 reconcile.trySend(Unit)
             }
             MainActivity.KEY_WORKING_MODE -> {
@@ -184,15 +185,16 @@ class ForegroundDetectionService : Service() {
         } catch (e: Exception) {
             Log.w(TAG, "Failed to stop foreground", e)
         }
+        resetForegroundState()
+        stopSelf()
+    }
+
+    private fun resetForegroundState() {
         currentForegroundPackage = null
         lastManagedPackage = null
         pendingBlockPackage = null
         isShizuWallFocused = null
-        sharedPreferences.edit()
-            .putString(MainActivity.KEY_SMART_FOREGROUND_APP, "")
-            .putStringSet(MainActivity.KEY_ACTIVE_PACKAGES, emptySet())
-            .apply()
-        stopSelf()
+        sharedPreferences.edit().putString(MainActivity.KEY_SMART_FOREGROUND_APP, "").apply()
     }
 
     private val packageReceiver = object : BroadcastReceiver() {

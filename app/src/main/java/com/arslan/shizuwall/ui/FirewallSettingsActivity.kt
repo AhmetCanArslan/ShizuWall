@@ -3,9 +3,9 @@ package com.arslan.shizuwall.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Selection
 import android.text.Spannable
@@ -15,7 +15,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
-import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -23,6 +22,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.text.HtmlCompat
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.firewall.FirewallTargets
+import com.arslan.shizuwall.receivers.FirewallControlReceiver
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.FirewallUtils
@@ -49,19 +50,18 @@ class FirewallSettingsActivity : BaseActivity() {
     private var suppressFirewallModeListener = false
 
     private lateinit var radioGroupFirewallMode: RadioGroup
-    private lateinit var radioModeDefault: RadioButton
-    private lateinit var radioModeAdaptive: RadioButton
-    private lateinit var radioModeScreenLock: RadioButton
-    private lateinit var radioModeSmartForeground: RadioButton
-    private lateinit var radioModeFocusTracker: RadioButton
-    private lateinit var radioModeWhitelist: RadioButton
-    private lateinit var radioModeHybrid: RadioButton
+    private val modeRadios = mapOf(
+        R.id.radioModeDefault to FirewallMode.DEFAULT,
+        R.id.radioModeAdaptive to FirewallMode.ADAPTIVE,
+        R.id.radioModeScreenLock to FirewallMode.SCREEN_LOCK_MODE,
+        R.id.radioModeSmartForeground to FirewallMode.SMART_FOREGROUND,
+        R.id.radioModeFocusTracker to FirewallMode.FOCUS_TRACKER,
+        R.id.radioModeWhitelist to FirewallMode.WHITELIST,
+        R.id.radioModeHybrid to FirewallMode.HYBRID
+    )
     private lateinit var cardScreenLockDelay: com.google.android.material.card.MaterialCardView
-    private lateinit var layoutScreenLockDelay: android.widget.LinearLayout
     private lateinit var tvScreenLockDelayValue: TextView
     private lateinit var tvFirewallModeDisabledWarning: TextView
-    private lateinit var btnFirewallModeDetails: com.google.android.material.button.MaterialButton
-    private lateinit var layoutAdbBroadcastUsage: android.widget.LinearLayout
     private lateinit var rootView: ViewGroup
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,10 +83,11 @@ class FirewallSettingsActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        val mode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
+        val mode = FirewallUtils.firewallMode(sharedPreferences)
         updateFirewallModeUI(mode)
-        val isFirewallEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
-        updateFirewallModeSelectorState(isFirewallEnabled)
+        val locked = mode == FirewallMode.WHITELIST && FirewallUtils.loadFirewallEnabled(sharedPreferences)
+        radioGroupFirewallMode.alpha = if (locked) 0.5f else 1f
+        tvFirewallModeDisabledWarning.visibility = if (locked) View.VISIBLE else View.GONE
         loadAppVisibilitySettings()
     }
 
@@ -98,7 +99,6 @@ class FirewallSettingsActivity : BaseActivity() {
         switchKeepErrorAppsSelected = findViewById(R.id.switchKeepErrorAppsSelected)
         switchRememberDeletedApps = findViewById(R.id.switchRememberDeletedApps)
         switchAutoFirewallNewApps = findViewById(R.id.switchAutoFirewallNewApps)
-        layoutAdbBroadcastUsage = findViewById(R.id.layoutAdbBroadcastUsage)
         switchShowSystemApps = findViewById(R.id.switchShowSystemApps)
         switchShowOtherProfiles = findViewById(R.id.switchShowOtherProfiles)
         cardShowSystemApps = findViewById(R.id.cardShowSystemApps)
@@ -106,18 +106,9 @@ class FirewallSettingsActivity : BaseActivity() {
         tvAppVisibilityDisabledWarning = findViewById(R.id.tvAppVisibilityDisabledWarning)
 
         radioGroupFirewallMode = findViewById(R.id.radioGroupFirewallMode)
-        radioModeDefault = findViewById(R.id.radioModeDefault)
-        radioModeAdaptive = findViewById(R.id.radioModeAdaptive)
-        radioModeScreenLock = findViewById(R.id.radioModeScreenLock)
-        radioModeSmartForeground = findViewById(R.id.radioModeSmartForeground)
-        radioModeFocusTracker = findViewById(R.id.radioModeFocusTracker)
-        radioModeWhitelist = findViewById(R.id.radioModeWhitelist)
-        radioModeHybrid = findViewById(R.id.radioModeHybrid)
         cardScreenLockDelay = findViewById(R.id.cardScreenLockDelay)
-        layoutScreenLockDelay = findViewById(R.id.layoutScreenLockDelay)
         tvScreenLockDelayValue = findViewById(R.id.tvScreenLockDelayValue)
         tvFirewallModeDisabledWarning = findViewById(R.id.tvFirewallModeDisabledWarning)
-        btnFirewallModeDetails = findViewById(R.id.btnFirewallModeDetails)
     }
 
     private fun showFirewallModeDetailsDialog() {
@@ -153,24 +144,7 @@ class FirewallSettingsActivity : BaseActivity() {
         switchRememberDeletedApps.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_REMEMBER_DISABLED_APPS, true)
         switchAutoFirewallNewApps.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_AUTO_FIREWALL_NEW_APPS, false)
         cardKeepErrorApps.visibility = if (switchSkipErrorDialog.isChecked) View.VISIBLE else View.GONE
-
-        val firewallMode = FirewallMode.fromName(sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
-
-        when (firewallMode) {
-            FirewallMode.ADAPTIVE -> radioGroupFirewallMode.check(R.id.radioModeAdaptive)
-            FirewallMode.SCREEN_LOCK_MODE -> radioGroupFirewallMode.check(R.id.radioModeScreenLock)
-            FirewallMode.SMART_FOREGROUND -> radioGroupFirewallMode.check(R.id.radioModeSmartForeground)
-            FirewallMode.FOCUS_TRACKER -> radioGroupFirewallMode.check(R.id.radioModeFocusTracker)
-            FirewallMode.WHITELIST -> radioGroupFirewallMode.check(R.id.radioModeWhitelist)
-            FirewallMode.HYBRID -> radioGroupFirewallMode.check(R.id.radioModeHybrid)
-            else -> radioGroupFirewallMode.check(R.id.radioModeDefault)
-        }
-        updateScreenLockDelaySummary()
-        updateFirewallModeUI(firewallMode)
-
-        val isFirewallEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
-        updateFirewallModeSelectorState(isFirewallEnabled)
-        loadAppVisibilitySettings()
+        checkModeRadio(FirewallUtils.firewallMode(sharedPreferences))
     }
 
     private fun loadAppVisibilitySettings() {
@@ -192,8 +166,6 @@ class FirewallSettingsActivity : BaseActivity() {
         sharedPreferences.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet()
 
     private fun dropSelectionKeys(keys: Set<String>) {
-        if (keys.isEmpty()) return
-
         val remaining = selectedKeys() - keys
         val modes = try {
             JSONObject(sharedPreferences.getString(MainActivity.KEY_APP_MODES, "{}") ?: "{}")
@@ -209,16 +181,9 @@ class FirewallSettingsActivity : BaseActivity() {
             .apply()
     }
 
-    private fun selectedSystemAppKeys(): Set<String> {
-        val packageManager = packageManager
-        return selectedKeys().filterTo(mutableSetOf()) { key ->
-            val info = try {
-                packageManager.getApplicationInfo(AppKey.packageOf(key), 0)
-            } catch (e: PackageManager.NameNotFoundException) {
-                null
-            }
-            info != null && (info.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-        }
+    private fun selectedSystemAppKeys(): Set<String> = selectedKeys().filterTo(mutableSetOf()) { key ->
+        val flags = runCatching { packageManager.getApplicationInfo(AppKey.packageOf(key), 0).flags }.getOrDefault(0)
+        (flags and ApplicationInfo.FLAG_SYSTEM) != 0
     }
 
     private fun setVisibilityPreference(key: String, value: Boolean) {
@@ -227,19 +192,27 @@ class FirewallSettingsActivity : BaseActivity() {
         FirewallUtils.reapply(this, sharedPreferences)
     }
 
-    private fun confirmVisibilityUncheck(
+    private fun bindVisibilitySwitch(
+        switch: com.google.android.material.materialswitch.MaterialSwitch,
+        key: String,
         titleRes: Int,
         messageRes: Int,
-        switch: com.google.android.material.materialswitch.MaterialSwitch,
-        onConfirmed: () -> Unit
-    ) {
+        selected: () -> Set<String>
+    ) = switch.setOnCheckedChangeListener { _, isChecked ->
+        if (suppressVisibilityListeners) return@setOnCheckedChangeListener
+        val keys = if (isChecked) emptySet() else selected()
+        if (keys.isEmpty()) {
+            setVisibilityPreference(key, isChecked)
+            return@setOnCheckedChangeListener
+        }
         var confirmed = false
         MaterialAlertDialogBuilder(this)
             .setTitle(titleRes)
             .setMessage(messageRes)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 confirmed = true
-                onConfirmed()
+                dropSelectionKeys(keys)
+                setVisibilityPreference(key, false)
             }
             .setNegativeButton(android.R.string.cancel, null)
             .setOnDismissListener {
@@ -255,6 +228,13 @@ class FirewallSettingsActivity : BaseActivity() {
     private fun commitFirewallMode(newMode: FirewallMode) {
         sharedPreferences.edit().putString(MainActivity.KEY_FIREWALL_MODE, newMode.name).apply()
         setResult(RESULT_OK)
+        if (FirewallUtils.loadFirewallEnabled(sharedPreferences)) {
+            sendBroadcast(
+                Intent(this, FirewallControlReceiver::class.java)
+                    .setAction(MainActivity.ACTION_FIREWALL_CONTROL)
+                    .putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)
+            )
+        }
 
         TransitionManager.beginDelayedTransition(rootView, AutoTransition())
         updateFirewallModeUI(newMode)
@@ -264,21 +244,9 @@ class FirewallSettingsActivity : BaseActivity() {
         }
     }
 
-    private fun revertFirewallModeSelection() {
-        val currentMode = FirewallMode.fromName(
-            sharedPreferences.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name)
-        )
-        val targetId = when (currentMode) {
-            FirewallMode.ADAPTIVE -> R.id.radioModeAdaptive
-            FirewallMode.SCREEN_LOCK_MODE -> R.id.radioModeScreenLock
-            FirewallMode.SMART_FOREGROUND -> R.id.radioModeSmartForeground
-            FirewallMode.FOCUS_TRACKER -> R.id.radioModeFocusTracker
-            FirewallMode.WHITELIST -> R.id.radioModeWhitelist
-            FirewallMode.HYBRID -> R.id.radioModeHybrid
-            else -> R.id.radioModeDefault
-        }
+    private fun checkModeRadio(mode: FirewallMode) {
         suppressFirewallModeListener = true
-        radioGroupFirewallMode.check(targetId)
+        radioGroupFirewallMode.check(modeRadios.entries.first { it.value == mode }.key)
         suppressFirewallModeListener = false
     }
 
@@ -297,45 +265,20 @@ class FirewallSettingsActivity : BaseActivity() {
         }
     }
 
-    private fun updateFirewallModeSelectorState(isFirewallEnabled: Boolean) {
-        radioGroupFirewallMode.isEnabled = !isFirewallEnabled
-        radioModeDefault.isEnabled = !isFirewallEnabled
-        radioModeAdaptive.isEnabled = !isFirewallEnabled
-        radioModeScreenLock.isEnabled = !isFirewallEnabled
-        radioModeSmartForeground.isEnabled = !isFirewallEnabled
-        radioModeFocusTracker.isEnabled = !isFirewallEnabled
-        radioModeWhitelist.isEnabled = !isFirewallEnabled
-        radioModeHybrid.isEnabled = !isFirewallEnabled
-
-        val targetAlpha = if (isFirewallEnabled) 0.5f else 1f
-        radioGroupFirewallMode.alpha = targetAlpha
-
-        tvFirewallModeDisabledWarning.visibility = if (isFirewallEnabled) View.VISIBLE else View.GONE
-    }
-
     private fun setupListeners() {
-        btnFirewallModeDetails.setOnClickListener { showFirewallModeDetailsDialog() }
+        findViewById<View>(R.id.btnFirewallModeDetails).setOnClickListener { showFirewallModeDetailsDialog() }
 
         radioGroupFirewallMode.setOnCheckedChangeListener { _, checkedId ->
             if (suppressFirewallModeListener) return@setOnCheckedChangeListener
-
-            val isFirewallEnabled = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false)
-            if (isFirewallEnabled) {
-                Toast.makeText(this, R.string.firewall_mode_change_disabled, Toast.LENGTH_LONG).show()
-                revertFirewallModeSelection()
+            val newMode = modeRadios[checkedId] ?: return@setOnCheckedChangeListener
+            val oldMode = FirewallUtils.firewallMode(sharedPreferences)
+            val enabled = FirewallUtils.loadFirewallEnabled(sharedPreferences)
+            val locked = enabled && !FirewallTargets.canSwitchWhileEnabled(oldMode, newMode, selectedKeys().isNotEmpty())
+            if (locked) Toast.makeText(this, R.string.firewall_mode_change_disabled, Toast.LENGTH_LONG).show()
+            if (locked || (enabled && !FirewallUtils.checkBackendReady(this))) {
+                checkModeRadio(oldMode)
                 return@setOnCheckedChangeListener
             }
-
-            val newMode = when (checkedId) {
-                R.id.radioModeAdaptive -> FirewallMode.ADAPTIVE
-                R.id.radioModeScreenLock -> FirewallMode.SCREEN_LOCK_MODE
-                R.id.radioModeSmartForeground -> FirewallMode.SMART_FOREGROUND
-                R.id.radioModeFocusTracker -> FirewallMode.FOCUS_TRACKER
-                R.id.radioModeWhitelist -> FirewallMode.WHITELIST
-                R.id.radioModeHybrid -> FirewallMode.HYBRID
-                else -> FirewallMode.DEFAULT
-            }
-
             commitFirewallMode(newMode)
         }
 
@@ -369,43 +312,14 @@ class FirewallSettingsActivity : BaseActivity() {
             sharedPreferences.edit().putBoolean(MainActivity.KEY_KEEP_ERROR_APPS_SELECTED, isChecked).apply()
         }
 
-        switchShowSystemApps.setOnCheckedChangeListener { _, isChecked ->
-            if (suppressVisibilityListeners) return@setOnCheckedChangeListener
-            val selectedSystemKeys = if (isChecked) emptySet() else selectedSystemAppKeys()
-            if (!isChecked && selectedSystemKeys.isNotEmpty()) {
-                confirmVisibilityUncheck(
-                    R.string.show_system_apps,
-                    R.string.show_system_apps_uncheck_confirm,
-                    switchShowSystemApps
-                ) {
-                    dropSelectionKeys(selectedSystemKeys)
-                    setVisibilityPreference(MainActivity.KEY_SHOW_SYSTEM_APPS, false)
-                }
-            } else {
-                setVisibilityPreference(MainActivity.KEY_SHOW_SYSTEM_APPS, isChecked)
-            }
-        }
-
-        switchShowOtherProfiles.setOnCheckedChangeListener { _, isChecked ->
-            if (suppressVisibilityListeners) return@setOnCheckedChangeListener
-            val selectedSecondaryKeys = if (isChecked) {
-                emptySet()
-            } else {
-                selectedKeys().filterTo(mutableSetOf()) { AppKey.isSecondary(it) }
-            }
-            if (!isChecked && selectedSecondaryKeys.isNotEmpty()) {
-                confirmVisibilityUncheck(
-                    R.string.show_other_profiles,
-                    R.string.show_other_profiles_uncheck_confirm,
-                    switchShowOtherProfiles
-                ) {
-                    dropSelectionKeys(selectedSecondaryKeys)
-                    setVisibilityPreference(MainActivity.KEY_SHOW_OTHER_PROFILES, false)
-                }
-            } else {
-                setVisibilityPreference(MainActivity.KEY_SHOW_OTHER_PROFILES, isChecked)
-            }
-        }
+        bindVisibilitySwitch(
+            switchShowSystemApps, MainActivity.KEY_SHOW_SYSTEM_APPS,
+            R.string.show_system_apps, R.string.show_system_apps_uncheck_confirm, ::selectedSystemAppKeys
+        )
+        bindVisibilitySwitch(
+            switchShowOtherProfiles, MainActivity.KEY_SHOW_OTHER_PROFILES,
+            R.string.show_other_profiles, R.string.show_other_profiles_uncheck_confirm
+        ) { selectedKeys().filterTo(mutableSetOf()) { AppKey.isSecondary(it) } }
 
         cardShowSystemApps.setOnClickListener {
             if (switchShowSystemApps.isEnabled) switchShowSystemApps.toggle()
@@ -414,36 +328,26 @@ class FirewallSettingsActivity : BaseActivity() {
             if (switchShowOtherProfiles.isEnabled) switchShowOtherProfiles.toggle()
         }
 
-        layoutScreenLockDelay.setOnClickListener { showScreenLockDelayDialog() }
-        layoutAdbBroadcastUsage.setOnClickListener { showAdbBroadcastDialog() }
+        findViewById<View>(R.id.layoutScreenLockDelay).setOnClickListener { showScreenLockDelayDialog() }
+        findViewById<View>(R.id.layoutAdbBroadcastUsage).setOnClickListener { showAdbBroadcastDialog() }
 
-        makeCardClickableForSwitch(switchSkipConfirm)
-        makeCardClickableForSwitch(switchSkipErrorDialog)
-        makeCardClickableForSwitch(switchKeepErrorAppsSelected)
-        makeCardClickableForSwitch(switchRememberDeletedApps)
-        makeCardClickableForSwitch(switchAutoFirewallNewApps)
+        listOf(switchSkipConfirm, switchSkipErrorDialog, switchKeepErrorAppsSelected, switchRememberDeletedApps, switchAutoFirewallNewApps)
+            .forEach(::makeCardClickableForSwitch)
     }
 
+    private fun screenLockDelay(): Int = sharedPreferences
+        .getInt(MainActivity.KEY_SCREEN_LOCK_DELAY_SECONDS, MainActivity.DEFAULT_SCREEN_LOCK_DELAY_SECONDS)
+        .coerceIn(2, 10)
+
     private fun updateScreenLockDelaySummary() {
-        val delay = sharedPreferences
-            .getInt(
-                MainActivity.KEY_SCREEN_LOCK_DELAY_SECONDS,
-                MainActivity.DEFAULT_SCREEN_LOCK_DELAY_SECONDS
-            )
-            .coerceIn(2, 10)
-        tvScreenLockDelayValue.text = getString(R.string.screen_lock_delay_value, delay)
+        tvScreenLockDelayValue.text = getString(R.string.screen_lock_delay_value, screenLockDelay())
     }
 
     private fun showScreenLockDelayDialog() {
         val picker = NumberPicker(this).apply {
             minValue = 2
             maxValue = 10
-            value = sharedPreferences
-                .getInt(
-                    MainActivity.KEY_SCREEN_LOCK_DELAY_SECONDS,
-                    MainActivity.DEFAULT_SCREEN_LOCK_DELAY_SECONDS
-                )
-                .coerceIn(2, 10)
+            value = screenLockDelay()
             wrapSelectorWheel = false
         }
 
@@ -451,10 +355,7 @@ class FirewallSettingsActivity : BaseActivity() {
             .setTitle(R.string.screen_lock_delay_dialog_title)
             .setView(picker)
             .setPositiveButton(R.string.apply) { _, _ ->
-                val selectedDelay = picker.value.coerceIn(2, 10)
-                sharedPreferences.edit()
-                    .putInt(MainActivity.KEY_SCREEN_LOCK_DELAY_SECONDS, selectedDelay)
-                    .apply()
+                sharedPreferences.edit().putInt(MainActivity.KEY_SCREEN_LOCK_DELAY_SECONDS, picker.value).apply()
                 updateScreenLockDelaySummary()
                 setResult(RESULT_OK)
             }
@@ -485,102 +386,50 @@ class FirewallSettingsActivity : BaseActivity() {
     }
 
     private fun showAdbBroadcastDialog() {
-        val pkg = packageName
         val action = MainActivity.ACTION_FIREWALL_CONTROL
         val extraEnabled = MainActivity.EXTRA_FIREWALL_ENABLED
         val extraCsv = MainActivity.EXTRA_PACKAGES_CSV
-        val component = "$pkg/${com.arslan.shizuwall.receivers.FirewallControlReceiver::class.java.name}"
-
-        val cmdEnableSelected = "adb shell am broadcast -a $action -n $component --ez $extraEnabled true"
-        val cmdDisableSelected = "adb shell am broadcast -a $action -n $component --ez $extraEnabled false"
-        val cmdEnableCsv = "adb shell am broadcast -a $action -n $component --ez $extraEnabled true --es $extraCsv \"com.example.app1,com.example.app2\""
-        val cmdDisableCsv = "adb shell am broadcast -a $action -n $component --ez $extraEnabled false --es $extraCsv \"com.example.app1,com.example.app2\""
-        val installedComponent = "$pkg/${com.arslan.shizuwall.receivers.AppInstalledReceiver::class.java.name}"
-        val cmdAppInstalled = "adb shell am broadcast -a ${MainActivity.ACTION_APP_INSTALLED} -n $installedComponent --es $extraCsv \"com.example.newapp\""
-        val cmdAppInstalledProfile = "adb shell am broadcast --user 0 -a ${MainActivity.ACTION_APP_INSTALLED} -n $installedComponent --es $extraCsv \"150:com.example.newapp\""
+        val component = "$packageName/${FirewallControlReceiver::class.java.name}"
+        val control = "adb shell am broadcast -a $action -n $component --ez $extraEnabled"
+        val csv = "--es $extraCsv \"com.example.app1,com.example.app2\""
+        val installedComponent = "$packageName/${com.arslan.shizuwall.receivers.AppInstalledReceiver::class.java.name}"
+        val installed = "-a ${MainActivity.ACTION_APP_INSTALLED} -n $installedComponent --es $extraCsv"
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_adb_broadcast_usage, null)
-
-        val tvBroadcastAction = dialogView.findViewById<TextView>(R.id.tvBroadcastActionValue)
-        val tvBroadcastComponent = dialogView.findViewById<TextView>(R.id.tvBroadcastComponentValue)
-        val tvCmdEnableSelected = dialogView.findViewById<TextView>(R.id.tvCmdEnableSelected)
-        val tvCmdDisableSelected = dialogView.findViewById<TextView>(R.id.tvCmdDisableSelected)
-        val tvCmdEnableCsv = dialogView.findViewById<TextView>(R.id.tvCmdEnableCsv)
-        val tvCmdDisableCsv = dialogView.findViewById<TextView>(R.id.tvCmdDisableCsv)
-        val tvCmdAppInstalled = dialogView.findViewById<TextView>(R.id.tvCmdAppInstalled)
-        val tvCmdAppInstalledProfile = dialogView.findViewById<TextView>(R.id.tvCmdAppInstalledProfile)
-        val tvBroadcastExtras = dialogView.findViewById<TextView>(R.id.tvBroadcastExtrasValue)
-        val tvDevCmdEnableFramework = dialogView.findViewById<TextView>(R.id.tvDevCmdEnableFramework)
-        val tvDevCmdBlockPackage = dialogView.findViewById<TextView>(R.id.tvDevCmdBlockPackage)
-        val tvDevCmdUnblockPackage = dialogView.findViewById<TextView>(R.id.tvDevCmdUnblockPackage)
-        val tvDevCmdDisableFramework = dialogView.findViewById<TextView>(R.id.tvDevCmdDisableFramework)
-        val btnCopyBroadcastAction = dialogView.findViewById<View>(R.id.btnCopyBroadcastAction)
-        val btnCopyBroadcastComponent = dialogView.findViewById<View>(R.id.btnCopyBroadcastComponent)
-        val btnCopyCmdEnableSelected = dialogView.findViewById<View>(R.id.btnCopyCmdEnableSelected)
-        val btnCopyCmdDisableSelected = dialogView.findViewById<View>(R.id.btnCopyCmdDisableSelected)
-        val btnCopyCmdEnableCsv = dialogView.findViewById<View>(R.id.btnCopyCmdEnableCsv)
-        val btnCopyCmdDisableCsv = dialogView.findViewById<View>(R.id.btnCopyCmdDisableCsv)
-        val btnCopyCmdAppInstalled = dialogView.findViewById<View>(R.id.btnCopyCmdAppInstalled)
-        val btnCopyCmdAppInstalledProfile = dialogView.findViewById<View>(R.id.btnCopyCmdAppInstalledProfile)
-        val btnCopyDevCmdEnableFramework = dialogView.findViewById<View>(R.id.btnCopyDevCmdEnableFramework)
-        val btnCopyDevCmdBlockPackage = dialogView.findViewById<View>(R.id.btnCopyDevCmdBlockPackage)
-        val btnCopyDevCmdUnblockPackage = dialogView.findViewById<View>(R.id.btnCopyDevCmdUnblockPackage)
-        val btnCopyDevCmdDisableFramework = dialogView.findViewById<View>(R.id.btnCopyDevCmdDisableFramework)
-
-        tvBroadcastAction.text = action
-        tvBroadcastComponent.text = component
-        tvCmdEnableSelected.text = cmdEnableSelected
-        tvCmdDisableSelected.text = cmdDisableSelected
-        tvCmdEnableCsv.text = cmdEnableCsv
-        tvCmdDisableCsv.text = cmdDisableCsv
-        tvCmdAppInstalled.text = cmdAppInstalled
-        tvCmdAppInstalledProfile.text = cmdAppInstalledProfile
-
-        tvBroadcastExtras.text = getString(
-            R.string.adb_broadcast_extras_summary,
-            extraEnabled,
-            extraCsv
-        )
-
-        val selectableTextViews = listOf(
-            tvBroadcastAction,
-            tvBroadcastComponent,
-            tvCmdEnableSelected,
-            tvCmdDisableSelected,
-            tvCmdEnableCsv,
-            tvCmdDisableCsv,
-            tvCmdAppInstalled,
-            tvCmdAppInstalledProfile,
-            tvDevCmdEnableFramework,
-            tvDevCmdBlockPackage,
-            tvDevCmdUnblockPackage,
-            tvDevCmdDisableFramework
-        )
+        dialogView.findViewById<TextView>(R.id.tvBroadcastExtrasValue).text =
+            getString(R.string.adb_broadcast_extras_summary, extraEnabled, extraCsv)
 
         val clipboardManager = getSystemService(ClipboardManager::class.java)
 
-        fun View.enableCopyFrom(source: TextView, copyLabel: String) {
-            setOnClickListener {
-                val value = source.text?.toString().orEmpty()
-                if (value.isNotEmpty()) {
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText(copyLabel, value))
-                    Toast.makeText(this@FirewallSettingsActivity, getString(R.string.copied), Toast.LENGTH_SHORT).show()
+        fun row(textId: Int, copyId: Int, copyLabel: String, value: String? = null): TextView {
+            val source = dialogView.findViewById<TextView>(textId)
+            value?.let { source.text = it }
+            dialogView.findViewById<View>(copyId).setOnClickListener {
+                val text = source.text?.toString().orEmpty()
+                if (text.isNotEmpty()) {
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText(copyLabel, text))
+                    Toast.makeText(this, getString(R.string.copied), Toast.LENGTH_SHORT).show()
                 }
             }
+            return source
         }
 
-        btnCopyBroadcastAction.enableCopyFrom(tvBroadcastAction, "adb_action")
-        btnCopyBroadcastComponent.enableCopyFrom(tvBroadcastComponent, "adb_component")
-        btnCopyCmdEnableSelected.enableCopyFrom(tvCmdEnableSelected, "adb_enable_selected")
-        btnCopyCmdDisableSelected.enableCopyFrom(tvCmdDisableSelected, "adb_disable_selected")
-        btnCopyCmdEnableCsv.enableCopyFrom(tvCmdEnableCsv, "adb_enable_csv")
-        btnCopyCmdDisableCsv.enableCopyFrom(tvCmdDisableCsv, "adb_disable_csv")
-        btnCopyCmdAppInstalled.enableCopyFrom(tvCmdAppInstalled, "adb_app_installed")
-        btnCopyCmdAppInstalledProfile.enableCopyFrom(tvCmdAppInstalledProfile, "adb_app_installed_profile")
-        btnCopyDevCmdEnableFramework.enableCopyFrom(tvDevCmdEnableFramework, "dev_enable_firewall_framework")
-        btnCopyDevCmdBlockPackage.enableCopyFrom(tvDevCmdBlockPackage, "dev_block_specific_app")
-        btnCopyDevCmdUnblockPackage.enableCopyFrom(tvDevCmdUnblockPackage, "dev_unblock_specific_app")
-        btnCopyDevCmdDisableFramework.enableCopyFrom(tvDevCmdDisableFramework, "dev_disable_firewall_framework")
+        val selectableTextViews = listOf(
+            row(R.id.tvBroadcastActionValue, R.id.btnCopyBroadcastAction, "adb_action", action),
+            row(R.id.tvBroadcastComponentValue, R.id.btnCopyBroadcastComponent, "adb_component", component),
+            row(R.id.tvCmdEnableSelected, R.id.btnCopyCmdEnableSelected, "adb_enable_selected", "$control true"),
+            row(R.id.tvCmdDisableSelected, R.id.btnCopyCmdDisableSelected, "adb_disable_selected", "$control false"),
+            row(R.id.tvCmdEnableCsv, R.id.btnCopyCmdEnableCsv, "adb_enable_csv", "$control true $csv"),
+            row(R.id.tvCmdDisableCsv, R.id.btnCopyCmdDisableCsv, "adb_disable_csv", "$control false $csv"),
+            row(R.id.tvCmdAppInstalled, R.id.btnCopyCmdAppInstalled, "adb_app_installed",
+                "adb shell am broadcast $installed \"com.example.newapp\""),
+            row(R.id.tvCmdAppInstalledProfile, R.id.btnCopyCmdAppInstalledProfile, "adb_app_installed_profile",
+                "adb shell am broadcast --user 0 $installed \"150:com.example.newapp\""),
+            row(R.id.tvDevCmdEnableFramework, R.id.btnCopyDevCmdEnableFramework, "dev_enable_firewall_framework"),
+            row(R.id.tvDevCmdBlockPackage, R.id.btnCopyDevCmdBlockPackage, "dev_block_specific_app"),
+            row(R.id.tvDevCmdUnblockPackage, R.id.btnCopyDevCmdUnblockPackage, "dev_unblock_specific_app"),
+            row(R.id.tvDevCmdDisableFramework, R.id.btnCopyDevCmdDisableFramework, "dev_disable_firewall_framework")
+        )
 
         dialogView.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
