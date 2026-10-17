@@ -133,7 +133,7 @@ adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.P
 
 ShizuWall je poskytován **„tak, jak je“**, bez záruky. Využívá pokročilá systémová oprávnění a vývojář neodpovídá za nestabilitu systému, ztrátu dat ani vedlejší účinky blokování sítě. Vždy si ověřte, které aplikace blokujete.
 
-**Oficiální zdroje jsou pouze Google Play, F-Droid a tento repozitář.** APK odjinud nejsou s projektem spojeny a používáte je na vlastní riziko.
+**Oficiální zdroje jsou pouze Google Play, F-Droid a tento repozitář.** APK odjinud nejsou s projektem spojeny a používáte je na vlastní riziko. ShizuWall nemá žádné oficiální webové stránky.
 
 Oprávnění `INTERNET` se vyžaduje jen pro párování bezdrátového ladění (LibADB).
 

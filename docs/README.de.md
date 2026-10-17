@@ -133,7 +133,7 @@ adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.P
 
 ShizuWall wird **„wie besehen“** ohne Gewährleistung bereitgestellt. Es nutzt weitreichende Systemberechtigungen; der Entwickler haftet nicht für Systeminstabilität, Datenverlust oder Nebenwirkungen blockierter Netzwerkzugriffe. Prüfe immer, welche Apps du blockierst.
 
-**Offizielle Quellen sind nur Google Play, F-Droid und dieses Repository.** APKs von anderswo sind nicht zugehörig und werden auf eigenes Risiko verwendet.
+**Offizielle Quellen sind nur Google Play, F-Droid und dieses Repository.** APKs von anderswo sind nicht zugehörig und werden auf eigenes Risiko verwendet. ShizuWall hat keine offizielle Website.
 
 `INTERNET` wird nur für das Koppeln über Wireless Debugging (LibADB) angefordert.
 

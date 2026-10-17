@@ -132,7 +132,7 @@ adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.P
 
 ShizuWall は**現状有姿**で、いかなる保証もなく提供されます。高度なシステム権限を利用するため、システムの不安定化、データ損失、ネットワーク遮断による副作用について開発者は責任を負いません。ブロックするアプリは必ず確認してください。
 
-**公式の入手先は Google Play、F-Droid、およびこのリポジトリのみです。** それ以外の APK は無関係であり、自己責任でご利用ください。
+**公式の入手先は Google Play、F-Droid、およびこのリポジトリのみです。** それ以外の APK は無関係であり、自己責任でご利用ください。ShizuWall には公式ウェブサイトはありません。
 
 `INTERNET` 権限はワイヤレスデバッグのペアリング（LibADB）にのみ使用します。
 

@@ -133,7 +133,7 @@ adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.P
 
 ShizuWall 按**“原样”**提供，不附带任何保证。它依赖高级系统权限，开发者不对系统不稳定、数据丢失或网络屏蔽的副作用负责。请务必确认你屏蔽了哪些应用。
 
-**官方来源仅为 Google Play、F-Droid 和本仓库。** 其他来源的 APK 与本项目无关，使用风险自负。
+**官方来源仅为 Google Play、F-Droid 和本仓库。** 其他来源的 APK 与本项目无关，使用风险自负。ShizuWall 没有任何官方网站。
 
 `INTERNET` 权限仅用于无线调试配对（LibADB）。
 

@@ -131,7 +131,7 @@ adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.P
 
 ShizuWall hiçbir garanti verilmeksizin **"olduğu gibi"** sunulur. Gelişmiş sistem izinlerine dayanır; geliştirici sistem kararsızlığı, veri kaybı veya engellenen ağ erişiminin yan etkilerinden sorumlu değildir. Hangi uygulamaları engellediğinizi daima doğrulayın.
 
-**Resmî kaynaklar yalnızca Google Play, F-Droid ve bu depodur.** Başka yerlerden edinilen APK'lar projeyle ilişkili değildir ve kendi riskinizle kullanılır.
+**Resmî kaynaklar yalnızca Google Play, F-Droid ve bu depodur.** Başka yerlerden edinilen APK'lar projeyle ilişkili değildir ve kendi riskinizle kullanılır. ShizuWall'ın herhangi bir web sitesi yoktur.
 
 `INTERNET` izni yalnızca kablosuz hata ayıklama eşleştirmesi (LibADB) için istenir.
 
