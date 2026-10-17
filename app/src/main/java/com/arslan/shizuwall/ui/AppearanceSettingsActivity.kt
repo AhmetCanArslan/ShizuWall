@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import com.arslan.shizuwall.R
 import com.google.android.material.appbar.MaterialToolbar
@@ -20,8 +21,11 @@ class AppearanceSettingsActivity : BaseActivity() {
     private lateinit var switchUseAmoledBlack: SwitchCompat
     private lateinit var layoutChangeFont: LinearLayout
     private lateinit var tvCurrentFont: TextView
+    private lateinit var tvCurrentTheme: TextView
     private lateinit var layoutChangeLanguage: LinearLayout
     private lateinit var tvCurrentLanguage: TextView
+    private val themeModes = listOf(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, AppCompatDelegate.MODE_NIGHT_NO, AppCompatDelegate.MODE_NIGHT_YES)
+    private val themeLabels = listOf(R.string.widget_theme_system, R.string.widget_theme_light, R.string.widget_theme_dark)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +43,7 @@ class AppearanceSettingsActivity : BaseActivity() {
         switchUseAmoledBlack = findViewById(R.id.switchUseAmoledBlack)
         layoutChangeFont = findViewById(R.id.layoutChangeFont)
         tvCurrentFont = findViewById(R.id.tvCurrentFont)
+        tvCurrentTheme = findViewById(R.id.tvCurrentTheme)
         layoutChangeLanguage = findViewById(R.id.layoutChangeLanguage)
         tvCurrentLanguage = findViewById(R.id.tvCurrentLanguage)
 
@@ -53,6 +58,7 @@ class AppearanceSettingsActivity : BaseActivity() {
 
         val currentFont = sharedPreferences.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         tvCurrentFont.text = if (currentFont == "ndot") getString(R.string.font_ndot) else getString(R.string.font_default)
+        tvCurrentTheme.setText(themeLabels[themeModes.indexOf(AppCompatDelegate.getDefaultNightMode()).coerceAtLeast(0)])
         updateCurrentLanguageDisplay()
     }
 
@@ -73,11 +79,25 @@ class AppearanceSettingsActivity : BaseActivity() {
         }
 
         layoutChangeFont.setOnClickListener { showFontSelectorDialog() }
+        findViewById<View>(R.id.layoutChangeTheme).setOnClickListener { showThemeSelectorDialog() }
         layoutChangeLanguage.setOnClickListener { showLanguageSelectorDialog() }
 
         makeCardClickableForSwitch(switchMoveSelectedTop)
         makeCardClickableForSwitch(switchUseDynamicColor)
         makeCardClickableForSwitch(switchUseAmoledBlack)
+    }
+
+    private fun showThemeSelectorDialog() {
+        val checked = themeModes.indexOf(AppCompatDelegate.getDefaultNightMode()).coerceAtLeast(0)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.theme)
+            .setSingleChoiceItems(themeLabels.map { getString(it) }.toTypedArray(), checked) { dialog, which ->
+                dialog.dismiss()
+                sharedPreferences.edit().putInt(MainActivity.KEY_NIGHT_MODE, themeModes[which]).apply()
+                AppCompatDelegate.setDefaultNightMode(themeModes[which])
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun showFontSelectorDialog() {

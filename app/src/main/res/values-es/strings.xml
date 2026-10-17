@@ -161,6 +161,7 @@
     <string name="app_monitor_notification_channel_description">Servicio en segundo plano para monitorear nuevas apps</string>
     <string name="app_installed_notification_channel_name">Nueva app instalada</string>
     <string name="app_installed_notification_channel_description">Notificaciones al instalar una app nueva</string>
+    <string name="theme">Tema</string>
     <string name="font">Fuente</string>
     <string name="language">Idioma</string>
     <string name="language_system_default">Predeterminado del sistema</string>

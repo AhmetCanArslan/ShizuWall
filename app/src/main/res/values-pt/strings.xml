@@ -162,6 +162,7 @@
     <string name="keep_failed_apps_selected_description">Não desmarcar apps em caso de falha</string>
     <string name="auto_enable_on_shizuku_start">Ativar firewall automaticamente quando o Shizuku iniciar</string>
     <string name="auto_enable_on_shizuku_start_description">Ative automaticamente o firewall quando o serviço Shizuku ficar disponível</string>
+    <string name="theme">Tema</string>
     <string name="font">Fonte</string>
     <string name="language">Idioma</string>
     <string name="language_system_default">Padrão do sistema</string>

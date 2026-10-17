@@ -161,6 +161,7 @@
     <string name="app_monitor_notification_channel_description">新しいアプリを監視するためのバックグラウンドサービス</string>
     <string name="app_installed_notification_channel_name">新規アプリインストール</string>
     <string name="app_installed_notification_channel_description">新しいアプリがインストールされたときの通知</string>
+    <string name="theme">テーマ</string>
     <string name="font">フォント</string>
     <string name="language">言語</string>
     <string name="language_system_default">システムのデフォルト</string>

@@ -162,6 +162,7 @@
     <string name="keep_failed_apps_selected_description">Apps bei Fehler nicht abwählen</string>
     <string name="auto_enable_on_shizuku_start">Firewall automatisch aktivieren, wenn Shizuku gestartet wird</string>
     <string name="auto_enable_on_shizuku_start_description">Firewall automatisch aktivieren, wenn der Shizuku-Dienst verfügbar wird</string>
+    <string name="theme">Design</string>
     <string name="font">Schriftart</string>
     <string name="language">Sprache</string>
     <string name="language_system_default">Systemstandard</string>

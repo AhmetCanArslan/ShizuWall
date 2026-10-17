@@ -168,6 +168,7 @@
     <string name="app_monitor_notification_channel_description">Služba na pozadí pro monitorování nových aplikací</string>
     <string name="app_installed_notification_channel_name">Nová aplikace nainstalováno</string>
     <string name="app_installed_notification_channel_description">Oznámení při instalaci nové aplikace</string>
+    <string name="theme">Motiv</string>
     <string name="font">Písmo</string>
     <string name="language">Jazyk</string>
     <string name="language_system_default">Vychozí systémové</string>

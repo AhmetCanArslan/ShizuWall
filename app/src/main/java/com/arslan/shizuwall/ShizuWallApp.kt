@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import com.arslan.shizuwall.receivers.FirewallControlReceiver
 import com.arslan.shizuwall.shizuku.ShizukuShellExecutor
 import com.arslan.shizuwall.ui.MainActivity
@@ -25,6 +26,7 @@ class ShizuWallApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        AppCompatDelegate.setDefaultNightMode(getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE).getInt(MainActivity.KEY_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM))
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityStarted(activity: Activity) { startedActivities++ }
             override fun onActivityStopped(activity: Activity) { startedActivities-- }

@@ -169,6 +169,7 @@
     <string name="app_monitor_notification_channel_description">नए ऐप्स की निगरानी के लिए बैकग्राउंड सेवा</string>
     <string name="app_installed_notification_channel_name">नया ऐप इंस्टॉल हुआ</string>
     <string name="app_installed_notification_channel_description">नया ऐप इंस्टॉल होने पर सूचनाएँ</string>
+    <string name="theme">थीम</string>
     <string name="font">फ़ॉन्ट</string>
     <string name="language">भाषा</string>
     <string name="language_system_default">सिस्टम डिफ़ॉल्ट</string>

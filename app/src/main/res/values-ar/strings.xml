@@ -162,6 +162,7 @@
     <string name="app_monitor_notification_channel_description">خدمة خلفية لمراقبة التطبيقات الجديدة</string>
     <string name="app_installed_notification_channel_name">تم تثبيت تطبيق جديد</string>
     <string name="app_installed_notification_channel_description">إشعارات عند تثبيت تطبيق جديد</string>
+    <string name="theme">السمة</string>
     <string name="font">الخط</string>
     <string name="language">اللغة</string>
     <string name="language_system_default">افتراضي النظام</string>

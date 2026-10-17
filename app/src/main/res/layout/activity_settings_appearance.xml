@@ -202,6 +202,66 @@
                 app:strokeWidth="0dp">
 
                 <LinearLayout
+                    android:id="@+id/layoutChangeTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="72dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_picon_brightness_6"
+                        app:tint="?attr/colorPrimary"
+                        android:layout_marginEnd="16dp"
+                        android:contentDescription="@null" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/theme"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
+                            android:textColor="?android:attr/textColorPrimary" />
+
+                        <TextView
+                            android:id="@+id/tvCurrentTheme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/widget_theme_system"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                            android:textColor="?android:attr/textColorSecondary" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_edit"
+                        app:tint="?android:attr/textColorSecondary"
+                        android:contentDescription="@null" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
                     android:id="@+id/layoutChangeFont"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

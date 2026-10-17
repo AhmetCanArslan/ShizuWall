@@ -162,6 +162,7 @@
     <string name="keep_failed_apps_selected_description">失败时不取消选择应用</string>
     <string name="auto_enable_on_shizuku_start">Shizuku 启动时自动启用防火墙</string>
     <string name="auto_enable_on_shizuku_start_description">当 Shizuku 服务可用时自动启用防火墙</string>
+    <string name="theme">主题</string>
     <string name="font">字体</string>
     <string name="language">语言</string>
     <string name="language_system_default">系统默认</string>

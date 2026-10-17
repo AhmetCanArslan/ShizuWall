@@ -161,6 +161,7 @@
     <string name="app_monitor_notification_channel_description">Фоновый сервис для мониторинга новых приложений</string>
     <string name="app_installed_notification_channel_name">Установлено новое приложение</string>
     <string name="app_installed_notification_channel_description">Уведомления при установке нового приложения</string>
+    <string name="theme">Тема</string>
     <string name="font">Шрифт</string>
     <string name="language">Язык</string>
     <string name="language_system_default">Системный по умолчанию</string>
