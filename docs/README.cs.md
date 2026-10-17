@@ -22,14 +22,13 @@
 </p>
 <div style="height: 20px;">&nbsp;</div>
 <p align="center">
+  <a href="https://tooomm.github.io/github-release-stats/?username=AhmetCanArslan&repository=ShizuWall">
+    <img alt="Downloads (GitHub)" src="https://img.shields.io/github/downloads/AhmetCanArslan/ShizuWall/total?color=ff9500&label=Total%20Downloads%20(GitHub)&logo=github&logoColor=white&style=flat-square" />
+  </a>
+  <img alt="Downloads (F-Droid)" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fkitswas%2Ffdroid-metrics-dashboard%2Fraw%2Frefs%2Fheads%2Fmain%2Fprocessed%2Ftotal%2Fcom.arslan.shizuwall.json&query=%24.total_downloads&logo=fdroid&logoColor=white&label=Total%20Downloads%20(F-Droid)&style=flat-square" />
   <img alt="Last commit" src="https://img.shields.io/github/last-commit/AhmetCanArslan/ShizuWall?style=flat-square" />
   <img alt="Repo size" src="https://img.shields.io/github/repo-size/AhmetCanArslan/ShizuWall?style=flat-square" />
-  <img alt="License" src="https://img.shields.io/github/license/AhmetCanArslan/ShizuWall?style=flat-square" />
-  <img alt="Android" src="https://img.shields.io/badge/Android-11%2B-3DDC84?style=flat-square&logo=android&logoColor=white" />
-  <img alt="Downloads" src="https://img.shields.io/github/downloads/AhmetCanArslan/ShizuWall/total?color=ff9500&style=flat-square" />
-  <a href="https://github.com/timschneeb/awesome-shizuku?tab=readme-ov-file#network">
-    <img alt="Awesome" src="https://awesome.re/mentioned-badge-flat.svg" style="display:inline-block;" />
-  </a>
+  <img alt="Minimum SDK" src="https://img.shields.io/badge/Minimum%20SDK-30%20(Android%2011)-839192?style=flat-square&logo=android&logoColor=white" />
 </p>
 
 <p align="center">
@@ -48,154 +47,103 @@
 </p>
 
 
+## Funguje s
+
+Android 11+ a jeden z těchto backendů:
+
+- **Shizuku** (forky jsou podporovány)
+- **LibADB**: páruje se přes bezdrátové ladění, bez počítače
+- **Root**
+
 ## Proč ShizuWall
 
-- **Žádná VPN**: Vyhýbá se zachytávání paketů a vedlejším účinkům trvalého VPN tunelu.
-- **Řízení sítě pro jednotlivé aplikace**: Zapíná a vypíná síť aplikací pomocí ovládání chain-3 v `connectivity` Androidu.
-- **Soukromí už v návrhu**: Primárně offline, žádná analytika, žádná telemetrie, žádné sledování.
-- **Připraveno na automatizaci**: Podporuje příkazy `adb broadcast` pro skripty a automatizaci úloh.
-- **Způsoby ovládání**: ShizuWall nabízí tři pohodlné způsoby ovládání firewallu: dlaždici v Rychlém nastavení, widget a plovoucí tlačítko firewallu.
+- **Bez VPN**: žádné zachytávání paketů, žádný trvalý tunel.
+- **Řízení po aplikacích**: blokuje síť jednotlivým aplikacím včetně kopií v pracovním profilu a klonů.
+- **Soukromé**: offline-first, žádná analytika, žádná telemetrie.
+- **Rychlý přístup**: dlaždice Rychlého nastavení, widget a plovoucí tlačítko.
+- **Automatizace**: ovladatelné broadcasty z adb, Taskeru, MacroDroidu a podobných nástrojů.
 
-## Snímky obrazovky
+## Snímek obrazovky
 
 <p align="center">
-  <img src="../assets/screenshots/v4.6/1.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/2.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/3.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/4.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/5.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/6.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/7.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/8.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/9.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/10.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/11.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/12.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/13.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/14.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/15.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/16.png" width="30%" />
-
+  <img src="../assets/screenshots/v4.6/1.png" alt="ShizuWall" width="30%" />
 </p>
-
-## Požadavky
-
-- Android 11 (API 30) nebo novější
-- Jedno ovládací rozhraní: Shizuku, lokální ADB démon nebo root přístup
-
-## Ovládací rozhraní
-
-ShizuWall podporuje tři způsoby spouštění příkazů firewallu:
-
-| Metoda | Popis | Nastavení |
-|--------|---------|---------|
-| **Shizuku** | Bezpečné API komunikující se systémovými službami. Vyžaduje aplikaci Shizuku. Forky jsou podporovány. | Nainstalujte a nastavte aplikaci Shizuku, udělte oprávnění |
-| **Root** | Přímý root přístup. | Rootněte zařízení standardními postupy |
-| **LibADB (LADB)** | Využívá vestavěnou funkci „Bezdrátové ladění“ vašeho telefonu, takže se chová jako počítač připojený přes USB. Aplikace tak může provádět pokročilé systémové změny bez počítače, rootu i bez dalších aplikací jako Shizuku. | Zapněte bezdrátové ladění a spárujte je v možnostech pro vývojáře (návod je v aplikaci) |
 
 ## Jak to funguje
 
-ShizuWall používá **Chain 3** Androidu (řetězec konektivity) k řízení sítě jednotlivých aplikací. Toto jsou systémové příkazy spouštěné přes Shizuku nebo lokálního démona:
-
-### Příkazy ADB Chain 3
+ShizuWall ovládá androidí connectivity **chain 3**, mechanismus platformy, který řídí přístup k síti po balíčcích:
 
 ```bash
-# Zapnout rámec firewallu
-cmd connectivity set-chain3-enabled true
-
-# Zablokovat konkrétní aplikaci
-cmd connectivity set-package-networking-enabled false <package.name>
-
-# Odblokovat konkrétní aplikaci
-cmd connectivity set-package-networking-enabled true <package.name>
-
-# Vypnout rámec firewallu
-cmd connectivity set-chain3-enabled false
+cmd connectivity set-chain3-enabled true                                # firewall zapnut
+cmd connectivity set-package-networking-enabled false <package.name>   # blokovat
+cmd connectivity set-package-networking-enabled true <package.name>    # odblokovat
+cmd connectivity set-chain3-enabled false                               # firewall vypnut
 ```
 
-**Chain 3** je mechanismus platformy Android, který na systémové úrovni zachytává a řídí síťový přístup jednotlivých balíčků, což umožňuje jemné řízení firewallu.
+Android tato pravidla při restartu smaže.
 
-## Automatizace (ADB broadcast)
+## Automatizace
 
-ShizuWall můžete ovládat ze skriptů a automatizačních nástrojů.
+Každý broadcast vyžaduje aktivní backend. `apps` je seznam klíčů aplikací oddělených čárkou: samotný název balíčku míří na uživatele 0, klíč s prefixem jako `150:com.example.app` na kopii v daném pracovním profilu nebo klonovaném prostoru.
 
-**Akce**: `shizuwall.CONTROL`  
-**Komponenta**: `com.arslan.shizuwall/.receivers.FirewallControlReceiver`  
+### Firewall: `shizuwall.CONTROL`
 
-**Extras**
-
-- `state` (boolean, povinné): `true` = zapnout, `false` = vypnout
-- `apps` (řetězec, volitelné): seznam balíčků oddělených čárkou. Pokud chybí, ShizuWall použije uložené vybrané aplikace.
-
-### Příklady
+| Extra | Typ | |
+|---|---|---|
+| `state` | boolean, povinné | `true` = blokovat, `false` = odblokovat |
+| `apps` | string, volitelné | Aplikace k zablokování nebo odblokování. Bez něj broadcast přepíná celý firewall. |
 
 ```bash
-# Zapnout firewall pro uložené vybrané aplikace
+# Zapnout firewall (state false ho vypne)
 adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true
 
-# Vypnout firewall pro uložené vybrané aplikace
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state false
-
-# Zapnout firewall pro konkrétní balíčky
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true --es apps "com.example.app1,com.example.app2"
-
-# Vypnout firewall pro konkrétní balíčky
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state false --es apps "com.example.app1,com.example.app2"
+# Zablokovat aplikaci i její kopii v pracovním profilu
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true --es apps "com.example.app,150:com.example.app"
 ```
 
-> Aby broadcasty fungovaly, musí být aktivní jedno z ovládacích rozhraní (Shizuku, lokální ADB démon nebo root).
+- S `apps` se přizpůsobí i výběr v aplikaci: `state true` aplikace vybere a zapne firewall, pokud byl vypnutý; `state false` je z výběru odebere a firewall nechá zapnutý. V režimu whitelistu `apps` míří na seznam povolených, takže jsou oba stavy obrácené.
+- Je-li **Zobrazit aplikace z jiných profilů** vypnuto, platí samotný název balíčku i pro jeho klony. Je-li zapnuto, každý profil se adresuje jen svým prefixem.
 
-## Poznámky a omezení
+### Nová aplikace: `shizuwall.APP_INSTALLED`
 
-- Pravidla firewallu se při restartu mažou kvůli chování platformy Android.
-- Restart zařízení zruší veškeré aktivní blokace sítě nastavené ShizuWallem.
-- Aplikace žádá o `android.permission.INTERNET` pouze kvůli párování bezdrátového ladění (připojení k lokálnímu démonu LibADB).
-
-## Sestavení (pro vývojáře)
-
-### Aplikace
+Oznámí nově nainstalovanou aplikaci, takže se na ni použijí pravidla i oznámení pro nové aplikace, jako by instalaci zaznamenal sám ShizuWall. ShizuWall vidí jen instalace ve vlastním profilu; takto lze pokrýt i ostatní.
 
 ```bash
-./gradlew assembleRelease
+adb shell am broadcast -a shizuwall.APP_INSTALLED -n com.arslan.shizuwall/.receivers.AppInstalledReceiver --es apps "com.example.newapp"
 ```
 
-### Démon
+Když je firewall vypnutý, nepoužije se žádné pravidlo. Aplikace bez oprávnění `INTERNET` se ignorují.
 
-Démon běžící v zařízení (`SystemDaemon.java`) se automaticky kompiluje do DEX souboru (`daemon.bin`) jako součást běžného sestavení Gradle úlohou `compileDaemonDex`. Je kompilován ze zdrojového kódu pomocí `javac` a `d8` z build-tools Android SDK a zabalen jako asset — v repozitáři není žádný předkompilovaný binární soubor, takže servery pro reprodukovatelná sestavení (např. F-Droid) si jej vytvoří samy.
+### Profil: `shizuwall.PROFILE`
 
-Není nutný žádný ruční krok; `./gradlew assembleRelease` jej sestaví. Úlohu lze spustit i samostatně:
+Aktivuje uložený profil: zapíše jeho výběr aplikací, režim firewallu, režimy jednotlivých aplikací a nastavení *Zobrazit systémové aplikace*.
+
+| Extra | Typ | |
+|---|---|---|
+| `profile` | string | Název profilu, jak je uveden v seznamu profilů. |
+| `profile_id` | string | Interní ID; kontroluje se jako první a přejmenování ho neovlivní. Dialog **Automatizace** u profilu ukazuje hotový příkaz. |
+| `force_enable` | boolean, volitelné | Po přepnutí zapne firewall, i když byl vypnutý. |
+
+Je vyžadováno `profile` nebo `profile_id`. Pokud žádné neodpovídá, nic se nezmění a oznámí to toast.
 
 ```bash
-./gradlew :app:compileDaemonDex
+adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.ProfileControlReceiver --es profile "Work"
 ```
 
-## Prohlášení o bezpečnosti a distribuci
+## Prohlášení o odpovědnosti
 
-ShizuWall je poskytován **„tak, jak je“**, bez jakékoli záruky.
+ShizuWall je poskytován **„tak, jak je“**, bez záruky. Využívá pokročilá systémová oprávnění a vývojář neodpovídá za nestabilitu systému, ztrátu dat ani vedlejší účinky blokování sítě. Vždy si ověřte, které aplikace blokujete.
 
-Používáním této aplikace berete na vědomí, že se opírá o pokročilá systémová oprávnění (Shizuku/ADB/root), a přijímáte veškerá související rizika. Vývojář neodpovídá za škody, jako je nestabilita systému, ztráta dat, přerušení služeb nebo vedlejší účinky zablokované sítě.
+**Oficiální zdroje jsou pouze Google Play, F-Droid a tento repozitář.** APK odjinud nejsou s projektem spojeny a používáte je na vlastní riziko.
 
-**Oficiální distribuce a rizika třetích stran**
-Vývojáři a přispěvatelé ShizuWallu nenesou žádnou odpovědnost za škody, bezpečnostní incidenty, nákazu malwarem nebo ztrátu dat vzniklé stažením, instalací či používáním souborů APK získaných ze zdrojů třetích stran. ShizuWall je oficiálně vyvíjen a distribuován výhradně prostřednictvím Google Play, svého oficiálního repozitáře na GitHubu a F-Droidu. ShizuWall nevlastní, neprovozuje ani nepodporuje žádné oficiální webové stránky. Jakákoli webová stránka nebo platforma třetí strany tvrdící, že nabízí oficiální stažení ShizuWallu, je zcela nesouvisející a neautorizovaná. Uživatelé, kteří aplikaci získají mimo oficiální kanály, tak činí výhradně na vlastní riziko.
-
-**ShizuWall je aplikace s otevřeným zdrojovým kódem. Vývojář nepřijímá žádnou finanční, morální ani právní odpovědnost za používání této aplikace. Veškerá odpovědnost je na uživateli.**
-
-Vždy si ověřte, které aplikace blokujete.
+Oprávnění `INTERNET` se vyžaduje jen pro párování bezdrátového ladění (LibADB).
 
 ## Licence
 
-Licencováno pod **GNU General Public License v3.0 (GPLv3)**. Viz [LICENSE.md](../LICENSE.md).
-
-Přiložená data podpisů trackerů nejsou kód a mají vlastní licenci (ODbL v1.0). Viz [TRACKER_DATA_LICENSE.md](../TRACKER_DATA_LICENSE.md).
-
-## Podpora
-
-- ⭐ Dejte projektu hvězdičku: [GitHub Stars](https://github.com/AhmetCanArslan/ShizuWall/stargazers)
-- ☕ Přispějte: [Buy Me a Coffee](https://buymeacoffee.com/ahmetcanarslan)
-- ⬇️ Stáhněte si: [Google Play Store](https://play.google.com/store/apps/details?id=com.arslan.shizuwall)
+[GPLv3](../LICENSE.md). Přibalená data signatur trackerů jsou licencována samostatně pod ODbL v1.0, viz [TRACKER_DATA_LICENSE.md](../TRACKER_DATA_LICENSE.md).
 
 ## Poděkování
 
-- [Shizuku](https://github.com/RikkaApps/Shizuku) — API umožňující spouštění privilegovaných příkazů.
-- [LibADB](https://github.com/MuntashirAkon/libadb-android) — Podpora bezdrátového ladění a připojení k démonovi.
-- [Exodus Privacy](https://exodus-privacy.eu.org/) — Databáze podpisů trackerů použitá k detekci sledovacích SDK uvnitř aplikací, licencovaná pod [ODbL v1.0](https://opendatacommons.org/licenses/odbl/1-0/). ShizuWall obsahuje zkrácenou kopii a nikdy nekontaktuje jejich API. Viz [TRACKER_DATA_LICENSE.md](../TRACKER_DATA_LICENSE.md).
+- [Shizuku](https://github.com/RikkaApps/Shizuku): spouštění privilegovaných příkazů.
+- [LibADB](https://github.com/MuntashirAkon/libadb-android): bezdrátové ladění a připojení k démonu.
+- [Exodus Privacy](https://exodus-privacy.eu.org/): databáze signatur trackerů. ShizuWall obsahuje její zkrácenou kopii a nikdy nekontaktuje jejich API.

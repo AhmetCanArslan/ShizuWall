@@ -22,14 +22,13 @@
 </p>
 <div style="height: 20px;">&nbsp;</div>
 <p align="center">
+  <a href="https://tooomm.github.io/github-release-stats/?username=AhmetCanArslan&repository=ShizuWall">
+    <img alt="Downloads (GitHub)" src="https://img.shields.io/github/downloads/AhmetCanArslan/ShizuWall/total?color=ff9500&label=Total%20Downloads%20(GitHub)&logo=github&logoColor=white&style=flat-square" />
+  </a>
+  <img alt="Downloads (F-Droid)" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fkitswas%2Ffdroid-metrics-dashboard%2Fraw%2Frefs%2Fheads%2Fmain%2Fprocessed%2Ftotal%2Fcom.arslan.shizuwall.json&query=%24.total_downloads&logo=fdroid&logoColor=white&label=Total%20Downloads%20(F-Droid)&style=flat-square" />
   <img alt="Last commit" src="https://img.shields.io/github/last-commit/AhmetCanArslan/ShizuWall?style=flat-square" />
   <img alt="Repo size" src="https://img.shields.io/github/repo-size/AhmetCanArslan/ShizuWall?style=flat-square" />
-  <img alt="License" src="https://img.shields.io/github/license/AhmetCanArslan/ShizuWall?style=flat-square" />
-  <img alt="Android" src="https://img.shields.io/badge/Android-11%2B-3DDC84?style=flat-square&logo=android&logoColor=white" />
-  <img alt="Downloads" src="https://img.shields.io/github/downloads/AhmetCanArslan/ShizuWall/total?color=ff9500&style=flat-square" />
-  <a href="https://github.com/timschneeb/awesome-shizuku?tab=readme-ov-file#network">
-    <img alt="Awesome" src="https://awesome.re/mentioned-badge-flat.svg" style="display:inline-block;" />
-  </a>
+  <img alt="Minimum SDK" src="https://img.shields.io/badge/Minimum%20SDK-30%20(Android%2011)-839192?style=flat-square&logo=android&logoColor=white" />
 </p>
 
 <p align="center">
@@ -48,154 +47,103 @@
 </p>
 
 
+## Работает с
+
+Android 11+ и один из этих бэкендов:
+
+- **Shizuku** (форки поддерживаются)
+- **LibADB**: сопряжение по беспроводной отладке, компьютер не нужен
+- **Root**
+
 ## Почему ShizuWall
 
-- **Без VPN**: Не перехватывает пакеты и избавляет от побочных эффектов постоянного VPN-туннеля.
-- **Управление сетью для каждого приложения**: Включает и отключает сеть приложений через средства chain-3 в `connectivity` Android.
-- **Приватность по умолчанию**: Работает офлайн, без аналитики, телеметрии и слежки.
-- **Готов к автоматизации**: Поддерживает команды `adb broadcast` для скриптов и автоматизации задач.
-- **Способы управления**: ShizuWall предлагает три удобных способа управлять файрволом: плитка в быстрых настройках, виджет и плавающая кнопка файрвола.
+- **Без VPN**: никакого перехвата пакетов и постоянного туннеля.
+- **Управление по приложениям**: блокирует сеть для каждого приложения, включая копии в рабочем профиле и клоны.
+- **Приватность**: работает офлайн, без аналитики и телеметрии.
+- **Быстрый доступ**: плитка быстрых настроек, виджет и плавающая кнопка.
+- **Автоматизация**: управление через broadcast-команды из adb, Tasker, MacroDroid и подобных.
 
-## Скриншоты
+## Скриншот
 
 <p align="center">
-  <img src="../assets/screenshots/v4.6/1.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/2.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/3.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/4.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/5.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/6.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/7.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/8.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/9.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/10.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/11.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/12.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/13.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/14.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/15.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/16.png" width="30%" />
-
+  <img src="../assets/screenshots/v4.6/1.png" alt="ShizuWall" width="30%" />
 </p>
-
-## Требования
-
-- Android 11 (API 30) или новее
-- Один из бэкендов управления: Shizuku, локальный ADB-демон или root-доступ
-
-## Бэкенды управления
-
-ShizuWall поддерживает три способа выполнения команд файрвола:
-
-| Способ | Описание | Настройка |
-|--------|---------|---------|
-| **Shizuku** | Безопасный API, взаимодействующий с системными службами. Требуется приложение Shizuku. Форки поддерживаются. | Установите и настройте приложение Shizuku, выдайте разрешения |
-| **Root** | Прямой root-доступ. | Получите root стандартными способами |
-| **LibADB (LADB)** | Использует встроенную функцию «Беспроводная отладка», чтобы телефон вёл себя как компьютер, подключённый по USB. Это позволяет приложению вносить сложные системные изменения без компьютера, root-прав и дополнительных приложений вроде Shizuku. | Включите беспроводную отладку и выполните сопряжение в параметрах разработчика (руководство есть в приложении) |
 
 ## Как это работает
 
-ShizuWall использует **Chain 3** Android (цепочку подключений) для управления сетью каждого приложения. Через Shizuku или локальный демон выполняются такие системные команды:
-
-### Команды ADB Chain 3
+ShizuWall управляет **chain 3** службы connectivity в Android — механизмом платформы, который контролирует доступ к сети для каждого пакета:
 
 ```bash
-# Включить механизм файрвола
-cmd connectivity set-chain3-enabled true
-
-# Заблокировать конкретное приложение
-cmd connectivity set-package-networking-enabled false <package.name>
-
-# Разблокировать конкретное приложение
-cmd connectivity set-package-networking-enabled true <package.name>
-
-# Отключить механизм файрвола
-cmd connectivity set-chain3-enabled false
+cmd connectivity set-chain3-enabled true                                # файрвол включён
+cmd connectivity set-package-networking-enabled false <package.name>   # заблокировать
+cmd connectivity set-package-networking-enabled true <package.name>    # разблокировать
+cmd connectivity set-chain3-enabled false                               # файрвол выключен
 ```
 
-**Chain 3** — механизм платформы Android, который перехватывает и контролирует сетевой доступ каждого пакета на системном уровне, обеспечивая точное управление файрволом.
+Android сбрасывает эти правила при перезагрузке.
 
-## Автоматизация (ADB broadcast)
+## Автоматизация
 
-Вы можете управлять ShizuWall из скриптов и средств автоматизации.
+Для каждого broadcast нужен активный бэкенд. `apps` — это CSV-список ключей приложений: простое имя пакета относится к пользователю 0, а ключ с префиксом, например `150:com.example.app`, — к копии в этом рабочем профиле или пространстве клонов.
 
-**Действие**: `shizuwall.CONTROL`  
-**Компонент**: `com.arslan.shizuwall/.receivers.FirewallControlReceiver`  
+### Файрвол: `shizuwall.CONTROL`
 
-**Дополнительные параметры**
-
-- `state` (boolean, обязательный): `true` = включить, `false` = выключить
-- `apps` (строка, необязательный): список пакетов через запятую. Если не указан, ShizuWall использует сохранённые выбранные приложения.
-
-### Примеры
+| Параметр | Тип | |
+|---|---|---|
+| `state` | boolean, обязательный | `true` = заблокировать, `false` = разблокировать |
+| `apps` | string, необязательный | Приложения, которые нужно заблокировать или разблокировать. Без него broadcast переключает весь файрвол. |
 
 ```bash
-# Включить файрвол для сохранённых выбранных приложений
+# Включить файрвол (state false выключает)
 adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true
 
-# Выключить файрвол для сохранённых выбранных приложений
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state false
-
-# Включить файрвол для конкретных пакетов
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true --es apps "com.example.app1,com.example.app2"
-
-# Выключить файрвол для конкретных пакетов
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state false --es apps "com.example.app1,com.example.app2"
+# Заблокировать приложение и его копию в рабочем профиле
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true --es apps "com.example.app,150:com.example.app"
 ```
 
-> Чтобы броадкасты срабатывали, должен быть активен один из бэкендов управления (Shizuku, локальный ADB-демон или root).
+- С `apps` выбор в приложении синхронизируется: `state true` отмечает приложения и включает файрвол, если он был выключен; `state false` снимает отметку и оставляет файрвол включённым. В режиме белого списка `apps` относится к списку разрешённых, поэтому два состояния меняются местами.
+- Если **Показывать приложения из других профилей** выключено, простое имя пакета действует и на его клоны. Если включено, каждый профиль адресуется только через свой префикс.
 
-## Примечания и ограничения
+### Новое приложение: `shizuwall.APP_INSTALLED`
 
-- Правила файрвола сбрасываются при перезагрузке — так устроена платформа Android.
-- Перезагрузка устройства снимает все активные блокировки сети, установленные ShizuWall.
-- Приложение запрашивает `android.permission.INTERNET` только для сопряжения по беспроводной отладке (подключение к локальному демону LibADB).
-
-## Сборка (для разработчиков)
-
-### Приложение
+Сообщает о только что установленном приложении, чтобы политика и уведомление для новых приложений применились так, как если бы ShizuWall сам обнаружил установку. ShizuWall видит установки только в своём профиле; так можно охватить остальные.
 
 ```bash
-./gradlew assembleRelease
+adb shell am broadcast -a shizuwall.APP_INSTALLED -n com.arslan.shizuwall/.receivers.AppInstalledReceiver --es apps "com.example.newapp"
 ```
 
-### Демон
+Пока брандмауэр выключен, правила не применяются. Приложения без разрешения `INTERNET` игнорируются.
 
-Демон, работающий на устройстве (`SystemDaemon.java`), автоматически компилируется в DEX (`daemon.bin`) в рамках обычной сборки Gradle задачей `compileDaemonDex`. Он собирается из исходников с помощью `javac` и `d8` из build-tools Android SDK и упаковывается как ресурс — готового бинарника в репозитории нет, поэтому серверы воспроизводимых сборок (например, F-Droid) создают его сами.
+### Профиль: `shizuwall.PROFILE`
 
-Никаких ручных действий не требуется; `./gradlew assembleRelease` собирает и его. Задачу можно запустить и отдельно:
+Активирует сохранённый профиль: записывает его выбор приложений, режим файрвола, режимы отдельных приложений и настройку *Показать системные приложения*.
+
+| Параметр | Тип | |
+|---|---|---|
+| `profile` | string | Имя профиля, как оно показано в списке профилей. |
+| `profile_id` | string | Внутренний идентификатор; проверяется первым и не зависит от переименований. Диалог **Автоматизация** профиля показывает готовую команду. |
+| `force_enable` | boolean, необязательный | Включить файрвол после переключения, даже если он был выключен. |
+
+Обязателен один из параметров `profile` или `profile_id`. Если ни один не найден, ничего не меняется, а всплывающее сообщение сообщает об этом.
 
 ```bash
-./gradlew :app:compileDaemonDex
+adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.ProfileControlReceiver --es profile "Work"
 ```
 
-## Отказ от ответственности: безопасность и распространение
+## Отказ от ответственности
 
-ShizuWall предоставляется **«как есть»**, без каких-либо гарантий.
+ShizuWall предоставляется **«как есть»**, без гарантий. Он использует расширенные системные разрешения, и разработчик не несёт ответственности за нестабильность системы, потерю данных или побочные эффекты блокировки сети. Всегда проверяйте, какие приложения вы блокируете.
 
-Используя это приложение, вы подтверждаете, что оно опирается на расширенные системные разрешения (Shizuku/ADB/root), и принимаете все связанные риски. Разработчик не несёт ответственности за ущерб, включая нестабильность системы, потерю данных, перебои в работе служб или последствия блокировки сети.
+**Официальные источники — только Google Play, F-Droid и этот репозиторий.** APK из других мест не связаны с проектом и используются на ваш риск.
 
-**Официальное распространение и риски третьих сторон**
-Разработчики и участники проекта ShizuWall не несут никакой ответственности за ущерб, нарушения безопасности, заражение вредоносным ПО или потерю данных, возникшие в результате загрузки, установки или использования APK-файлов, полученных из сторонних источников. ShizuWall официально разрабатывается и распространяется исключительно через Google Play Store, официальный репозиторий на GitHub и F-Droid. ShizuWall не владеет, не управляет и не поддерживает никакой официальный веб-сайт. Любой сайт или сторонняя платформа, утверждающие, что предлагают официальные загрузки ShizuWall, не имеют к проекту отношения и не авторизованы. Пользователи, получающие приложение вне официальных каналов, делают это строго на свой риск.
-
-**ShizuWall — приложение с открытым исходным кодом. Разработчик не несёт финансовой, моральной или юридической ответственности за использование этого приложения. Вся ответственность лежит на пользователе.**
-
-Всегда проверяйте, какие приложения вы блокируете.
+Разрешение `INTERNET` запрашивается только для сопряжения по беспроводной отладке (LibADB).
 
 ## Лицензия
 
-Распространяется по лицензии **GNU General Public License v3.0 (GPLv3)**. См. [LICENSE.md](../LICENSE.md).
-
-Входящие в состав данные сигнатур трекеров не являются кодом и имеют собственную лицензию (ODbL v1.0). См. [TRACKER_DATA_LICENSE.md](../TRACKER_DATA_LICENSE.md).
-
-## Поддержать
-
-- ⭐ Поставьте звезду проекту: [GitHub Stars](https://github.com/AhmetCanArslan/ShizuWall/stargazers)
-- ☕ Сделать пожертвование: [Buy Me a Coffee](https://buymeacoffee.com/ahmetcanarslan)
-- ⬇️ Скачать: [Google Play Store](https://play.google.com/store/apps/details?id=com.arslan.shizuwall)
+[GPLv3](../LICENSE.md). Включённые данные сигнатур трекеров лицензируются отдельно по ODbL v1.0, см. [TRACKER_DATA_LICENSE.md](../TRACKER_DATA_LICENSE.md).
 
 ## Благодарности
 
-- [Shizuku](https://github.com/RikkaApps/Shizuku) — API, обеспечивающий выполнение привилегированных команд.
-- [LibADB](https://github.com/MuntashirAkon/libadb-android) — Поддержка беспроводной отладки и подключения к демону.
-- [Exodus Privacy](https://exodus-privacy.eu.org/) — База сигнатур трекеров, используемая для обнаружения трекерных SDK внутри приложений, под лицензией [ODbL v1.0](https://opendatacommons.org/licenses/odbl/1-0/). ShizuWall включает сокращённую копию и никогда не обращается к их API. См. [TRACKER_DATA_LICENSE.md](../TRACKER_DATA_LICENSE.md).
+- [Shizuku](https://github.com/RikkaApps/Shizuku): выполнение привилегированных команд.
+- [LibADB](https://github.com/MuntashirAkon/libadb-android): отладка по Wi-Fi и подключение к демону.
+- [Exodus Privacy](https://exodus-privacy.eu.org/): база сигнатур трекеров. ShizuWall включает её сокращённую копию и никогда не обращается к их API.

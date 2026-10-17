@@ -22,14 +22,13 @@
 </p>
 <div style="height: 20px;">&nbsp;</div>
 <p align="center">
+  <a href="https://tooomm.github.io/github-release-stats/?username=AhmetCanArslan&repository=ShizuWall">
+    <img alt="Downloads (GitHub)" src="https://img.shields.io/github/downloads/AhmetCanArslan/ShizuWall/total?color=ff9500&label=Total%20Downloads%20(GitHub)&logo=github&logoColor=white&style=flat-square" />
+  </a>
+  <img alt="Downloads (F-Droid)" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fkitswas%2Ffdroid-metrics-dashboard%2Fraw%2Frefs%2Fheads%2Fmain%2Fprocessed%2Ftotal%2Fcom.arslan.shizuwall.json&query=%24.total_downloads&logo=fdroid&logoColor=white&label=Total%20Downloads%20(F-Droid)&style=flat-square" />
   <img alt="Last commit" src="https://img.shields.io/github/last-commit/AhmetCanArslan/ShizuWall?style=flat-square" />
   <img alt="Repo size" src="https://img.shields.io/github/repo-size/AhmetCanArslan/ShizuWall?style=flat-square" />
-  <img alt="License" src="https://img.shields.io/github/license/AhmetCanArslan/ShizuWall?style=flat-square" />
-  <img alt="Android" src="https://img.shields.io/badge/Android-11%2B-3DDC84?style=flat-square&logo=android&logoColor=white" />
-  <img alt="Downloads" src="https://img.shields.io/github/downloads/AhmetCanArslan/ShizuWall/total?color=ff9500&style=flat-square" />
-  <a href="https://github.com/timschneeb/awesome-shizuku?tab=readme-ov-file#network">
-    <img alt="Awesome" src="https://awesome.re/mentioned-badge-flat.svg" style="display:inline-block;" />
-  </a>
+  <img alt="Minimum SDK" src="https://img.shields.io/badge/Minimum%20SDK-30%20(Android%2011)-839192?style=flat-square&logo=android&logoColor=white" />
 </p>
 
 <p align="center">
@@ -47,154 +46,102 @@
   </a>
 </p>
 
+## Şunlarla çalışır
+
+Android 11+ ve şu arka uçlardan biri:
+
+- **Shizuku** (fork'lar desteklenir)
+- **LibADB**: Kablosuz Hata Ayıklama ile eşleşir, bilgisayar gerekmez
+- **Root**
+
 ## Neden ShizuWall
 
-- **VPN yok**: Paket yakalama ve kalıcı VPN tüneli yan etkilerinden kaçınır.
-- **Uygulama bazlı ağ denetimi**: Uygulamaların ağ erişimini Android'in `connectivity` chain-3 denetimleriyle açıp kapatır.
-- **Tasarımı gereği gizlilik odaklı**: Öncelikle çevrimdışı; analitik, telemetri veya izleme yok.
-- **Otomasyona hazır**: Betikler ve görev otomasyonu için `adb broadcast` komutlarını destekler.
-- **Kontrol yöntemleri**: ShizuWall güvenlik duvarını kontrol etmek için üç pratik yol sunar: Hızlı Ayarlar düğmesi, uygulama widget'ı ve yüzen güvenlik duvarı düğmesi.
+- **VPN yok**: paket yakalama yok, kalıcı tünel yok.
+- **Uygulama bazlı denetim**: iş profili ve klon kopyaları dahil, ağ erişimini uygulama bazında engeller.
+- **Gizlilik**: öncelikle çevrimdışı; analitik yok, telemetri yok.
+- **Hızlı erişim**: Hızlı Ayarlar kutucuğu, widget ve yüzen düğme.
+- **Otomasyon**: adb, Tasker, MacroDroid ve benzerlerinden gönderilen yayınlarla (broadcast) kontrol edilebilir.
 
-## Ekran Görüntüleri
+## Ekran Görüntüsü
 
 <p align="center">
-  <img src="../assets/screenshots/v4.6/1.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/2.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/3.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/4.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/5.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/6.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/7.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/8.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/9.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/10.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/11.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/12.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/13.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/14.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/15.png" width="30%" />
-  <img src="../assets/screenshots/v4.6/16.png" width="30%" />
-
+  <img src="../assets/screenshots/v4.6/1.png" alt="ShizuWall" width="30%" />
 </p>
-
-## Gereksinimler
-
-- Android 11 (API 30) veya üzeri
-- Bir kontrol arka ucu: Shizuku, yerel ADB arka plan servisi veya root erişimi
-
-## Kontrol Arka Uçları
-
-ShizuWall güvenlik duvarı komutlarını çalıştırmak için üç yöntemi destekler:
-
-| Yöntem | Açıklama | Kurulum |
-|--------|---------|---------|
-| **Shizuku** | Sistem servisleriyle iletişim kuran güvenli API. Shizuku uygulaması gerekir. Çatallar (fork) da desteklenir. | Shizuku uygulamasını kurup ayarlayın, izinleri verin |
-| **Root** | Doğrudan root erişimi. | Cihazınızı standart yöntemlerle root'layın |
-| **LibADB (LADB)** | Telefonunuzun yerleşik "Kablosuz hata ayıklama" özelliğini kullanarak USB ile bağlı bir bilgisayar gibi davranır. Böylece uygulama; bilgisayar, root veya Shizuku gibi ek uygulamalar olmadan gelişmiş sistem değişiklikleri yapabilir. | Geliştirici seçeneklerinde kablosuz hata ayıklamayı etkinleştirip eşleştirin (rehber uygulama içinde) |
 
 ## Nasıl Çalışır
 
-ShizuWall, uygulama bazlı ağ denetimi için Android'in **Chain 3** (bağlantı zinciri) mekanizmasını kullanır. Shizuku veya yerel arka plan servisi üzerinden çalıştırılan platform komutları şunlardır:
-
-### ADB Chain 3 Komutları
+ShizuWall, ağ erişimini paket bazında denetleyen bir platform mekanizması olan Android'in connectivity **chain 3** zincirini kullanır:
 
 ```bash
-# Güvenlik duvarı çerçevesini etkinleştir
-cmd connectivity set-chain3-enabled true
-
-# Belirli bir uygulamayı engelle
-cmd connectivity set-package-networking-enabled false <package.name>
-
-# Belirli bir uygulamanın engelini kaldır
-cmd connectivity set-package-networking-enabled true <package.name>
-
-# Güvenlik duvarı çerçevesini devre dışı bırak
-cmd connectivity set-chain3-enabled false
+cmd connectivity set-chain3-enabled true                                # güvenlik duvarı açık
+cmd connectivity set-package-networking-enabled false <package.name>   # engelle
+cmd connectivity set-package-networking-enabled true <package.name>    # engeli kaldır
+cmd connectivity set-chain3-enabled false                               # güvenlik duvarı kapalı
 ```
 
-**Chain 3**, paket bazında ağ erişimini sistem düzeyinde yakalayıp denetleyen bir Android platform mekanizmasıdır ve ince ayarlı güvenlik duvarı kontrolü sağlar.
+Android bu kuralları yeniden başlatmada temizler.
 
-## Otomasyon (ADB Broadcast)
+## Otomasyon
 
-ShizuWall'ı betiklerden ve otomasyon araçlarından kontrol edebilirsiniz.
+Her yayın için etkin bir arka uç gerekir. `apps`, virgülle ayrılmış uygulama anahtarları listesidir: yalın paket adı kullanıcı 0'ı, `150:com.example.app` gibi ön ekli bir anahtar ise o iş profilindeki veya klon alanındaki kopyayı hedefler.
 
-**Eylem**: `shizuwall.CONTROL`  
-**Bileşen**: `com.arslan.shizuwall/.receivers.FirewallControlReceiver`  
+### Güvenlik duvarı: `shizuwall.CONTROL`
 
-**Ekstralar**
-
-- `state` (boolean, zorunlu): `true` = etkinleştir, `false` = devre dışı bırak
-- `apps` (string, isteğe bağlı): Virgülle ayrılmış paket listesi. Belirtilmezse ShizuWall kayıtlı seçili uygulamaları kullanır.
-
-### Örnekler
+| Ekstra | Tür | |
+|---|---|---|
+| `state` | boolean, zorunlu | `true` = engelle, `false` = engeli kaldır |
+| `apps` | string, isteğe bağlı | Engellenecek veya engeli kaldırılacak uygulamalar. Verilmezse yayın tüm güvenlik duvarını açıp kapatır. |
 
 ```bash
-# Kayıtlı seçili uygulamalar için güvenlik duvarını etkinleştir
+# Güvenlik duvarını aç (state false kapatır)
 adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true
 
-# Kayıtlı seçili uygulamalar için güvenlik duvarını devre dışı bırak
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state false
-
-# Belirli paketler için güvenlik duvarını etkinleştir
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true --es apps "com.example.app1,com.example.app2"
-
-# Belirli paketler için güvenlik duvarını devre dışı bırak
-adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state false --es apps "com.example.app1,com.example.app2"
+# Bir uygulamayı ve iş profilindeki kopyasını engelle
+adb shell am broadcast -a shizuwall.CONTROL -n com.arslan.shizuwall/.receivers.FirewallControlReceiver --ez state true --es apps "com.example.app,150:com.example.app"
 ```
 
-> Yayınların başarılı olması için kontrol arka uçlarından biri (Shizuku, yerel ADB arka plan servisi veya Root) etkin olmalıdır.
+`apps` verildiğinde uygulamadaki seçim de güncellenir: `state true` uygulamaları seçer ve kapalıysa güvenlik duvarını açar, `state false` seçimi kaldırır ve güvenlik duvarını açık bırakır. Beyaz liste modunda `apps` izin listesini hedefler, bu yüzden iki durum ters çalışır.
 
-## Notlar ve Kısıtlamalar
+### Yeni uygulama: `shizuwall.APP_INSTALLED`
 
-- Güvenlik duvarı kuralları, Android platformunun davranışı gereği yeniden başlatmada temizlenir.
-- Cihazı yeniden başlatmak, ShizuWall tarafından uygulanmış tüm etkin ağ engellemelerini sıfırlar.
-- Uygulama `android.permission.INTERNET` iznini yalnızca kablosuz hata ayıklama eşleştirmesi (LibADB yerel arka plan servisi bağlantısı) için ister.
-
-## Derleme (Geliştiriciler)
-
-### Uygulama
+Yeni kurulan bir uygulamayı bildirir; böylece yeni uygulama politikası ve bildirimi, kurulumu ShizuWall kendisi algılamış gibi uygulanır. ShizuWall yalnızca kendi profilindeki kurulumları görür; diğer profilleri kapsamanın yolu budur.
 
 ```bash
-./gradlew assembleRelease
+adb shell am broadcast -a shizuwall.APP_INSTALLED -n com.arslan.shizuwall/.receivers.AppInstalledReceiver --es apps "com.example.newapp"
 ```
 
-### Arka plan servisi (daemon)
+Güvenlik duvarı kapalıyken kural uygulanmaz. `INTERNET` izni olmayan uygulamalar yok sayılır.
 
-Cihaz üzerindeki arka plan servisi (`SystemDaemon.java`), normal Gradle derlemesinin bir parçası olarak `compileDaemonDex` göreviyle otomatik şekilde bir DEX dosyasına (`daemon.bin`) derlenir. Android SDK build-tools içindeki `javac` ve `d8` ile kaynaktan derlenip bir varlık (asset) olarak paketlenir; depoda önceden derlenmiş bir ikili dosya yoktur, böylece yeniden üretilebilir derleme sunucuları (ör. F-Droid) onu kendileri üretir.
+### Profil: `shizuwall.PROFILE`
 
-Elle bir adım gerekmez; `./gradlew assembleRelease` bunu da derler. Görev tek başına da çalıştırılabilir:
+Kayıtlı bir profili etkinleştirir: uygulama seçimini, güvenlik duvarı modunu, uygulama bazlı modları ve *Sistem uygulamalarını göster* ayarını yazar.
+
+| Ekstra | Tür | |
+|---|---|---|
+| `profile` | string | Profil adı, profiller sayfasında göründüğü gibi. |
+| `profile_id` | string | Dahili kimlik; önce buna bakılır ve yeniden adlandırmadan etkilenmez. Profilin **Otomasyon** penceresi hazır komutu gösterir. |
+| `force_enable` | boolean, isteğe bağlı | Kapalı olsa bile geçişten sonra güvenlik duvarını açar. |
+
+`profile` veya `profile_id` değerlerinden biri zorunludur. İkisi de eşleşmezse hiçbir şey değişmez ve bir bildirim (toast) bunu haber verir.
 
 ```bash
-./gradlew :app:compileDaemonDex
+adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.ProfileControlReceiver --es profile "Work"
 ```
 
-## Güvenlik ve Dağıtım Feragatnamesi
+## Feragatname
 
-ShizuWall hiçbir garanti verilmeksizin **"olduğu gibi"** sunulur.
+ShizuWall hiçbir garanti verilmeksizin **"olduğu gibi"** sunulur. Gelişmiş sistem izinlerine dayanır; geliştirici sistem kararsızlığı, veri kaybı veya engellenen ağ erişiminin yan etkilerinden sorumlu değildir. Hangi uygulamaları engellediğinizi daima doğrulayın.
 
-Bu uygulamayı kullanarak, gelişmiş sistem izinlerine (Shizuku/ADB/Root) dayandığını kabul eder ve ilgili tüm riskleri üstlenirsiniz. Geliştirici; sistem kararsızlığı, veri kaybı, hizmet kesintisi veya engellenen ağ erişiminden kaynaklanan yan etkiler gibi zararlardan sorumlu değildir.
+**Resmî kaynaklar yalnızca Google Play, F-Droid ve bu depodur.** Başka yerlerden edinilen APK'lar projeyle ilişkili değildir ve kendi riskinizle kullanılır.
 
-**Resmî Dağıtım ve Üçüncü Taraf Riskleri**
-ShizuWall geliştiricileri ve katkıda bulunanları; üçüncü taraf kaynaklardan edinilen APK dosyalarının indirilmesi, kurulması veya kullanılmasından doğan hiçbir zarardan, güvenlik ihlalinden, kötü amaçlı yazılım bulaşmasından veya veri kaybından sorumlu tutulamaz. ShizuWall resmî olarak yalnızca Google Play Store, resmî GitHub deposu ve F-Droid üzerinden geliştirilir ve dağıtılır. ShizuWall'ın sahip olduğu, işlettiği veya onayladığı herhangi bir resmî web sitesi yoktur. Resmî ShizuWall indirmeleri sunduğunu iddia eden her web sitesi veya üçüncü taraf platform tamamen ilgisiz ve yetkisizdir. Uygulamayı resmî kanalların dışından edinen kullanıcılar bunu tamamen kendi riskleriyle yapar.
-
-**ShizuWall açık kaynaklı bir uygulamadır. Geliştirici, bu uygulamanın kullanımına ilişkin hiçbir mali, ahlaki veya hukuki sorumluluk kabul etmez. Tüm sorumluluk kullanıcıya aittir.**
-
-Hangi uygulamaları engellediğinizi daima doğrulayın.
+`INTERNET` izni yalnızca kablosuz hata ayıklama eşleştirmesi (LibADB) için istenir.
 
 ## Lisans
 
-**GNU General Public License v3.0 (GPLv3)** ile lisanslanmıştır. Bkz. [LICENSE.md](../LICENSE.md).
-
-Uygulamayla birlikte gelen izleyici imza verisi kod değildir ve kendi lisansına sahiptir (ODbL v1.0). Bkz. [TRACKER_DATA_LICENSE.md](../TRACKER_DATA_LICENSE.md).
-
-## Destek
-
-- ⭐ Projeye yıldız verin: [GitHub Stars](https://github.com/AhmetCanArslan/ShizuWall/stargazers)
-- ☕ Bağış yapın: [Buy Me a Coffee](https://buymeacoffee.com/ahmetcanarslan)
-- ⬇️ İndirin: [Google Play Store](https://play.google.com/store/apps/details?id=com.arslan.shizuwall)
+[GPLv3](../LICENSE.md). Uygulamayla gelen izleyici imza verisi ayrıca ODbL v1.0 ile lisanslıdır, bkz. [TRACKER_DATA_LICENSE.md](../TRACKER_DATA_LICENSE.md).
 
 ## Teşekkürler
 
-- [Shizuku](https://github.com/RikkaApps/Shizuku) — Ayrıcalıklı komut çalıştırma akışını mümkün kılan API.
-- [LibADB](https://github.com/MuntashirAkon/libadb-android) — Kablosuz hata ayıklama ve arka plan servisi bağlantısı desteği.
-- [Exodus Privacy](https://exodus-privacy.eu.org/) — Uygulamalardaki izleyici SDK'larını tespit etmek için kullanılan izleyici imza veritabanı; [ODbL v1.0](https://opendatacommons.org/licenses/odbl/1-0/) ile lisanslıdır. ShizuWall kırpılmış bir kopyayı paketler ve API'lerine hiçbir zaman bağlanmaz. Bkz. [TRACKER_DATA_LICENSE.md](../TRACKER_DATA_LICENSE.md).
+- [Shizuku](https://github.com/RikkaApps/Shizuku): ayrıcalıklı komut çalıştırma.
+- [LibADB](https://github.com/MuntashirAkon/libadb-android): kablosuz hata ayıklama ve arka plan servisi bağlantısı.
+- [Exodus Privacy](https://exodus-privacy.eu.org/): izleyici imza veritabanı. ShizuWall kırpılmış bir kopyayı paketler ve API'lerine hiçbir zaman bağlanmaz.
