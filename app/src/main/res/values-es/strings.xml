@@ -97,7 +97,6 @@
     <string name="permission_denied">Permiso denegado</string>
     <string name="shizuku_permission_granted">Permiso de Shizuku otorgado</string>
     <string name="notification_permission_granted">Permiso de notificaciones otorgado</string>
-    <string name="notification_permission_denied">Permiso de notificaciones denegado. No verás notificaciones de estado del firewall.</string>
     <string name="shizuku_not_running_title">Shizuku no se está ejecutando</string>
     <string name="shizuku_not_running_message">Shizuku no está activo. Inicia el servicio Shizuku (o instálalo) antes de activar el firewall.</string>
     <string name="open_shizuku">Abrir Shizuku</string>
@@ -263,7 +262,6 @@
     <string name="open_developer_settings">Abrir Opciones de desarrollador</string>
     <string name="ladb_connection_failed_help">Error de conexión. Revisa:\n1. Depuración inalámbrica activa\n2. Misma red Wi-Fi\n3. Sin bloqueos de firewall</string>
     <string name="copy_logs_success">¡Registros copiados!</string>
-    <string name="shizuku_not_available">Shizuku no disponible o permiso denegado</string>
     <string name="firewall_reboot_title">El firewall estaba activo antes del reinicio</string>
     <string name="log_no_pairing_config">Configuración no encontrada, esperando...</string>
     <string name="log_showing_pairing_notif">Mostrando notificación para: %1$s:%2$d</string>

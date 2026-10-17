@@ -98,7 +98,6 @@
     <string name="permission_denied">Berechtigung verweigert</string>
     <string name="shizuku_permission_granted">Shizuku-Berechtigung erteilt</string>
     <string name="notification_permission_granted">Benachrichtigungsberechtigung erteilt</string>
-    <string name="notification_permission_denied">Benachrichtigungsberechtigung verweigert. Sie werden keine Firewall-Status-Benachrichtigungen sehen.</string>
     <string name="shizuku_not_running_title">Shizuku läuft nicht</string>
     <string name="shizuku_not_running_message">Shizuku läuft derzeit nicht. Starten Sie den Shizuku-Dienst (oder installieren Sie ihn), bevor Sie die Firewall aktivieren.</string>
     <string name="open_shizuku">Shizuku öffnen</string>
@@ -261,7 +260,6 @@
     <string name="open_developer_settings">Entwickleroptionen öffnen</string>
     <string name="ladb_connection_failed_help">Verbindung fehlgeschlagen. Bitte prüfen:\n1. Wireless-Debugging ist in den Entwickleroptionen aktiviert\n2. Das Gerät befindet sich im selben Netzwerk\n3. Keine Firewall blockiert die Verbindung</string>
     <string name="copy_logs_success">Protokolle in die Zwischenablage kopiert!</string>
-    <string name="shizuku_not_available">Shizuku nicht verfügbar oder Berechtigung verweigert</string>
     <string name="firewall_reboot_title">Firewall war vor dem Neustart aktiv</string>
     <string name="log_no_pairing_config">Keine Kopplungskonfiguration gefunden, warte auf automatische Erkennung...</string>
     <string name="log_showing_pairing_notif">Zeige Kopplungsbenachrichtigung für Konfiguration: %1$s:%2$d</string>

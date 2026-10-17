@@ -98,7 +98,6 @@
     <string name="permission_denied">İzin Reddedildi</string>
     <string name="shizuku_permission_granted">Shizuku izni verildi</string>
     <string name="notification_permission_granted">Bildirim izni verildi</string>
-    <string name="notification_permission_denied">Bildirim izni reddedildi. Güvenlik duvarı durumu bildirimlerini görmeyeceksiniz.</string>
     <string name="shizuku_not_running_title">Shizuku çalışmıyor</string>
     <string name="shizuku_not_running_message">Shizuku şu anda çalışmıyor. Güvenlik duvarını etkinleştirmeden önce Shizuku servisini başlatın (veya yükleyin).</string>
     <string name="open_shizuku">Shizukuyu Aç</string>
@@ -261,7 +260,6 @@
     <string name="open_developer_settings">Geliştirici Seçeneklerini Aç</string>
     <string name="ladb_connection_failed_help">Bağlantı başarısız oldu. Lütfen kontrol edin:\n1. Geliştirici seçeneklerinde kablosuz hata ayıklama etkin\n2. Cihaz aynı ağda\n3. Bağlantıyı engelleyen bir güvenlik duvarı yok</string>
     <string name="copy_logs_success">Günlükler panoya kopyalandı!</string>
-    <string name="shizuku_not_available">Shizuku mevcut değil veya izin reddedildi</string>
     <string name="firewall_reboot_title">Güvenlik duvarı yeniden başlatmadan önce aktifti</string>
     <string name="log_no_pairing_config">Eşleştirme yapılandırması bulunamadı, otomatik keşif bekleniyor...</string>
     <string name="log_showing_pairing_notif">Yapılandırma için eşleştirme bildirimi gösteriliyor: %1$s:%2$d</string>

@@ -97,7 +97,6 @@
     <string name="permission_denied">権限が拒否されました</string>
     <string name="shizuku_permission_granted">Shizuku の権限が許可されました</string>
     <string name="notification_permission_granted">通知の権限が許可されました</string>
-    <string name="notification_permission_denied">通知の権限が拒否されました。ファイアウォールのステータス通知は表示されません。</string>
     <string name="shizuku_not_running_title">Shizuku が実行されていません</string>
     <string name="shizuku_not_running_message">Shizuku は現在実行されていません。ファイアウォールを有効にする前に、Shizuku サービスを開始（またはインストール）してください。</string>
     <string name="open_shizuku">Shizuku を開く</string>
@@ -263,7 +262,6 @@
     <string name="open_developer_settings">開発者向けオプションを開く</string>
     <string name="ladb_connection_failed_help">接続に失敗しました。以下を確認してください:\n1. 開発者向けオプションでワイヤレスデバッグが有効になっているか\n2. デバイスが同じネットワーク上にあるか\n3. ファイアウォールが接続をブロックしていないか</string>
     <string name="copy_logs_success">ログをクリップボードにコピーしました！</string>
-    <string name="shizuku_not_available">Shizuku が利用できないか、権限が拒否されました</string>
     <string name="firewall_reboot_title">再起動前にファイアウォールがアクティブでした</string>
     <string name="log_no_pairing_config">ペアリング構成が見つかりません。自動検出を待機しています...</string>
     <string name="log_showing_pairing_notif">構成のペアリング通知を表示しています: %1$s:%2$d</string>

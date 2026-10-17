@@ -98,7 +98,6 @@
     <string name="permission_denied">权限被拒绝</string>
     <string name="shizuku_permission_granted">Shizuku 权限已授予</string>
     <string name="notification_permission_granted">通知权限已授予</string>
-    <string name="notification_permission_denied">通知权限被拒绝。您不会看到防火墙状态通知。</string>
     <string name="shizuku_not_running_title">Shizuku 未运行</string>
     <string name="shizuku_not_running_message">Shizuku 当前未运行。在启用防火墙之前启动 Shizuku 服务（或安装它）。</string>
     <string name="open_shizuku">打开 Shizuku</string>
@@ -261,7 +260,6 @@
     <string name="open_developer_settings">打开开发者选项</string>
     <string name="ladb_connection_failed_help">连接失败。请检查：\n1. 开发者选项中已启用无线调试\n2. 设备在同一网络中\n3. 没有防火墙阻止连接</string>
     <string name="copy_logs_success">日志已复制到剪贴板！</string>
-    <string name="shizuku_not_available">Shizuku 不可用或权限被拒绝</string>
     <string name="firewall_reboot_title">重启前防火墙处于活动状态</string>
     <string name="log_no_pairing_config">未找到配对配置，正在等待自动发现...</string>
     <string name="log_showing_pairing_notif">正在显示配置的配对通知：%1$s:%2$d</string>

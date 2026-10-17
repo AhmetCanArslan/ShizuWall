@@ -98,7 +98,6 @@
     <string name="permission_denied">تم رفض الإذن</string>
     <string name="shizuku_permission_granted">تم منح إذن Shizuku</string>
     <string name="notification_permission_granted">تم منح إذن الإشعارات</string>
-    <string name="notification_permission_denied">تم رفض إذن الإشعارات. لن ترى إشعارات حالة الجدار الناري.</string>
     <string name="shizuku_not_running_title">Shizuku لا يعمل</string>
     <string name="shizuku_not_running_message">Shizuku لا يعمل حاليًا. ابدأ خدمة Shizuku (أو قم بتثبيتها) قبل تفعيل الجدار الناري.</string>
     <string name="open_shizuku">فتح Shizuku</string>
@@ -264,7 +263,6 @@
     <string name="open_developer_settings">فتح إعدادات المطور</string>
     <string name="ladb_connection_failed_help">فشل الاتصال. يرجى التحقق من:\n1. تفعيل تصحيح أخطاء اللاسلكي في خيارات المطور\n2. الجهاز على نفس الشبكة\n3. لا يوجد جدار ناري يمنع الاتصال</string>
     <string name="copy_logs_success">تم نسخ السجلات إلى الحافظة!</string>
-    <string name="shizuku_not_available">Shizuku غير متاح أو تم رفض الإذن</string>
     <string name="firewall_reboot_title">كان الجدار الناري نشطًا قبل إعادة التشغيل</string>
     <string name="log_no_pairing_config">لم يتم العثور على تكوين إقران، في انتظار الاكتشاف التلقائي...</string>
     <string name="log_showing_pairing_notif">عرض إشعار الإقران للتكوين: %1$s:%2$d</string>

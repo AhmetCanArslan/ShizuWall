@@ -100,7 +100,6 @@
     <string name="permission_denied">Autorizzazione negata</string>
     <string name="shizuku_permission_granted">Autorizzazione Shizuku concessa</string>
     <string name="notification_permission_granted">Autorizzazione notifiche concessa</string>
-    <string name="notification_permission_denied">Autorizzazione notifiche negata. Non vedrai le notifiche di stato del firewall.</string>
     <string name="shizuku_not_running_title">Shizuku non è in esecuzione</string>
     <string name="shizuku_not_running_message">Shizuku non è attualmente in esecuzione. Avvia il servizio Shizuku (o installalo) prima di attivare il firewall.</string>
     <string name="open_shizuku">Apri Shizuku</string>
@@ -281,7 +280,6 @@
     <string name="open_developer_settings">Apri opzioni sviluppatore</string>
     <string name="ladb_connection_failed_help">Connessione non riuscita. Controlla:\n1. Il debug wireless è attivo nelle Opzioni sviluppatore\n2. Il dispositivo è sulla stessa rete\n3. Nessun firewall sta bloccando la connessione</string>
     <string name="copy_logs_success">Registri copiati negli appunti!</string>
-    <string name="shizuku_not_available">Shizuku non disponibile o autorizzazione negata</string>
     <string name="firewall_reboot_title">Il firewall era attivo prima del riavvio</string>
     <string name="log_no_pairing_config">Nessuna configurazione di associazione trovata, in attesa del rilevamento automatico...</string>
     <string name="log_showing_pairing_notif">Notifica di associazione mostrata per la configurazione: %1$s:%2$d</string>

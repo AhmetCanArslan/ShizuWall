@@ -98,7 +98,6 @@
     <string name="permission_denied">Permissão Negada</string>
     <string name="shizuku_permission_granted">Permissão Shizuku concedida</string>
     <string name="notification_permission_granted">Permissão de notificação concedida</string>
-    <string name="notification_permission_denied">Permissão de notificação negada. Você não verá notificações de status do firewall.</string>
     <string name="shizuku_not_running_title">Shizuku não está rodando</string>
     <string name="shizuku_not_running_message">Shizuku não está rodando atualmente. Inicie o serviço Shizuku (ou instale-o) antes de ativar o firewall.</string>
     <string name="open_shizuku">Abrir Shizuku</string>
@@ -261,7 +260,6 @@
     <string name="open_developer_settings">Abrir Opções do Desenvolvedor</string>
     <string name="ladb_connection_failed_help">A conexão falhou. Por favor, verifique:\n1. A depuração sem fio está ativada nas Opções do desenvolvedor\n2. O dispositivo está na mesma rede\n3. Nenhum firewall está bloqueando a conexão</string>
     <string name="copy_logs_success">Logs copiados para a área de transferência!</string>
-    <string name="shizuku_not_available">Shizuku não disponível ou permissão negada</string>
     <string name="firewall_reboot_title">O firewall estava ativo antes da reinicialização</string>
     <string name="log_no_pairing_config">Nenhuma configuração de pareamento encontrada, aguardando descoberta automática...</string>
     <string name="log_showing_pairing_notif">Mostrando notificação de pareamento para a configuração: %1$s:%2$d</string>

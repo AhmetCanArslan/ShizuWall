@@ -99,7 +99,6 @@
     <string name="permission_denied">Oprávnění zamítnuto.</string>
     <string name="shizuku_permission_granted">Shizuku oprávnění povoleno</string>
     <string name="notification_permission_granted">Povolení k zasílání oznámení uděleno.</string>
-    <string name="notification_permission_denied">Oprávnění k zasílání oznámení bylo zamítnuto. Neuvidíte oznámení o stavu brány firewall.</string>
     <string name="shizuku_not_running_title">Shizuku neběží</string>
     <string name="shizuku_not_running_message">Shizuku momentálně neběží. Spusťte službu Shizuku (nebo ji nainstalujte) před aktivací brány firewall.</string>
     <string name="open_shizuku">Otevřít Shizuku</string>
@@ -279,7 +278,6 @@
     <string name="open_developer_settings">Otevřít nastavení pro vývojáře</string>
     <string name="ladb_connection_failed_help">Připojení se nezdařilo. Zkontrolujte prosím:\n1. Bezdrátové ladění je povoleno v možnostech pro vývojáře\n2. Zařízení je připojeno ke stejné síti\n3. Připojení není blokováno žádným firewallem</string>
     <string name="copy_logs_success">Logy zkopírovány do schránky!</string>
-    <string name="shizuku_not_available">Shizuku není k dispozici nebo bylo odepřeno oprávnění</string>
     <string name="firewall_reboot_title">Firewall byl před restartem aktivní.</string>
     <string name="log_no_pairing_config">Nebylo nalezeno žádné nastavení párování, čekání na automatické vyhledání...</string>
     <string name="log_showing_pairing_notif">Zobrazení oznámení o párování pro konfiguraci: %1$s:%2$d</string>

@@ -97,7 +97,6 @@
     <string name="permission_denied">В разрешении отказано</string>
     <string name="shizuku_permission_granted">Разрешение Shizuku предоставлено</string>
     <string name="notification_permission_granted">Разрешение на уведомления предоставлено</string>
-    <string name="notification_permission_denied">В разрешении на уведомления отказано. Вы не будете видеть уведомления о статусе брандмауэра.</string>
     <string name="shizuku_not_running_title">Shizuku не запущен</string>
     <string name="shizuku_not_running_message">Shizuku в данный момент не запущен. Запустите сервис Shizuku (или установите его) перед включением брандмауэра.</string>
     <string name="open_shizuku">Открыть Shizuku</string>
@@ -263,7 +262,6 @@
     <string name="open_developer_settings">Открыть параметры разработчика</string>
     <string name="ladb_connection_failed_help">Подключение не удалось. Пожалуйста, проверьте:\n1. Беспроводная отладка включена в параметрах разработчика\n2. Устройство находится в той же сети\n3. Никакой брандмауэр не блокирует соединение</string>
     <string name="copy_logs_success">Логи скопированы в буфер обмена!</string>
-    <string name="shizuku_not_available">Shizuku недоступен или в разрешении отказано</string>
     <string name="firewall_reboot_title">Брандмауэр был активен до перезагрузки</string>
     <string name="log_no_pairing_config">Конфигурация сопряжения не найдена, ожидание автоматического обнаружения...</string>
     <string name="log_showing_pairing_notif">Отображение уведомления о сопряжении для конфигурации: %1$s:%2$d</string>

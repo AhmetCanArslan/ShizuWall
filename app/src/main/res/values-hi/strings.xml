@@ -100,7 +100,6 @@
     <string name="permission_denied">अनुमति अस्वीकृत</string>
     <string name="shizuku_permission_granted">Shizuku अनुमति दी गई</string>
     <string name="notification_permission_granted">सूचना अनुमति दी गई</string>
-    <string name="notification_permission_denied">सूचना अनुमति अस्वीकृत। आपको फ़ायरवॉल स्थिति सूचनाएँ नहीं दिखेंगी।</string>
     <string name="shizuku_not_running_title">Shizuku चल नहीं रहा है</string>
     <string name="shizuku_not_running_message">Shizuku इस समय चल नहीं रहा है। फ़ायरवॉल चालू करने से पहले Shizuku सेवा शुरू करें (या उसे इंस्टॉल करें)।</string>
     <string name="open_shizuku">Shizuku खोलें</string>
@@ -281,7 +280,6 @@
     <string name="open_developer_settings">डेवलपर विकल्प खोलें</string>
     <string name="ladb_connection_failed_help">कनेक्शन विफल। कृपया जाँचें:\n1. डेवलपर विकल्पों में वायरलेस डीबगिंग चालू है\n2. डिवाइस उसी नेटवर्क पर है\n3. कोई फ़ायरवॉल कनेक्शन को ब्लॉक नहीं कर रहा है</string>
     <string name="copy_logs_success">लॉग क्लिपबोर्ड पर कॉपी हो गए!</string>
-    <string name="shizuku_not_available">Shizuku उपलब्ध नहीं है या अनुमति अस्वीकृत है</string>
     <string name="firewall_reboot_title">रीबूट से पहले फ़ायरवॉल सक्रिय था</string>
     <string name="log_no_pairing_config">कोई पेयरिंग कॉन्फ़िगरेशन नहीं मिला, स्वतः खोज की प्रतीक्षा...</string>
     <string name="log_showing_pairing_notif">इस कॉन्फ़िगरेशन के लिए पेयरिंग सूचना दिखाई जा रही है: %1$s:%2$d</string>

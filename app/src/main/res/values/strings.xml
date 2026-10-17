@@ -100,7 +100,6 @@
     <string name="permission_denied">Permission Denied</string>
     <string name="shizuku_permission_granted">Shizuku permission granted</string>
     <string name="notification_permission_granted">Notification permission granted</string>
-    <string name="notification_permission_denied">Notification permission denied. You won\'t see firewall status notifications.</string>
     <string name="shizuku_not_running_title">Shizuku not running</string>
     <string name="shizuku_not_running_message">Shizuku is not currently running. Start the Shizuku service (or install it) before enabling the firewall.</string>
     <string name="open_shizuku">Open Shizuku</string>
@@ -281,7 +280,6 @@
     <string name="open_developer_settings">Open Developer Settings</string>
     <string name="ladb_connection_failed_help">Connection failed. Please check:\n1. Wireless debugging is enabled in Developer options\n2. The device is on the same network\n3. No firewall is blocking the connection</string>
     <string name="copy_logs_success">Logs copied to clipboard!</string>
-    <string name="shizuku_not_available">Shizuku not available or permission denied</string>
     <string name="firewall_reboot_title">Firewall was active before reboot</string>
     <string name="log_no_pairing_config">No pairing config found, waiting for auto-discovery...</string>
     <string name="log_showing_pairing_notif">Showing pairing notification for config: %1$s:%2$d</string>
