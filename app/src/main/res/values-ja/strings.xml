@@ -41,7 +41,8 @@
     <string name="android11_unsupported_title">Android 11 の互換性</string>
     <string name="android11_unsupported_message">Android 11 の一部のデバイスは ShizuWall をサポートしていません。次のようなエラーが表示される場合:\n - no command found set chain3 - \nお使いのデバイスは現在サポートされておらず、対応策はありません。</string>
     <string name="dont_show_again">次回から表示しない</string>
-    <string name="android11_unsupported_hint">エラーに -no command found set chain 3- が含まれている場合、その Android バージョンではデバイスがサポートされていない可能性があります。</string>
+    <string name="device_unsupported_title">このデバイスは非対応です</string>
+    <string name="device_unsupported_message">お使いの Android ビルドには、ShizuWall が利用する接続ファイアウォールチェーンがありません。これは Android 11〜12 や MIUI/HyperOS などの一部メーカー ROM でよく見られます。コマンド自体をシステムが拒否しているため、Shizuku・LADB・root を切り替えても解決しません。</string>
     <string name="firewall_cleanup_warning">警告: ファイアウォールのクリーンアップに失敗しました。インターネット接続を復元するには、デバイスを再起動してください。</string>
     <string name="app_reset_complete">アプリのリセットが完了しました。終了中…</string>
     <string name="reset_app_failed">アプリのリセットに失敗しました: %s</string>

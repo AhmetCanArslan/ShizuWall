@@ -41,7 +41,8 @@
     <string name="android11_unsupported_title">Совместимость с Android 11</string>
     <string name="android11_unsupported_message">Некоторые устройства на Android 11 не поддерживают ShizuWall. Если вы видите ошибку типа:\n - no command found set chain3 - \nэто означает, что ваше устройство не поддерживается, и в данный момент ничего нельзя сделать.</string>
     <string name="dont_show_again">Больше не показывать</string>
-    <string name="android11_unsupported_hint">Если в ошибке содержится -no command found set chain 3-, ваше устройство, скорее всего, не поддерживается в этой версии Android.</string>
+    <string name="device_unsupported_title">Устройство не поддерживается</string>
+    <string name="device_unsupported_message">Ваша сборка Android не предоставляет цепочку сетевого брандмауэра, на которую опирается ShizuWall. Это часто встречается на Android 11–12 и в некоторых прошивках производителей, например MIUI/HyperOS. Команду отклоняет сама система, поэтому переключение между Shizuku, LADB и root не поможет.</string>
     <string name="firewall_cleanup_warning">Внимание: Очистка брандмауэра не удалась. Пожалуйста, ПЕРЕЗАГРУЗИТЕ устройство, чтобы восстановить доступ в Интернет.</string>
     <string name="app_reset_complete">Сброс приложения завершен. Закрытие…</string>
     <string name="reset_app_failed">Не удалось сбросить приложение: %s</string>

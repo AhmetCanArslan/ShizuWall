@@ -45,7 +45,8 @@
     <string name="android11_unsupported_title">Compatibilidade com Android 11</string>
     <string name="android11_unsupported_message">Alguns dispositivos no Android 11 não suportam o ShizuWall. Se você vir um erro como:\n - no command found set chain3 - \nsignifica que seu dispositivo não é compatível e não há nada a fazer no momento.</string>
     <string name="dont_show_again">Não mostrar novamente</string>
-    <string name="android11_unsupported_hint">Se o erro contém -no command found set chain 3-, é provável que seu dispositivo não seja compatível com esta versão do Android.</string>
+    <string name="device_unsupported_title">Dispositivo não suportado</string>
+    <string name="device_unsupported_message">Sua versão do Android não oferece a cadeia de firewall de conectividade da qual o ShizuWall depende. Isso é comum no Android 11–12 e em algumas ROMs de fabricantes como MIUI/HyperOS. O próprio sistema rejeita o comando, então alternar entre Shizuku, LADB e root não vai ajudar.</string>
     <string name="adb_broadcast_usage_title">Uso de Broadcast ADB</string>
     <string name="adb_broadcast_field_action">Ação</string>
     <string name="adb_broadcast_field_component">Componente</string>

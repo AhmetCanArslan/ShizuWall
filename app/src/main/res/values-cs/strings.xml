@@ -43,7 +43,8 @@
     <string name="android11_unsupported_title">Android 11 kompatibilita</string>
     <string name="android11_unsupported_message">Některá zařízení s Androidem 11 nepodporují ShizuWall. Pokud se zobrazí chyba typu:\n - nebyl nalezen příkaz set chain3 - \nit znamená to, že vaše zařízení není podporováno a v tuto chvíli s tím nelze nic dělat.</string>
     <string name="dont_show_again">Znovu nezobrazovat</string>
-    <string name="android11_unsupported_hint">Pokud chyba obsahuje hlášení „-no command found set chain 3-“, vaše zařízení pravděpodobně není podporováno touto verzí systému Android.</string>
+    <string name="device_unsupported_title">Zařízení není podporováno</string>
+    <string name="device_unsupported_message">Vaše sestavení Androidu neposkytuje řetězec síťového firewallu, na kterém ShizuWall závisí. To je běžné u Androidu 11–12 a u některých ROM výrobců, například MIUI/HyperOS. Příkaz odmítá samotný systém, takže přepínání mezi Shizuku, LADB a root nepomůže.</string>
     <string name="firewall_cleanup_warning">Upozornění: Reset brány firewall se nezdařil. Restartujte zařízení, aby se obnovil přístup k internetu.</string>
     <string name="app_reset_complete">Resetování aplikace je kompletní. Zavírání…</string>
     <string name="reset_app_failed">Reset aplikacei selhal: %s</string>

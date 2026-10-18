@@ -63,6 +63,7 @@ import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
+import com.arslan.shizuwall.shell.ShellResult
 import com.arslan.shizuwall.receivers.ScreenLockModeReceiver
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.firewall.ForegroundTaskProbe
@@ -2418,6 +2419,16 @@ class MainActivity : BaseActivity() {
         val failedApps = appList.filter { it.key in failedPackages }
         if (failedApps.isEmpty()) return
 
+        if (errorDetails.values.any { ShellResult.isUnsupportedPlatform(it) }) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.device_unsupported_title)
+                .setMessage(R.string.device_unsupported_message)
+                .setPositiveButton(R.string.ok, null)
+                .setNeutralButton(R.string.details) { _, _ -> showErrorDetailsDialog(failedPackages, errorDetails) }
+                .show()
+            return
+        }
+
         if (sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)) {
             Toast.makeText(this, getString(R.string.operation_failed_for_apps, failedApps.size), Toast.LENGTH_SHORT).show()
             return
@@ -2443,11 +2454,6 @@ class MainActivity : BaseActivity() {
         val selectedAppsRecyclerView = dialogView.findViewById<RecyclerView>(R.id.selectedAppsRecyclerView)
 
         dialogMessage.text = getString(R.string.operation_failed_message, failedApps.size)
-
-        val chain3Msg = errorDetails["_chain3"] ?: errorDetails.values.firstOrNull { it.contains("no command found set chain 3", ignoreCase = true) }
-        if (chain3Msg != null) {
-            dialogMessage.append("\n\n${getString(R.string.android11_unsupported_hint)}")
-        }
 
         if (!errorDetails["_daemon_log"].isNullOrBlank()) {
             dialogMessage.append("\n\n${getString(R.string.ladb_daemon_log_detected_hint)}")

@@ -43,7 +43,8 @@
     <string name="android11_unsupported_title">Android 11 compatibility</string>
     <string name="android11_unsupported_message">Some devices on Android 11 dont support ShizuWall. If you see an error like:\n - no command found set chain3 - \nit means your device is not supported and there is nothing to do at the moment.</string>
     <string name="dont_show_again">Dont show again</string>
-    <string name="android11_unsupported_hint">If the error contains -no command found set chain 3-, your device is likely not supported on this Android version.</string>
+    <string name="device_unsupported_title">Device not supported</string>
+    <string name="device_unsupported_message">Your Android build does not provide the connectivity firewall chain ShizuWall relies on. This is common on Android 11–12 and on some OEM ROMs such as MIUI/HyperOS. The system rejects the command itself, so switching between Shizuku, LADB and root will not help.</string>
     <string name="firewall_cleanup_warning">Warning: Firewall cleanup failed. Please REBOOT your device to restore internet access.</string>
     <string name="app_reset_complete">App reset complete. Closing…</string>
     <string name="reset_app_failed">Failed to reset app: %s</string>

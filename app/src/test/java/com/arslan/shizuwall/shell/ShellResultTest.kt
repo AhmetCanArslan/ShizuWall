@@ -44,4 +44,12 @@ class ShellResultTest {
     fun unrelatedErrorIsNotUidOwnerMapMissing() {
         assertFalse(ShellResult(1, "", "no such package").isUidOwnerMapMissing)
     }
+
+    @Test
+    fun preTAndMissingCommandAreUnsupportedPlatform() {
+        assertTrue(ShellResult.isUnsupportedPlatform("java.lang.UnsupportedOperationException: setChildChain is not available on pre-T devices"))
+        assertTrue(ShellResult.isUnsupportedPlatform("java.lang.UnsupportedOperationException: setUidRule is not available on pre-T devices"))
+        assertTrue(ShellResult.isUnsupportedPlatform("Unknown command: set-chain3-enabled"))
+        assertFalse(ShellResult.isUnsupportedPlatform("permission denied"))
+    }
 }

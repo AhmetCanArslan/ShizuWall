@@ -14,6 +14,15 @@ data class ShellResult(val exitCode: Int, val stdout: String, val stderr: String
     companion object {
         // Keep in sync with SystemDaemon.UID_OWNER_MAP_MISSING.
         const val UID_OWNER_MAP_MISSING = "suidownermap does not have entry for uid"
+
+        private val UNSUPPORTED_PLATFORM = listOf(
+            "not available on pre-t devices",
+            "unknown command: set-chain3-enabled",
+            "unknown command: set-package-networking-enabled"
+        )
+
+        fun isUnsupportedPlatform(error: String): Boolean =
+            error.lowercase().let { e -> UNSUPPORTED_PLATFORM.any { it in e } }
     }
 }
 

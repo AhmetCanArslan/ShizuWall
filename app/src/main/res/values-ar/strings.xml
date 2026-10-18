@@ -42,7 +42,8 @@
     <string name="android11_unsupported_title">توافق أندرويد 11</string>
     <string name="android11_unsupported_message">بعض الأجهزة التي تعمل بنظام أندرويد 11 لا تدعم ShizuWall. إذا رأيت خطأ مثل:\n - no command found set chain3 - \nفهذا يعني أن جهازك غير مدعوم ولا يوجد شيء يمكن القيام به في الوقت الحالي.</string>
     <string name="dont_show_again">عدم الإظهار مرة أخرى</string>
-    <string name="android11_unsupported_hint">إذا كان الخطأ يحتوي على -no command found set chain 3-، فمن المحتمل أن جهازك غير مدعوم في إصدار أندرويد هذا.</string>
+    <string name="device_unsupported_title">الجهاز غير مدعوم</string>
+    <string name="device_unsupported_message">إصدار أندرويد لديك لا يوفّر سلسلة جدار حماية الاتصال التي يعتمد عليها ShizuWall. هذا شائع في أندرويد 11–12 وفي بعض واجهات الشركات المصنّعة مثل MIUI/HyperOS. النظام نفسه يرفض الأمر، لذا لن يفيد التبديل بين Shizuku وLADB والروت.</string>
     <string name="firewall_cleanup_warning">تحذير: فشل تنظيف الجدار الناري. يرجى إعادة تشغيل جهازك لاستعادة الوصول إلى الإنترنت.</string>
     <string name="app_reset_complete">اكتمل إعادة تعيين التطبيق. جاري الإغلاق…</string>
     <string name="reset_app_failed">فشل إعادة تعيين التطبيق: %s</string>
