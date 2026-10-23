@@ -44,9 +44,8 @@ object FirewallTargets {
 
     fun skipsBlockingAtEnable(mode: FirewallMode): Boolean = mode == FirewallMode.FOCUS_TRACKER
 
-    fun canSwitchWhileEnabled(from: FirewallMode, to: FirewallMode, hasSelection: Boolean): Boolean =
-        from != FirewallMode.WHITELIST && to != FirewallMode.WHITELIST &&
-            (hasSelection || to.allowsDynamicSelection())
+    fun canSwitchWhileEnabled(to: FirewallMode, hasSelection: Boolean): Boolean =
+        hasSelection || to.allowsDynamicSelection()
 
     fun shouldBlockOnToggle(mode: FirewallMode, isSelected: Boolean): Boolean =
         if (mode == FirewallMode.WHITELIST) !isSelected else isSelected

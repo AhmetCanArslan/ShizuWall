@@ -68,7 +68,6 @@ class FirewallSettingsActivity : BaseActivity() {
     )
     private lateinit var cardScreenLockDelay: com.google.android.material.card.MaterialCardView
     private lateinit var tvScreenLockDelayValue: TextView
-    private lateinit var tvFirewallModeDisabledWarning: TextView
     private lateinit var rootView: ViewGroup
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,9 +91,6 @@ class FirewallSettingsActivity : BaseActivity() {
         super.onResume()
         val mode = FirewallUtils.firewallMode(sharedPreferences)
         updateFirewallModeUI(mode)
-        val locked = mode == FirewallMode.WHITELIST && FirewallUtils.loadFirewallEnabled(sharedPreferences)
-        radioGroupFirewallMode.alpha = if (locked || firewallModeProgress.isVisible) 0.5f else 1f
-        tvFirewallModeDisabledWarning.visibility = if (locked) View.VISIBLE else View.GONE
         loadAppVisibilitySettings()
     }
 
@@ -116,7 +112,6 @@ class FirewallSettingsActivity : BaseActivity() {
         firewallModeProgress = findViewById(R.id.firewallModeProgress)
         cardScreenLockDelay = findViewById(R.id.cardScreenLockDelay)
         tvScreenLockDelayValue = findViewById(R.id.tvScreenLockDelayValue)
-        tvFirewallModeDisabledWarning = findViewById(R.id.tvFirewallModeDisabledWarning)
     }
 
     private fun showFirewallModeDetailsDialog() {
@@ -298,7 +293,7 @@ class FirewallSettingsActivity : BaseActivity() {
             val newMode = modeRadios[checkedId] ?: return@setOnCheckedChangeListener
             val oldMode = FirewallUtils.firewallMode(sharedPreferences)
             val enabled = FirewallUtils.loadFirewallEnabled(sharedPreferences)
-            val locked = enabled && !FirewallTargets.canSwitchWhileEnabled(oldMode, newMode, FirewallUtils.loadSelectedApps(this, sharedPreferences).isNotEmpty())
+            val locked = enabled && !FirewallTargets.canSwitchWhileEnabled(newMode, FirewallUtils.loadSelectedApps(this, sharedPreferences).isNotEmpty())
             if (locked) Toast.makeText(this, R.string.firewall_mode_change_disabled, Toast.LENGTH_LONG).show()
             if (locked || (enabled && !FirewallUtils.checkBackendReady(this))) {
                 checkModeRadio(oldMode)

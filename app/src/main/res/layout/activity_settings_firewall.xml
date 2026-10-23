@@ -376,16 +376,6 @@
                             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
-                        <TextView
-                            android:id="@+id/tvFirewallModeDisabledWarning"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="@string/firewall_mode_change_disabled"
-                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                            android:textColor="?attr/colorError"
-                            android:visibility="gone" />
-
                     </RadioGroup>
 
                     <com.google.android.material.progressindicator.CircularProgressIndicator
