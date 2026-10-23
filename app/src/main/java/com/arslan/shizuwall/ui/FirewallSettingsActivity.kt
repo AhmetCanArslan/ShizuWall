@@ -294,7 +294,7 @@ class FirewallSettingsActivity : BaseActivity() {
             val oldMode = FirewallUtils.firewallMode(sharedPreferences)
             val enabled = FirewallUtils.loadFirewallEnabled(sharedPreferences)
             val locked = enabled && !FirewallTargets.canSwitchWhileEnabled(newMode, FirewallUtils.loadSelectedApps(this, sharedPreferences).isNotEmpty())
-            if (locked) Toast.makeText(this, R.string.firewall_mode_change_disabled, Toast.LENGTH_LONG).show()
+            if (locked) Toast.makeText(this, R.string.no_apps_selected, Toast.LENGTH_LONG).show()
             if (locked || (enabled && !FirewallUtils.checkBackendReady(this))) {
                 checkModeRadio(oldMode)
                 return@setOnCheckedChangeListener

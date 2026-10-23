@@ -313,7 +313,6 @@
     <string name="firewall_mode_whitelist">Lista branca</string>
     <string name="firewall_mode_whitelist_description">Bloquear todos os apps por padrão, permitir apps selecionados</string>
     <string name="whitelist_info_system_apps_warning">Quando "Mostrar apps do sistema" está desativado, os apps do sistema não serão bloqueados pelo firewall no modo Lista branca.\n\nSe você ativou "Mostrar apps do sistema" e está usando o modo Lista branca, esta combinação não foi totalmente testada. Use com cuidado.\n\nApps instalados num perfil de trabalho ou espaço clonado com a firewall ligada não são detetados e continuam permitidos até desligar e voltar a ligar a firewall.</string>
-    <string name="firewall_mode_change_disabled">Não é possível alterar o modo de firewall enquanto está ativado. Por favor, desative o firewall primeiro.</string>
 
     <string name="firewall_mode_details_button">Como funcionam estes modos?</string>
     <string name="firewall_mode_details_title">Como funcionam os modos de firewall</string>

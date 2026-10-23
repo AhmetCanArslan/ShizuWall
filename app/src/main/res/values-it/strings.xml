@@ -318,7 +318,6 @@
 
     <string name="firewall_mode_focus_tracker">Rilevatore di focus</string>
     <string name="firewall_mode_focus_tracker_description">Attiva il firewall quando ShizuWall non è in primo piano e disattivalo quando lo è.</string>
-    <string name="firewall_mode_change_disabled">Impossibile cambiare la modalità firewall mentre il firewall è attivo. Disattivalo prima.</string>
 
     <string name="firewall_mode_details_button">Come funzionano queste modalità?</string>
     <string name="firewall_mode_details_title">Come funzionano le modalità firewall</string>

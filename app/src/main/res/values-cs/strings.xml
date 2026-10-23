@@ -316,7 +316,6 @@
     
     <string name="firewall_mode_focus_tracker">Focus Tracker</string>
     <string name="firewall_mode_focus_tracker_description">Zapnout bránu firewall, když není ShizuWall aktivní, a vypnout ji, když je aktivní.</string>
-    <string name="firewall_mode_change_disabled">Nelze změnit režim brány firewall, když je brána firewall aktivní. Nejprve ji deaktivujte.</string>
 
     <string name="firewall_mode_details_button">Jak tyto režimy fungují?</string>
     <string name="firewall_mode_details_title">Jak fungují režimy brány firewall</string>

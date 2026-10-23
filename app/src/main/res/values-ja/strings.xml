@@ -315,7 +315,6 @@
     <string name="firewall_mode_whitelist">ホワイトリスト</string>
     <string name="firewall_mode_whitelist_description">デフォルトですべてのアプリをブロックし、選択されたアプリを許可</string>
     <string name="whitelist_info_system_apps_warning">"システムアプリを表示"が無効の場合、ホワイトリストモードでシステムアプリはファイアウォールの対象になりません。\n\n"システムアプリを表示"を有効にしてホワイトリストモードを使用している場合、この組み合わせは十分にテストされていません。注意して使用してください。\n\nファイアウォールが有効な間に仕事用プロファイルやクローン領域にインストールされたアプリは検出されず、ファイアウォールをオフにして再度オンにするまで許可されたままになります。</string>
-    <string name="firewall_mode_change_disabled">ファイアウォールが有効になっている間はモードを変更できません。まずファイアウォールを無効にしてください。</string>
 
     <string name="firewall_mode_details_button">各モードの仕組み</string>
     <string name="firewall_mode_details_title">ファイアウォールモードの仕組み</string>

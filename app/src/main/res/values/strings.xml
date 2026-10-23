@@ -318,7 +318,6 @@
     
     <string name="firewall_mode_focus_tracker">Focus Tracker</string>
     <string name="firewall_mode_focus_tracker_description">Enable firewall when ShizuWall is unfocused, and disable when focused.</string>
-    <string name="firewall_mode_change_disabled">Cannot change firewall mode while firewall is enabled. Please disable the firewall first.</string>
 
     <string name="firewall_mode_details_button">How do these modes work?</string>
     <string name="firewall_mode_details_title">How firewall modes work</string>

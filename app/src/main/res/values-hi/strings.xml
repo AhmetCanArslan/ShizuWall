@@ -318,7 +318,6 @@
 
     <string name="firewall_mode_focus_tracker">फ़ोकस ट्रैकर</string>
     <string name="firewall_mode_focus_tracker_description">ShizuWall फ़ोकस में न हो तो फ़ायरवॉल चालू करें, और फ़ोकस में हो तो बंद करें।</string>
-    <string name="firewall_mode_change_disabled">फ़ायरवॉल चालू रहते हुए फ़ायरवॉल मोड नहीं बदला जा सकता। कृपया पहले फ़ायरवॉल बंद करें।</string>
 
     <string name="firewall_mode_details_button">ये मोड कैसे काम करते हैं?</string>
     <string name="firewall_mode_details_title">फ़ायरवॉल मोड कैसे काम करते हैं</string>
