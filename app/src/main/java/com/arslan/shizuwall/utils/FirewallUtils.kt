@@ -35,7 +35,7 @@ object FirewallUtils {
 
     data class EnableTargets(val block: List<String>, val allow: List<String>)
 
-    private val stateLock = Mutex()
+    val stateLock = Mutex()
 
     fun firewallMode(prefs: SharedPreferences): FirewallMode =
         FirewallMode.fromName(prefs.getString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
@@ -224,20 +224,23 @@ object FirewallUtils {
         val mode = firewallMode(prefs)
         val executor = ShellExecutorProvider.forContext(context)
         val successful = mutableListOf<String>()
+        val stuck = mutableListOf<String>()
         stateLock.withLock {
-            if (executor.exec(FirewallCommands.CHAIN3_ENABLE).isEffectivelySuccess) {
+            val chainOk = executor.exec(FirewallCommands.CHAIN3_ENABLE).isEffectivelySuccess
+            if (chainOk) {
                 val toBlock = modeAdapted(context, prefs, targets.block).distinct().filterNot { isSelfOrBackend(context, it) }
                 val toAllow = targets.allow.filterNot { isSelfOrBackend(context, it) }
-                val stale = loadActivePackages(prefs) - toBlock.toSet()
-                executor.execBatch(FirewallCommands.unblockAll(stale.toList() + toAllow))
+                val stale = (loadActivePackages(prefs) - toBlock.toSet()).toList()
+                val cleared = executor.execBatch(FirewallCommands.unblockAll(stale + toAllow))
+                stale.forEachIndexed { index, pkg -> if (!cleared[index].isEffectivelySuccess) stuck.add(pkg) }
                 val results = executor.execBatch(FirewallCommands.blockAll(toBlock))
                 logFailures(context, toBlock, results)
                 toBlock.forEachIndexed { index, pkg -> if (results[index].isEffectivelySuccess) successful.add(pkg) }
             }
 
-            if (successful.isNotEmpty() || mode.allowsDynamicSelection()) {
+            if (chainOk && (successful.isNotEmpty() || mode.allowsDynamicSelection())) {
                 saveFirewallEnabled(context, prefs, true)
-                saveActivePackages(prefs, successful.toSet())
+                saveActivePackages(prefs, (successful + stuck).toSet())
                 if (prefs.getBoolean(FloatingButtonService.KEY_FLOATING_BUTTON_ENABLED, false)) {
                     withContext(Dispatchers.Main) { FloatingButtonService.start(context) }
                 }

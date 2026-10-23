@@ -20,6 +20,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.core.text.HtmlCompat
+import androidx.core.view.children
+import androidx.core.view.isVisible
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.firewall.FirewallTargets
@@ -29,6 +31,10 @@ import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.FirewallUtils
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class FirewallSettingsActivity : BaseActivity() {
@@ -50,6 +56,7 @@ class FirewallSettingsActivity : BaseActivity() {
     private var suppressFirewallModeListener = false
 
     private lateinit var radioGroupFirewallMode: RadioGroup
+    private lateinit var firewallModeProgress: View
     private val modeRadios = mapOf(
         R.id.radioModeDefault to FirewallMode.DEFAULT,
         R.id.radioModeAdaptive to FirewallMode.ADAPTIVE,
@@ -86,7 +93,7 @@ class FirewallSettingsActivity : BaseActivity() {
         val mode = FirewallUtils.firewallMode(sharedPreferences)
         updateFirewallModeUI(mode)
         val locked = mode == FirewallMode.WHITELIST && FirewallUtils.loadFirewallEnabled(sharedPreferences)
-        radioGroupFirewallMode.alpha = if (locked) 0.5f else 1f
+        radioGroupFirewallMode.alpha = if (locked || firewallModeProgress.isVisible) 0.5f else 1f
         tvFirewallModeDisabledWarning.visibility = if (locked) View.VISIBLE else View.GONE
         loadAppVisibilitySettings()
     }
@@ -106,6 +113,7 @@ class FirewallSettingsActivity : BaseActivity() {
         tvAppVisibilityDisabledWarning = findViewById(R.id.tvAppVisibilityDisabledWarning)
 
         radioGroupFirewallMode = findViewById(R.id.radioGroupFirewallMode)
+        firewallModeProgress = findViewById(R.id.firewallModeProgress)
         cardScreenLockDelay = findViewById(R.id.cardScreenLockDelay)
         tvScreenLockDelayValue = findViewById(R.id.tvScreenLockDelayValue)
         tvFirewallModeDisabledWarning = findViewById(R.id.tvFirewallModeDisabledWarning)
@@ -225,15 +233,26 @@ class FirewallSettingsActivity : BaseActivity() {
             .show()
     }
 
-    private fun commitFirewallMode(newMode: FirewallMode) {
+    private fun commitFirewallMode(oldMode: FirewallMode, newMode: FirewallMode) {
         sharedPreferences.edit().putString(MainActivity.KEY_FIREWALL_MODE, newMode.name).apply()
         setResult(RESULT_OK)
         if (FirewallUtils.loadFirewallEnabled(sharedPreferences)) {
-            sendBroadcast(
-                Intent(this, FirewallControlReceiver::class.java)
-                    .setAction(MainActivity.ACTION_FIREWALL_CONTROL)
-                    .putExtra(MainActivity.EXTRA_FIREWALL_ENABLED, true)
-            )
+            setModeBusy(true)
+            CoroutineScope(Dispatchers.IO).launch {
+                val ok = FirewallUtils.toggle(applicationContext, sharedPreferences, true)
+                if (!ok) {
+                    sharedPreferences.edit().putString(MainActivity.KEY_FIREWALL_MODE, oldMode.name).apply()
+                    FirewallUtils.toggle(applicationContext, sharedPreferences, true)
+                }
+                withContext(Dispatchers.Main) {
+                    if (isDestroyed) return@withContext
+                    setModeBusy(false)
+                    if (!ok) {
+                        checkModeRadio(oldMode)
+                        updateFirewallModeUI(oldMode)
+                    }
+                }
+            }
         }
 
         TransitionManager.beginDelayedTransition(rootView, AutoTransition())
@@ -242,6 +261,12 @@ class FirewallSettingsActivity : BaseActivity() {
         if (newMode == FirewallMode.WHITELIST) {
             showWhitelistInfoDialog()
         }
+    }
+
+    private fun setModeBusy(busy: Boolean) {
+        radioGroupFirewallMode.alpha = if (busy) 0.5f else 1f
+        radioGroupFirewallMode.children.forEach { it.isEnabled = !busy }
+        firewallModeProgress.isVisible = busy
     }
 
     private fun checkModeRadio(mode: FirewallMode) {
@@ -273,13 +298,13 @@ class FirewallSettingsActivity : BaseActivity() {
             val newMode = modeRadios[checkedId] ?: return@setOnCheckedChangeListener
             val oldMode = FirewallUtils.firewallMode(sharedPreferences)
             val enabled = FirewallUtils.loadFirewallEnabled(sharedPreferences)
-            val locked = enabled && !FirewallTargets.canSwitchWhileEnabled(oldMode, newMode, selectedKeys().isNotEmpty())
+            val locked = enabled && !FirewallTargets.canSwitchWhileEnabled(oldMode, newMode, FirewallUtils.loadSelectedApps(this, sharedPreferences).isNotEmpty())
             if (locked) Toast.makeText(this, R.string.firewall_mode_change_disabled, Toast.LENGTH_LONG).show()
             if (locked || (enabled && !FirewallUtils.checkBackendReady(this))) {
                 checkModeRadio(oldMode)
                 return@setOnCheckedChangeListener
             }
-            commitFirewallMode(newMode)
+            commitFirewallMode(oldMode, newMode)
         }
 
         switchSkipConfirm.setOnCheckedChangeListener { _, isChecked ->

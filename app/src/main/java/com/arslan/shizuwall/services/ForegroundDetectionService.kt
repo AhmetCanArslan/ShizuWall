@@ -34,6 +34,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.sync.withLock
 import android.util.Log
 import com.arslan.shizuwall.firewall.ForegroundTaskProbe
 import com.arslan.shizuwall.firewall.ForegroundTaskWatcher
@@ -56,6 +57,7 @@ class ForegroundDetectionService : Service() {
         private const val RETRY_DELAY_MS = 300L
         private const val UNMANAGED_ALLOW_THROTTLE_MS = 2000L
         private const val BLOCK_CONFIRM_DELAY_MS = 900L
+        private val SMART_MODES = setOf(FirewallMode.SMART_FOREGROUND, FirewallMode.HYBRID)
 
         private val OVERLAY_PACKAGES = setOf(
             "com.android.systemui",
@@ -387,7 +389,7 @@ class ForegroundDetectionService : Service() {
     
         serviceScope.launch(Dispatchers.IO) {
             try {
-                applyFocusTrackerRules(getShellExecutor(), isNowFocused)
+                whileIn(setOf(FirewallMode.FOCUS_TRACKER), Unit) { applyFocusTrackerRules(getShellExecutor(), isNowFocused) }
                 Log.d(TAG, "ShizuWall Focused: $isNowFocused")
             } catch (e: Exception) {
                 Log.e(TAG, "Focus Tracker rule update failed", e)
@@ -529,8 +531,17 @@ class ForegroundDetectionService : Service() {
         }
     }
 
-    private suspend fun blockPackage(packageName: String) {
+    private suspend fun <T> whileIn(modes: Set<FirewallMode>, fallback: T, block: suspend () -> T): T =
         withContext(Dispatchers.IO) {
+            FirewallUtils.stateLock.withLock {
+                val live = sharedPreferences.getBoolean(MainActivity.KEY_FIREWALL_ENABLED, false) &&
+                    FirewallUtils.firewallMode(sharedPreferences) in modes
+                if (live) block() else fallback
+            }
+        }
+
+    private suspend fun blockPackage(packageName: String) {
+        whileIn(SMART_MODES, Unit) {
             try {
                 val result = execWithRetry(getShellExecutor(), FirewallCommands.block(packageName))
                 if (!result.success) {
@@ -669,7 +680,7 @@ class ForegroundDetectionService : Service() {
     }
 
     private suspend fun updateFirewallRules(previousPackage: String?, newPackage: String): Boolean {
-        return withContext(Dispatchers.IO) {
+        return whileIn(SMART_MODES, false) {
             try {
                 val executor = getShellExecutor()
                 val allowResult = execWithRetry(executor, FirewallCommands.unblock(newPackage))
@@ -677,7 +688,7 @@ class ForegroundDetectionService : Service() {
                 if (!allowOk) {
                     val allowErr = allowResult.stderr.ifEmpty { allowResult.stdout }
                     Log.w(TAG, "Failed to allow $newPackage: $allowErr")
-                    return@withContext false
+                    return@whileIn false
                 } else if (allowResult.isUidOwnerMapMissing) {
                     Log.d(TAG, "Allow for $newPackage already effective (uid not present in owner map)")
                 }

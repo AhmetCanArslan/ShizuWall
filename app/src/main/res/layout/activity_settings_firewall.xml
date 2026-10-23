@@ -246,11 +246,15 @@
                             android:textColor="?android:attr/textColorPrimary" />
                     </LinearLayout>
 
-                    <RadioGroup
-                        android:id="@+id/radioGroupFirewallMode"
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp">
+
+                    <RadioGroup
+                        android:id="@+id/radioGroupFirewallMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/radioModeDefault"
@@ -383,6 +387,17 @@
                             android:visibility="gone" />
 
                     </RadioGroup>
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/firewallModeProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        app:indicatorSize="26dp"
+                        app:trackThickness="3dp" />
+                    </FrameLayout>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnFirewallModeDetails"
