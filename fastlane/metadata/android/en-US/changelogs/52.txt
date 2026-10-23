@@ -1,0 +1,5 @@
+Firewall mode can be changed while the firewall is on, including Whitelist #164
+Theme picker: follow system, light or dark
+Clear "Device not supported" message on ROMs without the connectivity firewall
+App info shows each app's target and minimum SDK #160
+Smaller app size
