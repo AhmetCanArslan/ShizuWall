@@ -131,6 +131,10 @@
     <string name="show_system_apps_uncheck_confirm">कोई भी चयनित सिस्टम ऐप अचयनित होकर अपनी डिफ़ॉल्ट स्थिति में लौट आएगा। क्या आप इसे बंद करना चाहते हैं?</string>
     <string name="move_selected_top">चयनित ऐप्स को ऊपर ले जाएँ</string>
     <string name="move_selected_top_description">चयनित ऐप्स को शुरुआत में दिखाएँ</string>
+    <string name="hide_unblockable_apps">साझा सिस्टम UID वाले ऐप छिपाएं</string>
+    <string name="hide_unblockable_apps_description">Android इन ऐप्स के लिए प्रति-ऐप नियमों की अनुमति नहीं देता</string>
+    <string name="hide_no_internet_apps">इंटरनेट अनुमति के बिना ऐप छिपाएं</string>
+    <string name="hide_no_internet_apps_description">ये ऐप वैसे भी नेटवर्क तक नहीं पहुंच सकते</string>
     <string name="use_dynamic_color">डायनामिक रंग उपयोग करें</string>
     <string name="use_dynamic_color_description">ऐप थीम पर वॉलपेपर के रंग लागू करें</string>
     <string name="use_amoled_black">AMOLED थीम उपयोग करें</string>

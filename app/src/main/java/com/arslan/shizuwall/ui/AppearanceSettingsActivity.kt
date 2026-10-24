@@ -17,6 +17,8 @@ class AppearanceSettingsActivity : BaseActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var switchMoveSelectedTop: SwitchCompat
+    private lateinit var switchHideUnblockable: SwitchCompat
+    private lateinit var switchHideNoInternet: SwitchCompat
     private lateinit var switchUseDynamicColor: SwitchCompat
     private lateinit var switchUseAmoledBlack: SwitchCompat
     private lateinit var layoutChangeFont: LinearLayout
@@ -39,6 +41,8 @@ class AppearanceSettingsActivity : BaseActivity() {
         setupSettingsChrome(R.id.appearanceSettingsRoot, toolbar)
 
         switchMoveSelectedTop = findViewById(R.id.switchMoveSelectedTop)
+        switchHideUnblockable = findViewById(R.id.switchHideUnblockable)
+        switchHideNoInternet = findViewById(R.id.switchHideNoInternet)
         switchUseDynamicColor = findViewById(R.id.switchUseDynamicColor)
         switchUseAmoledBlack = findViewById(R.id.switchUseAmoledBlack)
         layoutChangeFont = findViewById(R.id.layoutChangeFont)
@@ -53,6 +57,8 @@ class AppearanceSettingsActivity : BaseActivity() {
 
     private fun loadSettings() {
         switchMoveSelectedTop.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, false)
+        switchHideUnblockable.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_HIDE_UNBLOCKABLE_APPS, false)
+        switchHideNoInternet.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_HIDE_NO_INTERNET_APPS, false)
         switchUseDynamicColor.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
         switchUseAmoledBlack.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
 
@@ -66,6 +72,14 @@ class AppearanceSettingsActivity : BaseActivity() {
         switchMoveSelectedTop.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit().putBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, isChecked).apply()
             setResult(RESULT_OK)
+        }
+
+        switchHideUnblockable.setOnCheckedChangeListener { _, isChecked ->
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_HIDE_UNBLOCKABLE_APPS, isChecked).apply()
+        }
+
+        switchHideNoInternet.setOnCheckedChangeListener { _, isChecked ->
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_HIDE_NO_INTERNET_APPS, isChecked).apply()
         }
 
         switchUseDynamicColor.setOnCheckedChangeListener { _, isChecked ->
@@ -83,6 +97,8 @@ class AppearanceSettingsActivity : BaseActivity() {
         layoutChangeLanguage.setOnClickListener { showLanguageSelectorDialog() }
 
         makeCardClickableForSwitch(switchMoveSelectedTop)
+        makeCardClickableForSwitch(switchHideUnblockable)
+        makeCardClickableForSwitch(switchHideNoInternet)
         makeCardClickableForSwitch(switchUseDynamicColor)
         makeCardClickableForSwitch(switchUseAmoledBlack)
     }

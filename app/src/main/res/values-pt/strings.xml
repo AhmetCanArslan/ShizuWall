@@ -128,6 +128,10 @@
     <string name="show_system_apps_uncheck_confirm">Qualquer aplicação do sistema selecionada será desmarcada e reposta no seu estado predefinido. Deseja desmarcá-la?</string>
     <string name="move_selected_top">Mover apps selecionados para o topo</string>
     <string name="move_selected_top_description">Mostrar apps selecionados no início</string>
+    <string name="hide_unblockable_apps">Ocultar apps com UID do sistema compartilhado</string>
+    <string name="hide_unblockable_apps_description">O Android não permite regras por app para esses apps</string>
+    <string name="hide_no_internet_apps">Ocultar apps sem permissão de internet</string>
+    <string name="hide_no_internet_apps_description">Esses apps não conseguem acessar a rede de qualquer forma</string>
     <string name="use_dynamic_color">Usar cor dinâmica</string>
     <string name="use_dynamic_color_description">Aplicar cores do papel de parede ao tema do app</string>
     <string name="use_amoled_black">Usar tema AMOLED</string>

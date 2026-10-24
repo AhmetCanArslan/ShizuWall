@@ -127,6 +127,10 @@
     <string name="show_system_apps_uncheck_confirm">Любое выбранное системное приложение будет снято с выбора и возвращено в состояние по умолчанию. Снять флажок?</string>
     <string name="move_selected_top">Переместить выбранные вверх</string>
     <string name="move_selected_top_description">Показывать выбранные приложения в начале списка</string>
+    <string name="hide_unblockable_apps">Скрыть приложения с общим системным UID</string>
+    <string name="hide_unblockable_apps_description">Android не позволяет задавать правила для этих приложений</string>
+    <string name="hide_no_internet_apps">Скрыть приложения без разрешения на интернет</string>
+    <string name="hide_no_internet_apps_description">Эти приложения всё равно не могут выходить в сеть</string>
     <string name="use_dynamic_color">Использовать динамические цвета</string>
     <string name="use_dynamic_color_description">Применять цвета обоев к теме приложения</string>
     <string name="use_amoled_black">Использовать AMOLED-тему</string>

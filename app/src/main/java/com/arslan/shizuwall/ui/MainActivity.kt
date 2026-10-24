@@ -69,6 +69,7 @@ import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.firewall.ForegroundTaskProbe
 import com.arslan.shizuwall.firewall.FirewallCommands
 import com.arslan.shizuwall.firewall.FirewallTargets
+import com.arslan.shizuwall.utils.AppIds
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.MultiUserApps
@@ -98,6 +99,8 @@ class MainActivity : BaseActivity() {
         const val KEY_SHOW_OTHER_PROFILES = "show_other_profiles"
         const val KEY_SHOW_APP_INFO_BUTTON = "show_app_info_button"
         const val KEY_MOVE_SELECTED_TOP = "move_selected_top"
+        const val KEY_HIDE_UNBLOCKABLE_APPS = "hide_unblockable_apps"
+        const val KEY_HIDE_NO_INTERNET_APPS = "hide_no_internet_apps"
         const val KEY_SELECTED_FONT = "selected_font"
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
         const val KEY_USE_AMOLED_BLACK = "use_amoled_black"
@@ -171,6 +174,8 @@ class MainActivity : BaseActivity() {
     private var showSystemApps = false 
     private var showOtherProfiles = false
     private var moveSelectedTop = false
+    private var hideUnblockableApps = false
+    private var hideNoInternetApps = false
     private var firewallMode = FirewallMode.DEFAULT
     private enum class SortOrder { NAME_ASC, NAME_DESC, INSTALL_TIME }
     private var currentSortOrder = SortOrder.NAME_ASC
@@ -381,6 +386,8 @@ class MainActivity : BaseActivity() {
         showSystemApps = sharedPreferences.getBoolean(KEY_SHOW_SYSTEM_APPS, false)
         showOtherProfiles = sharedPreferences.getBoolean(KEY_SHOW_OTHER_PROFILES, false)
         moveSelectedTop = sharedPreferences.getBoolean(KEY_MOVE_SELECTED_TOP, false)
+        hideUnblockableApps = sharedPreferences.getBoolean(KEY_HIDE_UNBLOCKABLE_APPS, false)
+        hideNoInternetApps = sharedPreferences.getBoolean(KEY_HIDE_NO_INTERNET_APPS, false)
         firewallMode = FirewallMode.fromName(sharedPreferences.getString(KEY_FIREWALL_MODE, FirewallMode.DEFAULT.name))
         currentSortOrder = try {
             SortOrder.valueOf(sharedPreferences.getString(KEY_SORT_ORDER, SortOrder.NAME_ASC.name) ?: SortOrder.NAME_ASC.name)
@@ -1018,8 +1025,9 @@ class MainActivity : BaseActivity() {
             Category.UNSELECTED -> appList.filter { !it.isSelected }
             Category.PROFILE -> appList.filter { it.userId == currentProfileUserId }
         }.filter { app ->
-            if (currentCategory == Category.SYSTEM) true
-            else showSystemApps || !app.isSystem
+            (currentCategory == Category.SYSTEM || showSystemApps || !app.isSystem) &&
+                !(hideUnblockableApps && !AppIds.isBlockable(app.uid)) &&
+                !(hideNoInternetApps && !app.hasInternet)
         }
 
         if (query.isEmpty()) {
@@ -1195,11 +1203,17 @@ class MainActivity : BaseActivity() {
             updateCategoryChips()
         }
 
+        val prefHideUnblockable = sharedPreferences.getBoolean(KEY_HIDE_UNBLOCKABLE_APPS, false)
+        val prefHideNoInternet = sharedPreferences.getBoolean(KEY_HIDE_NO_INTERNET_APPS, false)
+        val hideChanged = prefHideUnblockable != hideUnblockableApps || prefHideNoInternet != hideNoInternetApps
+        hideUnblockableApps = prefHideUnblockable
+        hideNoInternetApps = prefHideNoInternet
+
         if (showOtherProfilesChanged) {
             loadInstalledApps(showLoadingIfListEmpty = true)
             return true
         }
-        if (showSystemChanged || moveSelectedTopChanged) {
+        if (showSystemChanged || moveSelectedTopChanged || hideChanged) {
             sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
         }
 

@@ -131,6 +131,10 @@
     <string name="show_system_apps_uncheck_confirm">Any selected system app will be unselected and reset to its default state. Do you want to un-check it?</string>
     <string name="move_selected_top">Move selected apps to top</string>
     <string name="move_selected_top_description">Show selected apps at the beginning</string>
+    <string name="hide_unblockable_apps">Hide apps with a shared system UID</string>
+    <string name="hide_unblockable_apps_description">Android does not allow per-app rules for these apps</string>
+    <string name="hide_no_internet_apps">Hide apps without internet permission</string>
+    <string name="hide_no_internet_apps_description">These apps cannot access the network anyway</string>
     <string name="use_dynamic_color">Use dynamic color</string>
     <string name="use_dynamic_color_description">Apply wallpaper colors to app theme</string>
     <string name="use_amoled_black">Use AMOLED theme</string>

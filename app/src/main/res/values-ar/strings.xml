@@ -128,6 +128,10 @@
     <string name="show_system_apps_uncheck_confirm">سيتم إلغاء تحديد أي تطبيق نظام محدد وإعادته إلى حالته الافتراضية. هل تريد إلغاء التحديد؟</string>
     <string name="move_selected_top">نقل التطبيقات المحددة للأعلى</string>
     <string name="move_selected_top_description">إظهار التطبيقات المحددة في البداية</string>
+    <string name="hide_unblockable_apps">إخفاء التطبيقات ذات معرّف UID النظام المشترك</string>
+    <string name="hide_unblockable_apps_description">لا يسمح Android بقواعد خاصة بكل تطبيق لهذه التطبيقات</string>
+    <string name="hide_no_internet_apps">إخفاء التطبيقات التي لا تملك إذن الإنترنت</string>
+    <string name="hide_no_internet_apps_description">لا تستطيع هذه التطبيقات الوصول إلى الشبكة أصلاً</string>
     <string name="use_dynamic_color">استخدام ألوان ديناميكية</string>
     <string name="use_dynamic_color_description">تطبيق ألوان خلفية الشاشة على مظهر التطبيق</string>
     <string name="use_amoled_black">استخدام سمة AMOLED</string>

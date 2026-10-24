@@ -128,6 +128,10 @@
     <string name="show_system_apps_uncheck_confirm">Jede ausgewählte System-App wird abgewählt und auf ihren Standardzustand zurückgesetzt. Möchten Sie das Häkchen entfernen?</string>
     <string name="move_selected_top">Ausgewählte Apps nach oben verschieben</string>
     <string name="move_selected_top_description">Ausgewählte Apps am Anfang anzeigen</string>
+    <string name="hide_unblockable_apps">Apps mit gemeinsamer System-UID ausblenden</string>
+    <string name="hide_unblockable_apps_description">Android erlaubt für diese Apps keine App-Regeln</string>
+    <string name="hide_no_internet_apps">Apps ohne Internetberechtigung ausblenden</string>
+    <string name="hide_no_internet_apps_description">Diese Apps können ohnehin nicht auf das Netzwerk zugreifen</string>
     <string name="use_dynamic_color">Dynamische Farbe verwenden</string>
     <string name="use_dynamic_color_description">Hintergrundfarben auf das App-Theme anwenden</string>
     <string name="use_amoled_black">AMOLED-Design verwenden</string>

@@ -127,6 +127,10 @@
     <string name="show_system_apps_uncheck_confirm">選択中のシステムアプリはすべて選択解除され、既定の状態に戻ります。チェックを外しますか？</string>
     <string name="move_selected_top">選択したアプリを先頭に移動</string>
     <string name="move_selected_top_description">選択したアプリをリストの最初に表示する</string>
+    <string name="hide_unblockable_apps">共有システム UID のアプリを非表示</string>
+    <string name="hide_unblockable_apps_description">Android はこれらのアプリにアプリごとのルールを許可しません</string>
+    <string name="hide_no_internet_apps">インターネット権限のないアプリを非表示</string>
+    <string name="hide_no_internet_apps_description">これらのアプリはそもそもネットワークにアクセスできません</string>
     <string name="use_dynamic_color">ダイナミックカラーを使用</string>
     <string name="use_dynamic_color_description">壁紙の色をアプリのテーマに適用する</string>
     <string name="use_amoled_black">AMOLEDテーマを使用</string>
