@@ -527,7 +527,7 @@
     <string name="contact_developer_description">Отправить отзыв или сообщить о проблеме</string>
     <string name="contact_developer_no_app">Приложение для почты не найдено</string>
     <string name="changelog_title">Что нового в %1$s</string>
-    <string name="changelog_message">• Режим брандмауэра можно менять при включённом брандмауэре, включая Белый список\n• Выбор темы: как в системе, светлая или тёмная\n• Понятное сообщение «Устройство не поддерживается» на прошивках без сетевого брандмауэра\n• В сведениях о приложении показаны целевой и минимальный SDK\n• Уменьшен размер приложения</string>
+    <string name="changelog_message">• Новые настройки оформления: скрыть приложения с общим системным UID и приложения без разрешения на интернет</string>
     <string name="whats_new">Что нового</string>
     <string name="whats_new_description">Посмотреть изменения в этой версии</string>
     <string name="dismiss">Закрыть</string>

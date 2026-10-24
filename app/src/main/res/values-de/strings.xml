@@ -523,7 +523,7 @@
     <string name="contact_developer_description">Feedback senden oder Problem melden</string>
     <string name="contact_developer_no_app">Keine E-Mail-App gefunden</string>
     <string name="changelog_title">Neu in %1$s</string>
-    <string name="changelog_message">• Der Firewall-Modus lässt sich auch bei aktiver Firewall wechseln, inklusive Ausnahmeliste\n• Design-Auswahl: System folgen, Hell oder Dunkel\n• Klare Meldung „Gerät nicht unterstützt“ auf ROMs ohne Konnektivitäts-Firewall\n• App-Info zeigt Ziel- und Mindest-SDK jeder App\n• Kleinere App-Größe</string>
+    <string name="changelog_message">• Neue Darstellungsoptionen: Apps mit gemeinsamer System-UID und Apps ohne Internetberechtigung ausblenden</string>
     <string name="whats_new">Neuigkeiten</string>
     <string name="whats_new_description">Änderungen in dieser Version ansehen</string>
     <string name="dismiss">Schließen</string>

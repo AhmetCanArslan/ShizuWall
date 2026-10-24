@@ -525,7 +525,7 @@
     <string name="contact_developer_description">Odeslat zpětnou vazbu nebo nahlásit problém</string>
     <string name="contact_developer_no_app">Nebyla nalezena žádná e-mailová aplikace</string>
     <string name="changelog_title">Novinky ve verzi %1$s</string>
-    <string name="changelog_message">• Firewall režim lze měnit i se zapnutým firewallem, včetně Bílé listiny\n• Výběr motivu: podle systému, světlý nebo tmavý\n• Jasná zpráva „Zařízení není podporováno“ na ROM bez síťového firewallu\n• Informace o aplikaci ukazují cílové a minimální SDK\n• Menší velikost aplikace</string>
+    <string name="changelog_message">• Nové možnosti vzhledu: skrýt aplikace se sdíleným systémovým UID a aplikace bez oprávnění k internetu</string>
     <string name="whats_new">Novinky</string>
     <string name="whats_new_description">Zobrazit změny v této verzi</string>
     <string name="dismiss">Zavřít</string>

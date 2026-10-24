@@ -523,7 +523,7 @@
     <string name="contact_developer_description">Enviar comentários ou relatar um problema</string>
     <string name="contact_developer_no_app">Nenhuma aplicação de e-mail encontrada</string>
     <string name="changelog_title">Novidades na %1$s</string>
-    <string name="changelog_message">• O modo de firewall pode ser alterado com o firewall ativado, incluindo a Lista branca\n• Seletor de tema: seguir o sistema, claro ou escuro\n• Mensagem clara de “Dispositivo não suportado” em ROMs sem o firewall de conectividade\n• As informações de cada app mostram o SDK alvo e o mínimo\n• App menor</string>
+    <string name="changelog_message">• Novas opções de aparência: ocultar apps com UID do sistema compartilhado e apps sem permissão de internet</string>
     <string name="whats_new">Novidades</string>
     <string name="whats_new_description">Veja as mudanças desta versão</string>
     <string name="dismiss">Dispensar</string>
