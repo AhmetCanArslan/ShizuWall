@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
 import android.graphics.Rect
 import android.os.Build
@@ -175,6 +174,7 @@ class MainActivity : BaseActivity() {
     private lateinit var backendBanner: View
     private lateinit var backendBannerMessage: TextView
     private lateinit var backendBannerAction: com.google.android.material.button.MaterialButton
+    private lateinit var backendBannerOpenShizuku: com.google.android.material.button.MaterialButton
     private val appList = mutableListOf<AppInfo>()
     private val filteredAppList = mutableListOf<AppInfo>()
     private var isFirewallEnabled = false
@@ -863,6 +863,8 @@ class MainActivity : BaseActivity() {
         backendBannerMessage = findViewById(R.id.backendBannerMessage)
         backendBannerAction = findViewById(R.id.backendBannerAction)
         backendBannerAction.setOnClickListener { openBackendSetup() }
+        backendBannerOpenShizuku = findViewById(R.id.backendBannerOpenShizuku)
+        backendBannerOpenShizuku.setOnClickListener { ShizukuPackageResolver.launch(this) }
         recyclerView.layoutManager = LinearLayoutManager(this)
         appListAdapter = AppListAdapter(
             onAppClick = { appInfo ->
@@ -1430,22 +1432,10 @@ class MainActivity : BaseActivity() {
             .setTitle(getString(R.string.shizuku_not_running_title))
             .setMessage(getString(R.string.shizuku_not_running_message))
             .setPositiveButton(getString(R.string.open_shizuku)) { _, _ ->
-                launchShizukuApp()
+                ShizukuPackageResolver.launch(this)
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
-    }
-
-    private fun launchShizukuApp() {
-        val pm = packageManager
-        val candidates = ShizukuPackageResolver.getLaunchCandidates(this)
-        for (pkg in candidates) {
-            val launch = pm.getLaunchIntentForPackage(pkg)
-            if (launch != null) { startActivity(launch); return }
-        }
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thedjchi/Shizuku/releases")))
-        } catch (_: Exception) {}
     }
 
     private fun showFirewallConfirmDialog(selectedApps: List<AppInfo>, blockPkgs: List<String> = selectedApps.map { it.key }, whitelistAllowApps: List<String> = emptyList()) {
@@ -1955,13 +1945,17 @@ class MainActivity : BaseActivity() {
             backendBanner.visibility = if (ready) View.GONE else View.VISIBLE
             if (ready) return@launch
 
+            val mode = currentWorkingMode()
             backendBannerMessage.setText(
-                when (currentWorkingMode()) {
+                when (mode) {
                     WorkingMode.LADB -> R.string.backend_banner_message_ladb
                     WorkingMode.ROOT -> R.string.backend_banner_message_root
                     else -> R.string.backend_banner_message_shizuku
                 }
             )
+            val shizuku = mode == WorkingMode.SHIZUKU
+            backendBannerAction.setText(if (shizuku) R.string.shizuku_setup_guide else R.string.backend_banner_action)
+            backendBannerOpenShizuku.visibility = if (shizuku) View.VISIBLE else View.GONE
         }
     }
 

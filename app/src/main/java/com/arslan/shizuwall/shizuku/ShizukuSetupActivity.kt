@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.activity.enableEdgeToEdge
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.utils.ShizukuPackageResolver
 
 class ShizukuSetupActivity : BaseActivity() {
 
@@ -54,13 +55,6 @@ class ShizukuSetupActivity : BaseActivity() {
 
         TabLayoutMediator(tabLayout, viewPager) { _, _ -> }.attach()
 
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                descriptionView.text = slides.getOrNull(position)?.description ?: ""
-            }
-        })
-
         val prev = findViewById<MaterialButton>(R.id.prevButton)
         val next = findViewById<MaterialButton>(R.id.nextButton)
 
@@ -84,9 +78,18 @@ class ShizukuSetupActivity : BaseActivity() {
             if (viewPager.currentItem < (slides.size - 1)) {
                 viewPager.currentItem = viewPager.currentItem + 1
             } else {
+                ShizukuPackageResolver.launch(this)
                 finish()
             }
         }
+
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                descriptionView.text = slides.getOrNull(position)?.description ?: ""
+                next.setText(if (position == slides.lastIndex) R.string.open_shizuku else R.string.next)
+            }
+        })
     }
 
     private fun loadSlides(): List<ShizukuSlide> {

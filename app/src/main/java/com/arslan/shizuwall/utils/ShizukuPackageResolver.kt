@@ -1,13 +1,16 @@
 package com.arslan.shizuwall.utils
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 
 object ShizukuPackageResolver {
     
     private const val TAG = "ShizukuPackageResolver"
     
     private val SHIZUKU_PERMISSIONS = listOf(
+        "moe.shizuku.manager.permission.API_V23",
         "moe.shizuku.api.v3.permission.SHIZUKU",
         "moe.shizuku.api.permission.SHIZUKU"
     )
@@ -106,6 +109,13 @@ object ShizukuPackageResolver {
         return resolved + fallbacks
     }
     
+    fun launch(context: Context) {
+        val pm = context.packageManager
+        val intent = getLaunchCandidates(context).firstNotNullOfOrNull { pm.getLaunchIntentForPackage(it) }
+            ?: Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thedjchi/Shizuku/releases"))
+        try { context.startActivity(intent) } catch (_: Exception) {}
+    }
+
     fun clearCache() {
         cachedPackageNames = null
     }
