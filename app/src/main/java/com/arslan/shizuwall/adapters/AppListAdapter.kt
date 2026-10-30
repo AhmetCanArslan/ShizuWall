@@ -2,6 +2,7 @@ package com.arslan.shizuwall.adapters
 
 import android.animation.ValueAnimator
 import android.graphics.Bitmap
+import android.graphics.drawable.Animatable
 import android.util.LruCache
 import android.view.LayoutInflater
 import android.view.View
@@ -218,14 +219,8 @@ class AppListAdapter(
                 addUpdateListener { card.setCardBackgroundColor(it.animatedValue as Int) }
                 start()
             }
-            appSwitch.scaleX = SELECTION_SCALE_FROM
-            appSwitch.scaleY = SELECTION_SCALE_FROM
-            appSwitch.animate()
-                .scaleX(1f)
-                .scaleY(1f)
-                .setDuration(SELECTION_ANIM_MS)
-                .setInterpolator(OvershootInterpolator(3f))
-                .start()
+            appSwitch.setImageResource(if (boundSelected == true) R.drawable.avd_check_draw else R.drawable.avd_check_erase)
+            (appSwitch.drawable as Animatable).start()
         }
 
         private fun showFavoriteBadge(favorite: Boolean) {
@@ -324,6 +319,5 @@ class AppListAdapter(
         const val FAVORITE_FADE_OUT_MS = 160L
         const val FAVORITE_SCALE_FROM = 0.4f
         const val SELECTION_ANIM_MS = 220L
-        const val SELECTION_SCALE_FROM = 0.6f
     }
 }
