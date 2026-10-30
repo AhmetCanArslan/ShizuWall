@@ -96,7 +96,7 @@
     <LinearLayout
         android:id="@+id/searchContainer"
         android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_height="48dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@drawable/search_box_outline"
