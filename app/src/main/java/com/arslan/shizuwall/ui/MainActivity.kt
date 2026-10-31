@@ -126,7 +126,6 @@ class MainActivity : BaseActivity() {
         const val KEY_AUTO_ENABLE_ON_SHIZUKU_START = "auto_enable_on_shizuku_start"
         const val KEY_SHIZUKU_SERVER_ID = "shizuku_server_id"
         const val KEY_APPLY_ROOT_RULES_AFTER_REBOOT = "apply_root_rules_after_reboot"
-        const val KEY_SHOW_SETUP_PROMPT = "show_setup_prompt"
         const val KEY_WORKING_MODE = "working_mode"
         const val KEY_SORT_ORDER = "sort_order"
 
@@ -363,31 +362,6 @@ class MainActivity : BaseActivity() {
                     ladbManager.connect()
                 }
             }
-        }
-
-        val showSetupPrompt = sharedPreferences.getBoolean(KEY_SHOW_SETUP_PROMPT, true)
-        if (showSetupPrompt && workingMode == "SHIZUKU") {
-            val promptView = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
-            val messageText: TextView = promptView.findViewById(R.id.shizuku_prompt_message_text)
-            val checkbox: CheckBox = promptView.findViewById(R.id.shizuku_prompt_do_not_show)
-            messageText.text = getString(R.string.shizuku_prompt_message)
-            checkbox.text = getString(R.string.shizuku_prompt_do_not_show)
-
-            MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.shizuku_prompt_title)
-                .setView(promptView)
-                .setPositiveButton(R.string.show_now) { _, _ ->
-                    startActivity(Intent(this, ShizukuSetupActivity::class.java))
-                    if (checkbox.isChecked) {
-                        sharedPreferences.edit().putBoolean(KEY_SHOW_SETUP_PROMPT, false).apply()
-                    }
-                }
-                .setNegativeButton(R.string.later) { _, _ ->
-                    if (checkbox.isChecked) {
-                        sharedPreferences.edit().putBoolean(KEY_SHOW_SETUP_PROMPT, false).apply()
-                    }
-                }
-                .show()
         }
 
         val settingsButton: View? = findViewById(R.id.settingsButton)

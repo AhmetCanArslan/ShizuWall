@@ -30,7 +30,6 @@
     <string name="cat_favorites">收藏</string>
     <string name="made_by">由 Ahmet Can Arslan 用 ❤️ 制作</string>
     <string name="reset_app_menu">重置应用</string>
-    <string name="later">稍后</string>
     <string name="export_successful">导出成功</string>
     <string name="export_failed">导出失败：%s</string>
     <string name="import_successful">导入成功。请重新启动应用。</string>
@@ -171,6 +170,7 @@
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">正在加载应用</string>
     <string name="shizuku_setup_guide">Shizuku 设置指南</string>
+    <string name="shizuku_guide_tour_message">你可以随时在这里设置 Shizuku。</string>
     <string name="open_ladb_setup">打开 LADB 设置</string>
     <string name="working_mode_select_ladb_prompt">请先选择 LADB 模式以配置 LADB</string>
     <string name="pair">配对</string>
@@ -226,10 +226,6 @@
     <string name="daemon_status_running">守护进程：正在运行</string>
     <string name="daemon_status_stopped">守护进程：已停止</string>
     <string name="daemon_start">启动守护进程</string>
-    <string name="shizuku_prompt_title">显示 Shizuku 设置指南？</string>
-    <string name="shizuku_prompt_message">您想现在查看 Shizuku 设置幻灯片吗？您也可以稍后从“设置”中的三点菜单打开它们。</string>
-    <string name="shizuku_prompt_do_not_show">不再显示</string>
-    <string name="show_now">现在查看</string>
     <string name="daemon_kill">停止守护进程</string>
     <string name="daemon_installing">正在安装...</string>
     <string name="sort">排序</string>

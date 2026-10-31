@@ -30,7 +30,6 @@
     <string name="cat_favorites">Favoriten</string>
     <string name="made_by">Mit ❤️ gemacht von Ahmet Can Arslan</string>
     <string name="reset_app_menu">App zurücksetzen</string>
-    <string name="later">Später</string>
     <string name="export_successful">Export erfolgreich</string>
     <string name="export_failed">Export fehlgeschlagen: %s</string>
     <string name="import_successful">Import erfolgreich. Bitte starten Sie die App neu.</string>
@@ -171,6 +170,7 @@
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">Apps werden geladen</string>
     <string name="shizuku_setup_guide">Shizuku Einrichtungsanleitung</string>
+    <string name="shizuku_guide_tour_message">Hier kannst du Shizuku jederzeit einrichten.</string>
     <string name="open_ladb_setup">LADB-Setup öffnen</string>
     <string name="working_mode_select_ladb_prompt">Wählen Sie zuerst den LADB-Modus, um LADB zu konfigurieren</string>
     <string name="pair">Koppeln</string>
@@ -226,10 +226,6 @@
     <string name="daemon_status_running">Daemon: Läuft</string>
     <string name="daemon_status_stopped">Daemon: Gestoppt</string>
     <string name="daemon_start">Daemon starten</string>
-    <string name="shizuku_prompt_title">Shizuku-Anleitung anzeigen?</string>
-    <string name="shizuku_prompt_message">Möchten Sie jetzt die Shizuku-Setup-Folien ansehen? Sie können sie später jederzeit über das Drei-Punkte-Menü in den Einstellungen öffnen.</string>
-    <string name="shizuku_prompt_do_not_show">Nicht erneut anzeigen</string>
-    <string name="show_now">Jetzt anzeigen</string>
     <string name="daemon_kill">Daemon beenden</string>
     <string name="daemon_installing">Installiere...</string>
     <string name="sort">Sortieren</string>

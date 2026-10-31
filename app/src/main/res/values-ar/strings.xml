@@ -29,7 +29,6 @@
     <string name="cat_favorites">المفضلة</string>
     <string name="made_by">صنع بـ ❤️ بواسطة Ahmet Can Arslan</string>
     <string name="reset_app_menu">إعادة تعيين التطبيق</string>
-    <string name="later">لاحقاً</string>
     <string name="export_successful">نجح التصدير</string>
     <string name="export_failed">فشل التصدير: %s</string>
     <string name="import_successful">نجح الاستيراد. يرجى إعادة تشغيل التطبيق.</string>
@@ -172,10 +171,7 @@
     <string name="loading_apps">جاري تحميل التطبيقات</string>
 
     <string name="shizuku_setup_guide">دليل إعداد Shizuku</string>
-    <string name="shizuku_prompt_title">هل تريد عرض دليل إعداد Shizuku؟</string>
-    <string name="shizuku_prompt_message">هل تود عرض شرائح إعداد Shizuku الآن؟ يمكنك دائمًا فتحها لاحقًا من القائمة ذات الثلاث نقاط في الإعدادات.</string>
-    <string name="shizuku_prompt_do_not_show">عدم الإظهار مرة أخرى</string>
-    <string name="show_now">إظهار الآن</string>
+    <string name="shizuku_guide_tour_message">يمكنك إعداد Shizuku من هنا في أي وقت.</string>
     <string name="open_ladb_setup">فتح إعداد LADB</string>
     <string name="working_mode_select_ladb_prompt">اختر وضع LADB أولاً لتكوين LADB</string>
     <string name="pair">إقران</string>

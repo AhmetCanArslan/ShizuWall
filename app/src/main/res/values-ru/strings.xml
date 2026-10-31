@@ -29,7 +29,6 @@
     <string name="cat_favorites">Избранное</string>
     <string name="made_by">Сделано с ❤️ Ахметом Джаном Арсланом</string>
     <string name="reset_app_menu">Сбросить приложение</string>
-    <string name="later">Позже</string>
     <string name="export_successful">Экспорт прошел успешно</string>
     <string name="export_failed">Ошибка экспорта: %s</string>
     <string name="import_successful">Импорт прошел успешно. Пожалуйста, перезапустите приложение.</string>
@@ -171,10 +170,7 @@
     <string name="loading_apps">Загрузка приложений</string>
 
     <string name="shizuku_setup_guide">Руководство по настройке Shizuku</string>
-    <string name="shizuku_prompt_title">Показать руководство по настройке Shizuku?</string>
-    <string name="shizuku_prompt_message">Хотите просмотреть слайд-шоу с руководством по настройке Shizuku сейчас? Вы всегда можете открыть его позже через меню с тремя точками в Настройках.</string>
-    <string name="shizuku_prompt_do_not_show">Больше не показывать</string>
-    <string name="show_now">Показать сейчас</string>
+    <string name="shizuku_guide_tour_message">Здесь можно в любой момент настроить Shizuku.</string>
     <string name="open_ladb_setup">Открыть настройку LADB</string>
     <string name="working_mode_select_ladb_prompt">Сначала выберите режим LADB, чтобы настроить LADB</string>
     <string name="pair">Связать</string>

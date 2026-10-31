@@ -30,7 +30,6 @@
     <string name="cat_favorites">Preferiti</string>
     <string name="made_by">Fatto con ❤️ da Ahmet Can Arslan</string>
     <string name="reset_app_menu">Reimposta app</string>
-    <string name="later">Più tardi</string>
     <string name="export_successful">Esportazione riuscita</string>
     <string name="export_failed">Esportazione non riuscita: %s</string>
     <string name="import_successful">Importazione riuscita. Riavvia l\'app.</string>
@@ -180,10 +179,7 @@
     <string name="loading_apps">Caricamento app</string>
 
     <string name="shizuku_setup_guide">Guida alla configurazione di Shizuku</string>
-    <string name="shizuku_prompt_title">Mostrare la guida alla configurazione di Shizuku?</string>
-    <string name="shizuku_prompt_message">Vuoi vedere ora le slide di configurazione di Shizuku? Puoi sempre aprirle in seguito dal menu a tre puntini nelle Impostazioni.</string>
-    <string name="shizuku_prompt_do_not_show">Non mostrare più</string>
-    <string name="show_now">Mostra ora</string>
+    <string name="shizuku_guide_tour_message">Puoi configurare Shizuku da qui in qualsiasi momento.</string>
     <string name="open_ladb_setup">Apri la configurazione LADB</string>
     <string name="working_mode_select_ladb_prompt">Seleziona prima la modalità LADB per configurarla</string>
     <string name="pair">Associa</string>

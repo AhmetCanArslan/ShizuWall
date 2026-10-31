@@ -30,7 +30,6 @@
     <string name="cat_favorites">Oblíbené</string>
     <string name="made_by">Vytvořil s ❤️ Ahmet Can Arslan</string>
     <string name="reset_app_menu">Resetovat aplikaci</string>
-    <string name="later">Později</string>
     <string name="export_successful">Export úspěšný</string>
     <string name="export_failed">Export selhal: %s</string>
     <string name="import_successful">Import byl úspěšný. Prosím restarujte aplikaci.</string>
@@ -178,10 +177,7 @@
     <string name="loading_apps">Načítání aplikací</string>
 
     <string name="shizuku_setup_guide">Shizuku příručka nastavení</string>
-    <string name="shizuku_prompt_title">Zobrazit průvodce nastavením Shizuku?</string>
-    <string name="shizuku_prompt_message">Chcete si nyní prohlédnout prezentaci o nastavení Shizuku? Můžete ji kdykoli otevřít později z nabídky pomocí tří teček v nastavení.</string>
-    <string name="shizuku_prompt_do_not_show">Znovu nezobrazovat</string>
-    <string name="show_now">Ukázat</string>
+    <string name="shizuku_guide_tour_message">Shizuku můžeš kdykoli nastavit odsud.</string>
     <string name="open_ladb_setup">Otevřít LADB nastavení</string>
     <string name="working_mode_select_ladb_prompt">Nejprve vyberte režim LADB, abyste nakonfigurovali LADB</string>
     <string name="pair">Párovat</string>

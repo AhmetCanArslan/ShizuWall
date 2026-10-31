@@ -18,6 +18,8 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.widget.ActionMenuView
+import androidx.core.view.children
 import androidx.lifecycle.lifecycleScope
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.ladb.LadbManager
@@ -187,6 +189,11 @@ class SettingsActivity : BaseActivity() {
 
         if (savedInstanceState == null && intent.getBooleanExtra(CoachMarks.EXTRA_TOUR, false)) {
             CoachMarks.show(this, listOf(
+                CoachMarks.Step(
+                    { toolbar.children.filterIsInstance<ActionMenuView>().firstOrNull()?.children?.lastOrNull() },
+                    getString(R.string.shizuku_setup_guide),
+                    getString(R.string.shizuku_guide_tour_message)
+                ),
                 CoachMarks.Step({ findViewById(R.id.rowBackend) }, getString(R.string.settings_category_backend_title), getString(R.string.settings_category_backend_desc), onTarget = {
                     startActivity(Intent(this, BackendSettingsActivity::class.java).putExtra(CoachMarks.EXTRA_TOUR, true))
                 })

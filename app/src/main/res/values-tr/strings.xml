@@ -30,7 +30,6 @@
     <string name="cat_favorites">Favoriler</string>
     <string name="made_by">Ahmet Can Arslan tarafından ❤️ ile yapıldı</string>
     <string name="reset_app_menu">Uygulamayı Sıfırla</string>
-    <string name="later">Daha Sonra</string>
     <string name="export_successful">Dışa aktarma başarılı</string>
     <string name="export_failed">Dışa aktarma başarısız: %s</string>
     <string name="import_successful">İçe aktarma başarılı. Lütfen uygulamayı yeniden başlatın.</string>
@@ -171,6 +170,7 @@
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">Uygulamalar yükleniyor</string>
     <string name="shizuku_setup_guide">Shizuku Kurulum Kılavuzu</string>
+    <string name="shizuku_guide_tour_message">Shizuku\'yu istediğin zaman buradan kurabilirsin.</string>
     <string name="open_ladb_setup">LADB kurulumunu aç</string>
     <string name="working_mode_select_ladb_prompt">LADB\'yi yapılandırmak için önce LADB modunu seçin</string>
     <string name="pair">Eşleştir</string>
@@ -226,10 +226,6 @@
     <string name="daemon_status_running">Daemon: Çalışıyor</string>
     <string name="daemon_status_stopped">Daemon: Durduruldu</string>
     <string name="daemon_start">Daemon\'ı Başlat</string>
-    <string name="shizuku_prompt_title">Shizuku kurulum kılavuzunu göster?</string>
-    <string name="shizuku_prompt_message">Shizuku kurulum slaytlarını şimdi görüntülemek ister misiniz? Daha sonra Ayarlar\'daki üç nokta menüsünden her zaman açabilirsiniz.</string>
-    <string name="shizuku_prompt_do_not_show">Bir daha gösterme</string>
-    <string name="show_now">Şimdi göster</string>
     <string name="sort">Sırala</string>
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>

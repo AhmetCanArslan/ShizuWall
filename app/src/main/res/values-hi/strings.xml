@@ -30,7 +30,6 @@
     <string name="cat_favorites">पसंदीदा</string>
     <string name="made_by">Ahmet Can Arslan द्वारा ❤️ से बनाया गया</string>
     <string name="reset_app_menu">ऐप रीसेट करें</string>
-    <string name="later">बाद में</string>
     <string name="export_successful">निर्यात सफल</string>
     <string name="export_failed">निर्यात विफल: %s</string>
     <string name="import_successful">आयात सफल। कृपया ऐप को पुनः आरंभ करें।</string>
@@ -180,10 +179,7 @@
     <string name="loading_apps">ऐप्स लोड हो रहे हैं</string>
 
     <string name="shizuku_setup_guide">Shizuku सेटअप मार्गदर्शिका</string>
-    <string name="shizuku_prompt_title">Shizuku सेटअप मार्गदर्शिका दिखाएँ?</string>
-    <string name="shizuku_prompt_message">क्या आप अभी Shizuku सेटअप स्लाइड देखना चाहेंगे? आप उन्हें बाद में कभी भी सेटिंग्स के तीन-बिंदु मेनू से खोल सकते हैं।</string>
-    <string name="shizuku_prompt_do_not_show">फिर से न दिखाएँ</string>
-    <string name="show_now">अभी दिखाएँ</string>
+    <string name="shizuku_guide_tour_message">आप यहाँ से कभी भी Shizuku सेट अप कर सकते हैं।</string>
     <string name="open_ladb_setup">LADB सेटअप खोलें</string>
     <string name="working_mode_select_ladb_prompt">LADB कॉन्फ़िगर करने के लिए पहले LADB मोड चुनें</string>
     <string name="pair">पेयर करें</string>
