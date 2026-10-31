@@ -15,6 +15,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -85,6 +86,15 @@ class FirewallSettingsActivity : BaseActivity() {
         initializeViews()
         loadSettings()
         setupListeners()
+
+        if (savedInstanceState == null && intent.getBooleanExtra(CoachMarks.EXTRA_TOUR, false)) {
+            val modeNames = radioGroupFirewallMode.children.filterIsInstance<RadioButton>().filter { it.isVisible }.joinToString(" · ") { it.text }
+            val modes = CoachMarks.Step({ radioGroupFirewallMode }, getString(R.string.firewall_mode_title), modeNames)
+            val details = CoachMarks.Step({ findViewById(R.id.btnFirewallModeDetails) }, getString(R.string.firewall_mode_details_title), getString(R.string.firewall_mode_details_button), onTarget = {
+                showFirewallModeDetailsDialog()
+            })
+            CoachMarks.show(this, listOf(modes, details))
+        }
     }
 
     override fun onResume() {

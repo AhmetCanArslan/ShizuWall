@@ -53,6 +53,7 @@ class SettingsActivity : BaseActivity() {
         private const val EXPORT_SCHEMA = "shizuwall.preferences"
         private val APP_LOCK_KEYS = setOf(AppLock.KEY_ENABLED, AppLock.KEY_PIN, AppLock.KEY_BIOMETRIC, AppLock.KEY_PIN_LENGTH)
         private const val EXPORT_VERSION = 3
+        private const val TOUR_DELAY_MS = 500L
     }
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -183,6 +184,14 @@ class SettingsActivity : BaseActivity() {
 
         val tvVersion = findViewById<TextView>(R.id.tvVersion)
         tvVersion.text = getString(R.string.version_format, com.arslan.shizuwall.BuildConfig.VERSION_NAME)
+
+        if (savedInstanceState == null && intent.getBooleanExtra(CoachMarks.EXTRA_TOUR, false)) {
+            CoachMarks.show(this, listOf(
+                CoachMarks.Step({ findViewById(R.id.rowBackend) }, getString(R.string.settings_category_backend_title), getString(R.string.settings_category_backend_desc), onTarget = {
+                    startActivity(Intent(this, BackendSettingsActivity::class.java).putExtra(CoachMarks.EXTRA_TOUR, true))
+                })
+            ), TOUR_DELAY_MS)
+        }
     }
 
     @SuppressLint("RestrictedApi")
