@@ -333,6 +333,9 @@ class MainActivity : BaseActivity() {
                 .putString(KEY_FIREWALL_MODE, FirewallMode.ADAPTIVE.name)
                 .putBoolean(KEY_SKIP_ENABLE_CONFIRM, true)
                 .apply()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS_TOUR)
+            }
         }
 
         setContentView(R.layout.activity_main)
@@ -352,7 +355,10 @@ class MainActivity : BaseActivity() {
 
         showChangelogDialogIfNeeded()
 
-        if (firstRun) startTour()
+        if (!prefs.getBoolean("tour_shown", false)) {
+            prefs.edit().putBoolean("tour_shown", true).apply()
+            startTour()
+        }
 
         val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
         if (workingMode == com.arslan.shizuwall.WorkingMode.LADB.name) {
@@ -1465,9 +1471,6 @@ class MainActivity : BaseActivity() {
     }
 
     private fun startTour() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS_TOUR)
-        }
         CoachMarks.show(this, listOf(
             CoachMarks.Step({ firewallToggle }, getString(R.string.welcome_title), getString(R.string.welcome_message), onShow = {
                 firewallProgressFader.set(true)
@@ -1504,6 +1507,7 @@ class MainActivity : BaseActivity() {
             recyclerView.postDelayed({ playTick(switch, R.drawable.avd_check_draw, on, base + i + 1) }, TOUR_DEMO_MS * (i + 1))
             recyclerView.postDelayed({ playTick(switch, R.drawable.avd_check_erase, off, base + total - i - 1) }, TOUR_DEMO_MS * (total + i) + TOUR_DEMO_HOLD_MS)
         }
+        recyclerView.postDelayed({ recyclerView.adapter?.notifyItemRangeChanged(0, total) }, TOUR_DEMO_MS * total * 2 + TOUR_DEMO_HOLD_MS * 2)
     }
 
     private fun playTick(switch: ImageView?, drawable: Int, tint: ColorStateList, count: Int) {
