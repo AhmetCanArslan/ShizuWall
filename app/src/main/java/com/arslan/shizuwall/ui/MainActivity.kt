@@ -2014,15 +2014,20 @@ class MainActivity : BaseActivity() {
         if (!show) return
 
         val searching = currentQuery.isNotEmpty()
-        val offerSystemApps = !searching && !showSystemApps && currentCategory != Category.SYSTEM
+        val favorites = !searching && currentCategory == Category.FAVORITES
+        val offerSystemApps = !searching && !favorites && !showSystemApps && currentCategory != Category.SYSTEM
 
         appListEmptyTitle.setText(
             if (searching) R.string.empty_app_list_search_title else R.string.empty_app_list_title
         )
         appListEmptyMessage.setText(
-            if (searching) R.string.empty_app_list_search_message else R.string.empty_app_list_message
+            when {
+                searching -> R.string.empty_app_list_search_message
+                favorites -> R.string.favorites_message
+                else -> R.string.empty_app_list_message
+            }
         )
-        appListEmptyMessage.visibility = if (searching || offerSystemApps) View.VISIBLE else View.GONE
+        appListEmptyMessage.visibility = if (searching || favorites || offerSystemApps) View.VISIBLE else View.GONE
         appListEmptyAction.visibility = if (offerSystemApps) View.VISIBLE else View.GONE
     }
 
