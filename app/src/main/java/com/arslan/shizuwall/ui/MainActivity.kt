@@ -97,6 +97,7 @@ class MainActivity : BaseActivity() {
         const val KEY_ACTIVE_PACKAGES = "active_packages"
         const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed"
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
+        private const val REQUEST_NOTIFICATIONS_TOUR = 1002
         const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
         const val KEY_SKIP_ERROR_DIALOG = "skip_error_dialog"
         const val KEY_SKIP_ANDROID11_INFO = "skip_android11_info"
@@ -318,12 +319,14 @@ class MainActivity : BaseActivity() {
         enableEdgeToEdge()
 
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        val onboardingComplete = prefs.getBoolean("onboarding_complete", false)
-
-        if (!onboardingComplete) {
-            startActivity(Intent(this, OnboardingActivity::class.java))
-            finish()
-            return
+        val firstRun = !prefs.getBoolean("onboarding_complete", false)
+        if (firstRun) {
+            prefs.edit().putBoolean("onboarding_complete", true).apply()
+            sharedPreferences.edit()
+                .putString(KEY_LAST_SEEN_CHANGELOG, changelogId(this))
+                .putString(KEY_FIREWALL_MODE, FirewallMode.ADAPTIVE.name)
+                .putBoolean(KEY_SKIP_ENABLE_CONFIRM, true)
+                .apply()
         }
 
         setContentView(R.layout.activity_main)
@@ -342,6 +345,8 @@ class MainActivity : BaseActivity() {
         showAndroid11WarningDialog()
 
         showChangelogDialogIfNeeded()
+
+        if (firstRun) startTour()
 
         val workingMode = sharedPreferences.getString(KEY_WORKING_MODE, "SHIZUKU") ?: "SHIZUKU"
         if (workingMode == com.arslan.shizuwall.WorkingMode.LADB.name) {
@@ -1476,6 +1481,27 @@ class MainActivity : BaseActivity() {
         lp.height = if ((72 * displayMetrics.density).toInt() * count > maxHeight) maxHeight else ViewGroup.LayoutParams.WRAP_CONTENT
         recycler.layoutParams = lp
         recycler.isNestedScrollingEnabled = false
+    }
+
+    private fun startTour() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS_TOUR)
+        }
+        CoachMarks.show(this, listOf(
+            CoachMarks.Step({ firewallToggle }, getString(R.string.welcome_title), getString(R.string.welcome_message)),
+            CoachMarks.Step({ recyclerView.getChildAt(0) }, getString(R.string.favorites_title), getString(R.string.favorites_message)),
+            CoachMarks.Step({ findViewById(R.id.sortButton) }, getString(R.string.sorting_onboarding_title), getString(R.string.sorting_onboarding_message)),
+            CoachMarks.Step({ findViewById(R.id.profileButton) }, getString(R.string.profiles), getString(R.string.profiles_subtitle)),
+            CoachMarks.Step(
+                { findViewById(R.id.settingsButton) },
+                getString(R.string.settings_title),
+                getString(R.string.settings_category_backend_title) + "\n" + getString(R.string.settings_category_firewall_title),
+                onTarget = {
+                    val intent = Intent(this, SettingsActivity::class.java).putExtra(CoachMarks.EXTRA_TOUR, true)
+                    settingsLauncher.launch(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this, it, SettingsActivity.TRANSITION_NAME))
+                }
+            )
+        ))
     }
 
     private fun showChangelogDialogIfNeeded() {
