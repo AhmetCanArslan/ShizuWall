@@ -43,7 +43,8 @@ class PerUidRoutingExecutor(
         }
         requested.forEach { (key, rule) -> effective[key] = rule }
 
-        val mobileOnly = PerUidFirewall.mobileOnlyKeys(context)
+        val mobileOnlyKeys = PerUidFirewall.mobileOnlyKeys(context)
+        val mobileOnly = { key: String -> FirewallTargets.isMobileOnly(mobileOnlyKeys, key, !mirroring) }
         val coveredByParent = clonesCoveredByParent(effective, uidBatchMode, mobileOnly)
 
         val (shellRules, uidRules) = effective.toList()
@@ -74,22 +75,22 @@ class PerUidRoutingExecutor(
         return CHAIN_FALLBACK_SUCCESS
     }
 
-    private fun usesShellPath(key: String, uidBatchMode: Boolean, mobileOnly: Set<String>): Boolean {
-        if (uidBatchMode || AppKey.isSecondary(key) || FirewallTargets.isMobileOnly(mobileOnly, key)) return false
+    private fun usesShellPath(key: String, uidBatchMode: Boolean, mobileOnly: (String) -> Boolean): Boolean {
+        if (uidBatchMode || AppKey.isSecondary(key) || mobileOnly(key)) return false
         return !PerUidFirewall.requiresUidPath(context, key)
     }
 
     private fun clonesCoveredByParent(
         effective: Map<String, Int>,
         uidBatchMode: Boolean,
-        mobileOnly: Set<String>
+        mobileOnly: (String) -> Boolean
     ): Map<String, String> {
         if (uidBatchMode) return emptyMap()
         val covered = LinkedHashMap<String, String>()
         for ((key, rule) in effective) {
             if (!AppKey.isSecondary(key)) continue
             val parentKey = AppKey.packageOf(key)
-            if (effective[parentKey] == rule && !FirewallTargets.isMobileOnly(mobileOnly, parentKey) && !FirewallTargets.isMobileOnly(mobileOnly, key)) covered[key] = parentKey
+            if (effective[parentKey] == rule && !mobileOnly(parentKey) && !mobileOnly(key)) covered[key] = parentKey
         }
         return covered
     }

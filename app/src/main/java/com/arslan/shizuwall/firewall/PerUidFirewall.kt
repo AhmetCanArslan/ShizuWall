@@ -47,7 +47,8 @@ object PerUidFirewall {
         val mobileOnly = mobileOnlyKeys(context)
         val clearMetered = supportsMobileOnly() && context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
             .contains(MainActivity.KEY_MOBILE_ONLY_APPS)
-        val prepared = rules.map { (key, rule) -> prepare(context, key, rule, chainsFor(mobileOnly, clearMetered, key, rule)) }
+        val perCopy = MultiUserApps.isEnabled(context)
+        val prepared = rules.map { (key, rule) -> prepare(context, key, rule, chainsFor(mobileOnly, perCopy, clearMetered, key, rule)) }
         val batch = prepared.filterIsInstance<Prepared.Applicable>()
             .flatMap { it.rules }
             .associateBy { it.uid to it.chain }
@@ -86,9 +87,9 @@ object PerUidFirewall {
             .getStringSet(MainActivity.KEY_MOBILE_ONLY_APPS, emptySet()).orEmpty()
     }
 
-    private fun chainsFor(mobileOnly: Set<String>, clearMetered: Boolean, key: String, rule: Int): List<Int> = when {
+    private fun chainsFor(mobileOnly: Set<String>, perCopy: Boolean, clearMetered: Boolean, key: String, rule: Int): List<Int> = when {
         rule == RULE_DEFAULT && clearMetered -> listOf(CHAIN_OEM_DENY_3, CHAIN_METERED_DENY_ADMIN)
-        FirewallTargets.isMobileOnly(mobileOnly, key) -> listOf(CHAIN_METERED_DENY_ADMIN)
+        FirewallTargets.isMobileOnly(mobileOnly, key, perCopy) -> listOf(CHAIN_METERED_DENY_ADMIN)
         else -> listOf(CHAIN_OEM_DENY_3)
     }
 

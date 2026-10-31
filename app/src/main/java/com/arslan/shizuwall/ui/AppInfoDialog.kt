@@ -22,6 +22,7 @@ import com.arslan.shizuwall.utils.AppIds
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.FirewallUtils
+import com.arslan.shizuwall.utils.MultiUserApps
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -89,7 +90,7 @@ object AppInfoDialog {
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         switch.visibility = View.VISIBLE
         summary.visibility = View.VISIBLE
-        switch.isChecked = FirewallTargets.isMobileOnly(PerUidFirewall.mobileOnlyKeys(context), key)
+        switch.isChecked = FirewallTargets.isMobileOnly(PerUidFirewall.mobileOnlyKeys(context), key, MultiUserApps.isEnabled(context))
         if (packageInfo != null && packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) != true) {
             switch.isEnabled = false
             summary.alpha = 0.5f

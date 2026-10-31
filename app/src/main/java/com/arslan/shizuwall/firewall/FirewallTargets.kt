@@ -48,8 +48,8 @@ object FirewallTargets {
     fun canSwitchWhileEnabled(to: FirewallMode, hasSelection: Boolean): Boolean =
         hasSelection || to.allowsDynamicSelection()
 
-    fun isMobileOnly(mobileOnly: Set<String>, key: String): Boolean =
-        key in mobileOnly
+    fun isMobileOnly(mobileOnly: Set<String>, key: String, perCopy: Boolean): Boolean =
+        (if (perCopy) key else AppKey.packageOf(key)) in mobileOnly
 
     fun shouldBlockOnToggle(mode: FirewallMode, isSelected: Boolean): Boolean =
         if (mode == FirewallMode.WHITELIST) !isSelected else isSelected

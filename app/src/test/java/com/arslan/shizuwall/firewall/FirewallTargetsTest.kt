@@ -131,11 +131,18 @@ class FirewallTargetsTest {
     @Test
     fun mobileOnlyIsPerAppCopy() {
         val mobileOnly = setOf("com.a", "10:com.c")
-        assertTrue(FirewallTargets.isMobileOnly(mobileOnly, "com.a"))
-        assertFalse(FirewallTargets.isMobileOnly(mobileOnly, "10:com.a"))
-        assertTrue(FirewallTargets.isMobileOnly(mobileOnly, "10:com.c"))
-        assertFalse(FirewallTargets.isMobileOnly(mobileOnly, "com.c"))
-        assertFalse(FirewallTargets.isMobileOnly(mobileOnly, "com.b"))
-        assertFalse(FirewallTargets.isMobileOnly(emptySet(), "com.a"))
+        assertTrue(FirewallTargets.isMobileOnly(mobileOnly, "com.a", true))
+        assertFalse(FirewallTargets.isMobileOnly(mobileOnly, "10:com.a", true))
+        assertTrue(FirewallTargets.isMobileOnly(mobileOnly, "10:com.c", true))
+        assertFalse(FirewallTargets.isMobileOnly(mobileOnly, "com.c", true))
+        assertFalse(FirewallTargets.isMobileOnly(mobileOnly, "com.b", true))
+        assertFalse(FirewallTargets.isMobileOnly(emptySet(), "com.a", true))
+    }
+
+    @Test
+    fun mobileOnlyFollowsMainCopyWhenProfilesHidden() {
+        val mobileOnly = setOf("com.a", "10:com.c")
+        assertTrue(FirewallTargets.isMobileOnly(mobileOnly, "10:com.a", false))
+        assertFalse(FirewallTargets.isMobileOnly(mobileOnly, "10:com.c", false))
     }
 }
