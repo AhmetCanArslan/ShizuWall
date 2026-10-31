@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +24,7 @@ import android.os.SystemClock
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -48,6 +50,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.chip.Chip
+import com.google.android.material.color.MaterialColors
 import com.arslan.shizuwall.adapters.AppListAdapter
 import com.arslan.shizuwall.adapters.SelectedAppsAdapter
 import com.arslan.shizuwall.adapters.ErrorDetailsAdapter
@@ -98,6 +101,9 @@ class MainActivity : BaseActivity() {
         const val KEY_FIREWALL_SAVED_ELAPSED = "firewall_saved_elapsed"
         private const val SHIZUKU_PERMISSION_REQUEST_CODE = 1001
         private const val REQUEST_NOTIFICATIONS_TOUR = 1002
+        private const val TOUR_DEMO_APPS = 15
+        private const val TOUR_DEMO_MS = 90L
+        private const val TOUR_DEMO_HOLD_MS = 1200L
         const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
         const val KEY_SKIP_ERROR_DIALOG = "skip_error_dialog"
         const val KEY_SKIP_ANDROID11_INFO = "skip_android11_info"
@@ -1489,6 +1495,12 @@ class MainActivity : BaseActivity() {
         }
         CoachMarks.show(this, listOf(
             CoachMarks.Step({ firewallToggle }, getString(R.string.welcome_title), getString(R.string.welcome_message)),
+            CoachMarks.Step(
+                { selectedCountText.parent as View },
+                getString(R.string.select_all),
+                getString(R.string.double_tap_or_long_press),
+                onShow = ::demoSelection
+            ),
             CoachMarks.Step({ recyclerView.getChildAt(0) }, getString(R.string.favorites_title), getString(R.string.favorites_message)),
             CoachMarks.Step({ findViewById(R.id.sortButton) }, getString(R.string.sorting_onboarding_title), getString(R.string.sorting_onboarding_message)),
             CoachMarks.Step({ findViewById(R.id.profileButton) }, getString(R.string.profiles), getString(R.string.profiles_subtitle)),
@@ -1502,6 +1514,25 @@ class MainActivity : BaseActivity() {
                 }
             )
         ))
+    }
+
+    private fun demoSelection() {
+        val base = appList.count { it.isSelected }
+        val total = minOf(TOUR_DEMO_APPS, recyclerView.adapter?.itemCount ?: 0)
+        val on = ColorStateList.valueOf(MaterialColors.getColor(recyclerView, android.R.attr.colorPrimary))
+        val off = ColorStateList.valueOf(MaterialColors.getColor(recyclerView, com.google.android.material.R.attr.colorOnSurfaceVariant))
+        repeat(total) { i ->
+            val switch = recyclerView.getChildAt(i)?.findViewById<ImageView>(R.id.appSwitch)
+            recyclerView.postDelayed({ playTick(switch, R.drawable.avd_check_draw, on, base + i + 1) }, TOUR_DEMO_MS * (i + 1))
+            recyclerView.postDelayed({ playTick(switch, R.drawable.avd_check_erase, off, base + total - i - 1) }, TOUR_DEMO_MS * (total + i) + TOUR_DEMO_HOLD_MS)
+        }
+    }
+
+    private fun playTick(switch: ImageView?, drawable: Int, tint: ColorStateList, count: Int) {
+        switch?.setImageResource(drawable)
+        switch?.imageTintList = tint
+        (switch?.drawable as? android.graphics.drawable.Animatable)?.start()
+        morphSelectedCount(count)
     }
 
     private fun showChangelogDialogIfNeeded() {
