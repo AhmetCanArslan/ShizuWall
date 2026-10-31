@@ -104,6 +104,7 @@ class MainActivity : BaseActivity() {
         private const val TOUR_DEMO_APPS = 15
         private const val TOUR_DEMO_MS = 90L
         private const val TOUR_DEMO_HOLD_MS = 1200L
+        private const val TOUR_PROGRESS_MS = 2500L
         const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
         const val KEY_SKIP_ERROR_DIALOG = "skip_error_dialog"
         const val KEY_SKIP_ANDROID11_INFO = "skip_android11_info"
@@ -1494,7 +1495,10 @@ class MainActivity : BaseActivity() {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS_TOUR)
         }
         CoachMarks.show(this, listOf(
-            CoachMarks.Step({ firewallToggle }, getString(R.string.welcome_title), getString(R.string.welcome_message)),
+            CoachMarks.Step({ firewallToggle }, getString(R.string.welcome_title), getString(R.string.welcome_message), onShow = {
+                firewallProgressFader.set(true)
+                firewallProgress.postDelayed({ firewallProgressFader.set(false) }, TOUR_PROGRESS_MS)
+            }),
             CoachMarks.Step(
                 { selectedCountText.parent as View },
                 getString(R.string.select_all),
