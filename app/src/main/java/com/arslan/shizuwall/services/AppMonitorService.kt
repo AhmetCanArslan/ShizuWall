@@ -81,7 +81,15 @@ class AppMonitorService : Service() {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
+            val openIntent = PendingIntent.getActivity(
+                context,
+                key.hashCode(),
+                Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
             val notification = NotificationCompat.Builder(context, CHANNEL_ID_LOUD)
+                .setContentIntent(openIntent)
                 .setContentTitle(context.getString(R.string.new_app_installed, appInfo?.let { pm.getApplicationLabel(it).toString() } ?: packageName))
                 .setContentText(if (AppKey.isSecondary(key)) "$packageName · ${MultiUserApps.userLabel(context, AppKey.userIdOf(key))}" else packageName)
                 .setSubText(if (hasInternet) null else context.getString(R.string.app_info_internet_no))
