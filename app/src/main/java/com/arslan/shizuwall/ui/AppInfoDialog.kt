@@ -90,9 +90,11 @@ object AppInfoDialog {
         if (!PerUidFirewall.supportsMobileOnly() || !AppIds.isBlockable(uid)) return
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         switch.visibility = View.VISIBLE
-        summary.visibility = View.VISIBLE
         val labels = listOf(R.string.app_info_block_all, R.string.app_info_mobile_only)
-        fun show(mobile: Boolean) = switch.setText(labels[if (mobile) 1 else 0])
+        fun show(mobile: Boolean) {
+            switch.setText(labels[if (mobile) 1 else 0])
+            summary.visibility = if (mobile) View.VISIBLE else View.GONE
+        }
         show(FirewallTargets.isMobileOnly(PerUidFirewall.mobileOnlyKeys(context), key, MultiUserApps.isEnabled(context)))
         if (packageInfo != null && packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) != true) {
             switch.isEnabled = false
