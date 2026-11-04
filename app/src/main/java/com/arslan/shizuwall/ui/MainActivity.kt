@@ -1665,41 +1665,15 @@ class MainActivity : BaseActivity() {
                 }
                 val packages = pm.getInstalledPackages(queryFlags)
 
-                val secondarySnapshot = if (MultiUserApps.isEnabled(this@MainActivity)) {
-                    MultiUserApps.snapshot(this@MainActivity)
-                } else {
-                    MultiUserApps.Snapshot.EMPTY
+                val snapshotDeferred = async {
+                    if (MultiUserApps.isEnabled(this@MainActivity)) MultiUserApps.snapshot(this@MainActivity) else MultiUserApps.Snapshot.EMPTY
                 }
-
-                val installedPackageNames = packages.mapTo(HashSet(packages.size)) { it.packageName }
-                secondarySnapshot.apps.forEach { installedPackageNames.add(it.key) }
-
-                val secondaryScanUsable = secondarySnapshot.apps.isNotEmpty()
-                val isKnown = { key: String ->
-                    installedPackageNames.contains(key) ||
-                        (AppKey.isSecondary(key) && !secondaryScanUsable)
-                }
-
-                val savedSelected = loadSelectedApps().toMutableSet()
-                val selectedToRemove = if (rememberDisabled) emptyList() else savedSelected.filterNot(isKnown)
-                val selfPkg = this@MainActivity.packageName
-                var selectedChanged = false
-                if (savedSelected.remove(selfPkg)) selectedChanged = true
-                if (selectedToRemove.isNotEmpty()) {
-                    savedSelected.removeAll(selectedToRemove.toSet())
-                    selectedChanged = true
-                }
-                if (selectedChanged) {
-                    sharedPreferences.edit()
-                        .putStringSet(KEY_SELECTED_APPS, savedSelected)
-                        .putInt(KEY_SELECTED_COUNT, savedSelected.size)
-                        .apply()
-                }
-
                 val favoritePackages = loadFavoriteApps()
                 val modesStr = sharedPreferences.getString(KEY_APP_MODES, "{}")
                 val modesJson = try { JSONObject(modesStr!!) } catch (e: Exception) { JSONObject() }
                 
+                val selectedAtStart = loadSelectedApps()
+                val selfPkg = this@MainActivity.packageName
                 val chunkSize = 50
                 val chunks = packages.chunked(chunkSize)
                 val results = chunks.map { chunk ->
@@ -1717,7 +1691,7 @@ class MainActivity : BaseActivity() {
                             if (packageName == selfPkg) continue
 
                             val appName = appInfo.loadLabel(pm).toString()
-                            val isSelected = savedSelected.contains(packageName)
+                            val isSelected = selectedAtStart.contains(packageName)
                             val isFavorite = favoritePackages.contains(packageName)
                             val installTime = packageInfo.firstInstallTime
                             val appMode = modesJson.optInt(packageName, 0)
@@ -1728,6 +1702,32 @@ class MainActivity : BaseActivity() {
                         chunkResult
                     }
                 }.awaitAll().flatten()
+                val secondarySnapshot = snapshotDeferred.await()
+
+                val installedPackageNames = packages.mapTo(HashSet(packages.size)) { it.packageName }
+                secondarySnapshot.apps.forEach { installedPackageNames.add(it.key) }
+
+                val secondaryScanUsable = secondarySnapshot.apps.isNotEmpty()
+                val isKnown = { key: String ->
+                    installedPackageNames.contains(key) ||
+                        (AppKey.isSecondary(key) && !secondaryScanUsable)
+                }
+
+                val savedSelected = loadSelectedApps().toMutableSet()
+                val selectedToRemove = if (rememberDisabled) emptyList() else savedSelected.filterNot(isKnown)
+                var selectedChanged = false
+                if (savedSelected.remove(selfPkg)) selectedChanged = true
+                if (selectedToRemove.isNotEmpty()) {
+                    savedSelected.removeAll(selectedToRemove.toSet())
+                    selectedChanged = true
+                }
+                if (selectedChanged) {
+                    sharedPreferences.edit()
+                        .putStringSet(KEY_SELECTED_APPS, savedSelected)
+                        .putInt(KEY_SELECTED_COUNT, savedSelected.size)
+                        .apply()
+                }
+
 
                 val internetPackages = packages.asSequence()
                     .filter { it.requestedPermissions?.contains(Manifest.permission.INTERNET) == true }
@@ -1784,7 +1784,7 @@ class MainActivity : BaseActivity() {
             }
             updateCategoryChips()
 
-            saveAppsCache(builtList)
+            lifecycleScope.launch(Dispatchers.Default) { saveAppsCache(builtList) }
 
             appListRefreshFader.set(false)
             if (isAppListLoadingVisible) {
