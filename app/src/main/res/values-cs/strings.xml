@@ -429,7 +429,7 @@
     <string name="app_info_internet_yes">Má oprávnění k internetu</string>
     <string name="app_info_internet_no">Bez oprávnění k internetu</string>
     <string name="app_info_mobile_only">Blokovat pouze mobilní data</string>
-    <string name="app_info_mobile_only_summary">Wi‑Fi zůstává povolená, i když je tato aplikace blokovaná. Blokují se jen měřené sítě: mobilní data a Wi‑Fi označené jako měřené, například hotspoty. Platí pro všechny kopie aplikace včetně pracovního profilu a klonů.</string>
+    <string name="app_info_mobile_only_summary">Wi‑Fi zůstává povolená, i když je tato aplikace blokovaná. Blokují se jen měřené sítě: mobilní data a Wi‑Fi označené jako měřené, například hotspoty.</string>
     <string name="app_info_mobile_only_failed">Nastavení pro %1$s bylo uloženo, ale pravidlo teď nelze použít. Zkontrolujte, zda backend běží.</string>
     <string name="app_list_mobile_only">%1$s · Pouze mobilní data</string>
     <string name="app_info_unavailable">Podrobnosti nejsou k dispozici</string>

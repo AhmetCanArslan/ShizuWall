@@ -427,7 +427,7 @@
     <string name="app_info_internet_yes">İnternet izni var</string>
     <string name="app_info_internet_no">İnternet izni yok</string>
     <string name="app_info_mobile_only">Yalnızca mobil veride engelle</string>
-    <string name="app_info_mobile_only_summary">Bu uygulama engellendiğinde Wi‑Fi serbest kalır. Yalnızca ölçülü ağlar engellenir: mobil veri ve hotspot gibi ölçülü olarak işaretli Wi‑Fi ağları. İş profili ve klonlar dahil uygulamanın tüm kopyalarına uygulanır.</string>
+    <string name="app_info_mobile_only_summary">Bu uygulama engellendiğinde Wi‑Fi serbest kalır. Yalnızca ölçülü ağlar engellenir: mobil veri ve hotspot gibi ölçülü olarak işaretli Wi‑Fi ağları.</string>
     <string name="app_info_mobile_only_failed">%1$s için ayar kaydedildi ancak kural şu an uygulanamadı. Arka ucun çalıştığından emin olun.</string>
     <string name="app_list_mobile_only">%1$s · Yalnızca mobil veri</string>
     <string name="app_info_unavailable">Uygulama ayrıntıları alınamadı</string>
