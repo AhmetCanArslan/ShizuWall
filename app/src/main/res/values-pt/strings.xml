@@ -427,6 +427,7 @@
     <string name="app_info_internet_yes">Tem permissão de internet</string>
     <string name="app_info_internet_no">Sem permissão de internet</string>
     <string name="app_info_mobile_only">Bloquear apenas nos dados móveis</string>
+    <string name="app_info_block_all">Bloquear todas as redes</string>
     <string name="app_info_mobile_only_summary">O Wi‑Fi continua permitido enquanto este app estiver bloqueado. Apenas redes limitadas são bloqueadas: dados móveis e Wi‑Fi marcadas como limitadas, como pontos de acesso.</string>
     <string name="app_info_mobile_only_failed">Configuração salva para %1$s, mas a regra não pôde ser aplicada agora. Verifique se o backend está em execução.</string>
     <string name="app_list_mobile_only">%1$s · Apenas dados móveis</string>

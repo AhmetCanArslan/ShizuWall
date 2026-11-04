@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -23,7 +24,7 @@ import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.CrossUserAppInfo
 import com.arslan.shizuwall.utils.FirewallUtils
 import com.arslan.shizuwall.utils.MultiUserApps
-import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -82,7 +83,7 @@ object AppInfoDialog {
     }
 
     private fun bindMobileOnly(context: Context, owner: LifecycleOwner, view: View, key: String, appName: String, packageInfo: PackageInfo?) {
-        val switch = view.findViewById<MaterialSwitch>(R.id.infoMobileOnly)
+        val switch = view.findViewById<MaterialButton>(R.id.infoMobileOnly)
         val summary = view.findViewById<TextView>(R.id.infoMobileOnlySummary)
         val info = packageInfo?.applicationInfo ?: CrossUserAppInfo.applicationInfo(context, AppKey.packageOf(key), AppKey.userIdOf(key))
         val uid = info?.uid ?: return
@@ -90,19 +91,29 @@ object AppInfoDialog {
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         switch.visibility = View.VISIBLE
         summary.visibility = View.VISIBLE
-        switch.isChecked = FirewallTargets.isMobileOnly(PerUidFirewall.mobileOnlyKeys(context), key, MultiUserApps.isEnabled(context))
+        val labels = listOf(R.string.app_info_block_all, R.string.app_info_mobile_only)
+        fun show(mobile: Boolean) = switch.setText(labels[if (mobile) 1 else 0])
+        show(FirewallTargets.isMobileOnly(PerUidFirewall.mobileOnlyKeys(context), key, MultiUserApps.isEnabled(context)))
         if (packageInfo != null && packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) != true) {
             switch.isEnabled = false
             summary.alpha = 0.5f
             return
         }
-        switch.setOnCheckedChangeListener { _, checked ->
-            switch.isEnabled = false
-            owner.lifecycleScope.launch {
-                val ok = FirewallUtils.setMobileOnly(context, prefs, key, checked)
-                switch.isEnabled = true
-                if (!ok) Toast.makeText(context, context.getString(R.string.app_info_mobile_only_failed, appName), Toast.LENGTH_LONG).show()
+        switch.setOnClickListener {
+            val menu = PopupMenu(context, switch)
+            labels.forEachIndexed { i, res -> menu.menu.add(0, i, i, res) }
+            menu.setOnMenuItemClickListener { item ->
+                val mobile = item.itemId == 1
+                show(mobile)
+                switch.isEnabled = false
+                owner.lifecycleScope.launch {
+                    val ok = FirewallUtils.setMobileOnly(context, prefs, key, mobile)
+                    switch.isEnabled = true
+                    if (!ok) Toast.makeText(context, context.getString(R.string.app_info_mobile_only_failed, appName), Toast.LENGTH_LONG).show()
+                }
+                true
             }
+            menu.show()
         }
     }
 

@@ -428,6 +428,7 @@
     <string name="app_info_internet_yes">इंटरनेट अनुमति है</string>
     <string name="app_info_internet_no">इंटरनेट अनुमति नहीं है</string>
     <string name="app_info_mobile_only">केवल मोबाइल डेटा पर ब्लॉक करें</string>
+    <string name="app_info_block_all">सभी नेटवर्क ब्लॉक करें</string>
     <string name="app_info_mobile_only_summary">इस ऐप के ब्लॉक रहने पर भी Wi‑Fi की अनुमति रहती है। केवल मीटर्ड नेटवर्क ब्लॉक होते हैं: मोबाइल डेटा और हॉटस्पॉट जैसे मीटर्ड चिह्नित Wi‑Fi।</string>
     <string name="app_info_mobile_only_failed">%1$s के लिए सेटिंग सहेजी गई, लेकिन नियम अभी लागू नहीं हो सका। जाँचें कि बैकएंड चल रहा है।</string>
     <string name="app_list_mobile_only">%1$s · केवल मोबाइल डेटा</string>

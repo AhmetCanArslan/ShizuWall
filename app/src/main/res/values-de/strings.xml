@@ -427,6 +427,7 @@
     <string name="app_info_internet_yes">Hat Internetberechtigung</string>
     <string name="app_info_internet_no">Keine Internetberechtigung</string>
     <string name="app_info_mobile_only">Nur mobile Daten blockieren</string>
+    <string name="app_info_block_all">Alle Netzwerke blockieren</string>
     <string name="app_info_mobile_only_summary">WLAN bleibt erlaubt, während diese App blockiert ist. Nur getaktete Netzwerke werden blockiert: mobile Daten und als getaktet markierte WLANs, z. B. Hotspots.</string>
     <string name="app_info_mobile_only_failed">Einstellung für %1$s gespeichert, die Regel konnte aber gerade nicht angewendet werden. Prüfe, ob das Backend läuft.</string>
     <string name="app_list_mobile_only">%1$s · Nur mobile Daten</string>

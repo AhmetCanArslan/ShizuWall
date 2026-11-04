@@ -429,6 +429,7 @@
     <string name="app_info_internet_yes">Tiene permiso de internet</string>
     <string name="app_info_internet_no">Sin permiso de internet</string>
     <string name="app_info_mobile_only">Bloquear solo con datos móviles</string>
+    <string name="app_info_block_all">Bloquear todas las redes</string>
     <string name="app_info_mobile_only_summary">El Wi‑Fi sigue permitido mientras esta app está bloqueada. Solo se bloquean las redes de uso medido: datos móviles y Wi‑Fi marcadas como de uso medido, como los puntos de acceso.</string>
     <string name="app_info_mobile_only_failed">Ajuste guardado para %1$s, pero la regla no se pudo aplicar ahora. Comprueba que el backend esté en ejecución.</string>
     <string name="app_list_mobile_only">%1$s · Solo datos móviles</string>

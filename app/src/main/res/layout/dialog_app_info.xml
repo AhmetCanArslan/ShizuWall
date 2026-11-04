@@ -58,16 +58,15 @@
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
-        <com.google.android.material.materialswitch.MaterialSwitch
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/infoMobileOnly"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:visibility="gone"
-            android:text="@string/app_info_mobile_only"
-            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-            app:thumbIcon="@drawable/check_24px"
-            app:thumbIconTint="@color/switch_thumb_icon_tint" />
+            app:icon="@drawable/arrow_drop_down_24px"
+            app:iconGravity="end" />
 
         <TextView
             android:id="@+id/infoMobileOnlySummary"
