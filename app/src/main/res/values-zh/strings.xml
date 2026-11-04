@@ -429,7 +429,6 @@
     <string name="app_info_block_all">阻止所有网络</string>
     <string name="app_info_mobile_only_summary">此应用被阻止时仍允许使用 Wi‑Fi。仅阻止按流量计费的网络:移动数据以及被标记为按流量计费的 Wi‑Fi(例如热点)。</string>
     <string name="app_info_mobile_only_failed">已为 %1$s 保存设置,但当前无法应用规则。请确认后端正在运行。</string>
-    <string name="app_list_mobile_only">%1$s · 仅移动数据</string>
     <string name="app_info_unavailable">无法获取详情</string>
     <string name="app_info_open_settings">应用详情</string>
     <string name="app_info_trackers_title">追踪器</string>

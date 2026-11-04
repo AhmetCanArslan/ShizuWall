@@ -432,7 +432,6 @@
     <string name="app_info_block_all">すべてのネットワークをブロック</string>
     <string name="app_info_mobile_only_summary">このアプリをブロックしている間も Wi‑Fi は許可されます。ブロックされるのは従量制ネットワーク(モバイルデータと、テザリングなど従量制に設定された Wi‑Fi)のみです。</string>
     <string name="app_info_mobile_only_failed">%1$s の設定は保存されましたが、今はルールを適用できませんでした。バックエンドが動作しているか確認してください。</string>
-    <string name="app_list_mobile_only">%1$s · モバイルデータのみ</string>
     <string name="app_info_unavailable">詳細を取得できません</string>
     <string name="app_info_open_settings">アプリの詳細</string>
     <string name="app_info_trackers_title">トラッカー</string>

@@ -431,7 +431,6 @@
     <string name="app_info_block_all">Blocca tutte le reti</string>
     <string name="app_info_mobile_only_summary">Il Wi‑Fi resta consentito mentre questa app è bloccata. Vengono bloccate solo le reti a consumo: dati mobili e Wi‑Fi contrassegnate a consumo, come gli hotspot.</string>
     <string name="app_info_mobile_only_failed">Impostazione salvata per %1$s, ma la regola non può essere applicata ora. Verifica che il backend sia in esecuzione.</string>
-    <string name="app_list_mobile_only">%1$s · Solo dati mobili</string>
     <string name="app_info_unavailable">Dettagli dell\'app non disponibili</string>
     <string name="app_info_open_settings">Dettagli dell\'app</string>
     <string name="app_info_trackers_title">Tracker</string>

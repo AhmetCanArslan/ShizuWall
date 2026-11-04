@@ -434,7 +434,6 @@
     <string name="app_info_block_all">Блокировать все сети</string>
     <string name="app_info_mobile_only_summary">Wi‑Fi остаётся разрешённым, пока это приложение заблокировано. Блокируются только лимитные сети: мобильные данные и Wi‑Fi, отмеченные как лимитные, например точки доступа.</string>
     <string name="app_info_mobile_only_failed">Настройка для %1$s сохранена, но правило сейчас не удалось применить. Убедитесь, что бэкенд запущен.</string>
-    <string name="app_list_mobile_only">%1$s · Только мобильные данные</string>
     <string name="app_info_unavailable">Сведения недоступны</string>
     <string name="app_info_open_settings">О приложении</string>
     <string name="app_info_trackers_title">Трекеры</string>

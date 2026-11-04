@@ -430,7 +430,6 @@
     <string name="app_info_block_all">Alle Netzwerke blockieren</string>
     <string name="app_info_mobile_only_summary">WLAN bleibt erlaubt, während diese App blockiert ist. Nur getaktete Netzwerke werden blockiert: mobile Daten und als getaktet markierte WLANs, z. B. Hotspots.</string>
     <string name="app_info_mobile_only_failed">Einstellung für %1$s gespeichert, die Regel konnte aber gerade nicht angewendet werden. Prüfe, ob das Backend läuft.</string>
-    <string name="app_list_mobile_only">%1$s · Nur mobile Daten</string>
     <string name="app_info_unavailable">App-Details nicht verfügbar</string>
     <string name="app_info_open_settings">App-Details</string>
     <string name="app_info_trackers_title">Tracker</string>

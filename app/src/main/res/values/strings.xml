@@ -432,7 +432,6 @@
     <string name="app_info_block_all">Block all networks</string>
     <string name="app_info_mobile_only_summary">Wi‑Fi stays allowed while this app is blocked. Only metered networks are blocked: mobile data and Wi‑Fi marked as metered, such as hotspots.</string>
     <string name="app_info_mobile_only_failed">Setting saved for %1$s, but the rule could not be applied right now. Check that the backend is running.</string>
-    <string name="app_list_mobile_only">%1$s · Mobile data only</string>
     <string name="app_info_unavailable">App details unavailable</string>
     <string name="app_info_open_settings">App details</string>
     <string name="app_info_trackers_title">Trackers</string>

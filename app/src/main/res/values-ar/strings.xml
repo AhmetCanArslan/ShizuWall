@@ -436,7 +436,6 @@
     <string name="app_info_block_all">حظر جميع الشبكات</string>
     <string name="app_info_mobile_only_summary">تظل شبكة Wi‑Fi مسموحة أثناء حظر هذا التطبيق. يتم حظر الشبكات المحدودة فقط: بيانات الجوال وشبكات Wi‑Fi المصنفة كمحدودة مثل نقاط الاتصال.</string>
     <string name="app_info_mobile_only_failed">تم حفظ الإعداد لـ %1$s، لكن تعذّر تطبيق القاعدة الآن. تأكد من أن الخدمة الخلفية تعمل.</string>
-    <string name="app_list_mobile_only">%1$s · بيانات الجوال فقط</string>
     <string name="app_info_unavailable">التفاصيل غير متاحة</string>
     <string name="app_info_open_settings">تفاصيل التطبيق</string>
     <string name="app_info_trackers_title">المتتبعات</string>

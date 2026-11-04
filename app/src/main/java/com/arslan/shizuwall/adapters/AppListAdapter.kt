@@ -115,11 +115,7 @@ class AppListAdapter(
             UiUtils.loadAppIcon(appIcon, pkg, appInfo.userId, iconCache)
 
             appName.text = appInfo.appName
-            packageName.text = if (appInfo.key in mobileOnlyPackages) {
-                itemView.context.getString(R.string.app_list_mobile_only, pkg)
-            } else {
-                pkg
-            }
+            packageName.text = pkg
 
             if (appInfo.userId != 0) {
                 profileBadge.visibility = View.VISIBLE
@@ -151,7 +147,12 @@ class AppListAdapter(
                 modeDropdownText.visibility = View.GONE
             }
 
-            val iconRes = if (appInfo.isSelected) R.drawable.check_circle_24dp else R.drawable.circle_24dp
+            val iconRes = when {
+                appInfo.key in mobileOnlyPackages && appInfo.isSelected -> R.drawable.mobile_circle_block_24dp
+                appInfo.key in mobileOnlyPackages -> R.drawable.mobile_circle_24dp
+                appInfo.isSelected -> R.drawable.check_circle_24dp
+                else -> R.drawable.circle_24dp
+            }
             appSwitch.setImageResource(iconRes)
             val tintColor = if (appInfo.isSelected) {
                 MaterialColors.getColor(itemView, android.R.attr.colorPrimary)
@@ -219,7 +220,16 @@ class AppListAdapter(
                 addUpdateListener { card.setCardBackgroundColor(it.animatedValue as Int) }
                 start()
             }
-            appSwitch.setImageResource(if (boundSelected == true) R.drawable.avd_check_draw else R.drawable.avd_check_erase)
+            val mobile = boundKey in mobileOnlyPackages
+            val draw = boundSelected == true
+            appSwitch.setImageResource(
+                when {
+                    mobile && draw -> R.drawable.avd_mobile_draw
+                    mobile -> R.drawable.avd_mobile_erase
+                    draw -> R.drawable.avd_check_draw
+                    else -> R.drawable.avd_check_erase
+                }
+            )
             (appSwitch.drawable as Animatable).start()
         }
 

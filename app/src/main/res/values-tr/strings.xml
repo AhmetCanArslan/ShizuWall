@@ -430,7 +430,6 @@
     <string name="app_info_block_all">Tüm ağları engelle</string>
     <string name="app_info_mobile_only_summary">Bu uygulama engellendiğinde Wi‑Fi serbest kalır. Yalnızca ölçülü ağlar engellenir: mobil veri ve hotspot gibi ölçülü olarak işaretli Wi‑Fi ağları.</string>
     <string name="app_info_mobile_only_failed">%1$s için ayar kaydedildi ancak kural şu an uygulanamadı. Arka ucun çalıştığından emin olun.</string>
-    <string name="app_list_mobile_only">%1$s · Yalnızca mobil veri</string>
     <string name="app_info_unavailable">Uygulama ayrıntıları alınamadı</string>
     <string name="app_info_open_settings">Uygulama ayrıntıları</string>
     <string name="app_info_trackers_title">İzleyiciler</string>
