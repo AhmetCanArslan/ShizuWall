@@ -174,6 +174,7 @@ class MainActivity : BaseActivity() {
     private lateinit var searchView: SearchView
     private lateinit var selectedCountText: TextView
     private lateinit var appListLoadingContainer: View
+    private lateinit var appListRefreshIndicator: View
     private lateinit var appListEmptyContainer: View
     private lateinit var appListEmptyTitle: TextView
     private lateinit var appListEmptyMessage: TextView
@@ -846,6 +847,7 @@ class MainActivity : BaseActivity() {
     private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.recyclerView)
         appListLoadingContainer = findViewById(R.id.appListLoadingContainer)
+        appListRefreshIndicator = findViewById(R.id.appListRefreshIndicator)
         appListEmptyContainer = findViewById(R.id.appListEmptyContainer)
         appListEmptyTitle = findViewById(R.id.appListEmptyTitle)
         appListEmptyMessage = findViewById(R.id.appListEmptyMessage)
@@ -1641,6 +1643,8 @@ class MainActivity : BaseActivity() {
         lifecycleScope.launch {
             if (showLoadingIfListEmpty && appList.isEmpty()) {
                 setAppListLoadingVisible(true)
+            } else {
+                appListRefreshFader.set(true)
             }
 
             if (!MultiUserApps.isEnabled(this@MainActivity)) {
@@ -1782,6 +1786,7 @@ class MainActivity : BaseActivity() {
 
             saveAppsCache(builtList)
 
+            appListRefreshFader.set(false)
             if (isAppListLoadingVisible) {
                 setAppListLoadingVisible(false)
             }
@@ -1919,6 +1924,8 @@ class MainActivity : BaseActivity() {
     private val firewallProgressFader by lazy { DelayedFader(firewallProgress) }
 
     private val appListLoadingFader by lazy { DelayedFader(appListLoadingContainer) }
+
+    private val appListRefreshFader by lazy { DelayedFader(appListRefreshIndicator) }
 
     private fun fadeVisibility(view: View, visible: Boolean) {
         view.animate().cancel()

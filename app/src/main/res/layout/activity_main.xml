@@ -341,6 +341,16 @@
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
     </LinearLayout>
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/appListRefreshIndicator"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/recyclerView"
+        app:layout_constraintStart_toStartOf="@id/recyclerView"
+        app:layout_constraintEnd_toEndOf="@id/recyclerView" />
+
     <LinearLayout
         android:id="@+id/appListEmptyContainer"
         android:layout_width="0dp"
