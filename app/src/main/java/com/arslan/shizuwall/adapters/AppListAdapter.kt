@@ -124,7 +124,7 @@ class AppListAdapter(
                 profileBadge.visibility = View.GONE
             }
 
-            appInfoButton.visibility = if (infoButtonEnabled) View.VISIBLE else View.GONE
+            appInfoButton.visibility = if (infoButtonEnabled || appInfo.key in mobileOnlyPackages) View.VISIBLE else View.GONE
             appInfoButton.setOnClickListener { onAppIconClick(appInfo) }
             appInfoButton.contentDescription = itemView.context.getString(
                 R.string.app_info_icon_content_description, appInfo.appName
