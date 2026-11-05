@@ -413,6 +413,7 @@ class MainActivity : BaseActivity() {
         Shizuku.addBinderReceivedListener(binderReceivedListener)
         Shizuku.addBinderDeadListener(binderDeadListener)
         shizukuListenersAdded = true
+        if (currentWorkingMode() == WorkingMode.SHIZUKU && Shizuku.pingBinder()) checkShizukuPermission()
 
         firewallRepo = FirewallStateRepository(applicationContext)
         firewallRepo?.let { repo ->
