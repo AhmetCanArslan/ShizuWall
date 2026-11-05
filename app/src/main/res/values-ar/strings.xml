@@ -76,6 +76,8 @@
     <string name="grant_permission">منح الإذن</string>
     <string name="favorites_title">المفضلة</string>
     <string name="favorites_message">اضغط مطولًا على تطبيق لإضافته إلى مفضلاتك للوصول السريع.</string>
+    <string name="block_mode_tour_title">وضع الحظر</string>
+    <string name="block_mode_tour_message">اضغط مطولًا على هذه الأيقونة لحظر جميع الشبكات أو بيانات الجوال فقط.</string>
     <string name="sorting_onboarding_title">الفرز والتصفية</string>
     <string name="sorting_onboarding_message">اضغط على أيقونة الفرز لتغيير ترتيب التطبيقات. ويمكنك من هناك أيضًا اختيار إظهار تطبيقات النظام وتطبيقات الملفات الشخصية.</string>
     <string name="onboarding_mode_selection_title">اختر وضع العمل</string>

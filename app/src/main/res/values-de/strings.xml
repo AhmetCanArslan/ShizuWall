@@ -76,6 +76,8 @@
     <string name="grant_permission">Berechtigung erteilen</string>
     <string name="favorites_title">Favoriten</string>
     <string name="favorites_message">Drücken Sie lange auf eine App, um sie zu Ihren Favoriten für schnellen Zugriff hinzuzufügen.</string>
+    <string name="block_mode_tour_title">Blockmodus</string>
+    <string name="block_mode_tour_message">Halte dieses Symbol gedrückt, um alle Netzwerke oder nur mobile Daten zu blockieren.</string>
     <string name="sorting_onboarding_title">Sortieren &amp; Filtern</string>
     <string name="sorting_onboarding_message">Tippen Sie auf das Sortiersymbol, um die Reihenfolge der Apps zu ändern. Dort können Sie auch auswählen, ob System-Apps und Profil-Apps angezeigt werden.</string>
     <string name="onboarding_mode_selection_title">Arbeitsmodus wählen</string>

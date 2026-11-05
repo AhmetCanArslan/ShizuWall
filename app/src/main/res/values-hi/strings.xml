@@ -78,6 +78,8 @@
     <string name="grant_permission">अनुमति दें</string>
     <string name="favorites_title">पसंदीदा</string>
     <string name="favorites_message">त्वरित पहुँच के लिए किसी ऐप को पसंदीदा में जोड़ने हेतु उसे देर तक दबाएँ।</string>
+    <string name="block_mode_tour_title">ब्लॉक मोड</string>
+    <string name="block_mode_tour_message">सभी नेटवर्क या केवल मोबाइल डेटा ब्लॉक करने के लिए इस आइकन को देर तक दबाएँ।</string>
     <string name="sorting_onboarding_title">सॉर्टिंग और फ़िल्टरिंग</string>
     <string name="sorting_onboarding_message">ऐप्स का क्रम बदलने के लिए सॉर्टिंग आइकन पर टैप करें। वहीं से आप यह भी चुन सकते हैं कि सिस्टम ऐप्स और प्रोफ़ाइल ऐप्स दिखें या नहीं।</string>
     <string name="onboarding_mode_selection_title">कार्य मोड चुनें</string>

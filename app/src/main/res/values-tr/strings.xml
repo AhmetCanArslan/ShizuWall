@@ -76,6 +76,8 @@
     <string name="grant_permission">İzin Ver</string>
     <string name="favorites_title">Favoriler</string>
     <string name="favorites_message">Hızlı erişim için bir uygulamaya uzun basın ve favorilerinize ekleyin.</string>
+    <string name="block_mode_tour_title">Engelleme modu</string>
+    <string name="block_mode_tour_message">Tüm ağları veya yalnızca mobil veriyi engellemek için bu simgeye uzun bas.</string>
     <string name="sorting_onboarding_title">Sıralama ve Filtreleme</string>
     <string name="sorting_onboarding_message">Uygulamaların sıralamasını değiştirmek için sıralama simgesine dokunun. Sistem uygulamalarının ve profil uygulamalarının görünüp görünmeyeceğini de buradan ayarlayabilirsiniz.</string>
     <string name="onboarding_mode_selection_title">Çalışma Modunu Seçin</string>

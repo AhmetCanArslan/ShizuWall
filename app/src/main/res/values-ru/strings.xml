@@ -75,6 +75,8 @@
     <string name="grant_permission">Предоставить разрешение</string>
     <string name="favorites_title">Избранное</string>
     <string name="favorites_message">Удерживайте приложение, чтобы добавить его в избранное для быстрого доступа.</string>
+    <string name="block_mode_tour_title">Режим блокировки</string>
+    <string name="block_mode_tour_message">Удерживайте этот значок, чтобы заблокировать все сети или только мобильные данные.</string>
     <string name="sorting_onboarding_title">Сортировка и фильтры</string>
     <string name="sorting_onboarding_message">Нажмите значок сортировки, чтобы изменить порядок приложений. Там же можно выбрать, показывать ли системные приложения и приложения профилей.</string>
     <string name="onboarding_mode_selection_title">Выберите рабочий режим</string>

@@ -1505,7 +1505,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun startTour() {
-        CoachMarks.show(this, listOf(
+        CoachMarks.show(this, listOfNotNull(
             CoachMarks.Step({ firewallToggle }, getString(R.string.welcome_title), getString(R.string.welcome_message), onShow = {
                 firewallProgressFader.set(true)
                 firewallProgress.postDelayed({ firewallProgressFader.set(false) }, TOUR_PROGRESS_MS)
@@ -1516,6 +1516,11 @@ class MainActivity : BaseActivity() {
                 getString(R.string.double_tap_or_long_press),
                 onShow = ::demoSelection
             ),
+            CoachMarks.Step(
+                { recyclerView.getChildAt(0)?.findViewById(R.id.appSwitch) },
+                getString(R.string.block_mode_tour_title),
+                getString(R.string.block_mode_tour_message)
+            ).takeIf { PerUidFirewall.supportsMobileOnly() },
             CoachMarks.Step({ recyclerView.getChildAt(0) }, getString(R.string.favorites_title), getString(R.string.favorites_message)),
             CoachMarks.Step({ findViewById(R.id.sortButton) }, getString(R.string.sorting_onboarding_title), getString(R.string.sorting_onboarding_message)),
             CoachMarks.Step({ findViewById(R.id.profileButton) }, getString(R.string.profiles), getString(R.string.profiles_subtitle)),

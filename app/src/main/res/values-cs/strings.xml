@@ -77,6 +77,8 @@
     <string name="grant_permission">Povolit oprávnění</string>
     <string name="favorites_title">Oblíbené</string>
     <string name="favorites_message">Dlouhým stisknutím aplikace ji přidáte do oblíbených pro rychlý přístup.</string>
+    <string name="block_mode_tour_title">Režim blokování</string>
+    <string name="block_mode_tour_message">Dlouhým stiskem této ikony zablokujete všechny sítě nebo jen mobilní data.</string>
     <string name="sorting_onboarding_title">Řazení a filtrování</string>
     <string name="sorting_onboarding_message">Klepnutím na ikonu řazení změníte pořadí aplikací. Zde můžete také zvolit, zda se mají zobrazovat systémové aplikace a aplikace profilů.</string>
     <string name="onboarding_mode_selection_title">Zvolte Pracovní režim</string>
