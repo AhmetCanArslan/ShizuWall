@@ -169,7 +169,7 @@ object FirewallUtils {
         block: Boolean,
         syncSelection: Boolean = false
     ): Boolean = withContext(Dispatchers.IO) {
-        val candidates = keys.map { AppKey.normalize(it) }.filterNot { isSelfOrBackend(context, it) }
+        val candidates = keys.map { AppKey.normalize(it) }.flatMap { sharedUidKeys(context, it) }.distinct().filterNot { isSelfOrBackend(context, it) }
         val targets = if (block) candidates.filter { PerUidFirewall.isBlockableKey(context, it) } else candidates
         if (targets.isEmpty()) return@withContext false
         val toApply = if (block && syncSelection) modeAdapted(context, prefs, targets) else targets
@@ -301,6 +301,13 @@ object FirewallUtils {
             }
             ok
         }
+    }
+
+    private fun sharedUidKeys(context: Context, key: String): List<String> {
+        val pm = context.packageManager
+        val uid = runCatching { pm.getApplicationInfo(AppKey.packageOf(key), 0).uid }.getOrNull() ?: return listOf(key)
+        val packages = pm.getPackagesForUid(AppIds.appIdOf(uid)) ?: return listOf(key)
+        return packages.map { AppKey.of(AppKey.userIdOf(key), it) }
     }
 
     private fun isSelfOrBackend(context: Context, key: String): Boolean =

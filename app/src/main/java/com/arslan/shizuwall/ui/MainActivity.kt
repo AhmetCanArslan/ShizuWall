@@ -869,10 +869,8 @@ class MainActivity : BaseActivity() {
                     return@AppListAdapter
                 }
 
-                val idx = appList.indexOfFirst { it.key == appInfo.key }
-                if (idx != -1) {
-                    appList[idx] = appInfo
-                }
+                val group = appList.filter { it.key == appInfo.key || (it.uid == appInfo.uid && appInfo.uid != -1 && it.isSelectable) }.map { it.key }
+                appList.replaceAll { if (it.key in group) it.copy(isSelected = appInfo.isSelected) else it }
                 updateSelectedCount()
                 saveSelectedApps()
                 sortAndFilterApps(preserveScrollPosition = true)
@@ -884,36 +882,30 @@ class MainActivity : BaseActivity() {
                         }
                     }
                 } else if (isFirewallEnabled && firewallMode.allowsDynamicSelection()) {
-                    val pkg = appInfo.key
                     val isSelected = appInfo.isSelected
-                    
+
                     lifecycleScope.launch(Dispatchers.IO) {
                         lastOperationErrorDetails.clear()
 
                         val shouldBlock = FirewallTargets.shouldBlockOnToggle(firewallMode, isSelected)
-                        val res = runCommandDetailed(FirewallCommands.networking(pkg, !shouldBlock))
-                        val success = res.isEffectivelySuccess
-                        
-                        withContext(Dispatchers.Main) {
-                            if (success) {
-                                if (shouldBlock) {
-                                    activeFirewallPackages.add(pkg)
-                                } else {
-                                    activeFirewallPackages.remove(pkg)
-                                }
-                                saveActivePackages(activeFirewallPackages)
-                            } else {
-                                if (shouldBlock) {
-                                    val skipErrorDialog = sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)
-                                    val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
+                        val results = group.associateWith { runCommandDetailed(FirewallCommands.networking(it, !shouldBlock)) }
+                        val failed = results.filterValues { !it.isEffectivelySuccess }
 
-                                    if (!(skipErrorDialog && keepErrorAppsSelected)) revertSelection(listOf(pkg), !isSelected)
-                                    lastOperationErrorDetails[pkg] = res.stderr.ifEmpty { res.stdout }
-                                    showOperationErrorsDialog(listOf(pkg), lastOperationErrorDetails)
-                                } else {
-                                    revertSelection(listOf(pkg), !isSelected)
-                                    Toast.makeText(this@MainActivity, getString(R.string.failed_to_unblock_app, appInfo.appName), Toast.LENGTH_SHORT).show()
-                                }
+                        withContext(Dispatchers.Main) {
+                            val done = group - failed.keys
+                            if (shouldBlock) activeFirewallPackages.addAll(done) else activeFirewallPackages.removeAll(done.toSet())
+                            saveActivePackages(activeFirewallPackages)
+                            if (failed.isEmpty()) return@withContext
+                            if (shouldBlock) {
+                                val skipErrorDialog = sharedPreferences.getBoolean(KEY_SKIP_ERROR_DIALOG, false)
+                                val keepErrorAppsSelected = sharedPreferences.getBoolean(KEY_KEEP_ERROR_APPS_SELECTED, false)
+
+                                if (!(skipErrorDialog && keepErrorAppsSelected)) revertSelection(failed.keys.toList(), !isSelected)
+                                failed.forEach { (k, r) -> lastOperationErrorDetails[k] = r.stderr.ifEmpty { r.stdout } }
+                                showOperationErrorsDialog(failed.keys.toList(), lastOperationErrorDetails)
+                            } else {
+                                revertSelection(failed.keys.toList(), !isSelected)
+                                Toast.makeText(this@MainActivity, getString(R.string.failed_to_unblock_app, appInfo.appName), Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
