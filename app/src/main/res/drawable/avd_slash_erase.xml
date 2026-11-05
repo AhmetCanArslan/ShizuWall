@@ -1,15 +1,15 @@
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
-    android:drawable="@drawable/check_circle_24dp">
-  <target android:name="tick">
+    android:drawable="@drawable/circle_block_24dp">
+  <target android:name="slash">
     <aapt:attr name="android:animation">
       <objectAnimator
           android:propertyName="trimPathEnd"
-          android:valueFrom="0"
-          android:valueTo="1"
+          android:valueFrom="1"
+          android:valueTo="0"
           android:valueType="floatType"
-          android:duration="380"
-          android:interpolator="@android:interpolator/fast_out_slow_in"/>
+          android:duration="260"
+          android:interpolator="@android:interpolator/fast_out_linear_in"/>
     </aapt:attr>
   </target>
 </animated-vector>

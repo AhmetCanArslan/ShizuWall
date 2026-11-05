@@ -315,7 +315,7 @@ class MainActivity : BaseActivity() {
             updateCategoryChips()
             
             if (isFirewallEnabled) applyListInteractionState()
-            appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
+            appListAdapter.setMode(firewallMode)
         }
     }
 
@@ -564,7 +564,7 @@ class MainActivity : BaseActivity() {
             setToggleChecked(isEnablingProcess)
         }
         applyListInteractionState()
-        appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
+        appListAdapter.setMode(firewallMode)
         appListAdapter.setInfoButtonEnabled(
             sharedPreferences.getBoolean(KEY_SHOW_APP_INFO_BUTTON, true)
         )
@@ -921,7 +921,7 @@ class MainActivity : BaseActivity() {
             },
             onAppSwitchLongClick = { showBlockModeDialog(it) }
         )
-        appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
+        appListAdapter.setMode(firewallMode)
         recyclerView.adapter = appListAdapter
         recyclerView.recycledViewPool.setMaxRecycledViews(0, 24)
         defaultItemAnimator = recyclerView.itemAnimator
@@ -1538,8 +1538,8 @@ class MainActivity : BaseActivity() {
         val off = ColorStateList.valueOf(MaterialColors.getColor(recyclerView, com.google.android.material.R.attr.colorOnSurfaceVariant))
         repeat(total) { i ->
             val switch = recyclerView.getChildAt(i)?.findViewById<ImageView>(R.id.appSwitch)
-            recyclerView.postDelayed({ playTick(switch, R.drawable.avd_check_draw, on, base + i + 1) }, TOUR_DEMO_MS * (i + 1))
-            recyclerView.postDelayed({ playTick(switch, R.drawable.avd_check_erase, off, base + total - i - 1) }, TOUR_DEMO_MS * (total + i) + TOUR_DEMO_HOLD_MS)
+            recyclerView.postDelayed({ playTick(switch, R.drawable.avd_slash_draw, on, base + i + 1) }, TOUR_DEMO_MS * (i + 1))
+            recyclerView.postDelayed({ playTick(switch, R.drawable.avd_slash_erase, off, base + total - i - 1) }, TOUR_DEMO_MS * (total + i) + TOUR_DEMO_HOLD_MS)
         }
         recyclerView.postDelayed({ recyclerView.adapter?.notifyItemRangeChanged(0, total) }, TOUR_DEMO_MS * total * 2 + TOUR_DEMO_HOLD_MS * 2)
     }
@@ -1598,7 +1598,7 @@ class MainActivity : BaseActivity() {
 
         if (firewallMode != stateMode) {
             firewallMode = stateMode
-            appListAdapter.setHybridModeEnabled(stateMode == FirewallMode.HYBRID)
+            appListAdapter.setMode(stateMode)
             structureChanged = true
         }
         if (showSystemApps != state.showSystemApps) {
@@ -2863,7 +2863,7 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
+        appListAdapter.setMode(firewallMode)
         updateSelectedCount()
         updateCategoryChips()
 
