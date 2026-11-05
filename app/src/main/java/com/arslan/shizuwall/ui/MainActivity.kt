@@ -1638,9 +1638,12 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private var appLoadJob: kotlinx.coroutines.Job? = null
+
     @SuppressLint("NotifyDataSetChanged")
     private fun loadInstalledApps(showLoadingIfListEmpty: Boolean = false) {
-        lifecycleScope.launch {
+        appLoadJob?.cancel()
+        appLoadJob = lifecycleScope.launch {
             if (showLoadingIfListEmpty && appList.isEmpty()) {
                 setAppListLoadingVisible(true)
             } else {
