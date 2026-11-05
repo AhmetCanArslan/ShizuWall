@@ -10,21 +10,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.arslan.shizuwall.R
-import com.arslan.shizuwall.firewall.FirewallTargets
-import com.arslan.shizuwall.firewall.PerUidFirewall
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.trackers.TrackerScanner
 import com.arslan.shizuwall.utils.AppIds
-import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.CrossUserAppInfo
-import com.arslan.shizuwall.utils.FirewallUtils
-import com.arslan.shizuwall.utils.MultiUserApps
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,7 +50,6 @@ object AppInfoDialog {
         packageView.text = packageName
         iconView.setImageDrawable(CrossUserAppInfo.icon(context, packageName, userId))
         metaView.text = buildMeta(context, packageInfo)
-        bindMobileOnly(context, owner, view, AppKey.of(userId, packageName), appName, packageInfo)
 
         val cachedResult = TrackerScanner.cachedResult(context, packageName, userId)
         if (cachedResult != null) {
@@ -79,43 +71,6 @@ object AppInfoDialog {
             val result = TrackerScanner.scan(context, packageName, userId)
             if (!dialog.isShowing) return@launch
             renderTrackers(context, result, loadingView, summaryView, listView, noteView)
-        }
-    }
-
-    private fun bindMobileOnly(context: Context, owner: LifecycleOwner, view: View, key: String, appName: String, packageInfo: PackageInfo?) {
-        val switch = view.findViewById<MaterialButton>(R.id.infoMobileOnly)
-        val summary = view.findViewById<TextView>(R.id.infoMobileOnlySummary)
-        val info = packageInfo?.applicationInfo ?: CrossUserAppInfo.applicationInfo(context, AppKey.packageOf(key), AppKey.userIdOf(key))
-        val uid = info?.uid ?: return
-        if (!PerUidFirewall.supportsMobileOnly() || !AppIds.isBlockable(uid)) return
-        val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-        switch.visibility = View.VISIBLE
-        val labels = listOf(R.string.app_info_block_all, R.string.app_info_mobile_only)
-        fun show(mobile: Boolean) {
-            switch.setText(labels[if (mobile) 1 else 0])
-            summary.visibility = if (mobile) View.VISIBLE else View.GONE
-        }
-        show(FirewallTargets.isMobileOnly(PerUidFirewall.mobileOnlyKeys(context), key, MultiUserApps.isEnabled(context)))
-        if (packageInfo != null && packageInfo.requestedPermissions?.contains(android.Manifest.permission.INTERNET) != true) {
-            switch.isEnabled = false
-            summary.alpha = 0.5f
-            return
-        }
-        switch.setOnClickListener {
-            val menu = PopupMenu(context, switch)
-            labels.forEachIndexed { i, res -> menu.menu.add(0, i, i, res) }
-            menu.setOnMenuItemClickListener { item ->
-                val mobile = item.itemId == 1
-                show(mobile)
-                switch.isEnabled = false
-                owner.lifecycleScope.launch {
-                    val ok = FirewallUtils.setMobileOnly(context, prefs, key, mobile)
-                    switch.isEnabled = true
-                    if (!ok) Toast.makeText(context, context.getString(R.string.app_info_mobile_only_failed, appName), Toast.LENGTH_LONG).show()
-                }
-                true
-            }
-            menu.show()
         }
     }
 

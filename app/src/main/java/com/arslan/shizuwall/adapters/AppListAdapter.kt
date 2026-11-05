@@ -38,7 +38,8 @@ class AppInfoDiffCallback : DiffUtil.ItemCallback<AppInfo>() {
 class AppListAdapter(
     private val onAppClick: (AppInfo) -> Unit,
     private val onAppLongClick: (AppInfo) -> Unit,
-    private val onAppIconClick: (AppInfo) -> Unit = {}
+    private val onAppIconClick: (AppInfo) -> Unit = {},
+    private val onAppSwitchLongClick: (AppInfo) -> Unit = {}
 ) : ListAdapter<AppInfo, AppListAdapter.AppViewHolder>(AppInfoDiffCallback()) {
 
     private val iconCache = object : LruCache<String, Bitmap>(
@@ -124,7 +125,7 @@ class AppListAdapter(
                 profileBadge.visibility = View.GONE
             }
 
-            appInfoButton.visibility = if (infoButtonEnabled || appInfo.key in mobileOnlyPackages) View.VISIBLE else View.GONE
+            appInfoButton.visibility = if (infoButtonEnabled) View.VISIBLE else View.GONE
             appInfoButton.setOnClickListener { onAppIconClick(appInfo) }
             appInfoButton.contentDescription = itemView.context.getString(
                 R.string.app_info_icon_content_description, appInfo.appName
@@ -276,11 +277,13 @@ class AppListAdapter(
                 itemView.isClickable = true
                 itemView.setOnClickListener { onAppClick(toggled) }
                 appSwitch.setOnClickListener { onAppClick(toggled) }
+                appSwitch.setOnLongClickListener { onAppSwitchLongClick(appInfo); true }
                 modeDropdownText.setOnClickListener { view -> showModePopupMenu(view, appInfo) }
                 return
             }
 
             appSwitch.isEnabled = false
+            appSwitch.setOnLongClickListener(null)
             appSwitch.alpha = 0.4f
             modeDropdownText.setOnClickListener(null)
 

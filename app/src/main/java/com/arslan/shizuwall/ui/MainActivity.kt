@@ -48,6 +48,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
@@ -78,6 +79,7 @@ import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.arslan.shizuwall.firewall.ForegroundTaskProbe
 import com.arslan.shizuwall.firewall.FirewallCommands
 import com.arslan.shizuwall.firewall.FirewallTargets
+import com.arslan.shizuwall.firewall.PerUidFirewall
 import com.arslan.shizuwall.utils.AppIds
 import com.arslan.shizuwall.utils.AppKey
 import com.arslan.shizuwall.utils.CrossUserAppInfo
@@ -916,7 +918,8 @@ class MainActivity : BaseActivity() {
             },
             onAppIconClick = { appInfo ->
                 AppInfoDialog.show(this, this, appInfo.packageName, appInfo.appName, appInfo.userId)
-            }
+            },
+            onAppSwitchLongClick = { showBlockModeDialog(it) }
         )
         appListAdapter.setHybridModeEnabled(firewallMode == FirewallMode.HYBRID)
         recyclerView.adapter = appListAdapter
@@ -988,6 +991,42 @@ class MainActivity : BaseActivity() {
                 else Toast.makeText(this@MainActivity, getString(failToastRes, failed.size), Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun showBlockModeDialog(appInfo: AppInfo) {
+        if (!PerUidFirewall.supportsMobileOnly()) return
+        val sheetView = LayoutInflater.from(this).inflate(R.layout.sheet_block_mode, null)
+        val sheet = InlineBottomSheet(this, sheetView)
+        val iconView = sheetView.findViewById<ImageView>(R.id.blockModeAppIcon)
+        lifecycleScope.launch {
+            iconView.setImageDrawable(withContext(Dispatchers.IO) { CrossUserAppInfo.icon(this@MainActivity, appInfo.packageName, appInfo.userId) })
+        }
+        sheetView.findViewById<TextView>(R.id.blockModeAppName).text = appInfo.appName
+        val current = FirewallTargets.isMobileOnly(PerUidFirewall.mobileOnlyKeys(this), appInfo.key, MultiUserApps.isEnabled(this))
+        val primary = MaterialColors.getColor(sheetView, android.R.attr.colorPrimary)
+        val outline = MaterialColors.getColor(sheetView, com.google.android.material.R.attr.colorOutlineVariant)
+        val onSurface = MaterialColors.getColor(sheetView, com.google.android.material.R.attr.colorOnSurfaceVariant)
+        listOf(R.id.blockOptionAll to false, R.id.blockOptionMobile to true).forEach { (id, mobile) ->
+            val card = sheetView.findViewById<MaterialCardView>(id)
+            val selected = mobile == current
+            card.strokeColor = if (selected) primary else outline
+            card.strokeWidth = resources.displayMetrics.density.times(if (selected) 2 else 1).toInt()
+            card.findViewById<ImageView>(if (mobile) R.id.blockOptionMobileIcon else R.id.blockOptionAllIcon).imageTintList = ColorStateList.valueOf(if (selected) primary else onSurface)
+            card.findViewById<ImageView>(if (mobile) R.id.blockOptionMobileCheck else R.id.blockOptionAllCheck).apply {
+                setImageResource(if (selected) R.drawable.check_circle_24dp else R.drawable.circle_24dp)
+                imageTintList = ColorStateList.valueOf(if (selected) primary else outline)
+            }
+            card.setOnClickListener {
+                if (!selected) sheet.setOnDismissListener {
+                    lifecycleScope.launch {
+                        val ok = FirewallUtils.setMobileOnly(this@MainActivity, sharedPreferences, appInfo.key, mobile)
+                        if (!ok) Toast.makeText(this@MainActivity, getString(R.string.app_info_mobile_only_failed, appInfo.appName), Toast.LENGTH_LONG).show()
+                    }
+                }
+                sheet.dismiss()
+            }
+        }
+        sheet.show()
     }
 
     private fun revertSelection(keys: List<String>, isSelected: Boolean) {

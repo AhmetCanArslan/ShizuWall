@@ -434,6 +434,7 @@
     <string name="app_info_internet_no">لا يوجد إذن إنترنت</string>
     <string name="app_info_mobile_only">الحظر على بيانات الجوال فقط</string>
     <string name="app_info_block_all">حظر جميع الشبكات</string>
+    <string name="app_info_block_all_summary">يتم حظر شبكة Wi‑Fi وبيانات الجوال معًا.</string>
     <string name="app_info_mobile_only_summary">تظل شبكة Wi‑Fi مسموحة أثناء حظر هذا التطبيق. يتم حظر الشبكات المحدودة فقط: بيانات الجوال وشبكات Wi‑Fi المصنفة كمحدودة مثل نقاط الاتصال.</string>
     <string name="app_info_mobile_only_failed">تم حفظ الإعداد لـ %1$s، لكن تعذّر تطبيق القاعدة الآن. تأكد من أن الخدمة الخلفية تعمل.</string>
     <string name="app_info_unavailable">التفاصيل غير متاحة</string>

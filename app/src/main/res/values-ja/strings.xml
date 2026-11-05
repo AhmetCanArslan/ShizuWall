@@ -430,6 +430,7 @@
     <string name="app_info_internet_no">インターネット権限なし</string>
     <string name="app_info_mobile_only">モバイルデータのみブロック</string>
     <string name="app_info_block_all">すべてのネットワークをブロック</string>
+    <string name="app_info_block_all_summary">Wi‑Fi とモバイルデータの両方をブロックします。</string>
     <string name="app_info_mobile_only_summary">このアプリをブロックしている間も Wi‑Fi は許可されます。ブロックされるのは従量制ネットワーク(モバイルデータと、テザリングなど従量制に設定された Wi‑Fi)のみです。</string>
     <string name="app_info_mobile_only_failed">%1$s の設定は保存されましたが、今はルールを適用できませんでした。バックエンドが動作しているか確認してください。</string>
     <string name="app_info_unavailable">詳細を取得できません</string>
