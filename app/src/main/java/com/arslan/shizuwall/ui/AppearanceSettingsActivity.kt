@@ -19,6 +19,7 @@ class AppearanceSettingsActivity : BaseActivity() {
     private lateinit var switchMoveSelectedTop: SwitchCompat
     private lateinit var switchHideUnblockable: SwitchCompat
     private lateinit var switchHideNoInternet: SwitchCompat
+    private lateinit var switchAppInfoButton: SwitchCompat
     private lateinit var switchUseDynamicColor: SwitchCompat
     private lateinit var switchUseAmoledBlack: SwitchCompat
     private lateinit var layoutChangeFont: LinearLayout
@@ -43,6 +44,7 @@ class AppearanceSettingsActivity : BaseActivity() {
         switchMoveSelectedTop = findViewById(R.id.switchMoveSelectedTop)
         switchHideUnblockable = findViewById(R.id.switchHideUnblockable)
         switchHideNoInternet = findViewById(R.id.switchHideNoInternet)
+        switchAppInfoButton = findViewById(R.id.switchAppInfoButton)
         switchUseDynamicColor = findViewById(R.id.switchUseDynamicColor)
         switchUseAmoledBlack = findViewById(R.id.switchUseAmoledBlack)
         layoutChangeFont = findViewById(R.id.layoutChangeFont)
@@ -59,6 +61,7 @@ class AppearanceSettingsActivity : BaseActivity() {
         switchMoveSelectedTop.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_MOVE_SELECTED_TOP, false)
         switchHideUnblockable.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_HIDE_UNBLOCKABLE_APPS, false)
         switchHideNoInternet.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_HIDE_NO_INTERNET_APPS, false)
+        switchAppInfoButton.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_APP_INFO_BUTTON, true)
         switchUseDynamicColor.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
         switchUseAmoledBlack.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
 
@@ -78,6 +81,9 @@ class AppearanceSettingsActivity : BaseActivity() {
             sharedPreferences.edit().putBoolean(MainActivity.KEY_HIDE_UNBLOCKABLE_APPS, isChecked).apply()
         }
 
+        switchAppInfoButton.setOnCheckedChangeListener { _, isChecked ->
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_SHOW_APP_INFO_BUTTON, isChecked).apply()
+        }
         switchHideNoInternet.setOnCheckedChangeListener { _, isChecked ->
             sharedPreferences.edit().putBoolean(MainActivity.KEY_HIDE_NO_INTERNET_APPS, isChecked).apply()
         }
@@ -99,6 +105,7 @@ class AppearanceSettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchMoveSelectedTop)
         makeCardClickableForSwitch(switchHideUnblockable)
         makeCardClickableForSwitch(switchHideNoInternet)
+        makeCardClickableForSwitch(switchAppInfoButton)
         makeCardClickableForSwitch(switchUseDynamicColor)
         makeCardClickableForSwitch(switchUseAmoledBlack)
     }
