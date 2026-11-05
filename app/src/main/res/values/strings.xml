@@ -443,7 +443,6 @@
     <string name="app_info_trackers_count">%1$d trackers found</string>
     <string name="app_info_trackers_failed">This app could not be scanned</string>
     <string name="app_info_trackers_note">Found by scanning the app\'s code. ShizuWall uses no VPN and never inspects traffic. These trackers are cut off while this app is blocked.</string>
-    <string name="tracker_db_description">%1$d tracker signatures, bundled with the app. Detection runs entirely offline.</string>
     <string name="tracker_data_attribution">Tracker data: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Show apps in other profiles</string>
     <string name="main_profile">Main profile</string>

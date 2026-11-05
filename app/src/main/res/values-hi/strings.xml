@@ -442,7 +442,6 @@
     <string name="app_info_trackers_count">%1$d ट्रैकर मिले</string>
     <string name="app_info_trackers_failed">इस ऐप को स्कैन नहीं किया जा सका</string>
     <string name="app_info_trackers_note">ऐप के कोड को स्कैन करके पाए गए। ShizuWall कोई VPN उपयोग नहीं करता और कभी ट्रैफ़िक की जाँच नहीं करता। यह ऐप ब्लॉक रहने तक ये ट्रैकर कट जाते हैं।</string>
-    <string name="tracker_db_description">%1$d ट्रैकर सिग्नेचर, ऐप के साथ शामिल। पहचान पूरी तरह ऑफ़लाइन होती है।</string>
     <string name="tracker_data_attribution">ट्रैकर डेटा: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">अन्य प्रोफ़ाइलों के ऐप्स दिखाएँ</string>
     <string name="main_profile">मुख्य प्रोफ़ाइल</string>

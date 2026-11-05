@@ -441,7 +441,6 @@
     <string name="app_info_trackers_count">%1$d izleyici bulundu</string>
     <string name="app_info_trackers_failed">Bu uygulama taranamadı</string>
     <string name="app_info_trackers_note">Uygulamanın kodu taranarak bulundu. ShizuWall VPN kullanmaz ve trafiği incelemez. Bu uygulama engellendiğinde bu izleyiciler de kesilir.</string>
-    <string name="tracker_db_description">%1$d izleyici imzası, uygulamayla birlikte gelir. Tespit tamamen çevrimdışı çalışır.</string>
     <string name="tracker_data_attribution">İzleyici verisi: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Diğer profillerdeki uygulamalar</string>
     <string name="main_profile">Ana profil</string>

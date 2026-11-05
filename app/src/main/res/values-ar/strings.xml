@@ -447,7 +447,6 @@
     <string name="app_info_trackers_count">تم العثور على %1$d متتبع</string>
     <string name="app_info_trackers_failed">تعذر فحص هذا التطبيق</string>
     <string name="app_info_trackers_note">تم اكتشافها بفحص شفرة التطبيق. لا يستخدم ShizuWall شبكة VPN ولا يفحص الحركة. تُقطع هذه المتتبعات طالما التطبيق محظور.</string>
-    <string name="tracker_db_description">%1$d توقيع متتبع، مضمّنة مع التطبيق. يعمل الكشف دون اتصال بالإنترنت تمامًا.</string>
     <string name="tracker_data_attribution">بيانات المتتبعات: Exodus Privacy، ODbL 1.0</string>
     <string name="show_other_profiles">إظهار التطبيقات في الملفات الشخصية الأخرى</string>
     <string name="main_profile">الملف الشخصي الرئيسي</string>

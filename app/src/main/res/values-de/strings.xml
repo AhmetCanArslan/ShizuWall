@@ -441,7 +441,6 @@
     <string name="app_info_trackers_count">%1$d Tracker gefunden</string>
     <string name="app_info_trackers_failed">Diese App konnte nicht geprüft werden</string>
     <string name="app_info_trackers_note">Durch Analyse des App-Codes gefunden. ShizuWall nutzt kein VPN und untersucht keinen Datenverkehr. Diese Tracker sind abgeschnitten, solange die App blockiert ist.</string>
-    <string name="tracker_db_description">%1$d Tracker-Signaturen, in der App enthalten. Die Erkennung läuft vollständig offline.</string>
     <string name="tracker_data_attribution">Tracker-Daten: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Apps in anderen Profilen anzeigen</string>
     <string name="main_profile">Hauptprofil</string>

@@ -445,7 +445,6 @@
     <string name="app_info_trackers_count">Найдено трекеров: %1$d</string>
     <string name="app_info_trackers_failed">Не удалось проверить это приложение</string>
     <string name="app_info_trackers_note">Найдены при анализе кода приложения. ShizuWall не использует VPN и не анализирует трафик. Эти трекеры отрезаны, пока приложение заблокировано.</string>
-    <string name="tracker_db_description">Сигнатур трекеров: %1$d, входят в приложение. Обнаружение работает полностью офлайн.</string>
     <string name="tracker_data_attribution">Данные о трекерах: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Показывать приложения из других профилей</string>
     <string name="main_profile">Основной профиль</string>

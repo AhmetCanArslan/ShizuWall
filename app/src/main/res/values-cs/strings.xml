@@ -443,7 +443,6 @@
     <string name="app_info_trackers_count">Nalezeno sledovačů: %1$d</string>
     <string name="app_info_trackers_failed">Tuto aplikaci se nepodařilo prohlédnout</string>
     <string name="app_info_trackers_note">Nalezeno analýzou kódu aplikace. ShizuWall nepoužívá VPN a nezkoumá provoz. Tyto sledovače jsou odstřiženy, dokud je aplikace blokována.</string>
-    <string name="tracker_db_description">%1$d podpisů sledovačů, součást aplikace. Detekce běží zcela offline.</string>
     <string name="tracker_data_attribution">Data o sledovačích: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Zobrazit aplikace z jiných profilů</string>
     <string name="main_profile">Hlavní profil</string>

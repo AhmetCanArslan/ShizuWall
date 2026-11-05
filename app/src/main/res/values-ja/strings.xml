@@ -443,7 +443,6 @@
     <string name="app_info_trackers_count">%1$d 件のトラッカーを検出</string>
     <string name="app_info_trackers_failed">このアプリはスキャンできませんでした</string>
     <string name="app_info_trackers_note">アプリのコードを調べて検出しました。ShizuWall は VPN を使わず通信を見ません。このアプリをブロックする間、これらのトラッカーも遮断されます。</string>
-    <string name="tracker_db_description">%1$d 件のトラッカー署名がアプリに同梱されています。検出は完全にオフラインで動作します。</string>
     <string name="tracker_data_attribution">トラッカーデータ: Exodus Privacy、ODbL 1.0</string>
     <string name="show_other_profiles">他のプロファイルのアプリを表示</string>
     <string name="main_profile">メインプロファイル</string>

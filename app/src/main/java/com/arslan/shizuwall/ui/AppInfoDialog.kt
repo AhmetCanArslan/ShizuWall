@@ -130,9 +130,12 @@ object AppInfoDialog {
                         }
                     }
                     listView.visibility = View.VISIBLE
-                    noteView.text = context.getString(R.string.app_info_trackers_note)
-                    noteView.visibility = View.VISIBLE
                 }
+                noteView.text = listOfNotNull(
+                    context.getString(R.string.app_info_trackers_note).takeIf { trackers.isNotEmpty() },
+                    context.getString(R.string.tracker_data_attribution)
+                ).joinToString("\n")
+                noteView.visibility = View.VISIBLE
             }
         }
     }

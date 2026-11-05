@@ -441,7 +441,6 @@
     <string name="app_info_trackers_count">%1$d rastreadores encontrados</string>
     <string name="app_info_trackers_failed">Não foi possível analisar este app</string>
     <string name="app_info_trackers_note">Encontrados ao analisar o código do app. O ShizuWall não usa VPN nem inspeciona tráfego. Estes rastreadores ficam cortados enquanto o app estiver bloqueado.</string>
-    <string name="tracker_db_description">%1$d assinaturas de rastreadores, incluídas no app. A detecção funciona totalmente offline.</string>
     <string name="tracker_data_attribution">Dados de rastreadores: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Mostrar apps de outros perfis</string>
     <string name="main_profile">Perfil principal</string>

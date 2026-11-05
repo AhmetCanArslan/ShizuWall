@@ -440,7 +440,6 @@
     <string name="app_info_trackers_count">发现 %1$d 个追踪器</string>
     <string name="app_info_trackers_failed">无法扫描此应用</string>
     <string name="app_info_trackers_note">通过扫描应用代码发现。ShizuWall 不使用 VPN，也不检查流量。封锁该应用时，这些追踪器也会被断开。</string>
-    <string name="tracker_db_description">%1$d 条追踪器特征，随应用附带。检测完全离线运行。</string>
     <string name="tracker_data_attribution">追踪器数据：Exodus Privacy，ODbL 1.0</string>
     <string name="show_other_profiles">显示其他配置文件中的应用</string>
     <string name="main_profile">主配置文件</string>

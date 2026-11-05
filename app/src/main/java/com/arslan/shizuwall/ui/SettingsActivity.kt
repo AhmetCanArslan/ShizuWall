@@ -31,7 +31,6 @@ import com.arslan.shizuwall.services.ForegroundDetectionService
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
-import com.arslan.shizuwall.trackers.TrackerRegistry
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -125,14 +124,6 @@ class SettingsActivity : BaseActivity() {
         }
         findViewById<LinearLayout>(R.id.rowSecurity).setOnClickListener {
             startActivity(Intent(this, SecuritySettingsActivity::class.java))
-        }
-
-        val trackerSummary = findViewById<TextView>(R.id.tvTrackerDefinitionsSummary)
-        lifecycleScope.launch {
-            val count = withContext(Dispatchers.IO) {
-                TrackerRegistry.trackers(this@SettingsActivity).size
-            }
-            trackerSummary.text = getString(R.string.tracker_db_description, count)
         }
 
         findViewById<LinearLayout>(R.id.btnDonate).setOnClickListener {
