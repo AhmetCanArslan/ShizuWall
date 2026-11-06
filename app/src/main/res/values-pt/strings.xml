@@ -485,7 +485,7 @@
     <string name="backend_banner_message_ladb">O ShizuWall precisa que o daemon ADB local esteja em execução antes de bloquear qualquer app. Emparelhe com a depuração sem fio para iniciá-lo.</string>
     <string name="backend_banner_message_root">O ShizuWall precisa de acesso root antes de bloquear qualquer app.</string>
     <string name="backend_banner_action">Configurar</string>
-    <string name="app_unsupported_system_uid">O Android não permite regras por aplicativo para apps do sistema que compartilham um UID do sistema.</string>
+    <string name="app_unsupported_system_uid">Este app roda com um UID de sistema (abaixo de 10000). O Android isenta UIDs de sistema das regras de firewall por app, então ele não pode ser bloqueado.</string>
     <string name="settings_category_security_title">Segurança</string>
     <string name="settings_category_security_desc">Bloqueio do app, PIN e biometria</string>
     <string name="app_lock_title">Bloqueio do app</string>

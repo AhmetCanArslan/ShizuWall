@@ -487,7 +487,7 @@
     <string name="backend_banner_message_ladb">ShizuWall potřebuje spuštěného místního démona ADB, než bude moci blokovat aplikace. Spusťte jej spárováním přes bezdrátové ladění.</string>
     <string name="backend_banner_message_root">ShizuWall potřebuje root přístup, než bude moci blokovat aplikace.</string>
     <string name="backend_banner_action">Nastavit</string>
-    <string name="app_unsupported_system_uid">Android neumožňuje pravidla pro jednotlivé aplikace u systémových aplikací, které sdílejí systémové UID.</string>
+    <string name="app_unsupported_system_uid">Tato aplikace běží pod systémovým UID (pod 10000). Android vyjímá systémová UID z pravidel firewallu pro jednotlivé aplikace, proto ji nelze blokovat.</string>
     <string name="settings_category_security_title">Zabezpečení</string>
     <string name="settings_category_security_desc">Zámek aplikace, PIN a biometrie</string>
     <string name="app_lock_title">Zámek aplikace</string>

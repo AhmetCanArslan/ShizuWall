@@ -491,7 +491,7 @@
     <string name="backend_banner_message_ladb">يحتاج ShizuWall إلى تشغيل خدمة ADB المحلية قبل أن يتمكن من حظر أي تطبيق. أقرِن الجهاز عبر تصحيح الأخطاء اللاسلكي لبدء تشغيلها.</string>
     <string name="backend_banner_message_root">يحتاج ShizuWall إلى صلاحيات الروت قبل أن يتمكن من حظر أي تطبيق.</string>
     <string name="backend_banner_action">إعداد</string>
-    <string name="app_unsupported_system_uid">لا يسمح نظام Android بقواعد لكل تطبيق لتطبيقات النظام التي تشترك في معرّف UID للنظام.</string>
+    <string name="app_unsupported_system_uid">يعمل هذا التطبيق بمعرّف UID للنظام (أقل من 10000). يستثني Android معرّفات UID للنظام من قواعد جدار الحماية لكل تطبيق، لذلك لا يمكن حظره.</string>
     <string name="settings_category_security_title">الأمان</string>
     <string name="settings_category_security_desc">قفل التطبيق ورمز PIN والقياسات الحيوية</string>
     <string name="app_lock_title">قفل التطبيق</string>
