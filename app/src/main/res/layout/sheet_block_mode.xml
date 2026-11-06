@@ -18,11 +18,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:orientation="horizontal"
         android:paddingHorizontal="20dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="2dp">
+        android:paddingTop="16dp"
+        android:paddingBottom="10dp">
 
         <ImageView
             android:id="@+id/blockModeAppIcon"
@@ -33,10 +33,9 @@
 
         <TextView
             android:id="@+id/blockModeAppName"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="14dp"
-            android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall.Emphasized"
@@ -121,7 +120,7 @@
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:importantForAccessibility="no"
-                android:src="@drawable/ic_picon_signal_cellular_alt" />
+                android:src="@drawable/ic_mobile_bars_block" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -152,6 +151,55 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="12dp"
                 android:importantForAccessibility="no" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/blockOptionWifi"
+        style="@style/Widget.Material3.CardView.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
+        android:alpha="0.38"
+        android:clickable="false"
+        android:focusable="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_picon_wifi_off" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_info_wifi_only"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/app_info_wifi_only_summary"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

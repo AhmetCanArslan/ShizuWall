@@ -431,6 +431,8 @@
     <string name="app_info_internet_yes">Has internet permission</string>
     <string name="app_info_internet_no">No internet permission</string>
     <string name="app_info_mobile_only">Block only on mobile data</string>
+    <string name="app_info_wifi_only">Block only on Wi‑Fi</string>
+    <string name="app_info_wifi_only_summary">Not supported. ShizuWall uses neither a VPN nor root-based rules, so Wi‑Fi cannot be blocked on its own.</string>
     <string name="app_info_block_all">Block all networks</string>
     <string name="app_info_block_all_summary">Wi‑Fi and mobile data are both blocked.</string>
     <string name="app_info_mobile_only_summary">Wi‑Fi stays allowed while this app is blocked. Only metered networks are blocked: mobile data and Wi‑Fi marked as metered, such as hotspots.</string>
