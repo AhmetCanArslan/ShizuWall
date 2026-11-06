@@ -429,6 +429,8 @@
     <string name="app_info_internet_yes">Hat Internetberechtigung</string>
     <string name="app_info_internet_no">Keine Internetberechtigung</string>
     <string name="app_info_mobile_only">Nur mobile Daten blockieren</string>
+    <string name="app_info_wifi_only">Nur im WLAN blockieren</string>
+    <string name="app_info_wifi_only_summary">Nicht unterstützt. ShizuWall verwendet weder VPN noch Root-basierte Regeln, daher kann WLAN nicht einzeln blockiert werden.</string>
     <string name="app_info_block_all">Alle Netzwerke blockieren</string>
     <string name="app_info_block_all_summary">WLAN und mobile Daten werden beide blockiert.</string>
     <string name="app_info_mobile_only_summary">WLAN bleibt erlaubt, während diese App blockiert ist. Nur getaktete Netzwerke werden blockiert: mobile Daten und als getaktet markierte WLANs, z. B. Hotspots.</string>

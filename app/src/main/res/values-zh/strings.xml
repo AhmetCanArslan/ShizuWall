@@ -428,6 +428,8 @@
     <string name="app_info_internet_yes">具有联网权限</string>
     <string name="app_info_internet_no">无联网权限</string>
     <string name="app_info_mobile_only">仅阻止移动数据</string>
+    <string name="app_info_wifi_only">仅阻止 Wi‑Fi</string>
+    <string name="app_info_wifi_only_summary">不支持。ShizuWall 不使用 VPN 或基于 root 的规则，因此无法单独阻止 Wi‑Fi。</string>
     <string name="app_info_block_all">阻止所有网络</string>
     <string name="app_info_block_all_summary">Wi‑Fi 和移动数据都会被阻止。</string>
     <string name="app_info_mobile_only_summary">此应用被阻止时仍允许使用 Wi‑Fi。仅阻止按流量计费的网络:移动数据以及被标记为按流量计费的 Wi‑Fi(例如热点)。</string>

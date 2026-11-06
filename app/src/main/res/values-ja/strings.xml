@@ -431,6 +431,8 @@
     <string name="app_info_internet_yes">インターネット権限あり</string>
     <string name="app_info_internet_no">インターネット権限なし</string>
     <string name="app_info_mobile_only">モバイルデータのみブロック</string>
+    <string name="app_info_wifi_only">Wi‑Fi のみブロック</string>
+    <string name="app_info_wifi_only_summary">非対応です。ShizuWall は VPN も root ベースのルールも使用しないため、Wi‑Fi だけをブロックすることはできません。</string>
     <string name="app_info_block_all">すべてのネットワークをブロック</string>
     <string name="app_info_block_all_summary">Wi‑Fi とモバイルデータの両方をブロックします。</string>
     <string name="app_info_mobile_only_summary">このアプリをブロックしている間も Wi‑Fi は許可されます。ブロックされるのは従量制ネットワーク(モバイルデータと、テザリングなど従量制に設定された Wi‑Fi)のみです。</string>

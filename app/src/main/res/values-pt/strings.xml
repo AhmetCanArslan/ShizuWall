@@ -429,6 +429,8 @@
     <string name="app_info_internet_yes">Tem permissão de internet</string>
     <string name="app_info_internet_no">Sem permissão de internet</string>
     <string name="app_info_mobile_only">Bloquear apenas nos dados móveis</string>
+    <string name="app_info_wifi_only">Bloquear apenas no Wi‑Fi</string>
+    <string name="app_info_wifi_only_summary">Não suportado. O ShizuWall não usa VPN nem regras baseadas em root, por isso não é possível bloquear só o Wi‑Fi.</string>
     <string name="app_info_block_all">Bloquear todas as redes</string>
     <string name="app_info_block_all_summary">Wi‑Fi e dados móveis são bloqueados.</string>
     <string name="app_info_mobile_only_summary">O Wi‑Fi continua permitido enquanto este app estiver bloqueado. Apenas redes limitadas são bloqueadas: dados móveis e Wi‑Fi marcadas como limitadas, como pontos de acesso.</string>

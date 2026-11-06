@@ -429,6 +429,8 @@
     <string name="app_info_internet_yes">İnternet izni var</string>
     <string name="app_info_internet_no">İnternet izni yok</string>
     <string name="app_info_mobile_only">Yalnızca mobil veride engelle</string>
+    <string name="app_info_wifi_only">Yalnızca Wi‑Fi\'da engelle</string>
+    <string name="app_info_wifi_only_summary">Desteklenmiyor. ShizuWall VPN veya root tabanlı kurallar kullanmadığı için yalnızca Wi‑Fi engellenemez.</string>
     <string name="app_info_block_all">Tüm ağları engelle</string>
     <string name="app_info_block_all_summary">Wi‑Fi ve mobil veri birlikte engellenir.</string>
     <string name="app_info_mobile_only_summary">Bu uygulama engellendiğinde Wi‑Fi serbest kalır. Yalnızca ölçülü ağlar engellenir: mobil veri ve hotspot gibi ölçülü olarak işaretli Wi‑Fi ağları.</string>

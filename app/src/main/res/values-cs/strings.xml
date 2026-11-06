@@ -431,6 +431,8 @@
     <string name="app_info_internet_yes">Má oprávnění k internetu</string>
     <string name="app_info_internet_no">Bez oprávnění k internetu</string>
     <string name="app_info_mobile_only">Blokovat pouze mobilní data</string>
+    <string name="app_info_wifi_only">Blokovat pouze na Wi‑Fi</string>
+    <string name="app_info_wifi_only_summary">Nepodporováno. ShizuWall nepoužívá VPN ani pravidla založená na rootu, takže nelze blokovat samotnou Wi‑Fi.</string>
     <string name="app_info_block_all">Blokovat všechny sítě</string>
     <string name="app_info_block_all_summary">Blokuje se Wi‑Fi i mobilní data.</string>
     <string name="app_info_mobile_only_summary">Wi‑Fi zůstává povolená, i když je tato aplikace blokovaná. Blokují se jen měřené sítě: mobilní data a Wi‑Fi označené jako měřené, například hotspoty.</string>

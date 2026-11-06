@@ -433,6 +433,8 @@
     <string name="app_info_internet_yes">Есть доступ в интернет</string>
     <string name="app_info_internet_no">Нет доступа в интернет</string>
     <string name="app_info_mobile_only">Блокировать только мобильные данные</string>
+    <string name="app_info_wifi_only">Блокировать только в Wi‑Fi</string>
+    <string name="app_info_wifi_only_summary">Не поддерживается. ShizuWall не использует VPN или правила на основе root, поэтому заблокировать только Wi‑Fi нельзя.</string>
     <string name="app_info_block_all">Блокировать все сети</string>
     <string name="app_info_block_all_summary">Блокируются и Wi‑Fi, и мобильные данные.</string>
     <string name="app_info_mobile_only_summary">Wi‑Fi остаётся разрешённым, пока это приложение заблокировано. Блокируются только лимитные сети: мобильные данные и Wi‑Fi, отмеченные как лимитные, например точки доступа.</string>
