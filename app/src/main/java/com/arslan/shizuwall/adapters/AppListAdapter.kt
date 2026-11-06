@@ -98,7 +98,7 @@ class AppListAdapter(
         if (mobileOnlyPackages == packages) return
         val changed = mobileOnlyPackages.symmetricDifference(packages)
         mobileOnlyPackages = packages
-        currentList.forEachIndexed { index, app -> if (app.key in changed) notifyItemChanged(index, PAYLOAD_SWITCH_ICON) }
+        currentList.forEachIndexed { index, app -> if (app.key in changed) notifyItemChanged(index) }
     }
 
     inner class AppViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -114,6 +114,7 @@ class AppListAdapter(
         private var boundKey: String? = null
         private var boundFavorite: Boolean? = null
         private var boundSelected: Boolean? = null
+        private var boundMobile: Boolean? = null
         private var cardColorAnimator: ValueAnimator? = null
 
         fun bind(appInfo: AppInfo) {
@@ -154,7 +155,10 @@ class AppListAdapter(
                 modeDropdownText.visibility = View.GONE
             }
 
-            appSwitch.setImageResource(switchIcon(appInfo.key, appInfo.isSelected, false))
+            val mobile = appInfo.key in mobileOnlyPackages
+            val animateMobile = boundKey == appInfo.key && boundMobile != null && boundMobile != mobile
+            boundMobile = mobile
+            if (animateMobile) animateMobile(appInfo.key, appInfo.isSelected, mobile) else appSwitch.setImageResource(switchIcon(appInfo.key, appInfo.isSelected, false))
             val tintColor = if (appInfo.isSelected) {
                 MaterialColors.getColor(itemView, android.R.attr.colorPrimary)
             } else {
@@ -236,12 +240,16 @@ class AppListAdapter(
             }
         }
 
-        fun fadeSwitchIcon(appInfo: AppInfo) {
-            appSwitch.animate().cancel()
-            appSwitch.animate().alpha(0f).setDuration(SWITCH_FADE_MS).withEndAction {
-                appSwitch.setImageResource(switchIcon(appInfo.key, appInfo.isSelected, false))
-                appSwitch.animate().alpha(1f).setDuration(SWITCH_FADE_MS).start()
-            }.start()
+        private fun animateMobile(key: String, selected: Boolean, mobile: Boolean) {
+            val slashed = selected != isWhitelistMode
+            val res = when {
+                mobile && slashed -> R.drawable.avd_mobile_bars_in_block
+                mobile -> R.drawable.avd_mobile_bars_in
+                slashed -> R.drawable.avd_mobile_bars_out_block
+                else -> R.drawable.avd_mobile_bars_out
+            }
+            appSwitch.setImageResource(res)
+            (appSwitch.drawable as Animatable).start()
         }
 
         private fun showFavoriteBadge(favorite: Boolean) {
@@ -337,16 +345,10 @@ class AppListAdapter(
         holder.bind(getItem(position))
     }
 
-    override fun onBindViewHolder(holder: AppViewHolder, position: Int, payloads: MutableList<Any>) {
-        if (PAYLOAD_SWITCH_ICON in payloads) holder.fadeSwitchIcon(getItem(position)) else super.onBindViewHolder(holder, position, payloads)
-    }
-
     private companion object {
         const val FAVORITE_FADE_IN_MS = 260L
         const val FAVORITE_FADE_OUT_MS = 160L
         const val FAVORITE_SCALE_FROM = 0.4f
         const val SELECTION_ANIM_MS = 220L
-        const val SWITCH_FADE_MS = 140L
-        const val PAYLOAD_SWITCH_ICON = "switch_icon"
     }
 }

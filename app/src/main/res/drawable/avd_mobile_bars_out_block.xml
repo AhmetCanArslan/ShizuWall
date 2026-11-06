@@ -1,0 +1,40 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:drawable="@drawable/mobile_circle_block_24dp">
+  <target android:name="b1">
+    <aapt:attr name="android:animation">
+      <objectAnimator
+          android:propertyName="fillAlpha"
+          android:valueFrom="1"
+          android:valueTo="0"
+          android:valueType="floatType"
+          android:startOffset="0"
+          android:duration="200"
+          android:interpolator="@android:interpolator/fast_out_linear_in"/>
+    </aapt:attr>
+  </target>
+  <target android:name="b2">
+    <aapt:attr name="android:animation">
+      <objectAnimator
+          android:propertyName="fillAlpha"
+          android:valueFrom="1"
+          android:valueTo="0"
+          android:valueType="floatType"
+          android:startOffset="170"
+          android:duration="200"
+          android:interpolator="@android:interpolator/fast_out_linear_in"/>
+    </aapt:attr>
+  </target>
+  <target android:name="b3">
+    <aapt:attr name="android:animation">
+      <objectAnimator
+          android:propertyName="fillAlpha"
+          android:valueFrom="1"
+          android:valueTo="0"
+          android:valueType="floatType"
+          android:startOffset="340"
+          android:duration="200"
+          android:interpolator="@android:interpolator/fast_out_linear_in"/>
+    </aapt:attr>
+  </target>
+</animated-vector>
