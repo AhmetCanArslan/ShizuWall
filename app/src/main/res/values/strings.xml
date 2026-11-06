@@ -522,7 +522,7 @@
     <string name="contact_developer_description">Send feedback or report a problem</string>
     <string name="contact_developer_no_app">No email app found</string>
     <string name="changelog_title">What\'s new in %1$s</string>
-    <string name="changelog_message">• New appearance options: hide apps with a shared system UID and apps without internet permission</string>
+    <string name="changelog_message">• Block mode: long press an app\'s select icon to block it on mobile data only (Android 13+)\n• Slash and signal icons show each app\'s blocked state\n• New guided tour replaces onboarding\n• Apps sharing a UID are blocked and unblocked together\n• Faster, more reliable app list loading</string>
     <string name="whats_new">What\'s new</string>
     <string name="whats_new_description">See the changes in this version</string>
     <string name="dismiss">Dismiss</string>

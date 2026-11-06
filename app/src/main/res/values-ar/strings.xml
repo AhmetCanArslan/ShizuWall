@@ -524,7 +524,7 @@
     <string name="contact_developer_description">أرسل ملاحظاتك أو أبلغ عن مشكلة</string>
     <string name="contact_developer_no_app">لم يتم العثور على تطبيق بريد</string>
     <string name="changelog_title">الجديد في %1$s</string>
-    <string name="changelog_message">• خيارات مظهر جديدة: إخفاء التطبيقات ذات معرّف UID النظام المشترك والتطبيقات التي لا تملك إذن الإنترنت</string>
+    <string name="changelog_message">• وضع الحظر: اضغط مطولاً على أيقونة تحديد التطبيق لحظره على بيانات الجوال فقط (Android 13+)\n• أيقونات الشرطة والإشارة تعرض حالة حظر كل تطبيق\n• جولة إرشادية جديدة بدلاً من شاشة التعريف\n• التطبيقات التي تشترك في UID نفسه تُحظر وتُفتح معاً\n• تحميل أسرع وأكثر موثوقية لقائمة التطبيقات</string>
     <string name="whats_new">الجديد</string>
     <string name="whats_new_description">اطّلع على تغييرات هذا الإصدار</string>
     <string name="dismiss">تجاهل</string>

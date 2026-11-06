@@ -1,0 +1,8 @@
+Block mode: long press an app's select icon to block it on mobile data only (Android 13+) #169
+Animated slash and signal icons show each app's blocked state
+New guided tour replaces onboarding
+Apps sharing a UID are blocked and unblocked together
+Faster, more reliable app list loading with a refresh indicator
+Selected counter moved to the top bar with progress ring and haptics
+Open Shizuku button in setup, and new app notifications open the app #170 #171
+Smoother animations and compact app cards

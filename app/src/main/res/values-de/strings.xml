@@ -518,7 +518,7 @@
     <string name="contact_developer_description">Feedback senden oder Problem melden</string>
     <string name="contact_developer_no_app">Keine E-Mail-App gefunden</string>
     <string name="changelog_title">Neu in %1$s</string>
-    <string name="changelog_message">• Neue Darstellungsoptionen: Apps mit gemeinsamer System-UID und Apps ohne Internetberechtigung ausblenden</string>
+    <string name="changelog_message">• Blockmodus: Lange auf das Auswahlsymbol einer App drücken, um sie nur im mobilen Netz zu blockieren (Android 13+)\n• Schrägstrich- und Signalsymbole zeigen den Blockstatus jeder App\n• Neue geführte Tour ersetzt das Onboarding\n• Apps mit gleicher UID werden gemeinsam blockiert und freigegeben\n• Schnelleres, zuverlässigeres Laden der App-Liste</string>
     <string name="whats_new">Neuigkeiten</string>
     <string name="whats_new_description">Änderungen in dieser Version ansehen</string>
     <string name="dismiss">Schließen</string>
