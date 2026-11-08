@@ -59,7 +59,9 @@ import com.arslan.shizuwall.adapters.ErrorDetailsAdapter
 import com.arslan.shizuwall.model.AppInfo
 import com.arslan.shizuwall.repo.FirewallStateRepository
 import com.arslan.shizuwall.daemon.PersistentDaemonManager
+import com.arslan.shizuwall.BuildConfig
 import com.arslan.shizuwall.utils.FirewallUtils
+import com.arslan.shizuwall.utils.UpdateChecker
 import com.arslan.shizuwall.utils.WhitelistFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -151,6 +153,8 @@ class MainActivity : BaseActivity() {
         const val KEY_REMEMBER_DISABLED_APPS = "remember_disabled_apps"
         private const val KEY_APPS_CACHE_JSON = "apps_cache_json_v1"
         const val KEY_LAST_SEEN_CHANGELOG = "last_seen_changelog"
+        const val KEY_AUTO_CHECK_UPDATES = "auto_check_updates"
+        const val KEY_SKIPPED_UPDATE = "skipped_update"
 
         fun changelogId(context: Context): String {
             val config = android.content.res.Configuration(context.resources.configuration)
@@ -339,6 +343,14 @@ class MainActivity : BaseActivity() {
                 .apply()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS_TOUR)
+            }
+        }
+
+        if (sharedPreferences.getBoolean(KEY_AUTO_CHECK_UPDATES, false)) lifecycleScope.launch {
+            val release = withContext(Dispatchers.IO) { runCatching { UpdateChecker.fetchLatest() }.getOrNull() }
+            val fresh = release != null && release.tag != sharedPreferences.getString(KEY_SKIPPED_UPDATE, null)
+            if (fresh && UpdateChecker.isNewer(release!!.tag, BuildConfig.VERSION_NAME)) {
+                UpdateChecker.showDialog(this@MainActivity, release)
             }
         }
 

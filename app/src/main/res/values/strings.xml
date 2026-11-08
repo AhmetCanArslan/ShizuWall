@@ -523,7 +523,16 @@
     <string name="contact_developer_no_app">No email app found</string>
     <string name="changelog_title">What\'s new in %1$s</string>
     <string name="changelog_message">• Block mode: long press an app\'s select icon to block it on mobile data only (Android 13+)\n• Slash and signal icons show each app\'s blocked state\n• New guided tour replaces onboarding\n• Apps sharing a UID are blocked and unblocked together\n• Faster, more reliable app list loading</string>
+    <string name="check_update">Check for updates</string>
+    <string name="check_update_description">Look for a newer release on GitHub</string>
+    <string name="update_available_title">Update available</string>
+    <string name="update_available_message">Version %1$s is available on GitHub.</string>
+    <string name="update_download">Download</string>
+    <string name="update_up_to_date">You\'re up to date</string>
+    <string name="update_check_failed">Could not check for updates</string>
     <string name="whats_new">What\'s new</string>
     <string name="whats_new_description">See the changes in this version</string>
     <string name="dismiss">Dismiss</string>
+    <string name="update_skip_version">Skip this version</string>
+    <string name="auto_check_updates">Check for updates automatically</string>
 </resources>

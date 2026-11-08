@@ -521,4 +521,13 @@
     <string name="whats_new">新功能</string>
     <string name="whats_new_description">查看此版本的更新内容</string>
     <string name="dismiss">关闭</string>
+    <string name="check_update">检查更新</string>
+    <string name="check_update_description">在 GitHub 上查找新版本</string>
+    <string name="update_available_title">有可用更新</string>
+    <string name="update_available_message">GitHub 上已有 %1$s 版本。</string>
+    <string name="update_download">下载</string>
+    <string name="update_up_to_date">已是最新版本</string>
+    <string name="update_check_failed">无法检查更新</string>
+    <string name="update_skip_version">跳过此版本</string>
+    <string name="auto_check_updates">自动检查更新</string>
 </resources>

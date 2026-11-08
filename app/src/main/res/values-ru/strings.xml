@@ -526,4 +526,13 @@
     <string name="whats_new">Что нового</string>
     <string name="whats_new_description">Посмотреть изменения в этой версии</string>
     <string name="dismiss">Закрыть</string>
+    <string name="check_update">Проверить обновления</string>
+    <string name="check_update_description">Поиск новой версии на GitHub</string>
+    <string name="update_available_title">Доступно обновление</string>
+    <string name="update_available_message">Версия %1$s доступна на GitHub.</string>
+    <string name="update_download">Скачать</string>
+    <string name="update_up_to_date">Установлена последняя версия</string>
+    <string name="update_check_failed">Не удалось проверить обновления</string>
+    <string name="update_skip_version">Пропустить эту версию</string>
+    <string name="auto_check_updates">Проверять обновления автоматически</string>
 </resources>

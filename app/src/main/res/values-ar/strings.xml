@@ -528,4 +528,13 @@
     <string name="whats_new">الجديد</string>
     <string name="whats_new_description">اطّلع على تغييرات هذا الإصدار</string>
     <string name="dismiss">تجاهل</string>
+    <string name="check_update">التحقق من التحديثات</string>
+    <string name="check_update_description">ابحث عن إصدار أحدث على GitHub</string>
+    <string name="update_available_title">تحديث متاح</string>
+    <string name="update_available_message">الإصدار %1$s متاح على GitHub.</string>
+    <string name="update_download">تنزيل</string>
+    <string name="update_up_to_date">التطبيق محدّث</string>
+    <string name="update_check_failed">تعذّر التحقق من التحديثات</string>
+    <string name="update_skip_version">تخطي هذا الإصدار</string>
+    <string name="auto_check_updates">التحقق من التحديثات تلقائيًا</string>
 </resources>

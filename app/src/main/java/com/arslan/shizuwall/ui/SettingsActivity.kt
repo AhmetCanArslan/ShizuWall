@@ -32,6 +32,7 @@ import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.shizuku.ShizukuSetupActivity
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
+import com.arslan.shizuwall.utils.UpdateChecker
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -142,6 +143,25 @@ class SettingsActivity : BaseActivity() {
                 .setMessage(getString(R.string.changelog_message))
                 .setPositiveButton(R.string.ok, null)
                 .show()
+        }
+
+        val switchAutoUpdate = findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.switchAutoUpdate)
+        switchAutoUpdate.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_AUTO_CHECK_UPDATES, false)
+        switchAutoUpdate.setOnCheckedChangeListener { _, checked ->
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_AUTO_CHECK_UPDATES, checked).apply()
+        }
+        findViewById<View>(R.id.rowAutoUpdate).setOnClickListener { switchAutoUpdate.toggle() }
+        findViewById<View>(R.id.btnCheckUpdate).setOnClickListener { button ->
+            button.isEnabled = false
+            lifecycleScope.launch {
+                val release = withContext(Dispatchers.IO) { runCatching { UpdateChecker.fetchLatest() }.getOrNull() }
+                when {
+                    release == null -> Toast.makeText(this@SettingsActivity, R.string.update_check_failed, Toast.LENGTH_SHORT).show()
+                    UpdateChecker.isNewer(release.tag, com.arslan.shizuwall.BuildConfig.VERSION_NAME) -> UpdateChecker.showDialog(this@SettingsActivity, release)
+                    else -> Toast.makeText(this@SettingsActivity, R.string.update_up_to_date, Toast.LENGTH_SHORT).show()
+                }
+                button.isEnabled = true
+            }
         }
 
         findViewById<LinearLayout>(R.id.btnContactDeveloper).setOnClickListener {

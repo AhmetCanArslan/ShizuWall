@@ -523,4 +523,13 @@
     <string name="whats_new">Novità</string>
     <string name="whats_new_description">Guarda le modifiche di questa versione</string>
     <string name="dismiss">Ignora</string>
+    <string name="check_update">Controlla aggiornamenti</string>
+    <string name="check_update_description">Cerca una versione più recente su GitHub</string>
+    <string name="update_available_title">Aggiornamento disponibile</string>
+    <string name="update_available_message">La versione %1$s è disponibile su GitHub.</string>
+    <string name="update_download">Scarica</string>
+    <string name="update_up_to_date">Sei aggiornato</string>
+    <string name="update_check_failed">Impossibile controllare gli aggiornamenti</string>
+    <string name="update_skip_version">Salta questa versione</string>
+    <string name="auto_check_updates">Controlla automaticamente gli aggiornamenti</string>
 </resources>
