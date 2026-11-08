@@ -165,9 +165,7 @@
     <string name="adb_broadcast_usage_description">使用 adb 控制防火墙的快速指南</string>
     <string name="export_settings">导出设置</string>
     <string name="import_settings">导入设置</string>
-    <string name="support_developer_description">支持开发者</string>
     <string name="github">GitHub</string>
-    <string name="github_description">查看源代码并贡献</string>
     <string name="settings">设置</string>
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">正在加载应用</string>
@@ -529,5 +527,5 @@
     <string name="update_up_to_date">已是最新版本</string>
     <string name="update_check_failed">无法检查更新</string>
     <string name="update_skip_version">跳过此版本</string>
-    <string name="auto_check_updates">自动检查更新</string>
+    <string name="auto_check_updates">检查更新</string>
 </resources>

@@ -164,9 +164,7 @@
     <string name="adb_broadcast_usage_description">adb を使用したファイアウォール制御のクイックガイド</string>
     <string name="export_settings">設定をエクスポート</string>
     <string name="import_settings">設定をインポート</string>
-    <string name="support_developer_description">開発者を支援する</string>
     <string name="github">GitHub</string>
-    <string name="github_description">ソースコードの表示と貢献</string>
     <string name="settings">設定</string>
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">アプリを読み込み中</string>
@@ -532,5 +530,5 @@
     <string name="update_up_to_date">最新の状態です</string>
     <string name="update_check_failed">アップデートを確認できませんでした</string>
     <string name="update_skip_version">このバージョンをスキップ</string>
-    <string name="auto_check_updates">アップデートを自動確認</string>
+    <string name="auto_check_updates">アップデートを確認</string>
 </resources>

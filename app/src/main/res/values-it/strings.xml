@@ -172,9 +172,7 @@
     <string name="adb_broadcast_usage_description">Guida rapida per controllare il firewall con adb</string>
     <string name="export_settings">Esporta impostazioni</string>
     <string name="import_settings">Importa impostazioni</string>
-    <string name="support_developer_description">Sostieni lo sviluppatore</string>
     <string name="github">GitHub</string>
-    <string name="github_description">Guarda il codice sorgente e contribuisci</string>
     <string name="settings">Impostazioni</string>
     <string name="selected_count_zero">0</string>
     <string name="double_tap_or_long_press">Tocca due volte per selezionare più app, tieni premuto per deselezionare più app</string>
@@ -531,5 +529,5 @@
     <string name="update_up_to_date">Sei aggiornato</string>
     <string name="update_check_failed">Impossibile controllare gli aggiornamenti</string>
     <string name="update_skip_version">Salta questa versione</string>
-    <string name="auto_check_updates">Controlla automaticamente gli aggiornamenti</string>
+    <string name="auto_check_updates">Controlla aggiornamenti</string>
 </resources>

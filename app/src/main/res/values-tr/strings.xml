@@ -165,9 +165,7 @@
     <string name="adb_broadcast_usage_description">Güvenlik duvarını kontrol etmek için adb kullanımına hızlı rehber</string>
     <string name="export_settings">Ayarları dışa aktar</string>
     <string name="import_settings">Ayarları içe aktar</string>
-    <string name="support_developer_description">Geliştiriciyi destekle</string>
     <string name="github">GitHub</string>
-    <string name="github_description">Kaynak kodunu görüntüle ve katkıda bulun</string>
     <string name="settings">Ayarlar</string>
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">Uygulamalar yükleniyor</string>
@@ -530,5 +528,5 @@
     <string name="update_up_to_date">Uygulama güncel</string>
     <string name="update_check_failed">Güncellemeler denetlenemedi</string>
     <string name="update_skip_version">Bu sürümü atla</string>
-    <string name="auto_check_updates">Güncellemeleri otomatik denetle</string>
+    <string name="auto_check_updates">Güncellemeleri denetle</string>
 </resources>

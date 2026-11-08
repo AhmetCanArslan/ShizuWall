@@ -171,9 +171,7 @@
     <string name="adb_broadcast_usage_description">Stručný návod k použití adb pro ovládání brány firewall</string>
     <string name="export_settings">Export nastavení</string>
     <string name="import_settings">Import nastavení</string>
-    <string name="support_developer_description">Podpořit vývojáře</string>
     <string name="github">GitHub</string>
-    <string name="github_description">Zobrazit zdrojový kód a podílet se</string>
     <string name="settings">Nastavení</string>
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">Načítání aplikací</string>
@@ -532,5 +530,5 @@
     <string name="update_up_to_date">Máte nejnovější verzi</string>
     <string name="update_check_failed">Aktualizace se nepodařilo zkontrolovat</string>
     <string name="update_skip_version">Přeskočit tuto verzi</string>
-    <string name="auto_check_updates">Automaticky kontrolovat aktualizace</string>
+    <string name="auto_check_updates">Kontrolovat aktualizace</string>
 </resources>

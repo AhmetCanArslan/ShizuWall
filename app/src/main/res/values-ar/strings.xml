@@ -165,9 +165,7 @@
     <string name="adb_broadcast_usage_description">دليل سريع لاستخدام adb للتحكم في الجدار الناري</string>
     <string name="export_settings">تصدير الإعدادات</string>
     <string name="import_settings">استيراد الإعدادات</string>
-    <string name="support_developer_description">دعم المطور</string>
     <string name="github">GitHub</string>
-    <string name="github_description">عرض الكود المصدري والمساهمة</string>
     <string name="settings">الإعدادات</string>
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">جاري تحميل التطبيقات</string>
@@ -536,5 +534,5 @@
     <string name="update_up_to_date">التطبيق محدّث</string>
     <string name="update_check_failed">تعذّر التحقق من التحديثات</string>
     <string name="update_skip_version">تخطي هذا الإصدار</string>
-    <string name="auto_check_updates">التحقق من التحديثات تلقائيًا</string>
+    <string name="auto_check_updates">التحقق من التحديثات</string>
 </resources>

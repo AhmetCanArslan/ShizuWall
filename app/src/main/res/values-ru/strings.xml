@@ -164,9 +164,7 @@
     <string name="adb_broadcast_usage_description">Краткое руководство по использованию adb для управления брандмауэром</string>
     <string name="export_settings">Экспорт настроек</string>
     <string name="import_settings">Импорт настроек</string>
-    <string name="support_developer_description">Поддержать разработчика</string>
     <string name="github">GitHub</string>
-    <string name="github_description">Просмотреть исходный код и внести вклад</string>
     <string name="settings">Настройки</string>
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">Загрузка приложений</string>
@@ -534,5 +532,5 @@
     <string name="update_up_to_date">Установлена последняя версия</string>
     <string name="update_check_failed">Не удалось проверить обновления</string>
     <string name="update_skip_version">Пропустить эту версию</string>
-    <string name="auto_check_updates">Проверять обновления автоматически</string>
+    <string name="auto_check_updates">Проверять обновления</string>
 </resources>

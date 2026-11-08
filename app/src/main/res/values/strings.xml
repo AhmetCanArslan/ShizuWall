@@ -172,9 +172,7 @@
     <string name="adb_broadcast_usage_description">Quick guide to use adb to control firewall</string>
     <string name="export_settings">Export settings</string>
     <string name="import_settings">Import settings</string>
-    <string name="support_developer_description">Support the developer</string>
     <string name="github">GitHub</string>
-    <string name="github_description">View source code and contribute</string>
     <string name="settings">Settings</string>
     <string name="selected_count_zero">0</string>
     <string name="double_tap_or_long_press">Double tap to select multiple apps, long press to unselect multiple apps</string>
@@ -534,5 +532,5 @@
     <string name="whats_new_description">See the changes in this version</string>
     <string name="dismiss">Dismiss</string>
     <string name="update_skip_version">Skip this version</string>
-    <string name="auto_check_updates">Check for updates automatically</string>
+    <string name="auto_check_updates">Check for updates</string>
 </resources>
