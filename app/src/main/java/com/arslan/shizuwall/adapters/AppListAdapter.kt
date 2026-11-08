@@ -23,6 +23,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.color.MaterialColors
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.children
+import androidx.core.animation.doOnEnd
+import com.arslan.shizuwall.utils.MorphIconDrawable
 import com.arslan.shizuwall.utils.MultiUserApps
 import com.arslan.shizuwall.utils.UiUtils
 
@@ -115,6 +117,10 @@ class AppListAdapter(
         private var boundFavorite: Boolean? = null
         private var boundSelected: Boolean? = null
         private var boundMobile: Boolean? = null
+        private var boundMode: Int? = null
+        private var boundIconRes: Int = 0
+        private var modeMorphAnimator: ValueAnimator? = null
+        private var boundModeShown: Boolean? = null
         private var cardColorAnimator: ValueAnimator? = null
 
         fun bind(appInfo: AppInfo) {
@@ -143,17 +149,28 @@ class AppListAdapter(
                 )
             )
 
-            if (appInfo.isSelected && isHybridMode) {
-                modeDropdownText.visibility = View.VISIBLE
-                val iconRes = when (appInfo.appFirewallMode) {
-                    1 -> R.drawable.intelligence_24px
-                    2 -> R.drawable.mobile_lock_portrait_24px
-                    else -> R.drawable.wifi_off_24px
+            val showMode = appInfo.isSelected && isHybridMode
+            val sameItem = boundKey == appInfo.key
+            val appeared = showMode && sameItem && boundModeShown == false
+            val modeChanged = showMode && sameItem && boundMode != null && boundMode != appInfo.appFirewallMode
+            boundModeShown = showMode
+            boundMode = appInfo.appFirewallMode
+            modeDropdownText.animate().cancel()
+            modeDropdownText.visibility = if (showMode) View.VISIBLE else View.GONE
+            val iconRes = HYBRID_ICONS.getOrElse(appInfo.appFirewallMode) { R.drawable.wifi_off_24px }
+            when {
+                appeared -> {
+                    modeDropdownText.icon = itemView.context.getDrawable(iconRes)
+                    modeDropdownText.alpha = 0f
+                    modeDropdownText.animate().alpha(1f).setDuration(MODE_MORPH_MS).start()
                 }
-                modeDropdownText.icon = itemView.context.getDrawable(iconRes)
-            } else {
-                modeDropdownText.visibility = View.GONE
+                modeChanged -> morphModeIcon(boundIconRes, iconRes)
+                boundIconRes != iconRes || modeMorphAnimator?.isRunning != true -> {
+                    modeDropdownText.icon = itemView.context.getDrawable(iconRes)
+                    modeDropdownText.alpha = 1f
+                }
             }
+            boundIconRes = iconRes
 
             val mobile = appInfo.key in mobileOnlyPackages
             val animateMobile = boundKey == appInfo.key && boundMobile != null && boundMobile != mobile
@@ -252,6 +269,20 @@ class AppListAdapter(
             (appSwitch.drawable as Animatable).start()
         }
 
+        private fun morphModeIcon(fromRes: Int, toRes: Int) {
+            val ctx = itemView.context
+            val morph = MorphIconDrawable(ctx, fromRes, toRes)
+            modeDropdownText.icon = morph
+            modeMorphAnimator?.cancel()
+            modeMorphAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+                duration = MODE_MORPH_MS
+                interpolator = androidx.interpolator.view.animation.FastOutSlowInInterpolator()
+                addUpdateListener { morph.progress = it.animatedValue as Float }
+                doOnEnd { modeDropdownText.icon = ctx.getDrawable(toRes) }
+                start()
+            }
+        }
+
         private fun showFavoriteBadge(favorite: Boolean) {
             favoriteBadge.animate().cancel()
             favoriteBadge.visibility = if (favorite) View.VISIBLE else View.GONE
@@ -327,10 +358,15 @@ class AppListAdapter(
     }
 
     private fun showModePopupMenu(anchor: android.view.View, appInfo: AppInfo) {
-        val popupMenu = android.widget.PopupMenu(anchor.context, anchor)
-        popupMenu.menu.add(0, 0, 0, anchor.context.getString(R.string.hybrid_mode_default_block)).setIcon(R.drawable.wifi_off_24px)
-        popupMenu.menu.add(0, 1, 1, anchor.context.getString(R.string.hybrid_mode_smart_foreground)).setIcon(R.drawable.intelligence_24px)
-        popupMenu.menu.add(0, 2, 2, anchor.context.getString(R.string.hybrid_mode_screen_lock)).setIcon(R.drawable.mobile_lock_portrait_24px)
+        val popupMenu = androidx.appcompat.widget.PopupMenu(anchor.context, anchor)
+        val tint = android.content.res.ColorStateList.valueOf(
+            MaterialColors.getColor(anchor, com.google.android.material.R.attr.colorOnSurface)
+        )
+        intArrayOf(R.string.hybrid_mode_default_block, R.string.hybrid_mode_smart_foreground, R.string.hybrid_mode_screen_lock)
+            .forEachIndexed { index, label ->
+                popupMenu.menu.add(0, index, index, anchor.context.getString(label))
+                    .setIcon(HYBRID_ICONS[index]).iconTintList = tint
+            }
         popupMenu.setForceShowIcon(true)
         popupMenu.setOnMenuItemClickListener { menuItem ->
             if (appInfo.appFirewallMode != menuItem.itemId) {
@@ -350,5 +386,7 @@ class AppListAdapter(
         const val FAVORITE_FADE_OUT_MS = 160L
         const val FAVORITE_SCALE_FROM = 0.4f
         const val SELECTION_ANIM_MS = 220L
+        const val MODE_MORPH_MS = 380L
+        val HYBRID_ICONS = listOf(R.drawable.wifi_off_24px, R.drawable.intelligence_24px, R.drawable.mobile_lock_portrait_24px)
     }
 }

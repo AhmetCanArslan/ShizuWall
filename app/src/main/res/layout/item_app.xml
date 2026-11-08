@@ -110,16 +110,18 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/modeDropdownText"
                 style="@style/Widget.Material3Expressive.Button.IconButton.Standard"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:minWidth="0dp"
                 android:minHeight="0dp"
                 android:padding="0dp"
-                android:layout_marginEnd="12dp"
+                android:layout_marginEnd="4dp"
                 android:visibility="gone"
-                app:iconSize="22dp" />
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp" />
 
             <ImageView
                 android:id="@+id/appInfoButton"
