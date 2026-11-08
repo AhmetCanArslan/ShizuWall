@@ -872,24 +872,18 @@ class MainActivity : BaseActivity() {
                 }
 
                 val group = appList.filter { it.key == appInfo.key || (it.uid == appInfo.uid && appInfo.uid != -1 && it.isSelectable) }.map { it.key }
-                appList.replaceAll { if (it.key in group) it.copy(isSelected = appInfo.isSelected) else it }
+                appList.replaceAll { if (it.key in group) it.copy(isSelected = appInfo.isSelected, appFirewallMode = appInfo.appFirewallMode) else it }
                 updateSelectedCount()
                 saveSelectedApps()
                 sortAndFilterApps(preserveScrollPosition = true)
 
-                if (isFirewallEnabled && firewallMode == FirewallMode.HYBRID && appInfo.appFirewallMode != 0) {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        if (appInfo.appFirewallMode == 2) {
-                            ScreenLockMonitorService.sync(this@MainActivity)
-                        }
-                    }
-                } else if (isFirewallEnabled && firewallMode.allowsDynamicSelection()) {
+                if (isFirewallEnabled && firewallMode.allowsDynamicSelection()) {
                     val isSelected = appInfo.isSelected
 
                     lifecycleScope.launch(Dispatchers.IO) {
                         lastOperationErrorDetails.clear()
 
-                        val shouldBlock = FirewallTargets.shouldBlockOnToggle(firewallMode, isSelected)
+                        val shouldBlock = FirewallTargets.shouldBlockOnToggle(firewallMode, isSelected, appInfo.appFirewallMode, ScreenLockModeReceiver.isDeviceLocked(this@MainActivity))
                         val results = group.associateWith { runCommandDetailed(FirewallCommands.networking(it, !shouldBlock)) }
                         val failed = results.filterValues { !it.isEffectivelySuccess }
 

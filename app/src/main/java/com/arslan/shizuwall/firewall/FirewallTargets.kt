@@ -51,6 +51,14 @@ object FirewallTargets {
     fun isMobileOnly(mobileOnly: Set<String>, key: String, perCopy: Boolean): Boolean =
         (if (perCopy) key else AppKey.packageOf(key)) in mobileOnly
 
-    fun shouldBlockOnToggle(mode: FirewallMode, isSelected: Boolean): Boolean =
-        if (mode == FirewallMode.WHITELIST) !isSelected else isSelected
+    fun shouldBlockOnToggle(
+        mode: FirewallMode,
+        isSelected: Boolean,
+        appMode: Int = APP_MODE_INHERIT,
+        isDeviceLocked: Boolean = false
+    ): Boolean = when (mode) {
+        FirewallMode.WHITELIST -> !isSelected
+        FirewallMode.HYBRID -> isSelected && hybridBlocks(appMode, isDeviceLocked)
+        else -> isSelected
+    }
 }
