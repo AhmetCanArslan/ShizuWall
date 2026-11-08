@@ -518,7 +518,7 @@
     <string name="contact_developer_description">Enviar comentarios o informar de un problema</string>
     <string name="contact_developer_no_app">No se encontró ninguna aplicación de correo</string>
     <string name="changelog_title">Novedades en %1$s</string>
-    <string name="changelog_message">• Modo de bloqueo: mantén pulsado el icono de selección de una app para bloquearla solo con datos móviles (Android 13+)\n• Iconos de barra y señal muestran el estado de bloqueo de cada app\n• Nuevo recorrido guiado en lugar de la introducción\n• Las apps que comparten UID se bloquean y desbloquean juntas\n• Carga de la lista de apps más rápida y fiable</string>
+    <string name="changelog_message">• Búsqueda de actualizaciones en ajustes\n• Corregida la selección por app en el modo híbrido\n• Corregidos los huecos de la lista al alternar las opciones de ocultar\n• Ajustes reorganizados</string>
     <string name="whats_new">Novedades</string>
     <string name="whats_new_description">Ver los cambios de esta versión</string>
     <string name="dismiss">Descartar</string>

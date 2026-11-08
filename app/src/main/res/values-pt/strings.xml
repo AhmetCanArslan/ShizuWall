@@ -516,7 +516,7 @@
     <string name="contact_developer_description">Enviar comentários ou relatar um problema</string>
     <string name="contact_developer_no_app">Nenhuma aplicação de e-mail encontrada</string>
     <string name="changelog_title">Novidades na %1$s</string>
-    <string name="changelog_message">• Modo de bloqueio: toque e segure o ícone de seleção de um app para bloqueá-lo apenas nos dados móveis (Android 13+)\n• Ícones de barra e sinal mostram o estado de bloqueio de cada app\n• Novo tour guiado substitui a introdução\n• Apps que compartilham o mesmo UID são bloqueados e liberados juntos\n• Carregamento da lista de apps mais rápido e confiável</string>
+    <string name="changelog_message">• Verificação de atualizações nas configurações\n• Corrigida a seleção por app no modo híbrido\n• Corrigidas as lacunas na lista ao alternar as opções de ocultar\n• Configurações reorganizadas</string>
     <string name="whats_new">Novidades</string>
     <string name="whats_new_description">Veja as mudanças desta versão</string>
     <string name="dismiss">Dispensar</string>
