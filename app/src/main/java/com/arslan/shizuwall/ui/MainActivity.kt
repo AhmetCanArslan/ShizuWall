@@ -36,6 +36,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.WindowInsetsCompat
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.ForegroundDetectionService
@@ -776,11 +777,7 @@ class MainActivity : BaseActivity() {
                 currentQuery = newText ?: ""
                 filterApps(currentQuery)
 
-                if (::recyclerView.isInitialized) recyclerView.itemAnimator = null
-                appListAdapter.submitList(filteredAppList.toList()) {
-                    if (::recyclerView.isInitialized) recyclerView.itemAnimator = defaultItemAnimator
-                    updateSelectedCount()
-                }
+                submitInstant { updateSelectedCount() }
                 updateEmptyState()
                 return true
             }
@@ -921,6 +918,14 @@ class MainActivity : BaseActivity() {
         defaultItemAnimator = recyclerView.itemAnimator
         (defaultItemAnimator as? androidx.recyclerview.widget.SimpleItemAnimator)?.supportsChangeAnimations = false
 
+    }
+
+    private fun submitInstant(onCommit: () -> Unit) {
+        recyclerView.itemAnimator = null
+        appListAdapter.submitList(filteredAppList.toList()) {
+            recyclerView.doOnPreDraw { recyclerView.itemAnimator = defaultItemAnimator }
+            onCommit()
+        }
     }
 
     private fun selectableFilteredApps(): List<AppInfo> =
@@ -1303,9 +1308,7 @@ class MainActivity : BaseActivity() {
         }
 
         val updateList = {
-            recyclerView.itemAnimator = null
-            appListAdapter.submitList(filteredAppList.toList()) {
-                recyclerView.itemAnimator = defaultItemAnimator
+            submitInstant {
 
                 if (preserveScrollPosition && moveSelectedTop && firstVisible != RecyclerView.NO_POSITION) {
                     layoutManager.scrollToPositionWithOffset(firstVisible, offset)
