@@ -484,6 +484,11 @@
     <string name="backend_banner_message_shizuku">ShizuWall herhangi bir uygulamayı engelleyebilmek için Shizuku\'nun çalışmasına ve izin verilmesine ihtiyaç duyar.</string>
     <string name="backend_banner_message_ladb">ShizuWall herhangi bir uygulamayı engelleyebilmek için yerel ADB arka plan servisinin çalışmasına ihtiyaç duyar. Başlatmak için Kablosuz hata ayıklama ile eşleştirin.</string>
     <string name="backend_banner_message_root">ShizuWall herhangi bir uygulamayı engelleyebilmek için root erişimine ihtiyaç duyar.</string>
+    <string name="working_mode_vpn">VPN</string>
+    <string name="vpn_permission_required">ShizuWall herhangi bir uygulamayı engelleyebilmek için VPN iznine ihtiyaç duyar. Başka bir VPN \"Her zaman açık\" olarak ayarlıysa önce onu kapatın.</string>
+    <string name="vpn_mode_info">VPN modu yalnızca ana kullanıcının uygulamalarını engeller. Ekran Kilidi Modu, Akıllı Ön Plan, Odak Takipçisi ve Hibrit Mod kullanılamaz. Diğer profillerden seçili uygulamaların seçimi kaldırılır ve başka bir çalışma moduna geçtiğinizde yeniden seçilir.</string>
+    <string name="vpn_other_profiles_unsupported">Diğer profillerdeki uygulamalar VPN modunda engellenemez.</string>
+    <string name="vpn_mode_unavailable">VPN modunda kullanılamaz</string>
     <string name="backend_banner_action">Kur</string>
     <string name="app_unsupported_system_uid">Bu uygulama bir sistem UID\'si (10000\'in altı) altında çalışıyor. Android, sistem UID\'lerini uygulama başına güvenlik duvarı kurallarından muaf tuttuğu için engellenemez.</string>
     <string name="settings_category_security_title">Güvenlik</string>

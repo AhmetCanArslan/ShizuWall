@@ -484,6 +484,11 @@
     <string name="backend_banner_message_shizuku">O ShizuWall precisa que o Shizuku esteja em execução e com a permissão concedida antes de bloquear qualquer app.</string>
     <string name="backend_banner_message_ladb">O ShizuWall precisa que o daemon ADB local esteja em execução antes de bloquear qualquer app. Emparelhe com a depuração sem fio para iniciá-lo.</string>
     <string name="backend_banner_message_root">O ShizuWall precisa de acesso root antes de bloquear qualquer app.</string>
+    <string name="working_mode_vpn">VPN</string>
+    <string name="vpn_permission_required">O ShizuWall precisa da permissão de VPN antes de bloquear qualquer app. Se outra VPN estiver definida como \"VPN sempre ativa\", desative-a primeiro.</string>
+    <string name="vpn_mode_info">O modo VPN bloqueia apenas os apps do usuário principal. Modo de bloqueio de tela, Primeiro Plano Inteligente, Rastreador de Foco e Modo Híbrido ficam indisponíveis. Apps selecionados de outros perfis são desmarcados e selecionados novamente quando você muda para outro modo de funcionamento.</string>
+    <string name="vpn_other_profiles_unsupported">Apps de outros perfis não podem ser bloqueados no modo VPN.</string>
+    <string name="vpn_mode_unavailable">Indisponível no modo VPN</string>
     <string name="backend_banner_action">Configurar</string>
     <string name="app_unsupported_system_uid">Este app roda com um UID de sistema (abaixo de 10000). O Android isenta UIDs de sistema das regras de firewall por app, então ele não pode ser bloqueado.</string>
     <string name="settings_category_security_title">Segurança</string>

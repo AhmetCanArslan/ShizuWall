@@ -488,6 +488,11 @@
     <string name="backend_banner_message_shizuku">Чтобы блокировать приложения, ShizuWall нужен запущенный Shizuku с выданным разрешением.</string>
     <string name="backend_banner_message_ladb">Чтобы блокировать приложения, ShizuWall нужен запущенный локальный демон ADB. Выполните сопряжение по беспроводной отладке, чтобы запустить его.</string>
     <string name="backend_banner_message_root">Чтобы блокировать приложения, ShizuWall нужен root-доступ.</string>
+    <string name="working_mode_vpn">VPN</string>
+    <string name="vpn_permission_required">Чтобы блокировать приложения, ShizuWall нужно разрешение VPN. Если для другого VPN включён режим «Постоянная VPN», сначала отключите его.</string>
+    <string name="vpn_mode_info">Режим VPN блокирует только приложения основного пользователя. Режим блокировки экрана, Умный передний план, Отслеживание фокуса и Гибридный режим недоступны. Выбранные приложения из других профилей снимаются с выбора и снова выбираются при переходе на другой режим работы.</string>
+    <string name="vpn_other_profiles_unsupported">В режиме VPN нельзя блокировать приложения из других профилей.</string>
+    <string name="vpn_mode_unavailable">Недоступно в режиме VPN</string>
     <string name="backend_banner_action">Настроить</string>
     <string name="app_unsupported_system_uid">Это приложение работает под системным UID (меньше 10000). Android исключает системные UID из правил брандмауэра для отдельных приложений, поэтому его нельзя заблокировать.</string>
     <string name="settings_category_security_title">Безопасность</string>

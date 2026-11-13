@@ -486,6 +486,11 @@
     <string name="backend_banner_message_shizuku">ShizuWall needs Shizuku running and permission granted before it can block any app.</string>
     <string name="backend_banner_message_ladb">ShizuWall needs the local ADB daemon running before it can block any app. Pair with Wireless debugging to start it.</string>
     <string name="backend_banner_message_root">ShizuWall needs root access before it can block any app.</string>
+    <string name="working_mode_vpn">VPN</string>
+    <string name="vpn_permission_required">ShizuWall needs VPN permission before it can block any app. If another VPN is set to Always-on, turn that off first.</string>
+    <string name="vpn_mode_info">VPN mode blocks only apps of the main user. Screen Lock Mode, Smart Foreground, Focus Tracker and Hybrid are unavailable. Selected apps from other profiles are deselected and selected again when you switch to another working mode.</string>
+    <string name="vpn_other_profiles_unsupported">Apps in other profiles can\'t be blocked in VPN mode.</string>
+    <string name="vpn_mode_unavailable">Not available in VPN mode</string>
     <string name="backend_banner_action">Set up</string>
     <string name="app_unsupported_system_uid">This app runs under a system UID (below 10000). Android exempts system UIDs from per-app firewall rules, so it cannot be blocked.</string>
     <string name="settings_category_security_title">Security</string>
