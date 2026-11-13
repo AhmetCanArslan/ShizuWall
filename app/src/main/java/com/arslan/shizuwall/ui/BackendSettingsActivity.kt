@@ -15,6 +15,7 @@ import androidx.activity.enableEdgeToEdge
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.shell.RootShellExecutor
+import com.arslan.shizuwall.utils.FirewallUtils
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -37,6 +38,13 @@ class BackendSettingsActivity : BaseActivity() {
     private var autoEnablePreviousState: Boolean = false
     private var rootReapplyPreviousState: Boolean = false
     private var suppressWorkingModeListener = false
+
+    private val modeRadios = mapOf(
+        WorkingMode.SHIZUKU to R.id.radioShizukuMode,
+        WorkingMode.LADB to R.id.radioLadbMode,
+        WorkingMode.ROOT to R.id.radioRootMode,
+        WorkingMode.VPN to R.id.radioVpnMode
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,13 +86,8 @@ class BackendSettingsActivity : BaseActivity() {
         switchAutoEnableOnShizukuStart.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_AUTO_ENABLE_ON_SHIZUKU_START, false)
         switchApplyRootRulesAfterReboot.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, false)
 
-        val workingModeName = sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name)
-        val workingMode = WorkingMode.fromName(workingModeName)
-        when (workingMode) {
-            WorkingMode.LADB -> radioGroupWorkingMode.check(R.id.radioLadbMode)
-            WorkingMode.ROOT -> radioGroupWorkingMode.check(R.id.radioRootMode)
-            else -> radioGroupWorkingMode.check(R.id.radioShizukuMode)
-        }
+        val workingMode = WorkingMode.of(this)
+        checkWorkingModeRadio(workingMode)
 
         updateWorkingModeDependentUi(workingMode, restoreAutoEnable = false)
     }
@@ -103,34 +106,17 @@ class BackendSettingsActivity : BaseActivity() {
         radioGroupWorkingMode.setOnCheckedChangeListener { _, checkedId ->
             if (suppressWorkingModeListener) return@setOnCheckedChangeListener
 
-            val currentMode = WorkingMode.fromName(sharedPreferences.getString(MainActivity.KEY_WORKING_MODE, WorkingMode.SHIZUKU.name))
-            val mode = when (checkedId) {
-                R.id.radioLadbMode -> WorkingMode.LADB
-                R.id.radioRootMode -> WorkingMode.ROOT
-                else -> WorkingMode.SHIZUKU
-            }
+            val currentMode = WorkingMode.of(this)
+            val mode = modeRadios.entries.first { it.value == checkedId }.key
             if (mode == currentMode) return@setOnCheckedChangeListener
 
             if (mode == WorkingMode.ROOT && !RootShellExecutor.hasRootAccess()) {
                 showRootNotFoundDialog()
-                suppressWorkingModeListener = true
-                when (currentMode) {
-                    WorkingMode.LADB -> radioGroupWorkingMode.check(R.id.radioLadbMode)
-                    WorkingMode.ROOT -> radioGroupWorkingMode.check(R.id.radioRootMode)
-                    else -> radioGroupWorkingMode.check(R.id.radioShizukuMode)
-                }
-                suppressWorkingModeListener = false
+                checkWorkingModeRadio(currentMode)
                 return@setOnCheckedChangeListener
             }
 
-            sharedPreferences.edit().putString(MainActivity.KEY_WORKING_MODE, mode.name).apply()
-            if (mode != WorkingMode.ROOT) {
-                com.arslan.shizuwall.shell.RootShellExecutor.shutdown()
-            }
-            setResult(RESULT_OK)
-
-            TransitionManager.beginDelayedTransition(rootView, AutoTransition())
-            updateWorkingModeDependentUi(mode, restoreAutoEnable = true)
+            commitWorkingMode(mode)
         }
 
         layoutSetLadb.setOnClickListener {
@@ -147,6 +133,28 @@ class BackendSettingsActivity : BaseActivity() {
 
         makeCardClickableForSwitch(switchAutoEnableOnShizukuStart)
         makeCardClickableForSwitch(switchApplyRootRulesAfterReboot)
+    }
+
+    private fun checkWorkingModeRadio(mode: WorkingMode) {
+        suppressWorkingModeListener = true
+        radioGroupWorkingMode.check(modeRadios.getValue(mode))
+        suppressWorkingModeListener = false
+    }
+
+    private fun commitWorkingMode(mode: WorkingMode) {
+        FirewallUtils.setWorkingMode(sharedPreferences, mode)
+        if (mode != WorkingMode.ROOT) RootShellExecutor.shutdown()
+        if (mode == WorkingMode.VPN) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.working_mode_vpn)
+                .setMessage(R.string.vpn_mode_info)
+                .setPositiveButton(R.string.ok, null)
+                .show()
+        }
+        setResult(RESULT_OK)
+
+        TransitionManager.beginDelayedTransition(rootView, AutoTransition())
+        updateWorkingModeDependentUi(mode, restoreAutoEnable = true)
     }
 
     private fun showRootNotFoundDialog() {
