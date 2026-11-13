@@ -15,6 +15,7 @@ import com.arslan.shizuwall.receivers.FirewallControlReceiver
 import com.arslan.shizuwall.shizuku.ShizukuShellExecutor
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.FirewallUtils
+import com.arslan.shizuwall.vpn.FirewallVpnService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,6 +28,7 @@ class ShizuWallApp : Application() {
     override fun onCreate() {
         super.onCreate()
         AppCompatDelegate.setDefaultNightMode(getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE).getInt(MainActivity.KEY_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM))
+        if (WorkingMode.of(this) == WorkingMode.VPN) FirewallVpnService.apply(this) {}
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityStarted(activity: Activity) { startedActivities++ }
             override fun onActivityStopped(activity: Activity) { startedActivities-- }
