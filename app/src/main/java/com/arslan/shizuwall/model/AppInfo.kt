@@ -13,10 +13,11 @@ data class AppInfo(
     val appFirewallMode: Int = 0,
     val userId: Int = 0,
     val uid: Int = -1,
-    val hasInternet: Boolean = true
+    val hasInternet: Boolean = true,
+    val vpnLocked: Boolean = false
 ) {
 
-    val isSelectable: Boolean get() = hasInternet && AppIds.isBlockable(uid)
+    val isSelectable: Boolean get() = hasInternet && AppIds.isBlockable(uid) && !vpnLocked
 
     val key: String get() = AppKey.of(userId, packageName)
 }

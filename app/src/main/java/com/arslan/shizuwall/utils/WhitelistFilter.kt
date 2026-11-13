@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import com.arslan.shizuwall.WorkingMode
 
 object WhitelistFilter {
 
@@ -48,7 +49,8 @@ object WhitelistFilter {
         }
 
         val perProfileSelection = MultiUserApps.isEnabled(context)
-        for (app in MultiUserApps.cachedSnapshot(context).apps) {
+        val secondary = if (WorkingMode.of(context) == WorkingMode.VPN) emptyList() else MultiUserApps.cachedSnapshot(context).apps
+        for (app in secondary) {
             if (!AppIds.isBlockable(app.uid)) continue
             if (isSelected(selectedPkgs, app, perProfileSelection)) toAllow.add(app.key)
             else toBlock.add(app.key)

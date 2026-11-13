@@ -340,7 +340,12 @@ class AppListAdapter(
             itemView.isClickable = explainUnsupported
             if (explainUnsupported) {
                 itemView.setOnClickListener {
-                    Snackbar.make(itemView, if (appInfo.hasInternet) R.string.app_unsupported_system_uid else R.string.app_info_internet_no, Snackbar.LENGTH_LONG)
+                    val message = when {
+                        appInfo.vpnLocked -> R.string.vpn_other_profiles_unsupported
+                        appInfo.hasInternet -> R.string.app_unsupported_system_uid
+                        else -> R.string.app_info_internet_no
+                    }
+                    Snackbar.make(itemView, message, Snackbar.LENGTH_LONG)
                         .setTextMaxLines(4)
                         .setAction(R.string.ok) { }
                         .show()

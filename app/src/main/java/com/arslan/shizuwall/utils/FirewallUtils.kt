@@ -170,7 +170,9 @@ object FirewallUtils {
         block: Boolean,
         syncSelection: Boolean = false
     ): Boolean = withContext(Dispatchers.IO) {
-        val candidates = keys.map { AppKey.normalize(it) }.flatMap { sharedUidKeys(context, it) }.distinct().filterNot { isSelfOrBackend(context, it) }
+        val vpn = WorkingMode.of(context) == WorkingMode.VPN
+        val candidates = keys.map { AppKey.normalize(it) }.flatMap { sharedUidKeys(context, it) }.distinct()
+            .filterNot { isSelfOrBackend(context, it) || (vpn && AppKey.isSecondary(it)) }
         val targets = if (block) candidates.filter { PerUidFirewall.isBlockableKey(context, it) } else candidates
         if (targets.isEmpty()) return@withContext false
         val toApply = if (block && syncSelection) modeAdapted(context, prefs, targets) else targets

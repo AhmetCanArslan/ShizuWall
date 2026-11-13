@@ -1890,7 +1890,8 @@ class MainActivity : BaseActivity() {
                 appFirewallMode = modesJson.optInt(key, 0),
                 userId = app.userId,
                 uid = app.uid,
-                hasInternet = app.packageName in internetPackages || app.packageName !in primaryPackageNames
+                hasInternet = app.packageName in internetPackages || app.packageName !in primaryPackageNames,
+                vpnLocked = currentWorkingMode() == WorkingMode.VPN
             )
         }
     }
@@ -1923,7 +1924,8 @@ class MainActivity : BaseActivity() {
                         appFirewallMode = modesJson.optInt(key, 0),
                         userId = userId,
                         uid = obj.optInt("uid", -1),
-                        hasInternet = obj.optBoolean("hasInternet", true)
+                        hasInternet = obj.optBoolean("hasInternet", true),
+                        vpnLocked = userId != 0 && currentWorkingMode() == WorkingMode.VPN
                     )
                 )
             }
