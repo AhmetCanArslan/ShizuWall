@@ -5,6 +5,7 @@ import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.shizuku.ShizukuShellExecutor
 import com.arslan.shizuwall.daemon.DaemonShellExecutor
+import com.arslan.shizuwall.vpn.VpnShellExecutor
 
 object ShellExecutorProvider {
     fun forContext(context: Context): ShellExecutor {
@@ -13,6 +14,7 @@ object ShellExecutorProvider {
         val executor = when (WorkingMode.fromName(modeName)) {
             WorkingMode.LADB -> DaemonShellExecutor(context)
             WorkingMode.ROOT -> RootShellExecutor()
+            WorkingMode.VPN -> return VpnShellExecutor(context)
             else -> ShizukuShellExecutor()
         }
         return PerUidRoutingExecutor(context, executor)
