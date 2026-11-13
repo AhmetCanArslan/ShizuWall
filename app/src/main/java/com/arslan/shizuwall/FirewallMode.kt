@@ -24,4 +24,6 @@ enum class FirewallMode {
 
     fun requiresForegroundDetection(): Boolean =
         this == SMART_FOREGROUND || this == HYBRID || this == FOCUS_TRACKER
+
+    fun unavailableInVpn(): Boolean = requiresForegroundDetection() || this == SCREEN_LOCK_MODE
 }

@@ -145,4 +145,12 @@ class FirewallTargetsTest {
         assertTrue(FirewallTargets.isMobileOnly(mobileOnly, "10:com.a", false))
         assertFalse(FirewallTargets.isMobileOnly(mobileOnly, "10:com.c", false))
     }
+
+    @Test
+    fun vpnKeepsOnlyStaticModes() {
+        assertEquals(
+            setOf(FirewallMode.DEFAULT, FirewallMode.ADAPTIVE, FirewallMode.WHITELIST),
+            FirewallMode.values().filterNot { it.unavailableInVpn() }.toSet()
+        )
+    }
 }
