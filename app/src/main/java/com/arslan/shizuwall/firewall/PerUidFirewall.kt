@@ -45,7 +45,7 @@ object PerUidFirewall {
     suspend fun setRules(context: Context, rules: List<Pair<String, Int>>): List<RuleOutcome> = withContext(Dispatchers.IO) {
         if (rules.isEmpty()) return@withContext emptyList()
         val mobileOnly = mobileOnlyKeys(context)
-        val clearMetered = supportsMobileOnly() && context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+        val clearMetered = supportsMobileOnly(context) && context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
             .contains(MainActivity.KEY_MOBILE_ONLY_APPS)
         val perCopy = MultiUserApps.isEnabled(context)
         val prepared = rules.map { (key, rule) -> prepare(context, key, rule, chainsFor(mobileOnly, perCopy, clearMetered, key, rule)) }
@@ -79,10 +79,11 @@ object PerUidFirewall {
         return !AppIds.isBlockable(uid)
     }
 
-    fun supportsMobileOnly(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+    fun supportsMobileOnly(context: Context): Boolean =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU || WorkingMode.of(context) == WorkingMode.VPN
 
     fun mobileOnlyKeys(context: Context): Set<String> {
-        if (!supportsMobileOnly()) return emptySet()
+        if (!supportsMobileOnly(context)) return emptySet()
         return context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
             .getStringSet(MainActivity.KEY_MOBILE_ONLY_APPS, emptySet()).orEmpty()
     }

@@ -1006,7 +1006,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun showBlockModeDialog(appInfo: AppInfo) {
-        if (!PerUidFirewall.supportsMobileOnly()) return
+        if (!PerUidFirewall.supportsMobileOnly(this)) return
         val sheetView = LayoutInflater.from(this).inflate(R.layout.sheet_block_mode, null)
         val sheet = InlineBottomSheet(this, sheetView)
         val iconView = sheetView.findViewById<ImageView>(R.id.blockModeAppIcon)
@@ -1531,7 +1531,7 @@ class MainActivity : BaseActivity() {
                 { recyclerView.getChildAt(0)?.findViewById(R.id.appSwitch) },
                 getString(R.string.block_mode_tour_title),
                 getString(R.string.block_mode_tour_message)
-            ).takeIf { PerUidFirewall.supportsMobileOnly() },
+            ).takeIf { PerUidFirewall.supportsMobileOnly(this) },
             CoachMarks.Step({ recyclerView.getChildAt(0) }, getString(R.string.favorites_title), getString(R.string.favorites_message)),
             CoachMarks.Step({ findViewById(R.id.sortButton) }, getString(R.string.sorting_onboarding_title), getString(R.string.sorting_onboarding_message)),
             CoachMarks.Step({ findViewById(R.id.profileButton) }, getString(R.string.profiles), getString(R.string.profiles_subtitle)),
