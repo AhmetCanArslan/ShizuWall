@@ -243,7 +243,7 @@ class AppListAdapter(
                 start()
             }
             appSwitch.setImageResource(switchIcon(boundKey.orEmpty(), boundSelected == true, true))
-            (appSwitch.drawable as Animatable).start()
+            (appSwitch.drawable as? Animatable)?.start()
         }
 
         private fun switchIcon(key: String, selected: Boolean, animated: Boolean): Int {
@@ -266,7 +266,7 @@ class AppListAdapter(
                 else -> R.drawable.avd_mobile_bars_out
             }
             appSwitch.setImageResource(res)
-            (appSwitch.drawable as Animatable).start()
+            (appSwitch.drawable as? Animatable)?.start()
         }
 
         private fun morphModeIcon(fromRes: Int, toRes: Int) {
