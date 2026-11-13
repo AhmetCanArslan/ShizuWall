@@ -110,6 +110,12 @@ class BackendSettingsActivity : BaseActivity() {
             val mode = modeRadios.entries.first { it.value == checkedId }.key
             if (mode == currentMode) return@setOnCheckedChangeListener
 
+            if (FirewallUtils.loadFirewallEnabled(sharedPreferences)) {
+                Toast.makeText(this, R.string.app_visibility_change_disabled, Toast.LENGTH_LONG).show()
+                checkWorkingModeRadio(currentMode)
+                return@setOnCheckedChangeListener
+            }
+
             if (mode == WorkingMode.ROOT && !RootShellExecutor.hasRootAccess()) {
                 showRootNotFoundDialog()
                 checkWorkingModeRadio(currentMode)
