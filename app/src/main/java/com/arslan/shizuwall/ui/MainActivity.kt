@@ -1441,6 +1441,7 @@ class MainActivity : BaseActivity() {
             WorkingMode.SHIZUKU -> R.drawable.ic_shizuku
             WorkingMode.LADB -> R.drawable.adb_24px
             WorkingMode.ROOT -> R.drawable.hashtag_24px
+            WorkingMode.VPN -> R.drawable.ic_picon_vpn_lock
         }
         firewallToggle.setThumbIconResource(iconRes)
     }

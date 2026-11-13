@@ -30,7 +30,7 @@ object ForegroundTaskProbe {
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         val raw = try {
             when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
-                WorkingMode.SHIZUKU ->
+                WorkingMode.SHIZUKU, WorkingMode.VPN ->
                     if (!Shizuku.pingBinder()) null
                     else ShizukuUserServiceManager.obtain()?.foregroundTask
                 WorkingMode.LADB -> PersistentDaemonManager(context).executeCommand(COMMAND)

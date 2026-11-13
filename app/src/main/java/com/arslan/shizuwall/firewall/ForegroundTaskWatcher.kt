@@ -36,7 +36,7 @@ object ForegroundTaskWatcher {
         val working = WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))
         val started = try {
             when (working) {
-                WorkingMode.SHIZUKU -> startShizuku(onTask)
+                WorkingMode.SHIZUKU, WorkingMode.VPN -> startShizuku(onTask)
                 WorkingMode.LADB -> startDaemon(context, onTask)
                 WorkingMode.ROOT -> RootForegroundWatchSession.start(
                     PerUidFirewall.extractHelperDex(context).absolutePath
@@ -54,7 +54,7 @@ object ForegroundTaskWatcher {
     fun stop() {
         isActive = false
         when (mode) {
-            WorkingMode.SHIZUKU -> runCatching { ShizukuUserServiceManager.peek()?.stopForegroundWatch() }
+            WorkingMode.SHIZUKU, WorkingMode.VPN -> runCatching { ShizukuUserServiceManager.peek()?.stopForegroundWatch() }
             WorkingMode.LADB -> {
                 runCatching { socket?.close() }
                 socket = null

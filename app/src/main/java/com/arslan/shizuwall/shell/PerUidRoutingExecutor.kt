@@ -119,7 +119,7 @@ class PerUidRoutingExecutor(
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         return when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
             WorkingMode.ROOT, WorkingMode.LADB -> true
-            WorkingMode.SHIZUKU -> PerUidFirewall.shizukuBatchReady()
+            WorkingMode.SHIZUKU, WorkingMode.VPN -> PerUidFirewall.shizukuBatchReady()
         }
     }
 

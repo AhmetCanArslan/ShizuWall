@@ -67,7 +67,7 @@ object PerUidFirewall {
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         runCatching {
             when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
-                WorkingMode.SHIZUKU -> ShizukuUserServiceManager.obtain()?.setFirewallChainEnabled(enabled)
+                WorkingMode.SHIZUKU, WorkingMode.VPN -> ShizukuUserServiceManager.obtain()?.setFirewallChainEnabled(enabled)
                 WorkingMode.LADB -> PersistentDaemonManager(context).executeCommand(command)
                 WorkingMode.ROOT -> RootUidFirewallSession.execute(extractHelperDex(context).absolutePath, command)
             }
@@ -118,7 +118,7 @@ object PerUidFirewall {
     private suspend fun dispatch(context: Context, batch: List<UidRule>): List<RuleOutcome> {
         val prefs = context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         return when (WorkingMode.fromName(prefs.getString(MainActivity.KEY_WORKING_MODE, null))) {
-            WorkingMode.SHIZUKU -> applyViaShizuku(batch)
+            WorkingMode.SHIZUKU, WorkingMode.VPN -> applyViaShizuku(batch)
             WorkingMode.LADB -> applyViaDaemon(context, batch)
             WorkingMode.ROOT -> applyViaRoot(context, batch)
         }
