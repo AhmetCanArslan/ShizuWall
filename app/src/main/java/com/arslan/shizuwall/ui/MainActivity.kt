@@ -198,6 +198,7 @@ class MainActivity : BaseActivity() {
     private val filteredAppList = mutableListOf<AppInfo>()
     private var isFirewallEnabled = false
     private var currentQuery = ""
+    private var preSearchScroll: android.os.Parcelable? = null
     private var showSystemApps = false 
     private var showOtherProfiles = false
     private var moveSelectedTop = false
@@ -804,10 +805,17 @@ class MainActivity : BaseActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                val layoutManager = recyclerView.layoutManager
+                if (currentQuery.isEmpty() && !newText.isNullOrEmpty()) preSearchScroll = layoutManager?.onSaveInstanceState()
                 currentQuery = newText ?: ""
                 filterApps(currentQuery)
 
-                submitInstant { updateSelectedCount() }
+                val restore = preSearchScroll.takeIf { currentQuery.isEmpty() }
+                if (restore != null) preSearchScroll = null
+                appListAdapter.submitList(filteredAppList.toList()) {
+                    restore?.let { layoutManager?.onRestoreInstanceState(it) }
+                    updateSelectedCount()
+                }
                 updateEmptyState()
                 return true
             }
