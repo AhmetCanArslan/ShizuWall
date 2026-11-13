@@ -25,6 +25,7 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import com.arslan.shizuwall.FirewallMode
 import com.arslan.shizuwall.R
+import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.firewall.FirewallTargets
 import com.arslan.shizuwall.receivers.FirewallControlReceiver
 import com.arslan.shizuwall.services.AppMonitorService
@@ -57,6 +58,7 @@ class FirewallSettingsActivity : BaseActivity() {
     private var suppressFirewallModeListener = false
 
     private lateinit var radioGroupFirewallMode: RadioGroup
+    private lateinit var vpnModeNotice: TextView
     private lateinit var firewallModeProgress: View
     private val modeRadios = mapOf(
         R.id.radioModeDefault to FirewallMode.DEFAULT,
@@ -101,6 +103,7 @@ class FirewallSettingsActivity : BaseActivity() {
         super.onResume()
         val mode = FirewallUtils.firewallMode(sharedPreferences)
         updateFirewallModeUI(mode)
+        setModeBusy(false)
         loadAppVisibilitySettings()
     }
 
@@ -119,6 +122,7 @@ class FirewallSettingsActivity : BaseActivity() {
         tvAppVisibilityDisabledWarning = findViewById(R.id.tvAppVisibilityDisabledWarning)
 
         radioGroupFirewallMode = findViewById(R.id.radioGroupFirewallMode)
+        vpnModeNotice = findViewById(R.id.vpnModeNotice)
         firewallModeProgress = findViewById(R.id.firewallModeProgress)
         cardScreenLockDelay = findViewById(R.id.cardScreenLockDelay)
         tvScreenLockDelayValue = findViewById(R.id.tvScreenLockDelayValue)
@@ -270,7 +274,13 @@ class FirewallSettingsActivity : BaseActivity() {
 
     private fun setModeBusy(busy: Boolean) {
         radioGroupFirewallMode.alpha = if (busy) 0.5f else 1f
-        radioGroupFirewallMode.children.forEach { it.isEnabled = !busy }
+        val vpn = WorkingMode.of(this) == WorkingMode.VPN
+        vpnModeNotice.isVisible = vpn
+        radioGroupFirewallMode.children.forEach {
+            val locked = vpn && modeRadios[it.id]?.unavailableInVpn() == true
+            it.isEnabled = !busy && !locked
+            it.alpha = if (locked) 0.5f else 1f
+        }
         firewallModeProgress.isVisible = busy
     }
 

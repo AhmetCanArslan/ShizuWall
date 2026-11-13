@@ -307,6 +307,17 @@
                             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="?android:attr/textColorSecondary" />
 
+                        <TextView
+                            android:id="@+id/vpnModeNotice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="4dp"
+                            android:text="@string/vpn_mode_unavailable"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            android:textColor="?attr/colorPrimary"
+                            android:visibility="gone" />
+
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/radioModeScreenLock"
                             android:layout_width="match_parent"
