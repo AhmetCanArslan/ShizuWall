@@ -17,10 +17,10 @@ import com.arslan.shizuwall.R
 import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.services.AppMonitorService
 import com.arslan.shizuwall.services.ForegroundDetectionService
-import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.ui.MainActivity
 import com.arslan.shizuwall.utils.AppKey
+import com.arslan.shizuwall.utils.FirewallUtils
 import com.arslan.shizuwall.utils.ShizukuPackageResolver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -101,22 +101,22 @@ class BootReceiver : BroadcastReceiver() {
             false
         )
 
-        val shouldAttemptRootReapply =
-            workingMode == WorkingMode.ROOT &&
-                rootReapplyEnabled
+        val shouldAttemptReapply =
+            workingMode == WorkingMode.VPN ||
+                (workingMode == WorkingMode.ROOT && rootReapplyEnabled)
 
-        if (shouldAttemptRootReapply) {
+        if (shouldAttemptReapply) {
             val activePackages = loadActivePackages(context, dpPrefs, normalPrefs, context.packageName)
-            val reapplied = reapplyRootFirewallRules(context, activePackages)
+            val reapplied = reapplyFirewallRules(context, activePackages)
             if (reapplied) {
                 val elapsed = SystemClock.elapsedRealtime()
                 updateFirewallStateAfterReapply(dpPrefs, elapsed)
                 updateFirewallStateAfterReapply(normalPrefs, elapsed)
-                Log.d(TAG, "Successfully re-applied firewall rules after reboot via root")
+                Log.d(TAG, "Successfully re-applied firewall rules after reboot via $workingMode")
                 maybeStartForegroundDetection(context, dpPrefs, normalPrefs)
                 return
             }
-            Log.w(TAG, "Root re-apply failed, clearing persisted firewall state")
+            Log.w(TAG, "Re-apply failed, clearing persisted firewall state")
         }
 
         val autoEnableOnShizukuStart = readBoolean(
@@ -134,7 +134,7 @@ class BootReceiver : BroadcastReceiver() {
         clearFirewallState(dpPrefs)
         clearFirewallState(normalPrefs)
 
-        val messageRes = if (shouldAttemptRootReapply) {
+        val messageRes = if (shouldAttemptReapply) {
             R.string.firewall_reboot_apply_failed_message
         } else {
             R.string.firewall_reboot_message
@@ -213,9 +213,9 @@ class BootReceiver : BroadcastReceiver() {
             .distinct()
     }
 
-    private suspend fun reapplyRootFirewallRules(context: Context, activePackages: List<String>): Boolean {
-        if (!RootShellExecutor.hasRootAccess()) {
-            Log.w(TAG, "Root access not available during reboot re-apply")
+    private suspend fun reapplyFirewallRules(context: Context, activePackages: List<String>): Boolean {
+        if (!FirewallUtils.checkBackendReady(context, showToast = false)) {
+            Log.w(TAG, "Backend not ready during reboot re-apply")
             return false
         }
 
