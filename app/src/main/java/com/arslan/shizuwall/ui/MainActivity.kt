@@ -1,6 +1,10 @@
 package com.arslan.shizuwall.ui
 
 import android.animation.ValueAnimator
+import android.graphics.Color
+import android.graphics.Path
+import androidx.core.animation.doOnEnd
+import com.arslan.shizuwall.utils.MorphIconDrawable
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
@@ -1698,14 +1702,27 @@ class MainActivity : BaseActivity() {
         val from = selectedCountText.text.toString().toIntOrNull() ?: count
         if (from == count) return
         selectedCountAnimator?.cancel()
-        if (kotlin.math.abs(count - from) == 1) {
-            selectedCountText.text = count.toString()
-        } else {
-            selectedCountAnimator = ValueAnimator.ofInt(from, count).apply {
-                duration = 200L
-                addUpdateListener { selectedCountText.text = it.animatedValue.toString() }
-                start()
+        val view = selectedCountText
+        view.text = count.toString()
+        if (view.width == 0) return
+        fun digits(value: Int) = Path().also {
+            val text = value.toString()
+            val metrics = view.paint.fontMetrics
+            view.paint.getTextPath(text, 0, text.length, (view.width - view.paint.measureText(text)) / 2f, (view.height - metrics.ascent - metrics.descent) / 2f, it)
+        }
+        val colors = view.textColors
+        val morph = MorphIconDrawable(digits(from), digits(count), view.width.toFloat(), view.width).apply { setTintList(colors) }
+        view.foreground = morph
+        view.setTextColor(Color.TRANSPARENT)
+        selectedCountAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 320L
+            interpolator = androidx.interpolator.view.animation.FastOutSlowInInterpolator()
+            addUpdateListener { morph.progress = it.animatedValue as Float }
+            doOnEnd {
+                view.foreground = null
+                view.setTextColor(colors)
             }
+            start()
         }
         selectedCountText.scaleX = 0.85f
         selectedCountText.scaleY = 0.85f

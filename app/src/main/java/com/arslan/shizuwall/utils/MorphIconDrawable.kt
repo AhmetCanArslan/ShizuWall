@@ -12,17 +12,20 @@ import android.graphics.drawable.Drawable
 import androidx.core.graphics.PathParser
 import org.xmlpull.v1.XmlPullParser
 
-class MorphIconDrawable(context: Context, fromRes: Int, toRes: Int) : Drawable() {
+class MorphIconDrawable(fromPath: Path, toPath: Path, private val viewport: Float, private val size: Int) : Drawable() {
+
+    constructor(context: Context, fromRes: Int, toRes: Int) : this(
+        iconPath(context, fromRes), iconPath(context, toRes), VIEWPORT, (24 * context.resources.displayMetrics.density).toInt()
+    )
 
     private class Point(val x: Float, val y: Float, val start: Boolean)
 
-    private val from = trace(context, fromRes)
-    private val to = trace(context, toRes)
+    private val from = trace(fromPath)
+    private val to = trace(toPath)
     private val count = maxOf(from.size, to.size)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val path = Path().apply { fillType = Path.FillType.EVEN_ODD }
     private var tint: ColorStateList? = null
-    private val size = (24 * context.resources.displayMetrics.density).toInt()
 
     var progress = 0f
         set(value) {
@@ -32,7 +35,7 @@ class MorphIconDrawable(context: Context, fromRes: Int, toRes: Int) : Drawable()
 
     override fun draw(canvas: Canvas) {
         path.rewind()
-        val scale = bounds.width() / VIEWPORT
+        val scale = bounds.width() / viewport
         val t = progress
         var open = false
         repeat(count) {
@@ -54,20 +57,13 @@ class MorphIconDrawable(context: Context, fromRes: Int, toRes: Int) : Drawable()
         canvas.drawPath(path, paint)
     }
 
-    private fun trace(context: Context, res: Int): List<Point> {
-        val parser = context.resources.getXml(res)
-        var data = ""
-        while (parser.next() != XmlPullParser.END_DOCUMENT && data.isEmpty()) {
-            if (parser.eventType == XmlPullParser.START_TAG && parser.name == "path") {
-                data = parser.getAttributeValue(ANDROID_NS, "pathData").orEmpty()
-            }
-        }
-        val measure = PathMeasure(PathParser.createPathFromPathData(data), false)
+    private fun trace(source: Path): List<Point> {
+        val measure = PathMeasure(source, false)
         val contours = buildList {
             do add(measure.length) while (measure.nextContour())
         }
         val total = contours.sum()
-        val remeasure = PathMeasure(PathParser.createPathFromPathData(data), false)
+        val remeasure = PathMeasure(source, false)
         val spot = FloatArray(2)
         return buildList {
             contours.forEach { length ->
@@ -96,6 +92,17 @@ class MorphIconDrawable(context: Context, fromRes: Int, toRes: Int) : Drawable()
     override fun getOpacity() = PixelFormat.TRANSLUCENT
 
     private companion object {
+        fun iconPath(context: Context, res: Int): Path {
+            val parser = context.resources.getXml(res)
+            var data = ""
+            while (parser.next() != XmlPullParser.END_DOCUMENT && data.isEmpty()) {
+                if (parser.eventType == XmlPullParser.START_TAG && parser.name == "path") {
+                    data = parser.getAttributeValue(ANDROID_NS, "pathData").orEmpty()
+                }
+            }
+            return PathParser.createPathFromPathData(data)
+        }
+
         const val VIEWPORT = 960f
         const val SAMPLES = 480
         const val DEFAULT_COLOR = 0xFF000000.toInt()
