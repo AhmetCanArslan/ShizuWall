@@ -1243,7 +1243,7 @@ class MainActivity : BaseActivity() {
                 val showSystemChanged = newShowSystem != showSystemApps
                 if (showSystemChanged) {
                     applyShowSystemAppsChange(newShowSystem)
-                    sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
+                    sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, instant = true)
                 } else if (sortChanged) {
                     sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = true)
                 }
@@ -1333,13 +1333,13 @@ class MainActivity : BaseActivity() {
             return true
         }
         if (showSystemChanged || moveSelectedTopChanged || hideChanged) {
-            sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
+            sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, instant = true)
         }
 
         return false
     }
 
-    private fun sortAndFilterApps(preserveScrollPosition: Boolean = false, scrollToTop: Boolean = false, animate: Boolean = false, smoothTransition: Boolean = false) {
+    private fun sortAndFilterApps(preserveScrollPosition: Boolean = false, scrollToTop: Boolean = false, animate: Boolean = false, smoothTransition: Boolean = false, instant: Boolean = false) {
         val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
         
         var finalComparator: Comparator<AppInfo> = when (currentSortOrder) {
@@ -1362,31 +1362,31 @@ class MainActivity : BaseActivity() {
             offset = layoutManager.findViewByPosition(firstVisible)?.top ?: 0
         }
 
-        val updateList = {
-            submitInstant {
+        val onCommit = {
+            if (preserveScrollPosition && moveSelectedTop && firstVisible != RecyclerView.NO_POSITION) {
+                layoutManager.scrollToPositionWithOffset(firstVisible, offset)
+            } else if (scrollToTop) {
+                layoutManager.scrollToPosition(0)
+            }
 
-                if (preserveScrollPosition && moveSelectedTop && firstVisible != RecyclerView.NO_POSITION) {
-                    layoutManager.scrollToPositionWithOffset(firstVisible, offset)
-                } else if (scrollToTop) {
-                    layoutManager.scrollToPosition(0)
-                }
+            updateSelectedCount()
+            updateEmptyState()
 
-                updateSelectedCount()
-                updateEmptyState()
-
-                if (animate || smoothTransition) {
-                    val fadeInDelay = if (smoothTransition) 0L else 400L
-                    val fadeInDuration = if (smoothTransition) 260L else 200L
-                    recyclerView.post {
-                        val targetAlpha = if (listDimmed) 0.5f else 1f
-                        recyclerView.animate()
-                            .alpha(targetAlpha)
-                            .setStartDelay(fadeInDelay)
-                            .setDuration(fadeInDuration)
-                            .start()
-                    }
+            if (animate || smoothTransition) {
+                val fadeInDelay = if (smoothTransition) 0L else 400L
+                val fadeInDuration = if (smoothTransition) 260L else 200L
+                recyclerView.post {
+                    val targetAlpha = if (listDimmed) 0.5f else 1f
+                    recyclerView.animate()
+                        .alpha(targetAlpha)
+                        .setStartDelay(fadeInDelay)
+                        .setDuration(fadeInDuration)
+                        .start()
                 }
             }
+        }
+        val updateList = {
+            if (instant) submitInstant(onCommit) else appListAdapter.submitList(filteredAppList.toList(), Runnable(onCommit))
         }
 
         if (animate || smoothTransition) {
@@ -2153,7 +2153,7 @@ class MainActivity : BaseActivity() {
     private fun enableShowSystemAppsFromEmptyState() {
         if (showSystemApps) return
         applyShowSystemAppsChange(true)
-        sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, animate = false)
+        sortAndFilterApps(preserveScrollPosition = false, scrollToTop = true, instant = true)
     }
 
     private fun dropUnsupportedSelections() {
