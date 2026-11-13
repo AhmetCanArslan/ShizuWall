@@ -137,6 +137,7 @@
                     android:textColor="?attr/colorOnSurface" />
 
                 <TextView
+                    android:id="@+id/blockOptionMobileSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
@@ -173,6 +174,7 @@
             android:padding="16dp">
 
             <ImageView
+                android:id="@+id/blockOptionWifiIcon"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:importantForAccessibility="no"
@@ -193,6 +195,7 @@
                     android:textColor="?attr/colorOnSurface" />
 
                 <TextView
+                    android:id="@+id/blockOptionWifiSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
@@ -200,6 +203,13 @@
                     android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/blockOptionWifiCheck"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="12dp"
+                android:importantForAccessibility="no" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

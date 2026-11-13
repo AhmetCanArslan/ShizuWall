@@ -1031,24 +1031,37 @@ class MainActivity : BaseActivity() {
             iconView.setImageDrawable(withContext(Dispatchers.IO) { CrossUserAppInfo.icon(this@MainActivity, appInfo.packageName, appInfo.userId) })
         }
         sheetView.findViewById<TextView>(R.id.blockModeAppName).text = appInfo.appName
-        val current = FirewallTargets.isMobileOnly(PerUidFirewall.mobileOnlyKeys(this), appInfo.key, MultiUserApps.isEnabled(this))
+        val vpn = currentWorkingMode() == WorkingMode.VPN
+        val current = when {
+            appInfo.key in PerUidFirewall.wifiOnlyKeys(this) -> KEY_WIFI_ONLY_APPS
+            FirewallTargets.isMobileOnly(PerUidFirewall.mobileOnlyKeys(this), appInfo.key, MultiUserApps.isEnabled(this)) -> KEY_MOBILE_ONLY_APPS
+            else -> null
+        }
+        if (vpn) {
+            sheetView.findViewById<View>(R.id.blockOptionWifi).alpha = 1f
+            listOf(R.id.blockOptionWifiSummary, R.id.blockOptionMobileSummary).forEach { sheetView.findViewById<View>(it).visibility = View.GONE }
+        }
         val primary = MaterialColors.getColor(sheetView, android.R.attr.colorPrimary)
         val outline = MaterialColors.getColor(sheetView, com.google.android.material.R.attr.colorOutlineVariant)
         val onSurface = MaterialColors.getColor(sheetView, com.google.android.material.R.attr.colorOnSurfaceVariant)
-        listOf(R.id.blockOptionAll to false, R.id.blockOptionMobile to true).forEach { (id, mobile) ->
-            val card = sheetView.findViewById<MaterialCardView>(id)
-            val selected = mobile == current
+        listOfNotNull(
+            Triple(R.id.blockOptionAll, R.id.blockOptionAllIcon, R.id.blockOptionAllCheck) to null,
+            Triple(R.id.blockOptionMobile, R.id.blockOptionMobileIcon, R.id.blockOptionMobileCheck) to KEY_MOBILE_ONLY_APPS,
+            (Triple(R.id.blockOptionWifi, R.id.blockOptionWifiIcon, R.id.blockOptionWifiCheck) to KEY_WIFI_ONLY_APPS).takeIf { vpn }
+        ).forEach { (ids, scope) ->
+            val card = sheetView.findViewById<MaterialCardView>(ids.first)
+            val selected = scope == current
             card.strokeColor = if (selected) primary else outline
             card.strokeWidth = resources.displayMetrics.density.times(if (selected) 2 else 1).toInt()
-            card.findViewById<ImageView>(if (mobile) R.id.blockOptionMobileIcon else R.id.blockOptionAllIcon).imageTintList = ColorStateList.valueOf(if (selected) primary else onSurface)
-            card.findViewById<ImageView>(if (mobile) R.id.blockOptionMobileCheck else R.id.blockOptionAllCheck).apply {
+            card.findViewById<ImageView>(ids.second).imageTintList = ColorStateList.valueOf(if (selected) primary else onSurface)
+            card.findViewById<ImageView>(ids.third).apply {
                 setImageResource(if (selected) R.drawable.check_circle_24dp else R.drawable.circle_24dp)
                 imageTintList = ColorStateList.valueOf(if (selected) primary else outline)
             }
             card.setOnClickListener {
                 if (!selected) sheet.setOnDismissListener {
                     lifecycleScope.launch {
-                        val ok = FirewallUtils.setMobileOnly(this@MainActivity, sharedPreferences, appInfo.key, mobile)
+                        val ok = FirewallUtils.setBlockScope(this@MainActivity, sharedPreferences, appInfo.key, scope)
                         if (!ok) Toast.makeText(this@MainActivity, getString(R.string.app_info_mobile_only_failed, appInfo.appName), Toast.LENGTH_LONG).show()
                     }
                 }

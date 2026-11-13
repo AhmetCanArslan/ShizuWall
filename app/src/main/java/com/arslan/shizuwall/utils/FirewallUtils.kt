@@ -24,6 +24,7 @@ import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.shell.ShellExecutorProvider
 import com.arslan.shizuwall.shell.ShellResult
 import com.arslan.shizuwall.ui.MainActivity
+import com.arslan.shizuwall.vpn.FirewallVpnService
 import com.arslan.shizuwall.widgets.FirewallWidgetProvider
 import com.arslan.shizuwall.widgets.ProfileWidgetProvider
 import kotlinx.coroutines.Dispatchers
@@ -195,12 +196,17 @@ object FirewallUtils {
         }
     }
 
-    suspend fun setMobileOnly(context: Context, prefs: SharedPreferences, key: String, enabled: Boolean): Boolean = withContext(Dispatchers.IO) {
+    suspend fun setBlockScope(context: Context, prefs: SharedPreferences, key: String, scope: String?): Boolean = withContext(Dispatchers.IO) {
         stateLock.withLock {
-            val keys = prefs.getStringSet(MainActivity.KEY_MOBILE_ONLY_APPS, emptySet()).orEmpty()
-            prefs.edit().putStringSet(MainActivity.KEY_MOBILE_ONLY_APPS, if (enabled) keys + key else keys - key).apply()
+            val edit = prefs.edit()
+            listOf(MainActivity.KEY_MOBILE_ONLY_APPS, MainActivity.KEY_WIFI_ONLY_APPS).forEach {
+                val keys = prefs.getStringSet(it, emptySet()).orEmpty()
+                edit.putStringSet(it, if (it == scope) keys + key else keys - key)
+            }
+            edit.apply()
             val affected = loadActivePackages(prefs).filter { AppKey.packageOf(it) == AppKey.packageOf(key) }
             if (affected.isEmpty()) return@withLock true
+            if (WorkingMode.of(context) == WorkingMode.VPN) return@withLock FirewallVpnService.apply(context) {}
             val executor = ShellExecutorProvider.forContext(context)
             val cleared = executor.execBatch(FirewallCommands.unblockAll(affected))
             val unblocked = affected.filterIndexed { index, _ -> cleared[index].isEffectivelySuccess }
