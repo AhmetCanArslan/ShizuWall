@@ -330,6 +330,7 @@ object FirewallUtils {
         val error = when (mode) {
             "ROOT" -> if (RootShellExecutor.hasRootAccess()) 0 else R.string.root_not_found_message
             "LADB" -> if (PersistentDaemonManager(context).isDaemonRunning()) 0 else R.string.daemon_not_running
+            "VPN" -> 0
             else -> when {
                 !runCatching { Shizuku.pingBinder() }.getOrDefault(false) -> R.string.shizuku_not_running
                 runCatching { Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED }.getOrDefault(false) -> 0

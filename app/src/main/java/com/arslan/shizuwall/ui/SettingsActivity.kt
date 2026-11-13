@@ -299,6 +299,7 @@ class SettingsActivity : BaseActivity() {
                     }
                 }
                 "ROOT" -> RootShellExecutor.hasRootAccess()
+                "VPN" -> true
                 else -> {
                     val dm = com.arslan.shizuwall.daemon.PersistentDaemonManager(this)
                     dm.isDaemonRunning() || LadbManager.getInstance(this).isConnected()
