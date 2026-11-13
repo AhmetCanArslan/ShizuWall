@@ -153,4 +153,16 @@ class FirewallTargetsTest {
             FirewallMode.values().filterNot { it.unavailableInVpn() }.toSet()
         )
     }
+
+    @Test
+    fun vpnTargetsFollowTransport() {
+        val blocked = setOf("com.a", "com.m", "com.w")
+        val mobileOnly = setOf("com.m")
+        val wifiOnly = setOf("com.w")
+        assertEquals(blocked, FirewallTargets.vpnTargets(blocked, mobileOnly, wifiOnly, true, true))
+        assertEquals(setOf("com.a", "com.m"), FirewallTargets.vpnTargets(blocked, mobileOnly, wifiOnly, true, false))
+        assertEquals(setOf("com.a", "com.w"), FirewallTargets.vpnTargets(blocked, mobileOnly, wifiOnly, false, true))
+        assertEquals(setOf("com.a"), FirewallTargets.vpnTargets(blocked, mobileOnly, wifiOnly, false, false))
+        assertEquals(emptySet<String>(), FirewallTargets.vpnTargets(setOf("com.m"), mobileOnly, wifiOnly, false, true))
+    }
 }

@@ -51,6 +51,9 @@ object FirewallTargets {
     fun isMobileOnly(mobileOnly: Set<String>, key: String, perCopy: Boolean): Boolean =
         (if (perCopy) key else AppKey.packageOf(key)) in mobileOnly
 
+    fun vpnTargets(blocked: Set<String>, mobileOnly: Set<String>, wifiOnly: Set<String>, mobile: Boolean, wifi: Boolean): Set<String> =
+        blocked - (if (mobile) emptySet() else mobileOnly) - (if (wifi) emptySet() else wifiOnly)
+
     fun shouldBlockOnToggle(
         mode: FirewallMode,
         isSelected: Boolean,
