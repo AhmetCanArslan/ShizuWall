@@ -53,6 +53,8 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.snackbar.Snackbar
+import android.net.VpnService
 import com.arslan.shizuwall.adapters.AppListAdapter
 import com.arslan.shizuwall.adapters.SelectedAppsAdapter
 import com.arslan.shizuwall.adapters.ErrorDetailsAdapter
@@ -270,6 +272,15 @@ class MainActivity : BaseActivity() {
 
         Toast.makeText(this, getString(R.string.shizuku_service_dead), Toast.LENGTH_SHORT).show()
         finish()
+    }
+
+    private val vpnConsent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode != RESULT_OK) {
+            Snackbar.make(recyclerView, R.string.vpn_permission_required, Snackbar.LENGTH_LONG)
+                .setTextMaxLines(4)
+                .setAction(R.string.ok) { }
+                .show()
+        }
     }
 
     private var suppressToggleListener = false
@@ -743,6 +754,11 @@ class MainActivity : BaseActivity() {
         }
 
         if (workingMode == WorkingMode.LADB.name) return showLadbDaemonDialog {}
+
+        if (workingMode == WorkingMode.VPN.name) {
+            vpnConsent.launch(VpnService.prepare(this) ?: return true)
+            return false
+        }
 
         try {
             if (!Shizuku.pingBinder()) {
@@ -2062,7 +2078,7 @@ class MainActivity : BaseActivity() {
     private fun openBackendSetup() {
         val intent = when (currentWorkingMode()) {
             WorkingMode.LADB -> Intent(this, com.arslan.shizuwall.LadbSetupActivity::class.java)
-            WorkingMode.ROOT -> Intent(this, BackendSettingsActivity::class.java)
+            WorkingMode.ROOT, WorkingMode.VPN -> Intent(this, BackendSettingsActivity::class.java)
             else -> Intent(this, ShizukuSetupActivity::class.java)
         }
         try { startActivity(intent) } catch (_: Exception) { }
