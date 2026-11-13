@@ -146,6 +146,7 @@ class MainActivity : BaseActivity() {
         const val KEY_SHOW_FIREWALL_STATUS_NOTIFICATION = "show_firewall_status_notification"
         const val KEY_APP_MODES = "app_modes_json"
         const val KEY_MOBILE_ONLY_APPS = "mobile_only_apps"
+        const val KEY_WIFI_ONLY_APPS = "wifi_only_apps"
         const val KEY_PROFILES = "profiles_json"
         const val KEY_ACTIVE_PROFILE_ID = "active_profile_id"
         const val KEY_AUTO_ENABLE_ON_PROFILE_ACTIVATE = "auto_enable_on_profile_activate"

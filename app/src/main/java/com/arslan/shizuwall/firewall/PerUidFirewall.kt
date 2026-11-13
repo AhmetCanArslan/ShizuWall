@@ -87,6 +87,12 @@ object PerUidFirewall {
             .getStringSet(MainActivity.KEY_MOBILE_ONLY_APPS, emptySet()).orEmpty()
     }
 
+    fun wifiOnlyKeys(context: Context): Set<String> {
+        if (WorkingMode.of(context) != WorkingMode.VPN) return emptySet()
+        return context.getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
+            .getStringSet(MainActivity.KEY_WIFI_ONLY_APPS, emptySet()).orEmpty()
+    }
+
     private fun chainsFor(mobileOnly: Set<String>, perCopy: Boolean, clearMetered: Boolean, key: String, rule: Int): List<Int> = when {
         rule == RULE_DEFAULT && clearMetered -> listOf(CHAIN_OEM_DENY_3, CHAIN_METERED_DENY_ADMIN)
         FirewallTargets.isMobileOnly(mobileOnly, key, perCopy) -> listOf(CHAIN_METERED_DENY_ADMIN)
