@@ -93,13 +93,15 @@ class AppListAdapter(
     }
 
     private var mobileOnlyPackages: Set<String> = emptySet()
+    private var wifiOnlyPackages: Set<String> = emptySet()
 
     private fun Set<String>.symmetricDifference(other: Set<String>): Set<String> = (this - other) + (other - this)
 
-    fun setMobileOnlyPackages(packages: Set<String>) {
-        if (mobileOnlyPackages == packages) return
-        val changed = mobileOnlyPackages.symmetricDifference(packages)
+    fun setMobileOnlyPackages(packages: Set<String>, wifi: Set<String>) {
+        if (mobileOnlyPackages == packages && wifiOnlyPackages == wifi) return
+        val changed = mobileOnlyPackages.symmetricDifference(packages) + wifiOnlyPackages.symmetricDifference(wifi)
         mobileOnlyPackages = packages
+        wifiOnlyPackages = wifi
         currentList.forEachIndexed { index, app -> if (app.key in changed) notifyItemChanged(index) }
     }
 
@@ -173,7 +175,7 @@ class AppListAdapter(
             boundIconRes = iconRes
 
             val mobile = appInfo.key in mobileOnlyPackages
-            val animateMobile = boundKey == appInfo.key && boundMobile != null && boundMobile != mobile
+            val animateMobile = boundKey == appInfo.key && boundMobile != null && boundMobile != mobile && appInfo.key !in wifiOnlyPackages
             boundMobile = mobile
             if (animateMobile) animateMobile(appInfo.key, appInfo.isSelected, mobile) else appSwitch.setImageResource(switchIcon(appInfo.key, appInfo.isSelected, false))
             val tintColor = if (appInfo.isSelected) {
@@ -250,6 +252,7 @@ class AppListAdapter(
             val mobile = key in mobileOnlyPackages
             val slashed = selected != isWhitelistMode
             return when {
+                key in wifiOnlyPackages -> if (slashed) R.drawable.wifi_off_24px else R.drawable.ic_picon_wifi
                 mobile && slashed -> if (animated) R.drawable.avd_mobile_draw else R.drawable.mobile_circle_block_24dp
                 mobile -> if (animated) R.drawable.avd_mobile_erase else R.drawable.mobile_circle_24dp
                 slashed -> if (animated) R.drawable.avd_slash_draw else R.drawable.circle_block_24dp

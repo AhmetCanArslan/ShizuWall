@@ -459,7 +459,7 @@ class MainActivity : BaseActivity() {
                         syncSelectionFromState(state)
 
                         appListAdapter.setSelectionEnabled(!state.enabled || firewallMode.allowsDynamicSelection())
-                        appListAdapter.setMobileOnlyPackages(state.mobileOnlyApps)
+                        appListAdapter.setMobileOnlyPackages(state.mobileOnlyApps, state.wifiOnlyApps)
                         applyListInteractionState()
 
                         updateSelectedCount()

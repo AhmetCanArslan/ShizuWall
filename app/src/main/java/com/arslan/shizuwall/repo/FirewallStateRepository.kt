@@ -16,7 +16,8 @@ data class FirewallState(
     val firewallMode: String = FirewallMode.DEFAULT.name,
     val showSystemApps: Boolean = false,
     val activeProfileId: String? = null,
-    val mobileOnlyApps: Set<String> = emptySet()
+    val mobileOnlyApps: Set<String> = emptySet(),
+    val wifiOnlyApps: Set<String> = emptySet()
 )
 
 class FirewallStateRepository(private val context: Context) {
@@ -35,7 +36,9 @@ class FirewallStateRepository(private val context: Context) {
             key == MainActivity.KEY_FIREWALL_MODE ||
             key == MainActivity.KEY_SHOW_SYSTEM_APPS ||
             key == MainActivity.KEY_ACTIVE_PROFILE_ID ||
-            key == MainActivity.KEY_MOBILE_ONLY_APPS
+            key == MainActivity.KEY_MOBILE_ONLY_APPS ||
+            key == MainActivity.KEY_WIFI_ONLY_APPS ||
+            key == MainActivity.KEY_WORKING_MODE
         ) {
             _state.value = loadState()
         }
@@ -58,7 +61,8 @@ class FirewallStateRepository(private val context: Context) {
                 ?: FirewallMode.DEFAULT.name,
             showSystemApps = prefs.getBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, false),
             activeProfileId = prefs.getString(MainActivity.KEY_ACTIVE_PROFILE_ID, null),
-            mobileOnlyApps = PerUidFirewall.mobileOnlyKeys(context)
+            mobileOnlyApps = PerUidFirewall.mobileOnlyKeys(context),
+            wifiOnlyApps = PerUidFirewall.wifiOnlyKeys(context)
         )
     }
 
