@@ -118,7 +118,7 @@ class AppListAdapter(
         private var boundKey: String? = null
         private var boundFavorite: Boolean? = null
         private var boundSelected: Boolean? = null
-        private var boundMobile: Boolean? = null
+        private var boundScope: Int? = null
         private var boundMode: Int? = null
         private var boundIconRes: Int = 0
         private var modeMorphAnimator: ValueAnimator? = null
@@ -174,10 +174,10 @@ class AppListAdapter(
             }
             boundIconRes = iconRes
 
-            val mobile = appInfo.key in mobileOnlyPackages
-            val animateMobile = boundKey == appInfo.key && boundMobile != null && boundMobile != mobile && appInfo.key !in wifiOnlyPackages
-            boundMobile = mobile
-            if (animateMobile) animateMobile(appInfo.key, appInfo.isSelected, mobile) else appSwitch.setImageResource(switchIcon(appInfo.key, appInfo.isSelected, false))
+            val scope = scopeOf(appInfo.key)
+            val fromScope = boundScope.takeIf { boundKey == appInfo.key && it != scope }
+            boundScope = scope
+            if (fromScope != null) animateScope(fromScope, scope, appInfo.isSelected) else appSwitch.setImageResource(switchIcon(appInfo.key, appInfo.isSelected, false))
             val tintColor = if (appInfo.isSelected) {
                 MaterialColors.getColor(itemView, android.R.attr.colorPrimary)
             } else {
@@ -248,27 +248,20 @@ class AppListAdapter(
             (appSwitch.drawable as? Animatable)?.start()
         }
 
-        private fun switchIcon(key: String, selected: Boolean, animated: Boolean): Int {
-            val mobile = key in mobileOnlyPackages
-            val slashed = selected != isWhitelistMode
-            return when {
-                key in wifiOnlyPackages -> if (slashed) R.drawable.wifi_off_24px else R.drawable.ic_picon_wifi
-                mobile && slashed -> if (animated) R.drawable.avd_mobile_draw else R.drawable.mobile_circle_block_24dp
-                mobile -> if (animated) R.drawable.avd_mobile_erase else R.drawable.mobile_circle_24dp
-                slashed -> if (animated) R.drawable.avd_slash_draw else R.drawable.circle_block_24dp
-                else -> if (animated) R.drawable.avd_slash_erase else R.drawable.circle_24dp
-            }
+        private fun scopeOf(key: String) = when (key) {
+            in wifiOnlyPackages -> 2
+            in mobileOnlyPackages -> 1
+            else -> 0
         }
 
-        private fun animateMobile(key: String, selected: Boolean, mobile: Boolean) {
-            val slashed = selected != isWhitelistMode
-            val res = when {
-                mobile && slashed -> R.drawable.avd_mobile_bars_in_block
-                mobile -> R.drawable.avd_mobile_bars_in
-                slashed -> R.drawable.avd_mobile_bars_out_block
-                else -> R.drawable.avd_mobile_bars_out
-            }
-            appSwitch.setImageResource(res)
+        private fun slashIndex(selected: Boolean) = if (selected != isWhitelistMode) 0 else 1
+
+        private fun switchIcon(key: String, selected: Boolean, animated: Boolean): Int =
+            SWITCH_ICONS[scopeOf(key)][(if (animated) 2 else 0) + slashIndex(selected)]
+
+        private fun animateScope(from: Int, to: Int, selected: Boolean) {
+            val res = if (to != 0) SCOPE_IN[to] else SCOPE_OUT[from]
+            appSwitch.setImageResource(res[slashIndex(selected)])
             (appSwitch.drawable as? Animatable)?.start()
         }
 
@@ -396,5 +389,20 @@ class AppListAdapter(
         const val SELECTION_ANIM_MS = 220L
         const val MODE_MORPH_MS = 380L
         val HYBRID_ICONS = listOf(R.drawable.wifi_off_24px, R.drawable.intelligence_24px, R.drawable.mobile_lock_portrait_24px)
+        val SWITCH_ICONS = listOf(
+            intArrayOf(R.drawable.circle_block_24dp, R.drawable.circle_24dp, R.drawable.avd_slash_draw, R.drawable.avd_slash_erase),
+            intArrayOf(R.drawable.mobile_circle_block_24dp, R.drawable.mobile_circle_24dp, R.drawable.avd_mobile_draw, R.drawable.avd_mobile_erase),
+            intArrayOf(R.drawable.wifi_circle_block_24dp, R.drawable.wifi_circle_24dp, R.drawable.avd_wifi_draw, R.drawable.avd_wifi_erase)
+        )
+        val SCOPE_IN = listOf(
+            intArrayOf(),
+            intArrayOf(R.drawable.avd_mobile_bars_in_block, R.drawable.avd_mobile_bars_in),
+            intArrayOf(R.drawable.avd_wifi_arcs_in_block, R.drawable.avd_wifi_arcs_in)
+        )
+        val SCOPE_OUT = listOf(
+            intArrayOf(),
+            intArrayOf(R.drawable.avd_mobile_bars_out_block, R.drawable.avd_mobile_bars_out),
+            intArrayOf(R.drawable.avd_wifi_arcs_out_block, R.drawable.avd_wifi_arcs_out)
+        )
     }
 }
