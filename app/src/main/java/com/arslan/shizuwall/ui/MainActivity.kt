@@ -102,6 +102,7 @@ class MainActivity : BaseActivity() {
         const val PREF_NAME = "ShizuWallPrefs"
         const val KEY_SELECTED_APPS = "selected_apps"
         const val KEY_SELECTED_COUNT = "selected_count"
+        const val KEY_VPN_PARKED_APPS = "vpn_parked_apps"
         const val KEY_FAVORITE_APPS = "favorite_apps"
         const val KEY_FIREWALL_ENABLED = "firewall_enabled"
         const val KEY_ACTIVE_PACKAGES = "active_packages"

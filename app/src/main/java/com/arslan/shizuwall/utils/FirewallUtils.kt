@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.SystemClock
 import android.widget.Toast
 import com.arslan.shizuwall.FirewallMode
+import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.daemon.PersistentDaemonManager
 import com.arslan.shizuwall.firewall.FirewallCommands
@@ -322,6 +323,24 @@ object FirewallUtils {
             val detail = result.stderr.ifBlank { result.stdout }.trim().ifEmpty { "exit=${result.exitCode}" }
             LadbLogStore.append(context, "Firewall daemon failure: $key | $detail")
         }
+    }
+
+    fun setWorkingMode(prefs: SharedPreferences, mode: WorkingMode) {
+        val vpn = mode == WorkingMode.VPN
+        val selected = prefs.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()).orEmpty()
+        val parked = prefs.getStringSet(MainActivity.KEY_VPN_PARKED_APPS, emptySet()).orEmpty()
+        val secondary = selected.filterTo(mutableSetOf()) { AppKey.isSecondary(it) }
+        val next = if (vpn) selected - secondary else selected + parked
+        val edit = prefs.edit()
+            .putString(MainActivity.KEY_WORKING_MODE, mode.name)
+            .putStringSet(MainActivity.KEY_SELECTED_APPS, next)
+            .putInt(MainActivity.KEY_SELECTED_COUNT, next.size)
+            .putStringSet(MainActivity.KEY_VPN_PARKED_APPS, if (vpn) parked + secondary else emptySet())
+        if (vpn && firewallMode(prefs).unavailableInVpn()) {
+            edit.putString(MainActivity.KEY_FIREWALL_MODE, FirewallMode.ADAPTIVE.name)
+                .putBoolean(MainActivity.KEY_SKIP_ENABLE_CONFIRM, true)
+        }
+        edit.apply()
     }
 
     fun checkBackendReady(context: Context, showToast: Boolean = true): Boolean {

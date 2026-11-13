@@ -3,10 +3,12 @@ package com.arslan.shizuwall.profiles
 import android.content.Context
 import android.content.SharedPreferences
 import com.arslan.shizuwall.FirewallMode
+import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.firewall.FirewallTargets
 import com.arslan.shizuwall.firewall.PerUidFirewall
 import com.arslan.shizuwall.model.Profile
 import com.arslan.shizuwall.ui.MainActivity
+import com.arslan.shizuwall.utils.FirewallUtils
 import org.json.JSONArray
 import java.util.UUID
 
@@ -129,7 +131,8 @@ object ProfilesStore {
     fun captureCurrent(context: Context): CapturedConfig {
         val p = prefs(context)
         return CapturedConfig(
-            packages = (p.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()) ?: emptySet())
+            packages = (p.getStringSet(MainActivity.KEY_SELECTED_APPS, emptySet()).orEmpty() +
+                p.getStringSet(MainActivity.KEY_VPN_PARKED_APPS, emptySet()).orEmpty())
                 .filterTo(mutableSetOf()) { PerUidFirewall.isBlockableKey(context, it) },
             firewallMode = p.getString(MainActivity.KEY_FIREWALL_MODE, "DEFAULT") ?: "DEFAULT",
             appModesJson = p.getString(MainActivity.KEY_APP_MODES, "{}") ?: "{}",
@@ -151,8 +154,10 @@ object ProfilesStore {
             putBoolean(MainActivity.KEY_SHOW_SYSTEM_APPS, profile.showSystemApps)
             putString(MainActivity.KEY_ACTIVE_PROFILE_ID, profile.id)
             if (profile.firewallMode != FirewallMode.DEFAULT.name) putBoolean(MainActivity.KEY_SKIP_ENABLE_CONFIRM, true)
+            remove(MainActivity.KEY_VPN_PARKED_APPS)
             apply()
         }
+        FirewallUtils.setWorkingMode(prefs(context), WorkingMode.of(context))
     }
 
     data class CapturedConfig(
