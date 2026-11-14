@@ -7,12 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.PathInterpolator
 import android.widget.FrameLayout
+import androidx.activity.BackEventCompat
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class InlineBottomSheet(private val activity: Activity, private val content: View) {
+class InlineBottomSheet(
+    private val activity: Activity,
+    private val content: View,
+    private val predictiveBack: Boolean = false
+) {
 
     private val root = activity.findViewById<ViewGroup>(android.R.id.content)
     private val container = FrameLayout(activity)
@@ -77,6 +82,15 @@ class InlineBottomSheet(private val activity: Activity, private val content: Vie
 
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() = dismiss()
+
+            override fun handleOnBackProgressed(backEvent: BackEventCompat) {
+                if (!predictiveBack) return
+                content.translationY = content.height * BACK_SHIFT * backEvent.progress
+            }
+
+            override fun handleOnBackCancelled() {
+                content.animate().translationY(0f).setDuration(EXIT_DURATION).start()
+            }
         }
         backCallback = callback
         (activity as? ComponentActivity)?.onBackPressedDispatcher?.addCallback(callback)
@@ -103,6 +117,7 @@ class InlineBottomSheet(private val activity: Activity, private val content: Vie
 
     companion object {
         private const val SCRIM_ALPHA = 0.32f
+        private const val BACK_SHIFT = 0.2f
         private const val ENTER_DURATION = 250L
         private const val EXIT_DURATION = 200L
         private val ENTER_INTERPOLATOR = PathInterpolator(0.05f, 0.7f, 0.1f, 1f)

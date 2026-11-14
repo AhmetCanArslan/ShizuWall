@@ -45,7 +45,7 @@ class ProfilesBottomSheet(
     fun show() {
         val view = LayoutInflater.from(context).inflate(R.layout.sheet_profiles, null)
         val activity = context as? android.app.Activity ?: return
-        val sheet = InlineBottomSheet(activity, view)
+        val sheet = InlineBottomSheet(activity, view, predictiveBack = true)
         this.sheet = sheet
 
         recyclerView = view.findViewById(R.id.profilesRecyclerView)

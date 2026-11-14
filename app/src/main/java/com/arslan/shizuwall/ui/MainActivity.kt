@@ -1163,7 +1163,7 @@ class MainActivity : BaseActivity() {
 
     private fun showSortDialog() {
         val sheetView = LayoutInflater.from(this).inflate(R.layout.sheet_sort, null)
-        val sheet = InlineBottomSheet(this, sheetView)
+        val sheet = InlineBottomSheet(this, sheetView, predictiveBack = true)
 
         val radioGroup = sheetView.findViewById<RadioGroup>(R.id.radioGroupSort)
         val checkboxShowSystem = sheetView.findViewById<MaterialCheckBox>(R.id.checkboxShowSystemApps)
