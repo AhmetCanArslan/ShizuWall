@@ -5,7 +5,7 @@
     <string name="settings_category_firewall_title">سلوك جدار الحماية</string>
     <string name="settings_category_firewall_desc">الأوضاع، التأكيدات، معالجة الأخطاء</string>
     <string name="settings_category_backend_title">الخلفية ووضع التشغيل</string>
-    <string name="settings_category_backend_desc">Shizuku، LADB، الروت</string>
+    <string name="settings_category_backend_desc">Shizuku، LADB، الروت، VPN</string>
     <string name="settings_category_notifications_title">الإشعارات والزر العائم</string>
     <string name="settings_category_notifications_desc">المراقبة، التنبيهات، الزر العائم</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>

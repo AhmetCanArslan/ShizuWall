@@ -5,7 +5,7 @@
     <string name="settings_category_firewall_title">फ़ायरवॉल व्यवहार</string>
     <string name="settings_category_firewall_desc">मोड, पुष्टिकरण, त्रुटि प्रबंधन</string>
     <string name="settings_category_backend_title">बैकएंड और कार्य मोड</string>
-    <string name="settings_category_backend_desc">Shizuku, LADB, रूट</string>
+    <string name="settings_category_backend_desc">Shizuku, LADB, रूट, VPN</string>
     <string name="settings_category_notifications_title">सूचनाएँ और फ़्लोटिंग बटन</string>
     <string name="settings_category_notifications_desc">निगरानी, अलर्ट, ओवरले बटन</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>

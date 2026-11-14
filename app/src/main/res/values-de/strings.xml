@@ -6,7 +6,7 @@
     <string name="settings_category_firewall_title">Firewall-Verhalten</string>
     <string name="settings_category_firewall_desc">Modi, Bestätigungen, Fehlerbehandlung</string>
     <string name="settings_category_backend_title">Backend &amp; Arbeitsmodus</string>
-    <string name="settings_category_backend_desc">Shizuku, LADB, Root</string>
+    <string name="settings_category_backend_desc">Shizuku, LADB, Root, VPN</string>
     <string name="settings_category_notifications_title">Benachrichtigungen &amp; schwebender Button</string>
     <string name="settings_category_notifications_desc">Überwachung, Warnungen, Overlay-Button</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>

@@ -5,7 +5,7 @@
     <string name="settings_category_firewall_title">Поведение брандмауэра</string>
     <string name="settings_category_firewall_desc">Режимы, подтверждения, обработка ошибок</string>
     <string name="settings_category_backend_title">Бэкенд и рабочий режим</string>
-    <string name="settings_category_backend_desc">Shizuku, LADB, Root</string>
+    <string name="settings_category_backend_desc">Shizuku, LADB, Root, VPN</string>
     <string name="settings_category_notifications_title">Уведомления и плавающая кнопка</string>
     <string name="settings_category_notifications_desc">Мониторинг, оповещения, плавающая кнопка</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>

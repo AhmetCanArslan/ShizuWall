@@ -5,7 +5,7 @@
     <string name="settings_category_firewall_title">Firewall behavior</string>
     <string name="settings_category_firewall_desc">Modes, confirmations, error handling</string>
     <string name="settings_category_backend_title">Backend &amp; working mode</string>
-    <string name="settings_category_backend_desc">Shizuku, LADB, Root</string>
+    <string name="settings_category_backend_desc">Shizuku, LADB, Root, VPN</string>
     <string name="settings_category_notifications_title">Notifications &amp; floating button</string>
     <string name="settings_category_notifications_desc">Monitoring, alerts, overlay button</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>

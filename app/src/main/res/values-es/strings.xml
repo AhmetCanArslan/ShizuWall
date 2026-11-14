@@ -5,7 +5,7 @@
     <string name="settings_category_firewall_title">Comportamiento del cortafuegos</string>
     <string name="settings_category_firewall_desc">Modos, confirmaciones, gestión de errores</string>
     <string name="settings_category_backend_title">Backend y modo de trabajo</string>
-    <string name="settings_category_backend_desc">Shizuku, LADB, Root</string>
+    <string name="settings_category_backend_desc">Shizuku, LADB, Root, VPN</string>
     <string name="settings_category_notifications_title">Notificaciones y botón flotante</string>
     <string name="settings_category_notifications_desc">Monitorización, alertas, botón flotante</string>
     <string name="github_url">https://github.com/ahmetcanarslan/shizuwall</string>
