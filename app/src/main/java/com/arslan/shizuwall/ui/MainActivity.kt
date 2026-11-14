@@ -793,6 +793,7 @@ class MainActivity : BaseActivity() {
     private fun setupSearchView() {
         searchView = findViewById(R.id.searchView)
         searchView.queryHint = getString(R.string.search_app)
+        (searchView.findViewById<View>(androidx.appcompat.R.id.search_edit_frame).layoutParams as ViewGroup.MarginLayoutParams).marginStart = 0
 
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
