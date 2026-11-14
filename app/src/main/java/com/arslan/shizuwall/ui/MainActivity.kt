@@ -1038,7 +1038,7 @@ class MainActivity : BaseActivity() {
     private fun showBlockModeDialog(appInfo: AppInfo) {
         if (!PerUidFirewall.supportsMobileOnly(this)) return
         val sheetView = LayoutInflater.from(this).inflate(R.layout.sheet_block_mode, null)
-        val sheet = InlineBottomSheet(this, sheetView)
+        val sheet = InlineBottomSheet(this, sheetView, predictiveBack = true)
         val iconView = sheetView.findViewById<ImageView>(R.id.blockModeAppIcon)
         lifecycleScope.launch {
             iconView.setImageDrawable(withContext(Dispatchers.IO) { CrossUserAppInfo.icon(this@MainActivity, appInfo.packageName, appInfo.userId) })
