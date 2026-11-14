@@ -1,8 +1,9 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="128dp"
     android:height="128dp"
-    android:viewportWidth="192"
-    android:viewportHeight="192">
+    android:viewportWidth="160"
+    android:viewportHeight="160">
+  <group android:translateX="-16" android:translateY="-16">
   <path
       android:pathData="M128.6,162.5c-0.8,0.4 -1.7,0.8 -2.6,1.2 -3,1.3 -6,2.4 -9.1,3.3 -36.1,10.6 -73.8,-7.5 -88.6,-41 3.2,-4.6 7.4,-8.6 11.8,-11.9 -0.8,-7.9 1,-15.9 6.7,-24.3 9.2,2.7 17.1,7.6 23.4,14.8 10.2,-1.9 20,-0.4 29.4,3.5 8.3,-4.2 16.2,-6.5 23.6,-6.2 0.8,-0.1 1.6,0.5 1.8,1.4 1.6,8.7 0.8,16.8 -2.7,24.2 5.3,11.5 8.8,23.7 6.3,35z"
       android:strokeLineJoin="round"
@@ -27,4 +28,5 @@
       android:strokeWidth="12"
       android:fillColor="#00000000"
       android:strokeColor="#000000"/>
+  </group>
 </vector>

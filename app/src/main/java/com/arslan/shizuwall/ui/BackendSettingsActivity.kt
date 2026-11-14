@@ -1,23 +1,31 @@
 package com.arslan.shizuwall.ui
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.ScaleDrawable
+import android.graphics.drawable.StateListDrawable
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.TransitionManager
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.content.res.AppCompatResources
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.shell.RootShellExecutor
 import com.arslan.shizuwall.utils.FirewallUtils
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlin.math.roundToInt
 
 class BackendSettingsActivity : BaseActivity() {
 
@@ -70,6 +78,7 @@ class BackendSettingsActivity : BaseActivity() {
         cardApplyRootRulesAfterReboot = findViewById(R.id.cardApplyRootRulesAfterReboot)
 
         loadSettings()
+        setupModeIcons()
         setupListeners()
 
         if (savedInstanceState == null && intent.getBooleanExtra(CoachMarks.EXTRA_TOUR, false)) {
@@ -141,6 +150,37 @@ class BackendSettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchApplyRootRulesAfterReboot)
     }
 
+    private fun setupModeIcons() {
+        val iconSize = (24 * resources.displayMetrics.density).roundToInt()
+        modeRadios.forEach { (mode, id) ->
+            val radio = findViewById<RadioButton>(id)
+            val radioDrawable = radio.buttonDrawable ?: return@forEach
+            val dx = ((radioDrawable.intrinsicWidth - iconSize) / 2).coerceAtLeast(0)
+            val dy = ((radioDrawable.intrinsicHeight - iconSize) / 2).coerceAtLeast(0)
+            val icon = AppCompatResources.getDrawable(this, mode.icon)!!.mutate()
+            val sizedIcon = LayerDrawable(arrayOf(icon)).apply {
+                setLayerSize(0, iconSize, iconSize)
+                setLayerInset(0, dx, dy, dx, dy)
+            }
+            val indicator = StateListDrawable().apply {
+                addState(intArrayOf(android.R.attr.state_checked), ScaleDrawable(sizedIcon, Gravity.CENTER, 1f, 1f))
+                addState(intArrayOf(), radioDrawable)
+                setEnterFadeDuration(MORPH_DURATION)
+                setExitFadeDuration(MORPH_DURATION)
+                level = MAX_LEVEL
+            }
+            radio.buttonDrawable = indicator
+            radio.setOnCheckedChangeListener { _, isChecked ->
+                if (!isChecked) return@setOnCheckedChangeListener
+                ValueAnimator.ofInt(0, MAX_LEVEL).apply {
+                    duration = MORPH_DURATION.toLong()
+                    interpolator = OvershootInterpolator()
+                    addUpdateListener { indicator.level = it.animatedValue as Int }
+                }.start()
+            }
+        }
+    }
+
     private fun checkWorkingModeRadio(mode: WorkingMode) {
         suppressWorkingModeListener = true
         radioGroupWorkingMode.check(modeRadios.getValue(mode))
@@ -204,5 +244,10 @@ class BackendSettingsActivity : BaseActivity() {
             switchApplyRootRulesAfterReboot.isChecked = true
             sharedPreferences.edit().putBoolean(MainActivity.KEY_APPLY_ROOT_RULES_AFTER_REBOOT, true).apply()
         }
+    }
+
+    companion object {
+        private const val MORPH_DURATION = 250
+        private const val MAX_LEVEL = 10000
     }
 }

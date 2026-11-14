@@ -3,11 +3,11 @@ package com.arslan.shizuwall
 import android.content.Context
 import com.arslan.shizuwall.ui.MainActivity
 
-enum class WorkingMode {
-    SHIZUKU,
-    LADB,
-    ROOT,
-    VPN;
+enum class WorkingMode(val icon: Int) {
+    SHIZUKU(R.drawable.ic_shizuku),
+    LADB(R.drawable.adb_24px),
+    ROOT(R.drawable.hashtag_24px),
+    VPN(R.drawable.ic_picon_vpn_lock);
 
     companion object {
         fun of(context: Context): WorkingMode = fromName(

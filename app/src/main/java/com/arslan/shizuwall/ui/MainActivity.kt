@@ -1475,19 +1475,17 @@ class MainActivity : BaseActivity() {
         suppressToggleListener = false
     }
 
+    private var defaultThumbIconSize: Int? = null
+
     private fun updateFirewallToggleThumbIcon() {
         if (!::firewallToggle.isInitialized) return
 
         val workingMode = WorkingMode.fromName(
             sharedPreferences.getString(KEY_WORKING_MODE, WorkingMode.SHIZUKU.name)
         )
-        val iconRes = when (workingMode) {
-            WorkingMode.SHIZUKU -> R.drawable.ic_shizuku
-            WorkingMode.LADB -> R.drawable.adb_24px
-            WorkingMode.ROOT -> R.drawable.hashtag_24px
-            WorkingMode.VPN -> R.drawable.ic_picon_vpn_lock
-        }
-        firewallToggle.setThumbIconResource(iconRes)
+        firewallToggle.setThumbIconResource(workingMode.icon)
+        val defaultSize = defaultThumbIconSize ?: firewallToggle.thumbIconSize.also { defaultThumbIconSize = it }
+        firewallToggle.thumbIconSize = if (workingMode == WorkingMode.SHIZUKU) (28 * resources.displayMetrics.density).toInt() else defaultSize
     }
 
     private fun showLadbDaemonDialog(onProceed: () -> Unit): Boolean {
