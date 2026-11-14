@@ -80,7 +80,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_settings"
+                        android:src="@drawable/ic_chevron_right_24"
                         app:tint="?android:attr/textColorSecondary"
                         android:contentDescription="@null" />
                 </LinearLayout>
@@ -139,7 +139,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_settings"
+                        android:src="@drawable/ic_chevron_right_24"
                         app:tint="?android:attr/textColorSecondary"
                         android:contentDescription="@null" />
                 </LinearLayout>
@@ -198,7 +198,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_settings"
+                        android:src="@drawable/ic_chevron_right_24"
                         app:tint="?android:attr/textColorSecondary"
                         android:contentDescription="@null" />
                 </LinearLayout>
@@ -257,7 +257,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_settings"
+                        android:src="@drawable/ic_chevron_right_24"
                         app:tint="?android:attr/textColorSecondary"
                         android:contentDescription="@null" />
                 </LinearLayout>
@@ -315,7 +315,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_settings"
+                        android:src="@drawable/ic_chevron_right_24"
                         app:tint="?android:attr/textColorSecondary"
                         android:contentDescription="@null" />
                 </LinearLayout>
