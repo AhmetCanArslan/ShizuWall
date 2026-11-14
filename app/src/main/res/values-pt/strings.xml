@@ -532,5 +532,5 @@
     <string name="update_up_to_date">Você está atualizado</string>
     <string name="update_check_failed">Não foi possível verificar atualizações</string>
     <string name="update_skip_version">Ignorar esta versão</string>
-    <string name="auto_check_updates">Verificar atualizações</string>
+    <string name="auto_check_updates">Verificar atualizações automaticamente</string>
 </resources>

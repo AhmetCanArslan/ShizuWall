@@ -532,5 +532,5 @@
     <string name="update_up_to_date">Du bist auf dem neuesten Stand</string>
     <string name="update_check_failed">Update-Suche fehlgeschlagen</string>
     <string name="update_skip_version">Diese Version überspringen</string>
-    <string name="auto_check_updates">Nach Updates suchen</string>
+    <string name="auto_check_updates">Automatisch nach Updates suchen</string>
 </resources>

@@ -536,5 +536,5 @@
     <string name="whats_new_description">See the changes in this version</string>
     <string name="dismiss">Dismiss</string>
     <string name="update_skip_version">Skip this version</string>
-    <string name="auto_check_updates">Check for updates</string>
+    <string name="auto_check_updates">Auto check updates</string>
 </resources>

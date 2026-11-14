@@ -534,5 +534,5 @@
     <string name="update_up_to_date">最新の状態です</string>
     <string name="update_check_failed">アップデートを確認できませんでした</string>
     <string name="update_skip_version">このバージョンをスキップ</string>
-    <string name="auto_check_updates">アップデートを確認</string>
+    <string name="auto_check_updates">アップデートを自動確認</string>
 </resources>

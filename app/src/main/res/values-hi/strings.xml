@@ -533,5 +533,5 @@
     <string name="update_up_to_date">आप अप-टू-डेट हैं</string>
     <string name="update_check_failed">अपडेट जाँचने में विफल</string>
     <string name="update_skip_version">इस संस्करण को छोड़ें</string>
-    <string name="auto_check_updates">अपडेट जाँचें</string>
+    <string name="auto_check_updates">अपडेट अपने आप जाँचें</string>
 </resources>

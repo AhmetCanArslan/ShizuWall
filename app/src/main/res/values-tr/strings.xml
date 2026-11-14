@@ -532,5 +532,5 @@
     <string name="update_up_to_date">Uygulama güncel</string>
     <string name="update_check_failed">Güncellemeler denetlenemedi</string>
     <string name="update_skip_version">Bu sürümü atla</string>
-    <string name="auto_check_updates">Güncellemeleri denetle</string>
+    <string name="auto_check_updates">Güncellemeleri otomatik denetle</string>
 </resources>

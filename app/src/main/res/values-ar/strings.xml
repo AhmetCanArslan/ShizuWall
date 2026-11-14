@@ -538,5 +538,5 @@
     <string name="update_up_to_date">التطبيق محدّث</string>
     <string name="update_check_failed">تعذّر التحقق من التحديثات</string>
     <string name="update_skip_version">تخطي هذا الإصدار</string>
-    <string name="auto_check_updates">التحقق من التحديثات</string>
+    <string name="auto_check_updates">التحقق من التحديثات تلقائيًا</string>
 </resources>
