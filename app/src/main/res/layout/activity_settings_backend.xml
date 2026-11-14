@@ -31,7 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="8dp"
                 app:cardCornerRadius="20dp"
                 app:cardBackgroundColor="?attr/colorSurfaceContainer"
                 app:strokeWidth="0dp">
@@ -120,7 +120,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="8dp"
                 app:cardCornerRadius="20dp"
                 app:cardBackgroundColor="?attr/colorSurfaceContainer"
                 app:strokeWidth="0dp">
@@ -129,10 +129,11 @@
                     android:id="@+id/layoutSetLadb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="72dp"
+                    android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:padding="16dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackground">
@@ -176,7 +177,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="8dp"
                 app:cardCornerRadius="20dp"
                 app:cardBackgroundColor="?attr/colorSurfaceContainer"
                 app:strokeWidth="0dp">
@@ -184,10 +185,11 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="72dp"
+                    android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:padding="16dp">
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp">
 
                     <ImageView
                         android:layout_width="24dp"
@@ -232,7 +234,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="8dp"
                 app:cardCornerRadius="20dp"
                 app:cardBackgroundColor="?attr/colorSurfaceContainer"
                 app:strokeWidth="0dp">
@@ -240,10 +242,11 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="72dp"
+                    android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:padding="16dp">
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp">
 
                     <ImageView
                         android:layout_width="24dp"
