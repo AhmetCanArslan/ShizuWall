@@ -42,13 +42,13 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_picon_lock"
                         app:tint="?attr/colorPrimary" />
@@ -78,6 +78,7 @@
                         android:id="@+id/switchAppLock"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
+                        android:layout_marginStart="6dp"
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -96,13 +97,13 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_picon_fingerprint"
                         app:tint="?attr/colorPrimary" />
@@ -133,6 +134,7 @@
                         android:id="@+id/switchBiometrics"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
+                        android:layout_marginStart="6dp"
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -220,7 +222,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -229,7 +231,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_picon_vpn_key"
                         app:tint="?attr/colorPrimary" />

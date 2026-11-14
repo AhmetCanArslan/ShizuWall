@@ -42,7 +42,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -50,7 +50,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/move_up_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -78,6 +78,7 @@
                         android:id="@+id/switchMoveSelectedTop"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -98,7 +99,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -106,7 +107,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/ic_picon_visibility_off"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -134,6 +135,7 @@
                         android:id="@+id/switchHideUnblockable"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -154,7 +156,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -162,7 +164,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/wifi_off_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -190,6 +192,7 @@
                         android:id="@+id/switchHideNoInternet"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -210,7 +213,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -218,7 +221,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/info_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -246,6 +249,7 @@
                         android:id="@+id/switchAppInfoButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -266,7 +270,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -274,7 +278,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/colors_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -302,6 +306,7 @@
                         android:id="@+id/switchUseDynamicColor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -322,7 +327,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -330,7 +335,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/light_off_24dp"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -358,6 +363,7 @@
                         android:id="@+id/switchUseAmoledBlack"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -379,7 +385,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -390,7 +396,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/ic_picon_brightness_6"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -440,7 +446,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -451,7 +457,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/text_format_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -501,7 +507,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -512,7 +518,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/ic_world"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout

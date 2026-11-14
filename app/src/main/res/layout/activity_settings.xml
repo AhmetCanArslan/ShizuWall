@@ -43,7 +43,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -54,7 +54,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/colors_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -103,7 +103,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -114,7 +114,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/shield_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -163,7 +163,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -174,7 +174,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/adb_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -223,7 +223,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -234,7 +234,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/ic_notification"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -282,7 +282,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -293,7 +293,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/ic_picon_lock"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -350,7 +350,7 @@
                         android:minHeight="64dp"
                         android:orientation="vertical"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
+                        android:paddingHorizontal="12dp"
                         android:paddingVertical="8dp"
                         android:clickable="true"
                         android:focusable="true"
@@ -397,7 +397,7 @@
                         android:minHeight="64dp"
                         android:orientation="vertical"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
+                        android:paddingHorizontal="12dp"
                         android:paddingVertical="8dp"
                         android:clickable="true"
                         android:focusable="true"
@@ -444,7 +444,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -455,7 +455,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/info_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -502,7 +502,7 @@
                         android:minHeight="64dp"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
+                        android:paddingHorizontal="12dp"
                         android:paddingVertical="8dp"
                         android:clickable="true"
                         android:focusable="true"
@@ -513,7 +513,7 @@
                             android:layout_height="24dp"
                             android:src="@drawable/ic_picon_system_update"
                             app:tint="?attr/colorPrimary"
-                            android:layout_marginEnd="16dp"
+                            android:layout_marginEnd="12dp"
                             android:contentDescription="@null" />
 
                         <LinearLayout
@@ -534,6 +534,7 @@
                             android:id="@+id/switchAutoUpdate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
                             app:thumbIcon="@drawable/check_24px"
                             app:thumbIconTint="@color/switch_thumb_icon_tint" />
                     </LinearLayout>
@@ -567,7 +568,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -578,7 +579,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/ic_mail"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout

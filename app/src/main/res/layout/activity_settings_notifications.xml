@@ -42,13 +42,13 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_notification"
                         app:tint="?attr/colorPrimary" />
@@ -78,6 +78,7 @@
                         android:id="@+id/switchAppMonitor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -150,13 +151,13 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_notification"
                         app:tint="?attr/colorPrimary" />
@@ -186,6 +187,7 @@
                         android:id="@+id/switchFirewallStatusNotification"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -206,13 +208,13 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null"
                         android:src="@drawable/touch_app_24px"
                         app:tint="?attr/colorPrimary" />

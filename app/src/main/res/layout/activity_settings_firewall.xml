@@ -43,7 +43,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -51,7 +51,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/ic_picon_apps"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -101,7 +101,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -109,7 +109,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/ic_profiles_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -170,7 +170,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -178,7 +178,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/task_alt_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -206,6 +206,7 @@
                         android:id="@+id/switchSkipConfirm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -432,7 +433,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -443,7 +444,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/timer_24dp"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -494,7 +495,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp"
                     android:clickable="true"
                     android:focusable="true"
@@ -505,7 +506,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/podcasts_24dp"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -549,7 +550,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -557,7 +558,7 @@
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_dialog_alert"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -585,6 +586,7 @@
                         android:id="@+id/switchSkipErrorDialog"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -607,7 +609,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -615,7 +617,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/select_check_box_24px"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -643,6 +645,7 @@
                         android:id="@+id/switchKeepErrorAppsSelected"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -663,13 +666,13 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null"
                         android:src="@drawable/wifi_off_24px"
                         app:tint="?attr/colorPrimary" />
@@ -699,6 +702,7 @@
                         android:id="@+id/switchAutoFirewallNewApps"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
@@ -747,7 +751,7 @@
                     android:minHeight="64dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingHorizontal="16dp"
+                    android:paddingHorizontal="12dp"
                     android:paddingVertical="8dp">
 
                     <ImageView
@@ -755,7 +759,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/ic_picon_visibility_off"
                         app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginEnd="12dp"
                         android:contentDescription="@null" />
 
                     <LinearLayout
@@ -783,6 +787,7 @@
                         android:id="@+id/switchRememberDeletedApps"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
                 </LinearLayout>
