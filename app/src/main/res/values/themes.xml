@@ -84,4 +84,9 @@
         <item name="backgroundTint">?attr/colorPrimary</item>
         <item name="iconTint">?attr/colorOnPrimary</item>
     </style>
+
+    <style name="TextAppearance.Material3.TitleMedium.Emphasized" parent="TextAppearance.M3.Sys.Typescale.TitleMedium.Emphasized">
+        <item name="lineHeight">17sp</item>
+        <item name="android:lineHeight">17sp</item>
+    </style>
 </resources>
