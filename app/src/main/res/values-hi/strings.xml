@@ -527,7 +527,6 @@
     <string name="whats_new_description">इस संस्करण के बदलाव देखें</string>
     <string name="dismiss">खारिज करें</string>
     <string name="check_update">अपडेट जाँचें</string>
-    <string name="check_update_description">GitHub पर नया संस्करण खोजें</string>
     <string name="update_available_title">अपडेट उपलब्ध है</string>
     <string name="update_available_message">संस्करण %1$s GitHub पर उपलब्ध है।</string>
     <string name="update_download">डाउनलोड करें</string>

@@ -528,7 +528,6 @@
     <string name="whats_new_description">このバージョンの変更点を見る</string>
     <string name="dismiss">閉じる</string>
     <string name="check_update">アップデートを確認</string>
-    <string name="check_update_description">GitHubで新しいリリースを確認します</string>
     <string name="update_available_title">アップデートがあります</string>
     <string name="update_available_message">バージョン %1$s がGitHubで利用可能です。</string>
     <string name="update_download">ダウンロード</string>

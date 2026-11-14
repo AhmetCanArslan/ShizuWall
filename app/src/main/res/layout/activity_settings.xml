@@ -528,13 +528,6 @@
                                 android:text="@string/auto_check_updates"
                                 android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
                                 android:textColor="?android:attr/textColorPrimary" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/check_update_description"
-                                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                                android:textColor="?android:attr/textColorSecondary" />
                         </LinearLayout>
 
                         <com.google.android.material.materialswitch.MaterialSwitch

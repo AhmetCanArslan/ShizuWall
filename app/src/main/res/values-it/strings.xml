@@ -527,7 +527,6 @@
     <string name="whats_new_description">Guarda le modifiche di questa versione</string>
     <string name="dismiss">Ignora</string>
     <string name="check_update">Controlla aggiornamenti</string>
-    <string name="check_update_description">Cerca una versione più recente su GitHub</string>
     <string name="update_available_title">Aggiornamento disponibile</string>
     <string name="update_available_message">La versione %1$s è disponibile su GitHub.</string>
     <string name="update_download">Scarica</string>

@@ -528,7 +528,6 @@
     <string name="whats_new_description">Zobrazit změny v této verzi</string>
     <string name="dismiss">Zavřít</string>
     <string name="check_update">Zkontrolovat aktualizace</string>
-    <string name="check_update_description">Vyhledat novější verzi na GitHubu</string>
     <string name="update_available_title">Dostupná aktualizace</string>
     <string name="update_available_message">Na GitHubu je dostupná verze %1$s.</string>
     <string name="update_download">Stáhnout</string>

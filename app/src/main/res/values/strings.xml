@@ -527,7 +527,6 @@
     <string name="changelog_title">What\'s new in %1$s</string>
     <string name="changelog_message">• Update check in settings\n• Fixed hybrid mode per-app selection\n• Fixed list gaps when toggling hide options\n• Reorganized settings layout</string>
     <string name="check_update">Check for updates</string>
-    <string name="check_update_description">Look for a newer release on GitHub</string>
     <string name="update_available_title">Update available</string>
     <string name="update_available_message">Version %1$s is available on GitHub.</string>
     <string name="update_download">Download</string>

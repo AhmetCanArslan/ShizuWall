@@ -526,7 +526,6 @@
     <string name="whats_new_description">Bu sürümdeki değişiklikleri gör</string>
     <string name="dismiss">Kapat</string>
     <string name="check_update">Güncellemeleri denetle</string>
-    <string name="check_update_description">GitHub\'da daha yeni bir sürüm ara</string>
     <string name="update_available_title">Güncelleme mevcut</string>
     <string name="update_available_message">%1$s sürümü GitHub\'da mevcut.</string>
     <string name="update_download">İndir</string>
