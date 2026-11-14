@@ -234,6 +234,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">新しい順</string>
+    <string name="sort_by_mode">モード別にグループ化</string>
     <string name="failed_to_update_rules_count">%d 個のアプリのルールの更新に失敗しました</string>
     <string name="failed_to_unblock_count">%d 個のアプリのブロック解除に失敗しました</string>
     <string name="failed_to_unblock_app">%s のブロック解除に失敗しました</string>

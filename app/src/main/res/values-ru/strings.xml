@@ -234,6 +234,7 @@
     <string name="sort_name_asc">А-Я</string>
     <string name="sort_name_desc">Я-А</string>
     <string name="sort_install_time">Сначала новые приложения</string>
+    <string name="sort_by_mode">Группировать по режиму</string>
         <string name="failed_to_update_rules_count">Не удалось обновить правила для %d приложений</string>
     <string name="failed_to_unblock_count">Не удалось разблокировать %d приложений</string>
     <string name="failed_to_unblock_app">Не удалось разблокировать %s</string>

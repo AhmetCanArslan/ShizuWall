@@ -232,6 +232,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">最新安装优先</string>
+    <string name="sort_by_mode">按模式分组</string>
     <string name="failed_to_update_rules_count">无法更新 %d 个应用的规则</string>
     <string name="failed_to_unblock_count">无法取消阻止 %d 个应用</string>
     <string name="failed_to_unblock_app">无法取消阻止 %s</string>

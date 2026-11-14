@@ -251,6 +251,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">नए ऐप पहले</string>
+    <string name="sort_by_mode">मोड के अनुसार समूह</string>
     <string name="failed_to_update_rules_count">%d ऐप्स के नियम अपडेट नहीं हो सके</string>
     <string name="failed_to_unblock_count">%d ऐप्स अनब्लॉक नहीं हो सके</string>
     <string name="failed_to_unblock_app">%s अनब्लॉक नहीं हो सका</string>

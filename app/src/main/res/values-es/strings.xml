@@ -234,6 +234,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">Recientes primero</string>
+    <string name="sort_by_mode">Agrupar por modo</string>
     <string name="failed_to_update_rules_count">Error al actualizar reglas para %d apps</string>
     <string name="failed_to_unblock_count">Error al desbloquear %d apps</string>
     <string name="failed_to_unblock_app">Fallo al desbloquear %s</string>

@@ -87,6 +87,15 @@
                 android:minHeight="48dp"
                 android:text="@string/sort_name_desc"
                 android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                style="@style/Widget.Material3.CompoundButton.RadioButton"
+                android:id="@+id/radioMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:text="@string/sort_by_mode"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
         </RadioGroup>
 
         <com.google.android.material.divider.MaterialDivider

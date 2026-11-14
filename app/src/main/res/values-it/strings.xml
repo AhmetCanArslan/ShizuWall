@@ -251,6 +251,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">App più recenti prima</string>
+    <string name="sort_by_mode">Raggruppa per modalità</string>
     <string name="failed_to_update_rules_count">Impossibile aggiornare le regole per %d app</string>
     <string name="failed_to_unblock_count">Impossibile sbloccare %d app</string>
     <string name="failed_to_unblock_app">Impossibile sbloccare %s</string>

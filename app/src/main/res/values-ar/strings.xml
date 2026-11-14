@@ -235,6 +235,7 @@
     <string name="sort_name_asc">من أ إلى ي</string>
     <string name="sort_name_desc">من ي إلى أ</string>
     <string name="sort_install_time">أحدث التطبيقات أولاً</string>
+    <string name="sort_by_mode">التجميع حسب الوضع</string>
     <string name="failed_to_update_rules_count">فشل تحديث القواعد لـ %d تطبيقات</string>
     <string name="failed_to_unblock_count">فشل إلغاء الحظر لـ %d تطبيقات</string>
         <string name="failed_to_unblock_app">فشل إلغاء حظر %s</string>

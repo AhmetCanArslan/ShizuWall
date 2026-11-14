@@ -230,6 +230,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">En yeni önce</string>
+    <string name="sort_by_mode">Moda göre grupla</string>
     <string name="daemon_kill">Daemon\'ı Durdur</string>
     <string name="daemon_installing">Yükleniyor...</string>
     <string name="failed_to_update_rules_count">%d uygulama için kurallar güncellenemedi</string>

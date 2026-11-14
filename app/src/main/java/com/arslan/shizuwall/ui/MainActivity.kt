@@ -209,7 +209,7 @@ class MainActivity : BaseActivity() {
     private var hideUnblockableApps = false
     private var hideNoInternetApps = false
     private var firewallMode = FirewallMode.DEFAULT
-    private enum class SortOrder { NAME_ASC, NAME_DESC, INSTALL_TIME }
+    private enum class SortOrder { NAME_ASC, NAME_DESC, INSTALL_TIME, MODE }
     private var currentSortOrder = SortOrder.NAME_ASC
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -1169,10 +1169,13 @@ class MainActivity : BaseActivity() {
         val checkboxShowSystem = sheetView.findViewById<MaterialCheckBox>(R.id.checkboxShowSystemApps)
         val checkboxShowOtherProfiles = sheetView.findViewById<MaterialCheckBox>(R.id.checkboxShowOtherProfiles)
 
+        val hybrid = firewallMode == FirewallMode.HYBRID
+        sheetView.findViewById<View>(R.id.radioMode).visibility = if (hybrid) View.VISIBLE else View.GONE
         when (currentSortOrder) {
             SortOrder.INSTALL_TIME -> radioGroup.check(R.id.radioInstallTime)
             SortOrder.NAME_ASC -> radioGroup.check(R.id.radioNameAsc)
             SortOrder.NAME_DESC -> radioGroup.check(R.id.radioNameDesc)
+            SortOrder.MODE -> radioGroup.check(if (hybrid) R.id.radioMode else R.id.radioNameAsc)
         }
 
         checkboxShowSystem.isChecked = showSystemApps
@@ -1231,6 +1234,7 @@ class MainActivity : BaseActivity() {
                     R.id.radioInstallTime -> SortOrder.INSTALL_TIME
                     R.id.radioNameAsc -> SortOrder.NAME_ASC
                     R.id.radioNameDesc -> SortOrder.NAME_DESC
+                    R.id.radioMode -> SortOrder.MODE
                     else -> currentSortOrder
                 }
 
@@ -1343,11 +1347,15 @@ class MainActivity : BaseActivity() {
     private fun sortAndFilterApps(preserveScrollPosition: Boolean = false, scrollToTop: Boolean = false, animate: Boolean = false, smoothTransition: Boolean = false, instant: Boolean = false) {
         val turkishCollator = java.text.Collator.getInstance(java.util.Locale.forLanguageTag("tr-TR"))
         
+        val byName = Comparator { o1: AppInfo, o2: AppInfo -> turkishCollator.compare(o1.appName, o2.appName) }
+        val hybrid = firewallMode == FirewallMode.HYBRID
         var finalComparator: Comparator<AppInfo> = when (currentSortOrder) {
-            SortOrder.NAME_ASC -> Comparator { o1: AppInfo, o2: AppInfo -> turkishCollator.compare(o1.appName, o2.appName) }
-            SortOrder.NAME_DESC -> Comparator { o1: AppInfo, o2: AppInfo -> turkishCollator.compare(o1.appName, o2.appName) }.reversed()
+            SortOrder.NAME_ASC -> byName
+            SortOrder.NAME_DESC -> byName.reversed()
             SortOrder.INSTALL_TIME -> compareByDescending<AppInfo> { it.installTime }
+            SortOrder.MODE -> compareBy<AppInfo> { if (hybrid && it.isSelected) it.appFirewallMode else Int.MAX_VALUE }.then(byName)
         }
+        val reorders = moveSelectedTop || (hybrid && currentSortOrder == SortOrder.MODE)
 
         if (moveSelectedTop) {
             finalComparator = compareByDescending<AppInfo> { it.isSelected }.then(finalComparator)
@@ -1358,13 +1366,13 @@ class MainActivity : BaseActivity() {
         var firstVisible = RecyclerView.NO_POSITION
         var offset = 0
 
-        if (preserveScrollPosition && moveSelectedTop) {
+        if (preserveScrollPosition && reorders) {
             firstVisible = layoutManager.findFirstVisibleItemPosition()
             offset = layoutManager.findViewByPosition(firstVisible)?.top ?: 0
         }
 
         val onCommit = {
-            if (preserveScrollPosition && moveSelectedTop && firstVisible != RecyclerView.NO_POSITION) {
+            if (preserveScrollPosition && reorders && firstVisible != RecyclerView.NO_POSITION) {
                 layoutManager.scrollToPositionWithOffset(firstVisible, offset)
             } else if (scrollToTop) {
                 layoutManager.scrollToPosition(0)

@@ -251,6 +251,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">Newest app first</string>
+    <string name="sort_by_mode">Group by mode</string>
     <string name="failed_to_update_rules_count">Failed to update rules for %d apps</string>
     <string name="failed_to_unblock_count">Failed to unblock %d apps</string>
     <string name="failed_to_unblock_app">Failed to unblock %s</string>

@@ -249,6 +249,7 @@
     <string name="sort_name_asc">A-Z</string>
     <string name="sort_name_desc">Z-A</string>
     <string name="sort_install_time">Nejdřív nejnovější aplikace</string>
+    <string name="sort_by_mode">Seskupit podle režimu</string>
     <string name="failed_to_update_rules_count">Nepodařilo se aktualizovat pravidla pro %d aplikací</string>
     <string name="failed_to_unblock_count">Nepodařilo se odblokovat %d aplikací</string>
     <string name="failed_to_unblock_app">Selhalo odblokování %s</string>
