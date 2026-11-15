@@ -468,7 +468,6 @@
     <string name="ladb_adb_method_description">Připojte telefon k počítači se zapnutým laděním USB a jednou spusťte tento příkaz.</string>
     <string name="ladb_adb_command_label">Příkaz</string>
     <string name="ladb_adb_command_preparing">Příprava…</string>
-    <string name="ladb_copy_command">Kopírovat příkaz</string>
     <string name="ladb_command_copied">Příkaz zkopírován</string>
     <string name="ladb_share_command">Sdílet příkaz</string>
     <string name="ladb_adb_method_steps">1. Zapněte ladění USB ve vývojářských možnostech\n2. Připojte telefon k počítači a potvrďte výzvu\n3. Vložte příkaz do terminálu\n\nPo každém restartu spusťte znovu.</string>

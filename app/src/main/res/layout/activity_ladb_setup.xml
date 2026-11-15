@@ -581,15 +581,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        android:gravity="end"
                         android:layout_marginTop="12dp">
 
                         <com.google.android.material.button.MaterialButton
                             style="@style/Widget.Material3Expressive.Button"
                             android:id="@+id/btnCopyAdbCommand"
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/ladb_copy_command"
+                            android:text="@string/copy"
                             app:icon="@drawable/content_copy_24px"
                             app:backgroundTint="?attr/colorPrimaryContainer"
                             android:textColor="?attr/colorOnPrimaryContainer"
@@ -601,7 +601,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="@string/ladb_share_command" />
+                            android:text="@string/ladb_share_command"
+                            app:icon="@drawable/share_24px" />
                     </LinearLayout>
 
                     <View
