@@ -14,8 +14,10 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
+import android.widget.CheckBox
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
@@ -190,11 +192,16 @@ class BackendSettingsActivity : BaseActivity() {
     private fun commitWorkingMode(mode: WorkingMode) {
         FirewallUtils.setWorkingMode(sharedPreferences, mode)
         if (mode != WorkingMode.ROOT) RootShellExecutor.shutdown()
-        if (mode == WorkingMode.VPN) {
+        if (mode == WorkingMode.VPN && !sharedPreferences.getBoolean(MainActivity.KEY_SKIP_VPN_INFO, false)) {
+            val view = layoutInflater.inflate(R.layout.dialog_shizuku_prompt, null)
+            view.findViewById<TextView>(R.id.shizuku_prompt_message_text).setText(R.string.vpn_mode_info)
+            val checkbox = view.findViewById<CheckBox>(R.id.shizuku_prompt_do_not_show)
             MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.working_mode_vpn)
-                .setMessage(R.string.vpn_mode_info)
-                .setPositiveButton(R.string.ok, null)
+                .setView(view)
+                .setPositiveButton(R.string.ok) { _, _ ->
+                    if (checkbox.isChecked) sharedPreferences.edit().putBoolean(MainActivity.KEY_SKIP_VPN_INFO, true).apply()
+                }
                 .show()
         }
         setResult(RESULT_OK)

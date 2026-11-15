@@ -120,6 +120,7 @@ class MainActivity : BaseActivity() {
         const val KEY_SKIP_ENABLE_CONFIRM = "skip_enable_confirm" 
         const val KEY_SKIP_ERROR_DIALOG = "skip_error_dialog"
         const val KEY_SKIP_ANDROID11_INFO = "skip_android11_info"
+        const val KEY_SKIP_VPN_INFO = "skip_vpn_info"
         const val KEY_KEEP_ERROR_APPS_SELECTED = "keep_error_apps_selected"
         const val KEY_SHOW_SYSTEM_APPS = "show_system_apps"
         const val KEY_SHOW_OTHER_PROFILES = "show_other_profiles"
