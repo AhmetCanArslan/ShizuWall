@@ -339,6 +339,7 @@
     <string name="ladb_daemon_restart_reason_prefix">检测到的问题：</string>
     <string name="ladb_daemon_restart_reason_auth">守护进程授权失败。应用中的守护进程令牌与正在运行的守护进程可能不同步。</string>
     <string name="ladb_daemon_restart_reason_unresponsive">守护进程没有响应，或其套接字正在拒绝连接。</string>
+    <string name="helper_ping_ok">助手已激活并正在响应</string>
     <string name="ladb_daemon_restart_reason_token">守护进程日志提到令牌问题，或缺少令牌文件。</string>
     <string name="ladb_daemon_restart_log_prefix">最近的守护进程日志：</string>
     <string name="ladb_daemon_log_detected_hint">最近的守护进程日志可在“详情”中查看。</string>

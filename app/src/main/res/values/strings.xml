@@ -243,6 +243,7 @@
     <string name="ladb_daemon_restart_reason_prefix">Detected issues:</string>
     <string name="ladb_daemon_restart_reason_auth">Daemon authorization failed. The daemon token in the app and the running daemon may be out of sync.</string>
     <string name="ladb_daemon_restart_reason_unresponsive">Daemon is not responding or its socket is refusing connections.</string>
+    <string name="helper_ping_ok">Helper is active and responding</string>
     <string name="ladb_daemon_restart_reason_token">Daemon logs mention a token problem or a missing token file.</string>
     <string name="ladb_daemon_restart_log_prefix">Recent daemon log:</string>
     <string name="ladb_daemon_log_detected_hint">Recent daemon logs are available in Details.</string>

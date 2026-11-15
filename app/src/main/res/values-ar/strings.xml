@@ -341,6 +341,7 @@
     <string name="ladb_daemon_restart_reason_prefix">المشكلات المكتشفة:</string>
     <string name="ladb_daemon_restart_reason_auth">فشل تفويض الخدمة. قد يكون رمز الخدمة داخل التطبيق والخدمة قيد التشغيل غير متزامنين.</string>
     <string name="ladb_daemon_restart_reason_unresponsive">الخدمة لا تستجيب أو أن المقبس الخاص بها يرفض الاتصالات.</string>
+    <string name="helper_ping_ok">المساعد نشط ويستجيب</string>
     <string name="ladb_daemon_restart_reason_token">تشير سجلات الخدمة إلى مشكلة في الرمز أو إلى غياب ملف الرمز.</string>
     <string name="ladb_daemon_restart_log_prefix">سجل الخدمة الأخير:</string>
     <string name="ladb_daemon_log_detected_hint">سجلات الخدمة الأخيرة متاحة في قسم التفاصيل.</string>

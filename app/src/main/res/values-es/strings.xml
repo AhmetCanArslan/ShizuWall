@@ -341,6 +341,7 @@
     <string name="ladb_daemon_restart_reason_prefix">Problemas detectados:</string>
     <string name="ladb_daemon_restart_reason_auth">La autorización del daemon falló. El token del daemon en la app y el daemon en ejecución pueden estar desincronizados.</string>
     <string name="ladb_daemon_restart_reason_unresponsive">El daemon no responde o su socket está rechazando conexiones.</string>
+    <string name="helper_ping_ok">El asistente está activo y responde</string>
     <string name="ladb_daemon_restart_reason_token">Los registros del daemon mencionan un problema de token o la falta del archivo de token.</string>
     <string name="ladb_daemon_restart_log_prefix">Registro reciente del daemon:</string>
     <string name="ladb_daemon_log_detected_hint">Los registros recientes del daemon están disponibles en Detalles.</string>

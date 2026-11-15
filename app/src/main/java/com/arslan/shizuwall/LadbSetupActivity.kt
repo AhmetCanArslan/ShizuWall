@@ -43,8 +43,6 @@ import java.net.InetSocketAddress
 import android.os.Handler
 import android.os.Looper
 import android.graphics.Color
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import com.arslan.shizuwall.daemon.AdbDaemonBootstrap
 import com.arslan.shizuwall.daemon.PersistentDaemonManager
 import kotlinx.coroutines.Job
@@ -72,7 +70,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     private lateinit var daemonStatusIndicatorSimple: View
     private lateinit var tvDaemonStatus: TextView
     private lateinit var tvDaemonStatusSimple: TextView
-    private lateinit var actvDaemonCommands: AutoCompleteTextView
     private lateinit var connectProgress: android.widget.ProgressBar
     private lateinit var connectProgressSimple: android.widget.ProgressBar
     private lateinit var btnStartDaemon: MaterialButton
@@ -384,7 +381,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         daemonStatusIndicatorSimple = findViewById(R.id.daemonStatusIndicatorSimple)
         tvDaemonStatus = findViewById(R.id.tvDaemonStatus)
         tvDaemonStatusSimple = findViewById(R.id.tvDaemonStatusSimple)
-        actvDaemonCommands = findViewById(R.id.actvDaemonCommands)
         btnStartDaemon = findViewById(R.id.btnStartDaemon)
         btnKillDaemon = findViewById(R.id.btnKillDaemon)
 
@@ -395,7 +391,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         tvManualConnectStatus = findViewById(R.id.tvManualConnectStatus)
         btnCheckAndConnect.setOnClickListener { handleCheckAndConnect() }
 
-        setupDaemonCommandsDropdown()
+        findViewById<View>(R.id.btnPingDaemon).setOnClickListener { pingDaemon() }
         switchEnableLogs.isChecked = LadbLogStore.isEnabled(this)
         
         logsContainer.visibility = if (LadbLogStore.isEnabled(this)) View.VISIBLE else View.GONE
@@ -929,58 +925,13 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         }
     }
 
-    private fun setupDaemonCommandsDropdown() {
-        val commands = arrayOf(
-            "ping",
-            "status",
-            "id",
-            "ps -A | grep daemon",
-            "ls -l /data/local/tmp",
-            "cat /data/local/tmp/daemon.log",
-            "getprop ro.product.model",
-            "uname -a",
-            "pm list packages -3",
-            "dumpsys battery"
-        )
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, commands)
-        actvDaemonCommands.setAdapter(adapter)
-        actvDaemonCommands.setOnItemClickListener { parent, _, position, _ ->
-            val selectedCommand = parent.getItemAtPosition(position) as String
-            executeDaemonCommand(selectedCommand)
-        }
-    }
-
-    private fun executeDaemonCommand(cmd: String) {
-        if (cmd.isBlank()) return
-        
+    private fun pingDaemon() {
         lifecycleScope.launch {
-            appendLog("Executing daemon command: $cmd")
-            
-            val result = withContext(Dispatchers.IO) {
-                when (cmd) {
-                    "ping" -> {
-                        try {
-                            val response = daemonManager.executeCommand("ping")
-                            if (response.trim() == "pong") {
-                                "✓ Daemon is alive and responding!"
-                            } else {
-                                "✗ Unexpected response: $response"
-                            }
-                        } catch (e: Exception) {
-                            "✗ Ping failed: ${e.message}"
-                        }
-                    }
-                    else -> {
-                        daemonManager.executeCommand(cmd)
-                    }
-                }
-            }
-            appendLog("Daemon Result:\n$result")
-
-            if (cmd == "ping") {
-                isDaemonRunning = result.contains("✓")
-                updateStatus()
-            }
+            val response = daemonManager.executeCommand("ping").trim()
+            isDaemonRunning = response == "pong"
+            appendLog(if (isDaemonRunning) "✓ Daemon is alive and responding!" else "✗ Ping failed: $response")
+            Snackbar.make(rootView, if (isDaemonRunning) R.string.helper_ping_ok else R.string.ladb_daemon_restart_reason_unresponsive, Snackbar.LENGTH_SHORT).show()
+            updateStatus()
         }
     }
 

@@ -243,6 +243,7 @@
     <string name="ladb_daemon_restart_reason_prefix">पाई गई समस्याएँ:</string>
     <string name="ladb_daemon_restart_reason_auth">डेमॉन प्राधिकरण विफल रहा। ऐप में मौजूद डेमॉन टोकन और चल रहे डेमॉन का टोकन मेल नहीं खा रहे हो सकते हैं।</string>
     <string name="ladb_daemon_restart_reason_unresponsive">डेमॉन जवाब नहीं दे रहा है या उसका सॉकेट कनेक्शन अस्वीकार कर रहा है।</string>
+    <string name="helper_ping_ok">हेल्पर सक्रिय है और जवाब दे रहा है</string>
     <string name="ladb_daemon_restart_reason_token">डेमॉन लॉग में टोकन समस्या या गुम टोकन फ़ाइल का उल्लेख है।</string>
     <string name="ladb_daemon_restart_log_prefix">हालिया डेमॉन लॉग:</string>
     <string name="ladb_daemon_log_detected_hint">हालिया डेमॉन लॉग विवरण में उपलब्ध हैं।</string>

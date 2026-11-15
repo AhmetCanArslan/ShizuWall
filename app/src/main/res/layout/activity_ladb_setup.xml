@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ladbSetupRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -357,20 +358,13 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilDaemonCommands"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.Material3Expressive.Button.OutlinedButton"
+                        android:id="@+id/btnPingDaemon"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Quick Commands"
-                        android:layout_marginBottom="8dp">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/actvDaemonCommands"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="none" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                        android:text="Ping"
+                        tools:ignore="HardcodedText" />
 
                     <com.google.android.material.button.MaterialButton
                         style="@style/Widget.Material3Expressive.Button"

@@ -341,6 +341,7 @@
     <string name="ladb_daemon_restart_reason_prefix">Обнаруженные проблемы:</string>
     <string name="ladb_daemon_restart_reason_auth">Сбой авторизации демона. Токен демона в приложении и запущенный демон могут быть не синхронизированы.</string>
     <string name="ladb_daemon_restart_reason_unresponsive">Демон не отвечает или его сокет отклоняет подключения.</string>
+    <string name="helper_ping_ok">Помощник активен и отвечает</string>
     <string name="ladb_daemon_restart_reason_token">В журналах демона упоминается проблема с токеном или отсутствие файла токена.</string>
     <string name="ladb_daemon_restart_log_prefix">Недавний журнал демона:</string>
     <string name="ladb_daemon_log_detected_hint">Недавние журналы демона доступны в разделе Детали.</string>

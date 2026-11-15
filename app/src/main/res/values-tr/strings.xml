@@ -339,6 +339,7 @@
     <string name="ladb_daemon_restart_reason_prefix">Algılanan sorunlar:</string>
     <string name="ladb_daemon_restart_reason_auth">Daemon yetkilendirmesi başarısız oldu. Uygulamadaki daemon belirteci ile çalışan daemon senkron dışı olabilir.</string>
     <string name="ladb_daemon_restart_reason_unresponsive">Daemon yanıt vermiyor veya soketi bağlantıları reddediyor.</string>
+    <string name="helper_ping_ok">Yardımcı etkin ve yanıt veriyor</string>
     <string name="ladb_daemon_restart_reason_token">Daemon günlüklerinde bir belirteç sorunu veya eksik belirteç dosyası belirtiliyor.</string>
     <string name="ladb_daemon_restart_log_prefix">Son daemon günlüğü:</string>
     <string name="ladb_daemon_log_detected_hint">Son daemon günlükleri Ayrıntılar bölümünde mevcut.</string>

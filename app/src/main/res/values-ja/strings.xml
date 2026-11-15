@@ -341,6 +341,7 @@
     <string name="ladb_daemon_restart_reason_prefix">検出された問題:</string>
     <string name="ladb_daemon_restart_reason_auth">デーモンの認証に失敗しました。アプリ内のデーモントークンと実行中のデーモンが同期していない可能性があります。</string>
     <string name="ladb_daemon_restart_reason_unresponsive">デーモンが応答していないか、ソケットが接続を拒否しています。</string>
+    <string name="helper_ping_ok">ヘルパーは動作中で応答しています</string>
     <string name="ladb_daemon_restart_reason_token">デーモンログにトークンの問題、またはトークンファイルの欠落が記録されています。</string>
     <string name="ladb_daemon_restart_log_prefix">最近のデーモンログ:</string>
     <string name="ladb_daemon_log_detected_hint">最近のデーモンログは 詳細 で確認できます。</string>
