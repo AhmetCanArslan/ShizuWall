@@ -77,8 +77,8 @@
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchAppLock"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                        android:layout_marginStart="6dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -133,8 +133,8 @@
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchBiometrics"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                        android:layout_marginStart="6dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
