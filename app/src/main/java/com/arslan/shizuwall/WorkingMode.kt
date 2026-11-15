@@ -7,7 +7,7 @@ enum class WorkingMode(val icon: Int) {
     SHIZUKU(R.drawable.ic_shizuku),
     LADB(R.drawable.adb_24px),
     ROOT(R.drawable.hashtag_24px),
-    VPN(R.drawable.ic_picon_vpn_lock);
+    VPN(R.drawable.ic_picon_vpn_key);
 
     companion object {
         fun of(context: Context): WorkingMode = fromName(
