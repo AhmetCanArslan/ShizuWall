@@ -134,7 +134,7 @@ adb shell am broadcast -a shizuwall.PROFILE -n com.arslan.shizuwall/.receivers.P
 
 **المصادر الرسمية هي Google Play وF-Droid وهذا المستودع فقط.** أي ملفات APK من مكان آخر غير تابعة للمشروع وتُستخدم على مسؤوليتك. ليس لـ ShizuWall أي موقع ويب رسمي.
 
-يُطلب إذن `INTERNET` فقط لاقتران التصحيح اللاسلكي (LibADB).
+يُطلب إذن `INTERNET` فقط لاقتران التصحيح اللاسلكي والتحقق من التحديثات (طلب واحد إلى GitHub `releases/latest` دون إرسال أي بيانات).
 
 ## الترخيص
 

@@ -50,7 +50,7 @@
 Android 11+ and one of these backends:
 
 - **Shizuku** (forks are supported)
-- **LibADB**: pairs over Wireless Debugging, no computer needed
+- **Wireless debugging**: pairs on the device, no computer needed
 - **Root**
 
 ## Why ShizuWall
@@ -133,7 +133,7 @@ ShizuWall is provided **"as is"**, without warranty. It relies on advanced syste
 
 **Official sources are Google Play, F-Droid and this repository only.** APKs from anywhere else are unaffiliated and used at your own risk. ShizuWall has no official website.
 
-`INTERNET` is requested only for wireless debugging pairing (LibADB).
+`INTERNET` is requested only for wireless debugging pairing and the update check (one GitHub `releases/latest` request, no data sent).
 
 ## License
 
@@ -142,5 +142,5 @@ ShizuWall is provided **"as is"**, without warranty. It relies on advanced syste
 ## Credits
 
 - [Shizuku](https://github.com/RikkaApps/Shizuku): privileged command execution.
-- [LibADB](https://github.com/MuntashirAkon/libadb-android): wireless debugging and daemon connection.
+- [LibADB](https://github.com/MuntashirAkon/libadb-android): reference for the built-in ADB pairing and connection client.
 - [Exodus Privacy](https://exodus-privacy.eu.org/): tracker signature database. ShizuWall bundles a trimmed copy and never contacts their API.

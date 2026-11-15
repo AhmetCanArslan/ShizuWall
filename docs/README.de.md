@@ -134,7 +134,7 @@ ShizuWall wird **„wie besehen“** ohne Gewährleistung bereitgestellt. Es nut
 
 **Offizielle Quellen sind nur Google Play, F-Droid und dieses Repository.** APKs von anderswo sind nicht zugehörig und werden auf eigenes Risiko verwendet. ShizuWall hat keine offizielle Website.
 
-`INTERNET` wird nur für das Koppeln über Wireless Debugging (LibADB) angefordert.
+`INTERNET` wird nur für das Koppeln über Wireless Debugging und die Update-Prüfung angefordert (eine GitHub-Anfrage an `releases/latest`, es werden keine Daten gesendet).
 
 ## Lizenz
 

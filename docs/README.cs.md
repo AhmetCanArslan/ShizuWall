@@ -134,7 +134,7 @@ ShizuWall je poskytován **„tak, jak je“**, bez záruky. Využívá pokroči
 
 **Oficiální zdroje jsou pouze Google Play, F-Droid a tento repozitář.** APK odjinud nejsou s projektem spojeny a používáte je na vlastní riziko. ShizuWall nemá žádné oficiální webové stránky.
 
-Oprávnění `INTERNET` se vyžaduje jen pro párování bezdrátového ladění (LibADB).
+Oprávnění `INTERNET` se vyžaduje jen pro párování bezdrátového ladění a kontrolu aktualizací (jeden požadavek na GitHub `releases/latest`, žádná data se neodesílají).
 
 ## Licence
 

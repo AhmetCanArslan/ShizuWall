@@ -132,7 +132,7 @@ ShizuWall hiçbir garanti verilmeksizin **"olduğu gibi"** sunulur. Gelişmiş s
 
 **Resmî kaynaklar yalnızca Google Play, F-Droid ve bu depodur.** Başka yerlerden edinilen APK'lar projeyle ilişkili değildir ve kendi riskinizle kullanılır. ShizuWall'ın herhangi bir web sitesi yoktur.
 
-`INTERNET` izni yalnızca kablosuz hata ayıklama eşleştirmesi (LibADB) için istenir.
+`INTERNET` izni yalnızca kablosuz hata ayıklama eşleştirmesi ve güncelleme kontrolü (GitHub `releases/latest` adresine tek istek, veri gönderilmez) için istenir.
 
 ## Lisans
 

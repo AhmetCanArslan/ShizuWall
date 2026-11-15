@@ -134,7 +134,7 @@ ShizuWall 按**“原样”**提供，不附带任何保证。它依赖高级系
 
 **官方来源仅为 Google Play、F-Droid 和本仓库。** 其他来源的 APK 与本项目无关，使用风险自负。ShizuWall 没有任何官方网站。
 
-`INTERNET` 权限仅用于无线调试配对（LibADB）。
+`INTERNET` 权限仅用于无线调试配对和检查更新（向 GitHub `releases/latest` 发送一次请求，不发送任何数据）。
 
 ## 许可证
 
