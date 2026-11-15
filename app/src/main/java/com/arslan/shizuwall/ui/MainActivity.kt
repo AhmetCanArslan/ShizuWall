@@ -2137,7 +2137,7 @@ class MainActivity : BaseActivity() {
         if (!::appListEmptyContainer.isInitialized) return
 
         val show = filteredAppList.isEmpty() && !isAppListLoadingVisible
-        appListEmptyContainer.visibility = if (show) View.VISIBLE else View.GONE
+        fadeVisibility(appListEmptyContainer, show)
         if (!show) return
 
         val searching = currentQuery.isNotEmpty()
@@ -2608,15 +2608,20 @@ class MainActivity : BaseActivity() {
             chip.isChecked -> chip.chipMinHeight / 2
             else -> 8 * density
         }
+        var current = 0f
+        fun setRadius(r: Float) {
+            current = r
+            chip.shapeAppearanceModel = chip.shapeAppearanceModel.withCornerSize(r)
+        }
         fun morph(pressed: Boolean) {
             animator?.cancel()
-            animator = ValueAnimator.ofFloat(chip.chipCornerRadius, radius(pressed)).apply {
+            animator = ValueAnimator.ofFloat(current, radius(pressed)).apply {
                 duration = 250L
-                addUpdateListener { chip.chipCornerRadius = it.animatedValue as Float }
+                addUpdateListener { setRadius(it.animatedValue as Float) }
                 start()
             }
         }
-        chip.chipCornerRadius = radius(false)
+        setRadius(radius(false))
         chip.setOnCheckedChangeListener { _, _ -> morph(false) }
         chip.setOnTouchListener { _, e ->
             when (e.actionMasked) {
