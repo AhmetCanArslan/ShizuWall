@@ -160,7 +160,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 tvDaemonStatus.setTextColor(Color.GREEN)
                 tvDaemonStatusSimple.setTextColor(Color.GREEN)
                 applyButtonEnabledState(btnStartDaemon, false)
-                applyButtonEnabledState(btnKillDaemon, isConnected)
+                applyButtonEnabledState(btnKillDaemon, true)
             } else {
                 daemonStatusIndicator.setBackgroundColor(Color.RED)
                 daemonStatusIndicatorSimple.setBackgroundColor(Color.RED)
@@ -540,14 +540,13 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             appendLog(getString(R.string.log_killing_daemon))
             lifecycleScope.launch {
                 val cmd = "kill \$(cat /data/local/tmp/daemon.pid 2>/dev/null) 2>/dev/null; pkill -f 'com.arslan.shizuwall.daemon.[S]ystemDaemon'"
-                val result = withContext(Dispatchers.IO) {
-                    ladbManager.execShell(cmd)
+                isDaemonRunning = withContext(Dispatchers.IO) {
+                    if (ladbManager.isConnected()) ladbManager.execShell(cmd) else daemonManager.executeCommand(cmd)
+                    delay(300)
+                    daemonManager.isDaemonRunning()
                 }
-                if (result.exitCode == 0) {
-                    appendLog(getString(R.string.log_kill_success))
-                } else {
-                    appendLog(getString(R.string.log_kill_failed, result.stderr))
-                }
+                appendLog(if (isDaemonRunning) getString(R.string.log_kill_failed, "") else getString(R.string.log_kill_success))
+                updateStatus()
             }
         }
 
