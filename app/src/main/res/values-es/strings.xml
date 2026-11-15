@@ -222,7 +222,6 @@
     <string name="ladb_enable_logs">Activar registros</string>
     <string name="ladb_setup_guidance">Este modo usa un Demonio auxiliar para gestionar las reglas.\n\nGuía rápida:\n- Conéctate a Wi-Fi\n- Activa \'Depuración inalámbrica\' y \'Depuración USB\' en Opciones de desarrollador\n- Toca el botón de abajo para iniciar el auxiliar\n\nPrimera vez:\nSi no has vinculado, el botón abrirá Opciones de desarrollador. Ve a \'Depuración inalámbrica\' -> \'Vincular dispositivo con código\'. Aparecerá una notificación, pon el código allí.\n\nImportante: Android detiene el auxiliar al reiniciar. Debes tocar el botón tras cada reinicio.\n\nImportante 2: Sin depuración USB, esto solo funciona con Wi-Fi activo. Si te desconectas, el demonio se detendrá.</string>
     <string name="advanced_mode">Modo Avanzado</string>
-    <string name="advanced_mode_description">Mostrar configuración detallada de LADB y Demonio</string>
     <string name="daemon_not_running">El demonio no está activo. Inícialo desde la página de configuración.</string>
     <string name="open_daemon_setup">Abrir configuración de Demonio</string>
     <string name="daemon_status_running">Demonio: Ejecutándose</string>

@@ -231,7 +231,6 @@
     <string name="ladb_enable_logs">Attiva registri</string>
     <string name="ladb_setup_guidance">Questa modalità di funzionamento usa un daemon di supporto in background per gestire le regole del firewall.\n\nGuida rapida:\n- Assicurati di essere connesso al Wi-Fi\n- Attiva \'Debug wireless e debug USB (per mantenere attivo il daemon senza connessione Wi-Fi)\' nelle Opzioni sviluppatore\n- Tocca il pulsante qui sotto per avviare il daemon\n\nPrima configurazione:\nSe non hai mai eseguito l\'associazione, il pulsante aprirà le Opzioni sviluppatore. Vai su \'Debug wireless\' -> \'Accoppia dispositivo con codice di accoppiamento\'. Comparirà una notifica: inserisci lì il codice.\n\nImportante: Android arresta il daemon quando riavvii il telefono. Dovrai toccare di nuovo il pulsante dopo ogni riavvio per mantenerlo attivo.\n\nImportante 2: se non attivi il debug USB, questa modalità funzionerà solo con una connessione Wi-Fi attiva. Disconnettendoti dal Wi-Fi il daemon si arresta e il firewall non potrà essere attivato o disattivato.</string>
     <string name="advanced_mode">Modalità avanzata</string>
-    <string name="advanced_mode_description">Mostra la configurazione dettagliata di LADB e del daemon</string>
     <string name="daemon_not_running">Il daemon non è in esecuzione. Avvialo dalla pagina di configurazione.</string>
     <string name="open_daemon_setup">Apri configurazione daemon</string>
     <string name="daemon_status_running">Daemon: in esecuzione</string>

@@ -229,7 +229,6 @@
     <string name="ladb_enable_logs">Povolit logy</string>
     <string name="ladb_setup_guidance">Tento pracovní režim používá pomocný daemon na pozadí ke správě pravidel brány firewall. \n\nRychlý startovní průvodce:\n- Ujistěte se, že jste připojeni k Wi-Fi\n- V nastavení pro vývojáře povolte „Bezdrátové ladění a ladění USB (pro udržení pomocného programu v chodu bez připojení k Wi-Fi)“\n - Klepnutím na tlačítko níže spusťte pomocný program. První nastavení: Pokud jste ještě neprovedli párování, tlačítko otevře možnosti pro vývojáře. Přejděte do části „Bezdrátové ladění“ -> „Spárovat zařízení s párovacím kódem“. Zobrazí se oznámení – stačí tam zadat kód. Důležité: Android zastaví pomocný program, když restartujete telefon. Po každém restartu budete muset znovu klepnout na tlačítko, aby pomocný program zůstal aktivní.\n\nDůležité 2: Pokud nepovolíte ladění USB, bude tento pracovní režim fungovat pouze při připojení k Wi-Fi. Pokud se od Wi-Fi odpojíte, pomocný program se zastaví a firewall nelze povolit ani zakázat.</string>
     <string name="advanced_mode">Pokročilý režim</string>
-    <string name="advanced_mode_description">Zobrazit podrobnou konfiguraci LADB a daemon</string>
     <string name="daemon_not_running">Daemon není spuštěn. Spusťte jej prosím ze stránky nastavení.</string>
     <string name="open_daemon_setup">Otevřít daemon nastavení</string>
     <string name="daemon_status_running">Daemon: běžící</string>

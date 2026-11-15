@@ -60,7 +60,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     private lateinit var btnConnect: MaterialButton
     private lateinit var tvLadbLogs: TextView
     private lateinit var switchEnableLogs: com.google.android.material.materialswitch.MaterialSwitch
-    private lateinit var switchAdvancedMode: com.google.android.material.materialswitch.MaterialSwitch
     private lateinit var logsContainer: LinearLayout
     private lateinit var simpleSetupContainer: LinearLayout
     private lateinit var tvAdbCommand: TextView
@@ -340,6 +339,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
         val toolbar = findViewById<MaterialToolbar?>(R.id.ladbToolbar)
         toolbar?.setNavigationOnClickListener { finish() }
+        toolbar?.inflateMenu(R.menu.menu_ladb_setup)
 
         try {
             val typedValue = android.util.TypedValue()
@@ -347,6 +347,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             val onSurfaceColor = typedValue.data
             toolbar?.setTitleTextColor(onSurfaceColor)
             toolbar?.navigationIcon?.setTint(onSurfaceColor)
+            toolbar?.overflowIcon?.setTint(onSurfaceColor)
         } catch (_: Exception) {
         }
 
@@ -376,8 +377,6 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
         val btnClearLogs = findViewById<MaterialButton>(R.id.btnClearLogs)
         val btnCopyLogs = findViewById<MaterialButton>(R.id.btnCopyLogs)
         switchEnableLogs = findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.switchEnableLogs)
-        switchAdvancedMode = findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.switchAdvancedMode)
-        val cardAdvancedMode = findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardAdvancedMode)
         logsContainer = findViewById<LinearLayout>(R.id.logsContainer)
         simpleSetupContainer = findViewById<LinearLayout>(R.id.simpleSetupContainer)
         advancedSetupContainer = findViewById<LinearLayout>(R.id.advancedSetupContainer)
@@ -411,11 +410,13 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
 
         val prefs = getSharedPreferences("ladb_settings", Context.MODE_PRIVATE)
         val isAdvanced = prefs.getBoolean("advanced_mode", false)
-        switchAdvancedMode.isChecked = isAdvanced
+        toolbar?.menu?.findItem(R.id.action_advanced_mode)?.isChecked = isAdvanced
         simpleSetupContainer.visibility = if (isAdvanced) View.GONE else View.VISIBLE
         advancedSetupContainer.visibility = if (isAdvanced) View.VISIBLE else View.GONE
 
-        switchAdvancedMode.setOnCheckedChangeListener { _, isChecked ->
+        toolbar?.setOnMenuItemClickListener { item ->
+            val isChecked = !item.isChecked
+            item.isChecked = isChecked
             prefs.edit().putBoolean("advanced_mode", isChecked).apply()
             
             val outgoing = if (isChecked) simpleSetupContainer else advancedSetupContainer
@@ -439,11 +440,9 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                         .start()
                 }
                 .start()
+            true
         }
 
-        cardAdvancedMode.setOnClickListener {
-            switchAdvancedMode.isChecked = !switchAdvancedMode.isChecked
-        }
 
         LadbLogStore.read(this).takeIf { it.isNotEmpty() }?.let { showLogs(it) }
 

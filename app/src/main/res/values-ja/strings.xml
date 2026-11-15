@@ -222,7 +222,6 @@
     <string name="ladb_enable_logs">ログを有効にする</string>
     <string name="ladb_setup_guidance">この動作モードでは、バックグラウンドのヘルパーデーモンを使用してファイアウォールルールを管理します。\n\nクイックスタートガイド:\n- Wi-Fi に接続されていることを確認してください\n- 「開発者向けオプション」で「ワイヤレスデバッグ」および「USB デバッグ（Wi-Fi 接続なしでヘルパーを維持するため）」を有効にします\n- 下のボタンをタップしてヘルパーを開始します\n\n初回セットアップ:\nまだペアリングしていない場合、ボタンを押すと開発者向けオプションが開きます。「ワイヤレスデバッグ」→「ペアリングコードでデバイスをペアリング」に移動してください。通知が表示されるので、そこにコードを入力してください。\n\n重要: スマートフォンを再起動すると、Android はヘルパーを停止します。デーモンを維持するには、再起動のたびに再度ボタンをタップする必要があります。\n\n重要2: USB デバッグを有効にしない場合、この動作モードは Wi-Fi 接続時のみ機能します。Wi-Fi から切断するとデーモンが停止し、ファイアウォールの有効・無効を切り替えられなくなるためです。</string>
     <string name="advanced_mode">高度なモード</string>
-    <string name="advanced_mode_description">LADB とデーモンの詳細な構成を表示する</string>
     <string name="daemon_not_running">デーモンが実行されていません。セットアップページから開始してください。</string>
     <string name="open_daemon_setup">デーモンセットアップを開く</string>
     <string name="daemon_status_running">デーモン: 実行中</string>
