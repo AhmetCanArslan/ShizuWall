@@ -213,7 +213,6 @@
     <string name="ladb_notification_permission_required">需要通知权限来显示配对代码提示。</string>
     <string name="set_ladb_title">LADB 和守护进程设置</string>
     <string name="set_ladb_summary">配对 LADB 并安装持久后台守护进程</string>
-    <string name="ladb_logs_title">日志</string>
     <string name="ladb_logs_empty">尚无日志。执行 LADB 操作以在此处查看日志。</string>
     <string name="ladb_clear_logs">清除日志</string>
     <string name="ladb_copy_logs">复制日志</string>

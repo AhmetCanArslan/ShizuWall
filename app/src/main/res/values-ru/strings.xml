@@ -215,7 +215,6 @@
     <string name="ladb_notification_permission_required">Требуется разрешение на уведомления для отображения запроса на ввод кода сопряжения.</string>
     <string name="set_ladb_title">Настройка LADB и демона</string>
     <string name="set_ladb_summary">Связать LADB и установить постоянный фоновый демон</string>
-    <string name="ladb_logs_title">Логи</string>
     <string name="ladb_logs_empty">Логов пока нет. Выполните операции LADB, чтобы увидеть их здесь.</string>
     <string name="ladb_clear_logs">Очистить логи</string>
     <string name="ladb_copy_logs">Копировать логи</string>

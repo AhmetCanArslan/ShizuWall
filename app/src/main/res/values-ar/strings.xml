@@ -216,7 +216,6 @@
     <string name="ladb_notification_permission_required">إذن الإشعارات مطلوب لإظهار حوار رمز الإقران.</string>
     <string name="set_ladb_title">إعداد LADB والخدمة</string>
     <string name="set_ladb_summary">إقران LADB وتثبيت خدمة الخلفية الدائمة</string>
-    <string name="ladb_logs_title">السجلات</string>
     <string name="ladb_logs_empty">لا توجد سجلات بعد. قم بعمليات LADB لمشاهدة السجلات هنا.</string>
     <string name="ladb_clear_logs">مسح السجلات</string>
     <string name="ladb_copy_logs">نسخ السجلات</string>

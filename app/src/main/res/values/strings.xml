@@ -224,7 +224,6 @@
     <string name="ladb_notification_permission_required">Notification permission is required to show the pairing code prompt.</string>
     <string name="set_ladb_title">LADB &amp; Daemon Setup</string>
     <string name="set_ladb_summary">Pair LADB and install the persistent background daemon</string>
-    <string name="ladb_logs_title">Logs</string>
     <string name="ladb_logs_empty">No logs yet. Perform LADB operations to see logs here.</string>
     <string name="ladb_clear_logs">Clear Logs</string>
     <string name="ladb_copy_logs">Copy Logs</string>

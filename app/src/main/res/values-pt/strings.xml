@@ -213,7 +213,6 @@
     <string name="ladb_notification_permission_required">A permissão de notificação é necessária para mostrar o prompt do código de pareamento.</string>
     <string name="set_ladb_title">Configuração LADB e Daemon</string>
     <string name="set_ladb_summary">Pareie o LADB e instale o daemon de segundo plano persistente</string>
-    <string name="ladb_logs_title">Registros</string>
     <string name="ladb_logs_empty">Ainda não há logs. Realize operações LADB para ver os logs aqui.</string>
     <string name="ladb_clear_logs">Limpar Logs</string>
     <string name="ladb_copy_logs">Copiar Logs</string>

@@ -215,7 +215,6 @@
     <string name="ladb_notification_permission_required">ペアリングコードの入力を促すために、通知の権限が必要です。</string>
     <string name="set_ladb_title">LADB &amp; デーモンのセットアップ</string>
     <string name="set_ladb_summary">LADB をペアリングし、常駐バックグラウンドデーモンをインストールします</string>
-    <string name="ladb_logs_title">ログ</string>
     <string name="ladb_logs_empty">ログはまだありません。LADB の操作を実行するとここにログが表示されます。</string>
     <string name="ladb_clear_logs">ログを消去</string>
     <string name="ladb_copy_logs">ログをコピー</string>

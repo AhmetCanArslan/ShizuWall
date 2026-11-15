@@ -222,7 +222,6 @@
     <string name="ladb_notification_permission_required">K zobrazení výzvy k zadání párovacího kódu je nutné povolení k zasílání oznámení.</string>
     <string name="set_ladb_title">LADB &amp; Daemon nastavení</string>
     <string name="set_ladb_summary">Spárovat LADB a nainstalovat perzistentní daemon na pozadí</string>
-    <string name="ladb_logs_title">Logy</string>
     <string name="ladb_logs_empty">Zatím žádné protokoly. Pro zobrazení protokolů zde proveďte operace LADB.</string>
     <string name="ladb_clear_logs">Vyčisit logy</string>
     <string name="ladb_copy_logs">Kopírovat logy</string>

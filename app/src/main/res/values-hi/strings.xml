@@ -224,7 +224,6 @@
     <string name="ladb_notification_permission_required">पेयरिंग कोड संकेत दिखाने के लिए सूचना अनुमति आवश्यक है।</string>
     <string name="set_ladb_title">LADB और डेमॉन सेटअप</string>
     <string name="set_ladb_summary">LADB पेयर करें और स्थायी बैकग्राउंड डेमॉन इंस्टॉल करें</string>
-    <string name="ladb_logs_title">लॉग</string>
     <string name="ladb_logs_empty">अभी कोई लॉग नहीं। यहाँ लॉग देखने के लिए LADB कार्रवाइयाँ करें।</string>
     <string name="ladb_clear_logs">लॉग साफ़ करें</string>
     <string name="ladb_copy_logs">लॉग कॉपी करें</string>

@@ -213,7 +213,6 @@
     <string name="ladb_notification_permission_required">Die Benachrichtigungsberechtigung ist erforderlich, um die Kopplungscode-Aufforderung anzuzeigen.</string>
     <string name="set_ladb_title">LADB- &amp; Daemon-Setup</string>
     <string name="set_ladb_summary">LADB koppeln und den persistenten Hintergrund-Daemon installieren</string>
-    <string name="ladb_logs_title">Protokolle</string>
     <string name="ladb_logs_empty">Noch keine Protokolle. Führen Sie LADB-Operationen aus, um Protokolle hier zu sehen.</string>
     <string name="ladb_clear_logs">Protokolle löschen</string>
     <string name="ladb_copy_logs">Protokolle kopieren</string>

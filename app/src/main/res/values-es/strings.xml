@@ -215,7 +215,6 @@
     <string name="ladb_notification_permission_required">Se requiere permiso de notificación para mostrar el aviso de código.</string>
     <string name="set_ladb_title">Configuración de LADB y Demonio</string>
     <string name="set_ladb_summary">Vincula LADB e instala el demonio persistente</string>
-    <string name="ladb_logs_title">Registros</string>
     <string name="ladb_logs_empty">No hay registros aún. Realiza operaciones LADB para verlos.</string>
     <string name="ladb_clear_logs">Borrar registros</string>
     <string name="ladb_copy_logs">Copiar registros</string>

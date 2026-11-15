@@ -224,7 +224,6 @@
     <string name="ladb_notification_permission_required">L\'autorizzazione alle notifiche è necessaria per mostrare la richiesta del codice di associazione.</string>
     <string name="set_ladb_title">Configurazione LADB e daemon</string>
     <string name="set_ladb_summary">Associa LADB e installa il daemon persistente in background</string>
-    <string name="ladb_logs_title">Registri</string>
     <string name="ladb_logs_empty">Nessun registro. Esegui operazioni LADB per vedere i registri qui.</string>
     <string name="ladb_clear_logs">Cancella registri</string>
     <string name="ladb_copy_logs">Copia registri</string>

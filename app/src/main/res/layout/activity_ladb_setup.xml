@@ -418,15 +418,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ladb_logs_title"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:paddingBottom="8dp" />
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp">
 
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchEnableLogs"
@@ -434,7 +427,6 @@
                         android:layout_height="wrap_content"
                         android:text="@string/ladb_enable_logs"
                         android:checked="false"
-                        android:layout_marginBottom="8dp"
                         app:thumbIcon="@drawable/check_24px"
                         app:thumbIconTint="@color/switch_thumb_icon_tint" />
 
@@ -443,6 +435,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:layout_marginTop="8dp"
                         android:visibility="gone">
 
                         <androidx.core.widget.NestedScrollView
@@ -457,6 +450,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/ladb_logs_empty"
                                 android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                android:textSize="10sp"
                                 android:textColor="?android:attr/textColorSecondary"
                                 android:fontFamily="monospace"
                                 android:typeface="monospace" />

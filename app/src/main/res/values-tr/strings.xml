@@ -213,7 +213,6 @@
     <string name="ladb_notification_permission_required">Eşleştirme kodu istemini göstermek için bildirim izni gereklidir.</string>
     <string name="set_ladb_title">LADB ve Daemon Kurulumu</string>
     <string name="set_ladb_summary">LADB\'yi eşleştirin ve kalıcı arka plan daemon\'ını kurun</string>
-    <string name="ladb_logs_title">Günlükler</string>
     <string name="ladb_logs_empty">Henüz günlük yok. Günlükleri burada görmek için LADB işlemlerini gerçekleştirin.</string>
     <string name="ladb_clear_logs">Günlükleri Temizle</string>
     <string name="ladb_copy_logs">Günlükleri Kopyala</string>
