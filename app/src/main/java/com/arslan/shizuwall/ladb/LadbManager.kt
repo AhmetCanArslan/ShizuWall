@@ -3,45 +3,25 @@ package com.arslan.shizuwall.ladb
 import android.content.Context
 import android.content.SharedPreferences
 import com.arslan.shizuwall.shell.ShellResult
-import io.github.muntashirakon.adb.AdbConnection
-import io.github.muntashirakon.adb.AdbStream
-import io.github.muntashirakon.adb.PairingConnectionCtx
-import io.github.muntashirakon.adb.AdbAuthenticationFailedException
-import io.github.muntashirakon.adb.AdbPairingRequiredException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.io.IOException
-import org.conscrypt.Conscrypt
-import org.bouncycastle.asn1.x500.X500Name
-import org.bouncycastle.cert.X509v3CertificateBuilder
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter
-import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder
-import org.bouncycastle.jce.provider.BouncyCastleProvider
-import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
 import java.io.ByteArrayInputStream
 import java.io.PrintWriter
 import java.io.StringWriter
 import android.os.Build
 import java.security.PrivateKey
 import java.security.Security
-import java.security.cert.Certificate
-import java.math.BigInteger
-import java.util.Date
-import java.util.concurrent.TimeUnit
+import java.net.SocketTimeoutException
 import java.util.concurrent.atomic.AtomicReference
 import java.io.File
 import java.security.KeyFactory
 import java.security.KeyPairGenerator
-import java.security.PublicKey
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.security.spec.PKCS8EncodedKeySpec
+import javax.net.ssl.SSLException
 
 class LadbManager private constructor(private val context: Context) {
 
@@ -126,18 +106,8 @@ class LadbManager private constructor(private val context: Context) {
     }
 
     private val connectionRef = AtomicReference<AdbConnection?>(null)
-    private val keyMaterialRef = AtomicReference<Pair<PrivateKey, Certificate>?>(null)
+    private val keyMaterialRef = AtomicReference<Pair<PrivateKey, X509Certificate>?>(null)
     private val connectionMutex = Mutex()
-
-    init {
-        if (Security.getProvider("Conscrypt") == null) {
-            Security.insertProviderAt(Conscrypt.newProvider(), 1)
-        }
-
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(BouncyCastleProvider())
-        }
-    }
 
     @Volatile
     private var cachedPrefs: SharedPreferences? = null
@@ -183,7 +153,7 @@ class LadbManager private constructor(private val context: Context) {
         return File(context.filesDir, "ladb").apply { mkdirs() }
     }
 
-    private fun getOrCreateKeyMaterial(): Pair<PrivateKey, Certificate> {
+    private fun getOrCreateKeyMaterial(): Pair<PrivateKey, X509Certificate> {
         keyMaterialRef.get()?.let { return it }
 
         val dir = keyStoreDir()
@@ -208,7 +178,7 @@ class LadbManager private constructor(private val context: Context) {
         val generator = KeyPairGenerator.getInstance("RSA")
         generator.initialize(2048)
         val kp = generator.generateKeyPair()
-        val cert = createSelfSignedCertificate(kp.private, kp.public)
+        val cert = selfSignedCertificate(kp.private, kp.public.encoded)
         val created = kp.private to cert
 
         try {
@@ -227,29 +197,9 @@ class LadbManager private constructor(private val context: Context) {
         return kf.generatePrivate(spec)
     }
 
-    private fun loadCertificate(encoded: ByteArray): Certificate {
+    private fun loadCertificate(encoded: ByteArray): X509Certificate {
         val cf = CertificateFactory.getInstance("X.509")
-        return cf.generateCertificate(ByteArrayInputStream(encoded))
-    }
-
-    private fun createSelfSignedCertificate(privateKey: PrivateKey, publicKey: PublicKey): X509Certificate {
-        val now = Date()
-        val until = Date(now.time + TimeUnit.DAYS.toMillis(3650))
-        val subject = X500Name("CN=ShizuWall")
-        val serial = BigInteger.valueOf(now.time.coerceAtLeast(1L))
-
-        val builder: X509v3CertificateBuilder = JcaX509v3CertificateBuilder(
-            subject,
-            serial,
-            now,
-            until,
-            subject,
-            publicKey
-        )
-
-        val signer = JcaContentSignerBuilder("SHA256withRSA").build(privateKey)
-
-        return JcaX509CertificateConverter().getCertificate(builder.build(signer))
+        return cf.generateCertificate(ByteArrayInputStream(encoded)) as X509Certificate
     }
 
     suspend fun pair(host: String, port: Int, pairingCode: String?): Boolean = withContext(Dispatchers.IO) {
@@ -275,15 +225,7 @@ class LadbManager private constructor(private val context: Context) {
                 .apply()
 
             val (privateKey, certificate) = getOrCreateKeyMaterial()
-            val ctx = PairingConnectionCtx(
-                host,
-                port,
-                code.toByteArray(Charsets.UTF_8),
-                privateKey,
-                certificate,
-                "ShizuWall"
-            )
-            ctx.use { it.start() }
+            adbPair(host, port, code.toByteArray(Charsets.UTF_8), privateKey, certificate)
 
             getPrefs().edit().putBoolean(KEY_IS_PAIRED, true).apply()
             _state.set(State.PAIRED)
@@ -409,49 +351,28 @@ class LadbManager private constructor(private val context: Context) {
         } catch (_: Exception) {
         }
 
-        clearLibraryLogcat()
         val startMs = System.currentTimeMillis()
 
         return try {
             val (privateKey, certificate) = getOrCreateKeyMaterial()
-
-            val (c, established) = withTimeout(65_000L) {
-                withContext(Dispatchers.IO) {
-                    val c = AdbConnection.Builder()
-                        .setHost(targetHost)
-                        .setPort(targetPort)
-                        .setPrivateKey(privateKey)
-                        .setCertificate(certificate)
-                        .build()
-                    val ok = c.connect(60, TimeUnit.SECONDS, false)
-                    c to ok
-                }
+            val c = AdbConnection(targetHost, targetPort, privateKey, certificate)
+            try {
+                c.connect(60_000)
+            } catch (e: Exception) {
+                runCatching { c.close() }
+                throw e
             }
-            if (!established) {
-                val e = java.util.concurrent.TimeoutException("Timed out waiting for on-device authorization")
-                recordError("connect", targetHost, targetPort, e)
-                logHandshakeDiagnostic("connect-timeout", startMs)
-                _state.set(State.ERROR)
-                try { c.close() } catch (_: Exception) {}
-                false
-            } else {
-                connectionRef.set(c)
-                _state.set(State.CONNECTED)
-                true
-            }
-        } catch (e: AdbPairingRequiredException) {
+            connectionRef.set(c)
+            _state.set(State.CONNECTED)
+            true
+        } catch (e: SSLException) {
             recordError("connect", targetHost, targetPort, e)
             logHandshakeDiagnostic("pairing-required", startMs)
             _state.set(State.PAIRED)
             false
-        } catch (e: AdbAuthenticationFailedException) {
+        } catch (e: SocketTimeoutException) {
             recordError("connect", targetHost, targetPort, e)
-            logHandshakeDiagnostic("auth-failed", startMs)
-            _state.set(State.PAIRED)
-            false
-        } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
-            recordError("connect", targetHost, targetPort, e)
-            logHandshakeDiagnostic("outer-timeout", startMs)
+            logHandshakeDiagnostic("connect-timeout", startMs)
             _state.set(State.ERROR)
             false
         } catch (e: Exception) {
@@ -464,62 +385,8 @@ class LadbManager private constructor(private val context: Context) {
 
     private fun logHandshakeDiagnostic(outcome: String, startMs: Long) {
         try {
-            val elapsedMs = System.currentTimeMillis() - startMs
-            val libLines = captureLibraryLogcat()
-            val sawTls = libLines.any { it.contains("Handshake succeeded", ignoreCase = true) }
-
-            val diag = buildString {
-                appendLine("LADB handshake diagnostic (#116)")
-                appendLine("outcome=$outcome")
-                appendLine("elapsedMs=$elapsedMs")
-                appendLine("tlsHandshake=$sawTls")
-                if (libLines.isEmpty()) {
-                    appendLine("libadbLog=(none captured)")
-                } else {
-                    appendLine("libadbLog:")
-                    libLines.forEach { appendLine("  $it") }
-                }
-            }
-
-            val combined = (lastErrorLogRef.get()?.plus("\n") ?: "") + diag
-            lastErrorLogRef.set(combined)
-            try {
-                getPrefs().edit().putString(KEY_LAST_ERROR_LOG, combined).apply()
-            } catch (_: Exception) {
-            }
-            try {
-                LadbLogStore.append(
-                    context,
-                    "LADB handshake: $outcome after ${elapsedMs}ms, tls=$sawTls, libLines=${libLines.size}"
-                )
-            } catch (_: Exception) {
-            }
+            LadbLogStore.append(context, "LADB handshake: $outcome after ${System.currentTimeMillis() - startMs}ms")
         } catch (_: Exception) {
-        }
-    }
-
-    private fun clearLibraryLogcat() {
-        try {
-            Runtime.getRuntime()
-                .exec(arrayOf("logcat", "-b", "main", "-c"))
-                .waitFor()
-        } catch (_: Exception) {
-        }
-    }
-
-    private fun captureLibraryLogcat(): List<String> {
-        return try {
-            val proc = Runtime.getRuntime().exec(
-                arrayOf("logcat", "-b", "main", "-d", "-v", "time", "-t", "400", "AdbConnection:V", "*:S")
-            )
-            val text = proc.inputStream.bufferedReader().use { it.readText() }
-            proc.waitFor()
-            text.lineSequence()
-                .map { it.trim() }
-                .filter { it.isNotEmpty() && it.contains("AdbConnection") }
-                .toList()
-        } catch (_: Exception) {
-            emptyList()
         }
     }
 
@@ -570,43 +437,17 @@ class LadbManager private constructor(private val context: Context) {
                 connectionRef.get()
             } ?: return@withContext ShellResult(-1, "", "Failed to establish connection")
 
-            var stream: AdbStream? = null
             try {
-                val out = withTimeout(15_000L) {
-                    runInterruptible { readAll(conn.open("shell:$cmd").also { stream = it }) }
-                }
-                return@withContext ShellResult(0, out, "")
-            } catch (e: TimeoutCancellationException) {
-                if (stream == null) dropConnection(conn)
+                return@withContext ShellResult(0, conn.shell(cmd, 15_000), "")
+            } catch (e: SocketTimeoutException) {
+                dropConnection(conn)
                 return@withContext ShellResult(-1, "", "timeout")
-            } catch (e: CancellationException) {
-                throw e
             } catch (e: Exception) {
                 dropConnection(conn)
                 if (attempt == 1) return@withContext ShellResult(-1, "", e.message ?: "Error executing command")
-            } finally {
-                runCatching { stream?.close() }
             }
         }
         ShellResult(-1, "", "Failed to execute command")
-    }
-
-    private fun readAll(stream: AdbStream): String {
-        val input = stream.openInputStream()
-        val buf = ByteArray(8 * 1024)
-        val out = StringBuilder()
-        while (true) {
-            val n = try {
-                input.read(buf)
-            } catch (e: IOException) {
-                (e.cause as? InterruptedException)?.let { throw it }
-                if (stream.isClosed()) break
-                throw e
-            }
-            if (n <= 0) break
-            out.append(String(buf, 0, n, Charsets.UTF_8))
-        }
-        return out.toString()
     }
 
     private suspend fun dropConnection(conn: AdbConnection) {
