@@ -5,7 +5,6 @@ import org.gradle.process.ExecOperations
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -75,25 +74,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
-        }
-    }
     buildFeatures {
         aidl = true 
         viewBinding = true
         buildConfig = true
-    }
-
-    applicationVariants.all {
-        outputs.all {
-            val output = this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
-            val appName = "ShizuWall"
-            val version = versionName
-            val type = buildType.name
-            output.outputFileName = "$appName-$version-$type.apk"
-        }
     }
 }
 
@@ -204,7 +188,7 @@ abstract class CompileDaemonDexTask : DefaultTask() {
 
 val compileDaemonDex = tasks.register<CompileDaemonDexTask>("compileDaemonDex") {
     javaSource.set(layout.projectDirectory.file("src/main/java/com/arslan/shizuwall/daemon/SystemDaemon.java"))
-    sdkDirectory.set(layout.dir(provider { android.sdkDirectory }))
+    sdkDirectory.set(androidComponents.sdkComponents.sdkDirectory)
     buildToolsVersion.set(provider { android.buildToolsVersion })
     compileSdkVersion.set(provider { android.compileSdk!! })
     minApi.set(provider { android.defaultConfig.minSdk!! })
@@ -217,5 +201,9 @@ androidComponents {
             compileDaemonDex,
             CompileDaemonDexTask::outputDir
         )
+        variant.outputs.forEach {
+            (it as com.android.build.api.variant.impl.VariantOutputImpl).outputFileName
+                .set("ShizuWall-${it.versionName.get()}-${variant.buildType}.apk")
+        }
     }
 }
