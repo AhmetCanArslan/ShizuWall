@@ -129,25 +129,6 @@
                     app:cardBackgroundColor="?attr/colorSurfaceContainer"
                     app:strokeWidth="0dp">
 
-                    <TextView
-                        android:id="@+id/tvLadbStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ladb_status_unconfigured"
-                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:padding="16dp" />
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginBottom="12dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                    app:strokeWidth="0dp">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -167,7 +148,16 @@
                         android:text="@string/ladb_auto_pairing_description"
                         android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:paddingTop="4dp"
+                        android:paddingTop="4dp" />
+
+                    <TextView
+                        android:id="@+id/tvLadbStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ladb_status_unconfigured"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        android:textColor="?attr/colorPrimary"
+                        android:paddingTop="8dp"
                         android:paddingBottom="12dp" />
 
                     <com.google.android.material.button.MaterialButton
