@@ -236,12 +236,36 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/manualConnectHeader"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/ladb_manual_connection_title"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
-                        android:textColor="?android:attr/textColorPrimary" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:background="?attr/selectableItemBackground">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/ladb_manual_connection_title"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium.Emphasized"
+                            android:textColor="?android:attr/textColorPrimary" />
+
+                        <ImageView
+                            android:id="@+id/ivManualConnectArrow"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_chevron_right_24"
+                            app:tint="?android:attr/textColorSecondary" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/manualConnectContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -316,6 +340,8 @@
                         android:textColor="?android:attr/textColorSecondary"
                         android:layout_marginTop="8dp"
                         android:visibility="gone" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

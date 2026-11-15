@@ -439,6 +439,18 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
             true
         }
 
+        val manualContent = findViewById<View>(R.id.manualConnectContent)
+        val manualArrow = findViewById<View>(R.id.ivManualConnectArrow)
+        val manualExpanded = prefs.getBoolean("manual_connect_expanded", true)
+        manualContent.visibility = if (manualExpanded) View.VISIBLE else View.GONE
+        manualArrow.rotation = if (manualExpanded) 90f else 0f
+        findViewById<View>(R.id.manualConnectHeader).setOnClickListener {
+            val expand = manualContent.visibility != View.VISIBLE
+            prefs.edit().putBoolean("manual_connect_expanded", expand).apply()
+            android.transition.TransitionManager.beginDelayedTransition(manualContent.rootView as android.view.ViewGroup)
+            manualContent.visibility = if (expand) View.VISIBLE else View.GONE
+            manualArrow.animate().rotation(if (expand) 90f else 0f).setDuration(200).start()
+        }
 
         LadbLogStore.read(this).takeIf { it.isNotEmpty() }?.let { showLogs(it) }
 
