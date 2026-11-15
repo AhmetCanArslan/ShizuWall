@@ -223,6 +223,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
     }
 
     private fun showLadbErrorDialog(title: String, logs: String) {
+        lastShownErrorHash = logs.hashCode()
         val hint = if (logs.contains("ECONNREFUSED", ignoreCase = true) || logs.contains("Connection refused", ignoreCase = true)) {
             getString(R.string.ladb_hint_connection_refused)
         } else {
@@ -749,6 +750,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 tvManualConnectStatus.text = getString(R.string.manual_connect_needs_pairing)
             } else {
                 tvManualConnectStatus.text = getString(R.string.manual_connect_authorize_timeout)
+                ladbManager.getLastErrorLog()?.takeIf { it.isNotBlank() }?.let { showLadbErrorDialog(getString(R.string.ladb_error_title), it) }
             }
 
             btnCheckAndConnect.isEnabled = true
@@ -780,9 +782,7 @@ class LadbSetupActivity : BaseActivity(), AdbPortListener {
                 if (ladbManager.state == LadbManager.State.ERROR) {
                     val logs = ladbManager.getLastErrorLog().orEmpty()
                     if (logs.isNotBlank()) {
-                        val h = logs.hashCode()
-                        if (lastShownErrorHash != h) {
-                            lastShownErrorHash = h
+                        if (lastShownErrorHash != logs.hashCode()) {
                             showLadbErrorDialog(getString(R.string.ladb_error_title), logs)
                         }
                     }
