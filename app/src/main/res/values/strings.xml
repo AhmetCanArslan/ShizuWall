@@ -72,7 +72,7 @@
     <string name="shizuku_permission_required">Shizuku permission required</string>
     <string name="firewall">Firewall</string>
     <string name="welcome_title">Welcome to ShizuWall</string>
-    <string name="welcome_message">Block unwanted network connections without root or vpn</string>
+    <string name="welcome_message">Block unwanted network connections per app</string>
     <string name="next">Next</string>
     <string name="notification_permission_background_request">Please grant permission to keep running in the background.</string>
     <string name="grant_permission">Grant Permission</string>
@@ -430,7 +430,7 @@
     <string name="app_info_internet_no">No internet permission</string>
     <string name="app_info_mobile_only">Block only on mobile data</string>
     <string name="app_info_wifi_only">Block only on Wi‑Fi</string>
-    <string name="app_info_wifi_only_summary">Not supported. ShizuWall uses neither a VPN nor root-based rules, so Wi‑Fi cannot be blocked on its own.</string>
+    <string name="app_info_wifi_only_summary">Available only in VPN mode. Other modes cannot block Wi‑Fi on its own.</string>
     <string name="app_info_block_all">Block all networks</string>
     <string name="app_info_block_all_summary">Wi‑Fi and mobile data are both blocked.</string>
     <string name="app_info_mobile_only_summary">Wi‑Fi stays allowed while this app is blocked. Only metered networks are blocked: mobile data and Wi‑Fi marked as metered, such as hotspots.</string>
@@ -442,7 +442,7 @@
     <string name="app_info_trackers_none">No known trackers found</string>
     <string name="app_info_trackers_count">%1$d trackers found</string>
     <string name="app_info_trackers_failed">This app could not be scanned</string>
-    <string name="app_info_trackers_note">Found by scanning the app\'s code. ShizuWall uses no VPN and never inspects traffic. These trackers are cut off while this app is blocked.</string>
+    <string name="app_info_trackers_note">Found by scanning the app\'s code. ShizuWall never inspects traffic. These trackers are cut off while this app is blocked.</string>
     <string name="tracker_data_attribution">Tracker data: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Show apps in other profiles</string>
     <string name="main_profile">Main profile</string>

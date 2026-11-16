@@ -71,7 +71,7 @@
     <string name="shizuku_permission_required">需要 Shizuku 权限</string>
     <string name="firewall">防火墙</string>
     <string name="welcome_title">欢迎使用 ShizuWall</string>
-    <string name="welcome_message">无需 root 或 vpn 即可阻止不需要的网络连接</string>
+    <string name="welcome_message">按应用阻止不需要的网络连接</string>
     <string name="next">下一步</string>
     <string name="grant_permission">授予权限</string>
     <string name="favorites_title">收藏夹</string>
@@ -427,7 +427,7 @@
     <string name="app_info_internet_no">无联网权限</string>
     <string name="app_info_mobile_only">仅阻止移动数据</string>
     <string name="app_info_wifi_only">仅阻止 Wi‑Fi</string>
-    <string name="app_info_wifi_only_summary">不支持。ShizuWall 不使用 VPN 或基于 root 的规则，因此无法单独阻止 Wi‑Fi。</string>
+    <string name="app_info_wifi_only_summary">仅在 VPN 模式下可用。其他模式无法单独阻止 Wi‑Fi。</string>
     <string name="app_info_block_all">阻止所有网络</string>
     <string name="app_info_block_all_summary">Wi‑Fi 和移动数据都会被阻止。</string>
     <string name="app_info_mobile_only_summary">此应用被阻止时仍允许使用 Wi‑Fi。仅阻止按流量计费的网络:移动数据以及被标记为按流量计费的 Wi‑Fi(例如热点)。</string>
@@ -439,7 +439,7 @@
     <string name="app_info_trackers_none">未发现已知追踪器</string>
     <string name="app_info_trackers_count">发现 %1$d 个追踪器</string>
     <string name="app_info_trackers_failed">无法扫描此应用</string>
-    <string name="app_info_trackers_note">通过扫描应用代码发现。ShizuWall 不使用 VPN，也不检查流量。封锁该应用时，这些追踪器也会被断开。</string>
+    <string name="app_info_trackers_note">通过扫描应用代码发现。ShizuWall 不检查流量。封锁该应用时，这些追踪器也会被断开。</string>
     <string name="tracker_data_attribution">追踪器数据：Exodus Privacy，ODbL 1.0</string>
     <string name="show_other_profiles">显示其他配置文件中的应用</string>
     <string name="main_profile">主配置文件</string>

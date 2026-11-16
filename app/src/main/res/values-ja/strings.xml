@@ -70,7 +70,7 @@
     <string name="shizuku_permission_required">Shizuku の権限が必要です</string>
     <string name="firewall">ファイアウォール</string>
     <string name="welcome_title">ShizuWall へようこそ</string>
-    <string name="welcome_message">ルート権限や VPN なしで不要なネットワーク接続をブロックします</string>
+    <string name="welcome_message">アプリごとに不要なネットワーク接続をブロックします</string>
     <string name="next">次へ</string>
     <string name="grant_permission">権限を許可</string>
     <string name="favorites_title">お気に入り</string>
@@ -430,7 +430,7 @@
     <string name="app_info_internet_no">インターネット権限なし</string>
     <string name="app_info_mobile_only">モバイルデータのみブロック</string>
     <string name="app_info_wifi_only">Wi‑Fi のみブロック</string>
-    <string name="app_info_wifi_only_summary">非対応です。ShizuWall は VPN も root ベースのルールも使用しないため、Wi‑Fi だけをブロックすることはできません。</string>
+    <string name="app_info_wifi_only_summary">VPN モードでのみ利用できます。他のモードでは Wi‑Fi だけをブロックすることはできません。</string>
     <string name="app_info_block_all">すべてのネットワークをブロック</string>
     <string name="app_info_block_all_summary">Wi‑Fi とモバイルデータの両方をブロックします。</string>
     <string name="app_info_mobile_only_summary">このアプリをブロックしている間も Wi‑Fi は許可されます。ブロックされるのは従量制ネットワーク(モバイルデータと、テザリングなど従量制に設定された Wi‑Fi)のみです。</string>
@@ -442,7 +442,7 @@
     <string name="app_info_trackers_none">既知のトラッカーは見つかりませんでした</string>
     <string name="app_info_trackers_count">%1$d 件のトラッカーを検出</string>
     <string name="app_info_trackers_failed">このアプリはスキャンできませんでした</string>
-    <string name="app_info_trackers_note">アプリのコードを調べて検出しました。ShizuWall は VPN を使わず通信を見ません。このアプリをブロックする間、これらのトラッカーも遮断されます。</string>
+    <string name="app_info_trackers_note">アプリのコードを調べて検出しました。ShizuWall は通信の中身を見ません。このアプリをブロックする間、これらのトラッカーも遮断されます。</string>
     <string name="tracker_data_attribution">トラッカーデータ: Exodus Privacy、ODbL 1.0</string>
     <string name="show_other_profiles">他のプロファイルのアプリを表示</string>
     <string name="main_profile">メインプロファイル</string>

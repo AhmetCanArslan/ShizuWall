@@ -72,7 +72,7 @@
     <string name="shizuku_permission_required">È richiesta l\'autorizzazione di Shizuku</string>
     <string name="firewall">Firewall</string>
     <string name="welcome_title">Benvenuto in ShizuWall</string>
-    <string name="welcome_message">Blocca le connessioni di rete indesiderate senza root né VPN</string>
+    <string name="welcome_message">Blocca le connessioni di rete indesiderate per singola app</string>
     <string name="next">Avanti</string>
     <string name="notification_permission_background_request">Concedi l\'autorizzazione per continuare a funzionare in background.</string>
     <string name="grant_permission">Concedi autorizzazione</string>
@@ -429,7 +429,7 @@
     <string name="app_info_internet_no">Nessuna autorizzazione a Internet</string>
     <string name="app_info_mobile_only">Blocca solo i dati mobili</string>
     <string name="app_info_wifi_only">Blocca solo il Wi‑Fi</string>
-    <string name="app_info_wifi_only_summary">Non supportato. ShizuWall non usa VPN né regole basate su root, quindi non è possibile bloccare solo il Wi‑Fi.</string>
+    <string name="app_info_wifi_only_summary">Disponibile solo in modalità VPN. Le altre modalità non possono bloccare solo il Wi‑Fi.</string>
     <string name="app_info_block_all">Blocca tutte le reti</string>
     <string name="app_info_block_all_summary">Wi‑Fi e dati mobili vengono entrambi bloccati.</string>
     <string name="app_info_mobile_only_summary">Il Wi‑Fi resta consentito mentre questa app è bloccata. Vengono bloccate solo le reti a consumo: dati mobili e Wi‑Fi contrassegnate a consumo, come gli hotspot.</string>
@@ -441,7 +441,7 @@
     <string name="app_info_trackers_none">Nessun tracker noto trovato</string>
     <string name="app_info_trackers_count">%1$d tracker trovati</string>
     <string name="app_info_trackers_failed">Impossibile analizzare questa app</string>
-    <string name="app_info_trackers_note">Rilevati analizzando il codice dell\'app. ShizuWall non usa alcuna VPN e non ispeziona mai il traffico. Questi tracker vengono interrotti mentre l\'app è bloccata.</string>
+    <string name="app_info_trackers_note">Rilevati analizzando il codice dell\'app. ShizuWall non ispeziona mai il traffico. Questi tracker vengono interrotti mentre l\'app è bloccata.</string>
     <string name="tracker_data_attribution">Dati sui tracker: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Mostra le app di altri profili</string>
     <string name="main_profile">Profilo principale</string>

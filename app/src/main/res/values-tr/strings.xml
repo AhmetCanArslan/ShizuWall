@@ -71,7 +71,7 @@
     <string name="shizuku_permission_required">Shizuku izni gerekli</string>
     <string name="firewall">Güvenlik Duvarı</string>
     <string name="welcome_title">ShizuWall\'a Hoş Geldiniz</string>
-    <string name="welcome_message">Root veya vpn olmadan istenmeyen ağ bağlantılarını engelleyin</string>
+    <string name="welcome_message">İstenmeyen ağ bağlantılarını uygulama bazında engelleyin</string>
     <string name="next">İleri</string>
     <string name="grant_permission">İzin Ver</string>
     <string name="favorites_title">Favoriler</string>
@@ -428,7 +428,7 @@
     <string name="app_info_internet_no">İnternet izni yok</string>
     <string name="app_info_mobile_only">Yalnızca mobil veride engelle</string>
     <string name="app_info_wifi_only">Yalnızca Wi‑Fi\'da engelle</string>
-    <string name="app_info_wifi_only_summary">Desteklenmiyor. ShizuWall VPN veya root tabanlı kurallar kullanmadığı için yalnızca Wi‑Fi engellenemez.</string>
+    <string name="app_info_wifi_only_summary">Yalnızca VPN modunda kullanılabilir. Diğer modlar Wi‑Fi\'ı tek başına engelleyemez.</string>
     <string name="app_info_block_all">Tüm ağları engelle</string>
     <string name="app_info_block_all_summary">Wi‑Fi ve mobil veri birlikte engellenir.</string>
     <string name="app_info_mobile_only_summary">Bu uygulama engellendiğinde Wi‑Fi serbest kalır. Yalnızca ölçülü ağlar engellenir: mobil veri ve hotspot gibi ölçülü olarak işaretli Wi‑Fi ağları.</string>
@@ -440,7 +440,7 @@
     <string name="app_info_trackers_none">Bilinen izleyici bulunamadı</string>
     <string name="app_info_trackers_count">%1$d izleyici bulundu</string>
     <string name="app_info_trackers_failed">Bu uygulama taranamadı</string>
-    <string name="app_info_trackers_note">Uygulamanın kodu taranarak bulundu. ShizuWall VPN kullanmaz ve trafiği incelemez. Bu uygulama engellendiğinde bu izleyiciler de kesilir.</string>
+    <string name="app_info_trackers_note">Uygulamanın kodu taranarak bulundu. ShizuWall trafiği incelemez. Bu uygulama engellendiğinde bu izleyiciler de kesilir.</string>
     <string name="tracker_data_attribution">İzleyici verisi: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Diğer profillerdeki uygulamalar</string>
     <string name="main_profile">Ana profil</string>

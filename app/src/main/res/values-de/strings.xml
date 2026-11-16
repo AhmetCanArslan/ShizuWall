@@ -71,7 +71,7 @@
     <string name="shizuku_permission_required">Shizuku-Berechtigung erforderlich</string>
     <string name="firewall">Firewall</string>
     <string name="welcome_title">Willkommen bei ShizuWall</string>
-    <string name="welcome_message">Blockieren Sie unerwünschte Netzwerkverbindungen ohne Root oder VPN</string>
+    <string name="welcome_message">Blockieren Sie unerwünschte Netzwerkverbindungen pro App</string>
     <string name="next">Weiter</string>
     <string name="grant_permission">Berechtigung erteilen</string>
     <string name="favorites_title">Favoriten</string>
@@ -428,7 +428,7 @@
     <string name="app_info_internet_no">Keine Internetberechtigung</string>
     <string name="app_info_mobile_only">Nur mobile Daten blockieren</string>
     <string name="app_info_wifi_only">Nur im WLAN blockieren</string>
-    <string name="app_info_wifi_only_summary">Nicht unterstützt. ShizuWall verwendet weder VPN noch Root-basierte Regeln, daher kann WLAN nicht einzeln blockiert werden.</string>
+    <string name="app_info_wifi_only_summary">Nur im VPN-Modus verfügbar. Andere Modi können WLAN nicht einzeln blockieren.</string>
     <string name="app_info_block_all">Alle Netzwerke blockieren</string>
     <string name="app_info_block_all_summary">WLAN und mobile Daten werden beide blockiert.</string>
     <string name="app_info_mobile_only_summary">WLAN bleibt erlaubt, während diese App blockiert ist. Nur getaktete Netzwerke werden blockiert: mobile Daten und als getaktet markierte WLANs, z. B. Hotspots.</string>
@@ -440,7 +440,7 @@
     <string name="app_info_trackers_none">Keine bekannten Tracker gefunden</string>
     <string name="app_info_trackers_count">%1$d Tracker gefunden</string>
     <string name="app_info_trackers_failed">Diese App konnte nicht geprüft werden</string>
-    <string name="app_info_trackers_note">Durch Analyse des App-Codes gefunden. ShizuWall nutzt kein VPN und untersucht keinen Datenverkehr. Diese Tracker sind abgeschnitten, solange die App blockiert ist.</string>
+    <string name="app_info_trackers_note">Durch Analyse des App-Codes gefunden. ShizuWall untersucht keinen Datenverkehr. Diese Tracker sind abgeschnitten, solange die App blockiert ist.</string>
     <string name="tracker_data_attribution">Tracker-Daten: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Apps in anderen Profilen anzeigen</string>
     <string name="main_profile">Hauptprofil</string>

@@ -72,7 +72,7 @@
     <string name="shizuku_permission_required">Oprávnění Shizuku vyžadováno.</string>
     <string name="firewall">Brána firewall</string>
     <string name="welcome_title">Vítejte v ShizuWall</string>
-    <string name="welcome_message">Blokovat nežádoucí síťová připojení bez rootu nebo VPN</string>
+    <string name="welcome_message">Blokovat nežádoucí síťová připojení pro jednotlivé aplikace</string>
     <string name="next">Další</string>
     <string name="grant_permission">Povolit oprávnění</string>
     <string name="favorites_title">Oblíbené</string>
@@ -430,7 +430,7 @@
     <string name="app_info_internet_no">Bez oprávnění k internetu</string>
     <string name="app_info_mobile_only">Blokovat pouze mobilní data</string>
     <string name="app_info_wifi_only">Blokovat pouze na Wi‑Fi</string>
-    <string name="app_info_wifi_only_summary">Nepodporováno. ShizuWall nepoužívá VPN ani pravidla založená na rootu, takže nelze blokovat samotnou Wi‑Fi.</string>
+    <string name="app_info_wifi_only_summary">Dostupné jen v režimu VPN. Ostatní režimy nemohou blokovat samotnou Wi‑Fi.</string>
     <string name="app_info_block_all">Blokovat všechny sítě</string>
     <string name="app_info_block_all_summary">Blokuje se Wi‑Fi i mobilní data.</string>
     <string name="app_info_mobile_only_summary">Wi‑Fi zůstává povolená, i když je tato aplikace blokovaná. Blokují se jen měřené sítě: mobilní data a Wi‑Fi označené jako měřené, například hotspoty.</string>
@@ -442,7 +442,7 @@
     <string name="app_info_trackers_none">Nenalezeny žádné známé sledovače</string>
     <string name="app_info_trackers_count">Nalezeno sledovačů: %1$d</string>
     <string name="app_info_trackers_failed">Tuto aplikaci se nepodařilo prohlédnout</string>
-    <string name="app_info_trackers_note">Nalezeno analýzou kódu aplikace. ShizuWall nepoužívá VPN a nezkoumá provoz. Tyto sledovače jsou odstřiženy, dokud je aplikace blokována.</string>
+    <string name="app_info_trackers_note">Nalezeno analýzou kódu aplikace. ShizuWall nezkoumá provoz. Tyto sledovače jsou odstřiženy, dokud je aplikace blokována.</string>
     <string name="tracker_data_attribution">Data o sledovačích: Exodus Privacy, ODbL 1.0</string>
     <string name="show_other_profiles">Zobrazit aplikace z jiných profilů</string>
     <string name="main_profile">Hlavní profil</string>
