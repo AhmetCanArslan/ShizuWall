@@ -1888,7 +1888,7 @@ class MainActivity : BaseActivity() {
                 appList.clear()
                 appList.addAll(builtList)
                 dropUnsupportedSelections()
-                sortAndFilterApps(preserveScrollPosition = false)
+                sortAndFilterApps(preserveScrollPosition = false, scrollToTop = !recyclerView.canScrollVertically(-1))
             }
             updateCategoryChips()
 
@@ -2562,7 +2562,7 @@ class MainActivity : BaseActivity() {
 
                 if (appList.any { it.key == appInfo.key }) return@let
                 appList.add(appInfo)
-                sortAndFilterApps(preserveScrollPosition = false)
+                sortAndFilterApps(preserveScrollPosition = false, scrollToTop = !recyclerView.canScrollVertically(-1))
                 updateSelectedCount()
             }
         }
