@@ -112,6 +112,16 @@
                             android:layout_marginTop="8dp"
                             android:text="@string/working_mode_vpn" />
                     </RadioGroup>
+
+                    <TextView
+                        android:id="@+id/tvWorkingModeLocked"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/app_visibility_change_disabled"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:textColor="?attr/colorError"
+                        android:visibility="gone" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

@@ -21,6 +21,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.isVisible
 import com.arslan.shizuwall.R
 import com.arslan.shizuwall.WorkingMode
 import com.arslan.shizuwall.shell.RootShellExecutor
@@ -90,6 +91,10 @@ class BackendSettingsActivity : BaseActivity() {
 
         val workingMode = WorkingMode.of(this)
         checkWorkingModeRadio(workingMode)
+        val locked = FirewallUtils.loadFirewallEnabled(sharedPreferences)
+        modeRadios.values.forEach { findViewById<RadioButton>(it).isEnabled = !locked }
+        radioGroupWorkingMode.alpha = if (locked) 0.5f else 1f
+        findViewById<View>(R.id.tvWorkingModeLocked).isVisible = locked
 
         updateWorkingModeDependentUi(workingMode, restoreAutoEnable = false)
     }
@@ -111,12 +116,6 @@ class BackendSettingsActivity : BaseActivity() {
             val currentMode = WorkingMode.of(this)
             val mode = modeRadios.entries.first { it.value == checkedId }.key
             if (mode == currentMode) return@setOnCheckedChangeListener
-
-            if (FirewallUtils.loadFirewallEnabled(sharedPreferences)) {
-                Toast.makeText(this, R.string.app_visibility_change_disabled, Toast.LENGTH_LONG).show()
-                checkWorkingModeRadio(currentMode)
-                return@setOnCheckedChangeListener
-            }
 
             if (mode == WorkingMode.ROOT && !RootShellExecutor.hasRootAccess()) {
                 showRootNotFoundDialog()
