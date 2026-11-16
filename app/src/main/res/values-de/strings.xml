@@ -78,10 +78,6 @@
     <string name="favorites_message">Drücken Sie lange auf eine App, um sie zu Ihren Favoriten für schnellen Zugriff hinzuzufügen.</string>
     <string name="block_mode_tour_title">Blockmodus</string>
     <string name="block_mode_tour_message">Halte dieses Symbol gedrückt, um alle Netzwerke oder nur mobile Daten zu blockieren.</string>
-    <string name="sorting_onboarding_title">Sortieren &amp; Filtern</string>
-    <string name="sorting_onboarding_message">Tippen Sie auf das Sortiersymbol, um die Reihenfolge der Apps zu ändern. Dort können Sie auch auswählen, ob System-Apps und Profil-Apps angezeigt werden.</string>
-    <string name="onboarding_mode_selection_title">Arbeitsmodus wählen</string>
-    <string name="onboarding_mode_selection_message">Für die meisten wird Shizuku empfohlen. Ohne Shizuku kannst du Debugging über WLAN, Root oder VPN nutzen. Das lässt sich später ändern.</string>
     <string name="get_started">Loslegen</string>
     <string name="shizuku_service_dead">Shizuku-Dienst ist tot</string>
     <string name="shizuku_update_required">Shizuku-Update erforderlich</string>
@@ -170,7 +166,6 @@
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">Apps werden geladen</string>
     <string name="shizuku_setup_guide">Shizuku Einrichtungsanleitung</string>
-    <string name="shizuku_guide_tour_message">Hier kannst du Shizuku jederzeit einrichten.</string>
     <string name="open_ladb_setup">Einrichtung von Debugging über WLAN öffnen</string>
     <string name="working_mode_select_ladb_prompt">Wähle zuerst den Modus Debugging über WLAN</string>
     <string name="pair">Koppeln</string>

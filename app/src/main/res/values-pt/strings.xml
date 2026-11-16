@@ -78,10 +78,6 @@
     <string name="favorites_message">Pressione longamente em um app para adicioná-lo aos seus favoritos para acesso rápido.</string>
     <string name="block_mode_tour_title">Modo de bloqueio</string>
     <string name="block_mode_tour_message">Mantenha pressionado este ícone para bloquear todas as redes ou apenas os dados móveis.</string>
-    <string name="sorting_onboarding_title">Ordenação e filtros</string>
-    <string name="sorting_onboarding_message">Toque no ícone de ordenação para mudar a ordem dos apps. Ali você também pode escolher se os apps do sistema e os apps de perfis são exibidos.</string>
-    <string name="onboarding_mode_selection_title">Escolha o Modo de Trabalho</string>
-    <string name="onboarding_mode_selection_message">O Shizuku é recomendado para a maioria. Sem Shizuku, você pode usar depuração por Wi-Fi, Root ou VPN. É possível mudar depois.</string>
     <string name="get_started">Começar</string>
     <string name="shizuku_service_dead">Serviço Shizuku está morto</string>
     <string name="shizuku_update_required">Atualização Shizuku Necessária</string>
@@ -170,7 +166,6 @@
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">Carregando apps</string>
     <string name="shizuku_setup_guide">Guia de Configuração do Shizuku</string>
-    <string name="shizuku_guide_tour_message">Você pode configurar o Shizuku por aqui a qualquer momento.</string>
     <string name="open_ladb_setup">Abrir configuração da depuração por Wi-Fi</string>
     <string name="working_mode_select_ladb_prompt">Selecione primeiro o modo depuração por Wi-Fi</string>
     <string name="pair">Parear</string>

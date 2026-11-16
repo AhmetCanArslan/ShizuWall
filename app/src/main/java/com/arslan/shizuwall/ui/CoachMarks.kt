@@ -32,7 +32,6 @@ class CoachMarks private constructor(
         val target: () -> View?,
         val title: CharSequence,
         val message: CharSequence,
-        val onTarget: ((View) -> Unit)? = null,
         val onShow: (() -> Unit)? = null
     )
 
@@ -72,18 +71,12 @@ class CoachMarks private constructor(
         addView(bubble)
         isClickable = true
         bubble.findViewById<View>(R.id.coachSkip).setOnClickListener { dismiss() }
-        next.setOnClickListener { if (index == steps.lastIndex) act() else advance() }
+        next.setOnClickListener { advance() }
     }
 
     override fun onDraw(canvas: Canvas) {
         canvas.drawPath(scrim, scrimPaint)
         canvas.drawPath(arrowDrawn, arrowPaint)
-    }
-
-    private fun act() {
-        val view = target ?: return
-        steps[index].onTarget?.invoke(view)
-        advance()
     }
 
     private fun advance() {
@@ -93,7 +86,7 @@ class CoachMarks private constructor(
         target = view
         title.text = step.title
         message.text = step.message
-        next.setText(if (index == steps.lastIndex && step.onTarget == null) R.string.get_started else R.string.next)
+        next.setText(if (index == steps.lastIndex) R.string.get_started else R.string.next)
         view.requestRectangleOnScreen(Rect(0, 0, view.width, view.height), true)
         val loc = IntArray(2).also(view::getLocationInWindow)
         val own = IntArray(2).also(::getLocationInWindow)
@@ -160,7 +153,6 @@ class CoachMarks private constructor(
     }
 
     companion object {
-        const val EXTRA_TOUR = "coach_marks_tour"
         private const val SCRIM = 0xB3000000.toInt()
         private const val STEP_MS = 700L
         private const val BUBBLE_MS = 180L
@@ -175,16 +167,16 @@ class CoachMarks private constructor(
         private const val HEAD = 12
         private const val HEAD_ANGLE = 0.5f
 
-        fun show(activity: ComponentActivity, steps: List<Step>, delay: Long = 0L) {
+        fun show(activity: ComponentActivity, steps: List<Step>) {
             val decor = activity.window.decorView as ViewGroup
-            decor.postDelayed({
+            decor.post {
                 val marks = CoachMarks(activity, steps)
                 marks.alpha = 0f
                 decor.addView(marks, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
                 activity.onBackPressedDispatcher.addCallback(activity, marks.back)
                 marks.animate().alpha(1f).setDuration(BUBBLE_MS).start()
                 marks.doOnLayout { marks.advance() }
-            }, delay)
+            }
         }
     }
 }

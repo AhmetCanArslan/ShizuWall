@@ -79,10 +79,6 @@
     <string name="favorites_message">Dlouhým stisknutím aplikace ji přidáte do oblíbených pro rychlý přístup.</string>
     <string name="block_mode_tour_title">Režim blokování</string>
     <string name="block_mode_tour_message">Dlouhým stiskem této ikony zablokujete všechny sítě nebo jen mobilní data.</string>
-    <string name="sorting_onboarding_title">Řazení a filtrování</string>
-    <string name="sorting_onboarding_message">Klepnutím na ikonu řazení změníte pořadí aplikací. Zde můžete také zvolit, zda se mají zobrazovat systémové aplikace a aplikace profilů.</string>
-    <string name="onboarding_mode_selection_title">Zvolte Pracovní režim</string>
-    <string name="onboarding_mode_selection_message">Pro většinu uživatelů doporučujeme Shizuku. Bez Shizuku můžete použít bezdrátové ladění, Root nebo VPN. Později to lze změnit.</string>
     <string name="get_started">Začněte</string>
     <string name="shizuku_service_dead">Shizuku služba je mrtvá</string>
     <string name="shizuku_update_required">Je vyžadována Shizuku aktualizace</string>
@@ -177,7 +173,6 @@
     <string name="loading_apps">Načítání aplikací</string>
 
     <string name="shizuku_setup_guide">Shizuku příručka nastavení</string>
-    <string name="shizuku_guide_tour_message">Shizuku můžeš kdykoli nastavit odsud.</string>
     <string name="open_ladb_setup">Otevřít nastavení bezdrátového ladění</string>
     <string name="working_mode_select_ladb_prompt">Nejprve vyberte režim bezdrátového ladění</string>
     <string name="pair">Párovat</string>

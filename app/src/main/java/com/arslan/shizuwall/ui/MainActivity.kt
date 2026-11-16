@@ -1583,16 +1583,10 @@ class MainActivity : BaseActivity() {
                 getString(R.string.block_mode_tour_message)
             ).takeIf { PerUidFirewall.supportsMobileOnly(this) },
             CoachMarks.Step({ recyclerView.getChildAt(0) }, getString(R.string.favorites_title), getString(R.string.favorites_message)),
-            CoachMarks.Step({ findViewById(R.id.sortButton) }, getString(R.string.sorting_onboarding_title), getString(R.string.sorting_onboarding_message)),
-            CoachMarks.Step({ findViewById(R.id.profileButton) }, getString(R.string.profiles), getString(R.string.profiles_subtitle)),
             CoachMarks.Step(
                 { findViewById(R.id.settingsButton) },
                 getString(R.string.settings_title),
-                getString(R.string.settings_category_backend_title) + "\n" + getString(R.string.settings_category_firewall_title),
-                onTarget = {
-                    val intent = Intent(this, SettingsActivity::class.java).putExtra(CoachMarks.EXTRA_TOUR, true)
-                    settingsLauncher.launch(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this, it, SettingsActivity.TRANSITION_NAME))
-                }
+                getString(R.string.settings_category_backend_title) + "\n" + getString(R.string.settings_category_firewall_title)
             )
         ))
     }

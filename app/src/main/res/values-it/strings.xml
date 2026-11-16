@@ -80,10 +80,6 @@
     <string name="favorites_message">Tieni premuta un\'app per aggiungerla ai preferiti e accedervi rapidamente.</string>
     <string name="block_mode_tour_title">Modalità di blocco</string>
     <string name="block_mode_tour_message">Tieni premuta questa icona per bloccare tutte le reti o solo i dati mobili.</string>
-    <string name="sorting_onboarding_title">Ordinamento e filtri</string>
-    <string name="sorting_onboarding_message">Tocca l\'icona di ordinamento per cambiare l\'ordine delle app. Da lì puoi anche scegliere se mostrare le app di sistema e le app dei profili.</string>
-    <string name="onboarding_mode_selection_title">Scegli la modalità di funzionamento</string>
-    <string name="onboarding_mode_selection_message">Shizuku è consigliato per la maggior parte degli utenti. Senza Shizuku puoi usare debug wireless, Root o VPN. Puoi cambiarlo in seguito.</string>
     <string name="get_started">Inizia</string>
     <string name="shizuku_service_dead">Il servizio Shizuku non risponde</string>
     <string name="shizuku_update_required">Aggiornamento di Shizuku richiesto</string>
@@ -179,7 +175,6 @@
     <string name="loading_apps">Caricamento app</string>
 
     <string name="shizuku_setup_guide">Guida alla configurazione di Shizuku</string>
-    <string name="shizuku_guide_tour_message">Puoi configurare Shizuku da qui in qualsiasi momento.</string>
     <string name="open_ladb_setup">Apri configurazione debug wireless</string>
     <string name="working_mode_select_ladb_prompt">Seleziona prima la modalità debug wireless</string>
     <string name="pair">Associa</string>

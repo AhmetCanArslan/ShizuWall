@@ -78,10 +78,6 @@
     <string name="favorites_message">长按应用以将其添加到收藏夹以快速访问。</string>
     <string name="block_mode_tour_title">阻止模式</string>
     <string name="block_mode_tour_message">长按此图标可阻止所有网络或仅阻止移动数据。</string>
-    <string name="sorting_onboarding_title">排序与筛选</string>
-    <string name="sorting_onboarding_message">点击排序图标即可更改应用的排列方式。你也可以在这里选择是否显示系统应用和配置文件应用。</string>
-    <string name="onboarding_mode_selection_title">选择工作模式</string>
-    <string name="onboarding_mode_selection_message">大多数用户推荐使用 Shizuku。没有 Shizuku 时，可以使用无线调试、Root 或 VPN。之后可以更改。</string>
     <string name="get_started">开始</string>
     <string name="shizuku_service_dead">Shizuku 服务已死</string>
     <string name="shizuku_update_required">需要 Shizuku 更新</string>
@@ -170,7 +166,6 @@
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">正在加载应用</string>
     <string name="shizuku_setup_guide">Shizuku 设置指南</string>
-    <string name="shizuku_guide_tour_message">你可以随时在这里设置 Shizuku。</string>
     <string name="open_ladb_setup">打开无线调试设置</string>
     <string name="working_mode_select_ladb_prompt">请先选择无线调试模式</string>
     <string name="pair">配对</string>

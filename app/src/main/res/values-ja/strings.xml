@@ -77,10 +77,6 @@
     <string name="favorites_message">アプリを長押しすると、クイックアクセスのためにお気に入りに追加できます。</string>
     <string name="block_mode_tour_title">ブロックモード</string>
     <string name="block_mode_tour_message">このアイコンを長押しすると、すべてのネットワークまたはモバイルデータのみをブロックできます。</string>
-    <string name="sorting_onboarding_title">並べ替えとフィルター</string>
-    <string name="sorting_onboarding_message">並べ替えアイコンをタップするとアプリの並び順を変更できます。システムアプリやプロファイルアプリを表示するかどうかもここで選べます。</string>
-    <string name="onboarding_mode_selection_title">動作モードの選択</string>
-    <string name="onboarding_mode_selection_message">ほとんどのユーザーには Shizuku をおすすめします。Shizuku がない場合は、ワイヤレス デバッグ、Root、VPN を使用できます。後から変更できます。</string>
     <string name="get_started">使ってみる</string>
     <string name="shizuku_service_dead">Shizuku サービスが停止しています</string>
     <string name="shizuku_update_required">Shizuku のアップデートが必要です</string>
@@ -170,7 +166,6 @@
     <string name="loading_apps">アプリを読み込み中</string>
 
     <string name="shizuku_setup_guide">Shizuku セットアップガイド</string>
-    <string name="shizuku_guide_tour_message">ここからいつでも Shizuku をセットアップできます。</string>
     <string name="open_ladb_setup">ワイヤレス デバッグの設定を開く</string>
     <string name="working_mode_select_ladb_prompt">先にワイヤレス デバッグ モードを選択してください</string>
     <string name="pair">ペアリング</string>

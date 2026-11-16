@@ -77,10 +77,6 @@
     <string name="favorites_message">Удерживайте приложение, чтобы добавить его в избранное для быстрого доступа.</string>
     <string name="block_mode_tour_title">Режим блокировки</string>
     <string name="block_mode_tour_message">Удерживайте этот значок, чтобы заблокировать все сети или только мобильные данные.</string>
-    <string name="sorting_onboarding_title">Сортировка и фильтры</string>
-    <string name="sorting_onboarding_message">Нажмите значок сортировки, чтобы изменить порядок приложений. Там же можно выбрать, показывать ли системные приложения и приложения профилей.</string>
-    <string name="onboarding_mode_selection_title">Выберите рабочий режим</string>
-    <string name="onboarding_mode_selection_message">Большинству пользователей рекомендуется Shizuku. Без Shizuku можно использовать отладку по Wi-Fi, Root или VPN. Это можно изменить позже.</string>
     <string name="get_started">Приступить к работе</string>
     <string name="shizuku_service_dead">Сервис Shizuku не отвечает</string>
     <string name="shizuku_update_required">Требуется обновление Shizuku</string>
@@ -170,7 +166,6 @@
     <string name="loading_apps">Загрузка приложений</string>
 
     <string name="shizuku_setup_guide">Руководство по настройке Shizuku</string>
-    <string name="shizuku_guide_tour_message">Здесь можно в любой момент настроить Shizuku.</string>
     <string name="open_ladb_setup">Открыть настройку отладки по Wi-Fi</string>
     <string name="working_mode_select_ladb_prompt">Сначала выберите режим отладки по Wi-Fi</string>
     <string name="pair">Связать</string>

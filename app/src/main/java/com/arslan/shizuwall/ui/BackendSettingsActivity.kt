@@ -82,15 +82,6 @@ class BackendSettingsActivity : BaseActivity() {
         loadSettings()
         setupModeIcons()
         setupListeners()
-
-        if (savedInstanceState == null && intent.getBooleanExtra(CoachMarks.EXTRA_TOUR, false)) {
-            CoachMarks.show(this, listOf(
-                CoachMarks.Step({ radioGroupWorkingMode }, getString(R.string.onboarding_mode_selection_title), getString(R.string.onboarding_mode_selection_message), onTarget = {
-                    startActivity(Intent(this, FirewallSettingsActivity::class.java).putExtra(CoachMarks.EXTRA_TOUR, true))
-                    finish()
-                })
-            ))
-        }
     }
 
     private fun loadSettings() {

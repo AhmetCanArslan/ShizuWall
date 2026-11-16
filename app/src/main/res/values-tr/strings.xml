@@ -78,10 +78,6 @@
     <string name="favorites_message">Hızlı erişim için bir uygulamaya uzun basın ve favorilerinize ekleyin.</string>
     <string name="block_mode_tour_title">Engelleme modu</string>
     <string name="block_mode_tour_message">Tüm ağları veya yalnızca mobil veriyi engellemek için bu simgeye uzun bas.</string>
-    <string name="sorting_onboarding_title">Sıralama ve Filtreleme</string>
-    <string name="sorting_onboarding_message">Uygulamaların sıralamasını değiştirmek için sıralama simgesine dokunun. Sistem uygulamalarının ve profil uygulamalarının görünüp görünmeyeceğini de buradan ayarlayabilirsiniz.</string>
-    <string name="onboarding_mode_selection_title">Çalışma Modunu Seçin</string>
-    <string name="onboarding_mode_selection_message">Çoğu kullanıcı için Shizuku önerilir. Shizuku olmadan Kablosuz hata ayıklama, Root veya VPN kullanabilirsiniz. Bunu daha sonra değiştirebilirsiniz.</string>
     <string name="get_started">Başlayın</string>
     <string name="shizuku_service_dead">Shizuku servisi ölü</string>
     <string name="shizuku_update_required">Shizuku Güncellemesi Gerekli</string>
@@ -170,7 +166,6 @@
     <string name="selected_count_zero">0</string>
     <string name="loading_apps">Uygulamalar yükleniyor</string>
     <string name="shizuku_setup_guide">Shizuku Kurulum Kılavuzu</string>
-    <string name="shizuku_guide_tour_message">Shizuku\'yu istediğin zaman buradan kurabilirsin.</string>
     <string name="open_ladb_setup">Kablosuz hata ayıklama kurulumunu aç</string>
     <string name="working_mode_select_ladb_prompt">Önce Kablosuz hata ayıklama modunu seçin</string>
     <string name="pair">Eşleştir</string>

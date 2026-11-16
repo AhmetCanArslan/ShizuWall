@@ -80,10 +80,6 @@
     <string name="favorites_message">Long press on an app to add it to your favorites for quick access.</string>
     <string name="block_mode_tour_title">Block mode</string>
     <string name="block_mode_tour_message">Long press this icon to block all networks or only mobile data.</string>
-    <string name="sorting_onboarding_title">Sorting &amp; Filtering</string>
-    <string name="sorting_onboarding_message">Tap the sorting icon to change how apps are ordered. You can also choose there whether system apps and profile apps are shown.</string>
-    <string name="onboarding_mode_selection_title">Choose Working Mode</string>
-    <string name="onboarding_mode_selection_message">Shizuku is recommended for most users. Without Shizuku, you can use Wireless debugging, Root or VPN. You can change this later.</string>
     <string name="get_started">Get Started</string>
     <string name="shizuku_service_dead">Shizuku service is dead</string>
     <string name="shizuku_update_required">Shizuku Update Required</string>
@@ -179,7 +175,6 @@
     <string name="loading_apps">Loading apps</string>
 
     <string name="shizuku_setup_guide">Shizuku Setup Guide</string>
-    <string name="shizuku_guide_tour_message">You can set up Shizuku from here anytime.</string>
     <string name="open_ladb_setup">Open Wireless debugging setup</string>
     <string name="working_mode_select_ladb_prompt">Select Wireless debugging mode first</string>
     <string name="pair">Pair</string>
