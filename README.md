@@ -64,7 +64,7 @@ Android 11+ and one of these backends:
 ## Screenshot
 
 <p align="center">
-  <img src="assets/screenshots/v4.7/1.png" alt="ShizuWall main screen" width="30%" />
+  <img src="assets/screenshots/v4.7.2/1.png" alt="ShizuWall main screen" width="30%" />
 </p>
 
 ## How It Works
