@@ -516,7 +516,7 @@
     <string name="contact_developer_description">Invia un feedback o segnala un problema</string>
     <string name="contact_developer_no_app">Nessuna app email trovata</string>
     <string name="changelog_title">Novità in %1$s</string>
-    <string name="changelog_message">• Controllo aggiornamenti nelle impostazioni\n• Corretta la selezione per app in modalità ibrida\n• Corretti gli spazi vuoti nell\'elenco quando si cambiano le opzioni di nascondi\n• Impostazioni riorganizzate</string>
+    <string name="changelog_message">• Nuova modalità VPN: blocca le app senza Shizuku, root o ADB\n• Blocco solo Wi-Fi (modalità VPN)\n• Client ADB integrato per il debug wireless, APK più piccolo\n• Ordinamento per modalità di blocco nella modalità ibrida\n• Schermata del debug wireless riprogettata\n• Layout delle impostazioni più compatto\n• Supporto al gesto Indietro predittivo\n• Tour introduttivo più breve\n• Il passaggio da o verso la modalità VPN è bloccato con il firewall attivo\n• Corretta la perdita della posizione di scorrimento nella ricerca</string>
     <string name="whats_new">Novità</string>
     <string name="whats_new_description">Guarda le modifiche di questa versione</string>
     <string name="dismiss">Ignora</string>

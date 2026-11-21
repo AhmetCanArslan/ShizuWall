@@ -521,7 +521,7 @@
     <string name="contact_developer_description">أرسل ملاحظاتك أو أبلغ عن مشكلة</string>
     <string name="contact_developer_no_app">لم يتم العثور على تطبيق بريد</string>
     <string name="changelog_title">الجديد في %1$s</string>
-    <string name="changelog_message">• التحقق من التحديثات في الإعدادات\n• إصلاح اختيار الوضع لكل تطبيق في الوضع الهجين\n• إصلاح الفراغات في القائمة عند تبديل خيارات الإخفاء\n• إعادة تنظيم تخطيط الإعدادات</string>
+    <string name="changelog_message">• وضع VPN جديد: حظر التطبيقات دون Shizuku أو الروت أو ADB\n• حظر Wi-Fi فقط (وضع VPN)\n• عميل ADB مدمج لتصحيح الأخطاء اللاسلكي، وحجم APK أصغر\n• الترتيب حسب وضع الحظر في الوضع الهجين\n• إعادة تصميم شاشة تصحيح الأخطاء اللاسلكي\n• تخطيط إعدادات أكثر إحكامًا\n• دعم إيماءة الرجوع التنبؤية\n• جولة تعريفية أقصر\n• يُقفل التبديل إلى وضع VPN أو منه أثناء تشغيل جدار الحماية\n• إصلاح فقدان موضع التمرير أثناء البحث</string>
     <string name="whats_new">الجديد</string>
     <string name="whats_new_description">اطّلع على تغييرات هذا الإصدار</string>
     <string name="dismiss">تجاهل</string>

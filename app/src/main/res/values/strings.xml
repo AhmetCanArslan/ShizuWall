@@ -519,7 +519,7 @@
     <string name="contact_developer_description">Send feedback or report a problem</string>
     <string name="contact_developer_no_app">No email app found</string>
     <string name="changelog_title">What\'s new in %1$s</string>
-    <string name="changelog_message">• Update check in settings\n• Fixed hybrid mode per-app selection\n• Fixed list gaps when toggling hide options\n• Reorganized settings layout</string>
+    <string name="changelog_message">• New VPN mode: block apps without Shizuku, root or ADB\n• Wi-Fi only blocking (VPN mode)\n• Built-in ADB client for wireless debugging, smaller APK\n• Sort by block mode in hybrid mode\n• Redesigned wireless debugging screen\n• Compact settings layout\n• Predictive back gesture support\n• Shorter onboarding tour\n• Switching to or from VPN mode is locked while firewall is on\n• Fixed search losing scroll position</string>
     <string name="check_update">Check for updates</string>
     <string name="update_available_title">Update available</string>
     <string name="update_available_message">Version %1$s is available on GitHub.</string>

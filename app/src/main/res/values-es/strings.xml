@@ -517,7 +517,7 @@
     <string name="contact_developer_description">Enviar comentarios o informar de un problema</string>
     <string name="contact_developer_no_app">No se encontró ninguna aplicación de correo</string>
     <string name="changelog_title">Novedades en %1$s</string>
-    <string name="changelog_message">• Búsqueda de actualizaciones en ajustes\n• Corregida la selección por app en el modo híbrido\n• Corregidos los huecos de la lista al alternar las opciones de ocultar\n• Ajustes reorganizados</string>
+    <string name="changelog_message">• Nuevo modo VPN: bloquea apps sin Shizuku, root ni ADB\n• Bloqueo solo de Wi-Fi (modo VPN)\n• Cliente ADB integrado para la depuración inalámbrica, APK más pequeño\n• Ordenar por modo de bloqueo en el modo híbrido\n• Pantalla de depuración inalámbrica rediseñada\n• Diseño de ajustes más compacto\n• Compatibilidad con el gesto atrás predictivo\n• Recorrido de introducción más corto\n• No se puede cambiar a o desde el modo VPN con el cortafuegos activado\n• Corregida la pérdida de la posición de desplazamiento al buscar</string>
     <string name="whats_new">Novedades</string>
     <string name="whats_new_description">Ver los cambios de esta versión</string>
     <string name="dismiss">Descartar</string>

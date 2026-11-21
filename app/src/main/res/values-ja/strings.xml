@@ -517,7 +517,7 @@
     <string name="contact_developer_description">フィードバックの送信や問題の報告</string>
     <string name="contact_developer_no_app">メールアプリが見つかりません</string>
     <string name="changelog_title">%1$s の新機能</string>
-    <string name="changelog_message">• 設定にアップデート確認を追加\n• ハイブリッドモードのアプリ別選択を修正\n• 非表示オプション切り替え時のリストの隙間を修正\n• 設定画面のレイアウトを整理</string>
+    <string name="changelog_message">• 新しいVPNモード：Shizuku、root、ADBなしでアプリをブロック\n• Wi-Fiのみのブロック（VPNモード）\n• ワイヤレスデバッグ用のADBクライアントを内蔵、APKサイズを削減\n• ハイブリッドモードでブロックモード別の並べ替え\n• ワイヤレスデバッグ画面を刷新\n• 設定画面をよりコンパクトに\n• 予測型「戻る」ジェスチャーに対応\n• 紹介ツアーを短縮\n• ファイアウォールが有効な間はVPNモードへの切り替え・解除をロック\n• 検索時にスクロール位置が失われる問題を修正</string>
     <string name="whats_new">新機能</string>
     <string name="whats_new_description">このバージョンの変更点を見る</string>
     <string name="dismiss">閉じる</string>

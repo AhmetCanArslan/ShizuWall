@@ -1,0 +1,10 @@
+New VPN mode: block apps without Shizuku, root or ADB
+Wi-Fi only blocking (VPN mode)
+Built-in ADB client for wireless debugging, smaller APK
+Sort by block mode in hybrid mode
+Redesigned wireless debugging screen
+Compact settings layout
+Predictive back gesture support
+Shorter onboarding tour
+Switching to or from VPN mode is locked while firewall is on
+Fixed search losing scroll position

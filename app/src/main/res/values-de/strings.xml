@@ -515,7 +515,7 @@
     <string name="contact_developer_description">Feedback senden oder Problem melden</string>
     <string name="contact_developer_no_app">Keine E-Mail-App gefunden</string>
     <string name="changelog_title">Neu in %1$s</string>
-    <string name="changelog_message">• Update-Prüfung in den Einstellungen\n• Auswahl pro App im Hybridmodus korrigiert\n• Lücken in der Liste beim Umschalten der Ausblenden-Optionen behoben\n• Einstellungen neu gegliedert</string>
+    <string name="changelog_message">• Neuer VPN-Modus: Apps ohne Shizuku, Root oder ADB blockieren\n• Nur-WLAN-Sperre (VPN-Modus)\n• Integrierter ADB-Client für kabelloses Debugging, kleinere APK\n• Sortierung nach Sperrmodus im Hybridmodus\n• Neu gestalteter Bildschirm für kabelloses Debugging\n• Kompakteres Einstellungslayout\n• Unterstützung für die vorhersagende Zurück-Geste\n• Kürzere Einführungstour\n• Wechsel zum oder vom VPN-Modus ist bei aktiver Firewall gesperrt\n• Verlust der Scrollposition bei der Suche behoben</string>
     <string name="whats_new">Neuigkeiten</string>
     <string name="whats_new_description">Änderungen in dieser Version ansehen</string>
     <string name="dismiss">Schließen</string>

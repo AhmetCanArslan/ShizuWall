@@ -515,7 +515,7 @@
     <string name="contact_developer_description">Geri bildirim gönder veya sorun bildir</string>
     <string name="contact_developer_no_app">E-posta uygulaması bulunamadı</string>
     <string name="changelog_title">%1$s sürümündeki yenilikler</string>
-    <string name="changelog_message">• Ayarlarda güncelleme denetimi\n• Hibrit modda uygulama bazlı seçim düzeltildi\n• Gizleme seçenekleri değiştirilirken listedeki boşluklar giderildi\n• Ayarlar düzeni yeniden düzenlendi</string>
+    <string name="changelog_message">• Yeni VPN modu: Shizuku, root veya ADB olmadan uygulama engelleme\n• Yalnızca Wi-Fi engelleme (VPN modu)\n• Kablosuz hata ayıklama için yerleşik ADB istemcisi, daha küçük APK\n• Hibrit modda engelleme moduna göre sıralama\n• Yenilenen kablosuz hata ayıklama ekranı\n• Daha sıkı ayarlar düzeni\n• Tahmine dayalı geri hareketi desteği\n• Kısaltılmış tanıtım turu\n• Güvenlik duvarı açıkken VPN moduna geçiş ve VPN modundan çıkış kilitli\n• Aramada kaydırma konumunun kaybolması düzeltildi</string>
     <string name="whats_new">Yenilikler</string>
     <string name="whats_new_description">Bu sürümdeki değişiklikleri gör</string>
     <string name="dismiss">Kapat</string>
