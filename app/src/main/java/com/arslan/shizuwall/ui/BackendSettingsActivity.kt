@@ -91,10 +91,11 @@ class BackendSettingsActivity : BaseActivity() {
 
         val workingMode = WorkingMode.of(this)
         checkWorkingModeRadio(workingMode)
-        val locked = FirewallUtils.loadFirewallEnabled(sharedPreferences)
-        modeRadios.values.forEach { findViewById<RadioButton>(it).isEnabled = !locked }
+        val firewallOn = FirewallUtils.loadFirewallEnabled(sharedPreferences)
+        val locked = firewallOn && workingMode == WorkingMode.VPN
+        modeRadios.forEach { (mode, id) -> findViewById<RadioButton>(id).isEnabled = !firewallOn || (!locked && mode != WorkingMode.VPN) }
         radioGroupWorkingMode.alpha = if (locked) 0.5f else 1f
-        findViewById<View>(R.id.tvWorkingModeLocked).isVisible = locked
+        findViewById<View>(R.id.tvWorkingModeLocked).isVisible = firewallOn
 
         updateWorkingModeDependentUi(workingMode, restoreAutoEnable = false)
     }
