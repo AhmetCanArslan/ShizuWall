@@ -124,6 +124,8 @@
     <string name="use_dynamic_color_description">将壁纸颜色应用到应用主题</string>
     <string name="use_amoled_black">使用 AMOLED 主题</string>
     <string name="use_amoled_black_description">为 OLED 屏幕使用纯黑</string>
+    <string name="use_monochrome">单色</string>
+    <string name="use_monochrome_description">仅黑白</string>
     <string name="skip_enable_confirmation_description">启用防火墙时不询问</string>
     <string name="working_mode_title">工作模式</string>
     <string name="working_mode_summary">选择防火墙命令的执行方式</string>

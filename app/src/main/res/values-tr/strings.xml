@@ -124,6 +124,8 @@
     <string name="use_dynamic_color_description">Duvar kağıdı renklerini uygulama temasına uygula</string>
     <string name="use_amoled_black">AMOLED tema kullan</string>
     <string name="use_amoled_black_description">OLED ekranlar için saf siyah</string>
+    <string name="use_monochrome">Tek renkli</string>
+    <string name="use_monochrome_description">Yalnızca siyah ve beyaz</string>
     <string name="skip_enable_confirmation_description">Güvenlik duvarını etkinleştirirken sorma</string>
     <string name="working_mode_title">Çalışma modu</string>
     <string name="working_mode_summary">Güvenlik Duvarı komutlarının nasıl yürütüleceğini seçin</string>

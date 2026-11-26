@@ -24,6 +24,7 @@ open class BaseActivity : AppCompatActivity() {
     private var currentFont: String? = null
     private var currentDynamicColor: Boolean = true
     private var currentAmoledBlack: Boolean = false
+    private var currentMonochrome: Boolean = false
 
     companion object {
         private var shouldAnimateFadeIn = false
@@ -47,6 +48,7 @@ open class BaseActivity : AppCompatActivity() {
         currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         currentDynamicColor = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
         currentAmoledBlack = isAmoledActive(prefs)
+        currentMonochrome = prefs.getBoolean(MainActivity.KEY_USE_MONOCHROME, false)
 
         val themeRes = when {
             currentAmoledBlack && currentFont == "ndot" -> R.style.Theme_ShizuWall_Amoled_Ndot
@@ -58,9 +60,10 @@ open class BaseActivity : AppCompatActivity() {
         
         super.onCreate(savedInstanceState)
 
-        if (currentDynamicColor) {
+        if (currentDynamicColor && !currentMonochrome) {
             DynamicColors.applyToActivityIfAvailable(this)
         }
+        if (currentMonochrome) theme.applyStyle(R.style.ThemeOverlay_ShizuWall_Monochrome, true)
 
         applyRecentsPrivacy()
 
@@ -154,8 +157,9 @@ open class BaseActivity : AppCompatActivity() {
         val savedFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         val savedDynamicColor = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
         val savedAmoledBlack = isAmoledActive(prefs)
+        val savedMonochrome = prefs.getBoolean(MainActivity.KEY_USE_MONOCHROME, false)
 
-        if (savedFont != currentFont || savedDynamicColor != currentDynamicColor || savedAmoledBlack != currentAmoledBlack) {
+        if (savedFont != currentFont || savedDynamicColor != currentDynamicColor || savedAmoledBlack != currentAmoledBlack || savedMonochrome != currentMonochrome) {
             recreateWithAnimation()
         }
     }

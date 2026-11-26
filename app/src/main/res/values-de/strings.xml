@@ -124,6 +124,8 @@
     <string name="use_dynamic_color_description">Hintergrundfarben auf das App-Theme anwenden</string>
     <string name="use_amoled_black">AMOLED-Design verwenden</string>
     <string name="use_amoled_black_description">Reines Schwarz für OLED-Displays</string>
+    <string name="use_monochrome">Monochrome Farben</string>
+    <string name="use_monochrome_description">Nur Schwarz und Weiß</string>
     <string name="skip_enable_confirmation_description">Nicht fragen, wenn Firewall aktiviert wird</string>
     <string name="working_mode_title">Arbeitsmodus</string>
     <string name="working_mode_summary">Wählen Sie, wie Firewall-Befehle ausgeführt werden</string>

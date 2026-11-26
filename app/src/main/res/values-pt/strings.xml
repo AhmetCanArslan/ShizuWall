@@ -124,6 +124,8 @@
     <string name="use_dynamic_color_description">Aplicar cores do papel de parede ao tema do app</string>
     <string name="use_amoled_black">Usar tema AMOLED</string>
     <string name="use_amoled_black_description">Preto puro para telas OLED</string>
+    <string name="use_monochrome">Cores monocromáticas</string>
+    <string name="use_monochrome_description">Apenas preto e branco</string>
     <string name="skip_enable_confirmation_description">Não perguntar ao ativar firewall</string>
     <string name="working_mode_title">Modo de trabalho</string>
     <string name="working_mode_summary">Escolha como os comandos do Firewall são executados</string>

@@ -123,6 +123,8 @@
     <string name="use_dynamic_color_description">Применять цвета обоев к теме приложения</string>
     <string name="use_amoled_black">Использовать AMOLED-тему</string>
     <string name="use_amoled_black_description">Чистый черный для OLED-экранов</string>
+    <string name="use_monochrome">Монохромные цвета</string>
+    <string name="use_monochrome_description">Только чёрный и белый</string>
     <string name="skip_enable_confirmation_description">Не спрашивать при включении брандмауэра</string>
     <string name="skip_error_dialog">Пропускать диалог ошибки</string>
     <string name="skip_error_dialog_description">Не показывать предупреждение при сбое</string>

@@ -22,6 +22,7 @@ class AppearanceSettingsActivity : BaseActivity() {
     private lateinit var switchAppInfoButton: SwitchCompat
     private lateinit var switchUseDynamicColor: SwitchCompat
     private lateinit var switchUseAmoledBlack: SwitchCompat
+    private lateinit var switchUseMonochrome: SwitchCompat
     private lateinit var layoutChangeFont: LinearLayout
     private lateinit var tvCurrentFont: TextView
     private lateinit var tvCurrentTheme: TextView
@@ -47,6 +48,7 @@ class AppearanceSettingsActivity : BaseActivity() {
         switchAppInfoButton = findViewById(R.id.switchAppInfoButton)
         switchUseDynamicColor = findViewById(R.id.switchUseDynamicColor)
         switchUseAmoledBlack = findViewById(R.id.switchUseAmoledBlack)
+        switchUseMonochrome = findViewById(R.id.switchUseMonochrome)
         layoutChangeFont = findViewById(R.id.layoutChangeFont)
         tvCurrentFont = findViewById(R.id.tvCurrentFont)
         tvCurrentTheme = findViewById(R.id.tvCurrentTheme)
@@ -64,6 +66,7 @@ class AppearanceSettingsActivity : BaseActivity() {
         switchAppInfoButton.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_SHOW_APP_INFO_BUTTON, true)
         switchUseDynamicColor.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
         switchUseAmoledBlack.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
+        switchUseMonochrome.isChecked = sharedPreferences.getBoolean(MainActivity.KEY_USE_MONOCHROME, false)
 
         val currentFont = sharedPreferences.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         tvCurrentFont.text = if (currentFont == "ndot") getString(R.string.font_ndot) else getString(R.string.font_default)
@@ -98,6 +101,11 @@ class AppearanceSettingsActivity : BaseActivity() {
             recreateWithAnimation()
         }
 
+        switchUseMonochrome.setOnCheckedChangeListener { _, isChecked ->
+            sharedPreferences.edit().putBoolean(MainActivity.KEY_USE_MONOCHROME, isChecked).apply()
+            recreateWithAnimation()
+        }
+
         layoutChangeFont.setOnClickListener { showFontSelectorDialog() }
         findViewById<View>(R.id.layoutChangeTheme).setOnClickListener { showThemeSelectorDialog() }
         layoutChangeLanguage.setOnClickListener { showLanguageSelectorDialog() }
@@ -108,6 +116,7 @@ class AppearanceSettingsActivity : BaseActivity() {
         makeCardClickableForSwitch(switchAppInfoButton)
         makeCardClickableForSwitch(switchUseDynamicColor)
         makeCardClickableForSwitch(switchUseAmoledBlack)
+        makeCardClickableForSwitch(switchUseMonochrome)
     }
 
     private fun showThemeSelectorDialog() {

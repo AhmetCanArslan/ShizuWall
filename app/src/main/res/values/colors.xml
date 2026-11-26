@@ -4,4 +4,6 @@
     <color name="widget_content_system">#FF1B1B1F</color>
     <color name="widget_content_light">#FF1B1B1F</color>
     <color name="widget_content_dark">#FFECECEC</color>
+    <color name="mono_fg">#FF000000</color>
+    <color name="mono_bg">#FFFFFFFF</color>
 </resources>

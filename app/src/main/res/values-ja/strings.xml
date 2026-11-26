@@ -123,6 +123,8 @@
     <string name="use_dynamic_color_description">壁紙の色をアプリのテーマに適用する</string>
     <string name="use_amoled_black">AMOLEDテーマを使用</string>
     <string name="use_amoled_black_description">OLED画面向けの純粋な黒</string>
+    <string name="use_monochrome">モノクロ</string>
+    <string name="use_monochrome_description">白と黒のみ</string>
     <string name="skip_enable_confirmation_description">ファイアウォール有効化時に確認しない</string>
     <string name="skip_error_dialog">エラーダイアログをスキップ</string>
     <string name="skip_error_dialog_description">失敗時に警告を表示しない</string>

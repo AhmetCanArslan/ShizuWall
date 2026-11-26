@@ -124,6 +124,8 @@
     <string name="use_dynamic_color_description">تطبيق ألوان خلفية الشاشة على مظهر التطبيق</string>
     <string name="use_amoled_black">استخدام سمة AMOLED</string>
     <string name="use_amoled_black_description">أسود نقي لشاشات OLED</string>
+    <string name="use_monochrome">ألوان أحادية</string>
+    <string name="use_monochrome_description">الأسود والأبيض فقط</string>
     <string name="skip_enable_confirmation_description">لا تسأل عند تفعيل الجدار الناري</string>
     <string name="skip_error_dialog">تخطي حوار الخطأ</string>
     <string name="skip_error_dialog_description">عدم إظهار تحذير عند الفشل</string>

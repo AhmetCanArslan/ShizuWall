@@ -127,6 +127,8 @@
     <string name="use_dynamic_color_description">Apply wallpaper colors to app theme</string>
     <string name="use_amoled_black">Use AMOLED theme</string>
     <string name="use_amoled_black_description">Pure black for OLED screens</string>
+    <string name="use_monochrome">Monochrome colors</string>
+    <string name="use_monochrome_description">Black and white only</string>
     <string name="skip_enable_confirmation_description">Don\'t ask when enabling firewall</string>
     <string name="skip_error_dialog">Skip error dialog</string>
     <string name="skip_error_dialog_description">Don\'t show warning on failure</string>

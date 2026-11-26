@@ -131,6 +131,7 @@ class MainActivity : BaseActivity() {
         const val KEY_SELECTED_FONT = "selected_font"
         const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
         const val KEY_USE_AMOLED_BLACK = "use_amoled_black"
+        const val KEY_USE_MONOCHROME = "use_monochrome"
         const val KEY_NIGHT_MODE = "night_mode"
         const val KEY_FIREWALL_MODE = "firewall_mode"
         const val KEY_SCREEN_LOCK_DELAY_SECONDS = "screen_lock_delay_seconds"

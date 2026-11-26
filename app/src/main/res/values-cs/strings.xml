@@ -126,6 +126,8 @@
     <string name="use_dynamic_color_description">Použít barvy tapety na motiv aplikace</string>
     <string name="use_amoled_black">Použít AMOLED motiv</string>
     <string name="use_amoled_black_description">Čistě černá pro OLED displeje</string>
+    <string name="use_monochrome">Monochromatické barvy</string>
+    <string name="use_monochrome_description">Pouze černá a bílá</string>
     <string name="skip_enable_confirmation_description">Neptat se při zapínání firewallu</string>
     <string name="skip_error_dialog">Přeskočit dialog chyby</string>
     <string name="skip_error_dialog_description">Nezobrazovat varování při selhání</string>

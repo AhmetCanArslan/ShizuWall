@@ -127,6 +127,8 @@
     <string name="use_dynamic_color_description">ऐप थीम पर वॉलपेपर के रंग लागू करें</string>
     <string name="use_amoled_black">AMOLED थीम उपयोग करें</string>
     <string name="use_amoled_black_description">OLED स्क्रीन के लिए शुद्ध काला</string>
+    <string name="use_monochrome">मोनोक्रोम रंग</string>
+    <string name="use_monochrome_description">केवल काला और सफ़ेद</string>
     <string name="skip_enable_confirmation_description">फ़ायरवॉल चालू करते समय न पूछें</string>
     <string name="skip_error_dialog">त्रुटि संवाद छोड़ें</string>
     <string name="skip_error_dialog_description">विफलता पर चेतावनी न दिखाएँ</string>

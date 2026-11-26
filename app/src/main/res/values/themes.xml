@@ -46,6 +46,28 @@
         <item name="chipStyle">@style/Widget.ShizuWall.Chip.Ndot</item>
     </style>
 
+    <style name="ThemeOverlay.ShizuWall.Monochrome" parent="">
+        <item name="colorPrimary">@color/mono_fg</item>
+        <item name="colorOnPrimary">@color/mono_bg</item>
+        <item name="colorPrimaryContainer">@color/mono_fg</item>
+        <item name="colorOnPrimaryContainer">@color/mono_bg</item>
+        <item name="colorSecondary">@color/mono_fg</item>
+        <item name="colorOnSecondary">@color/mono_bg</item>
+        <item name="colorSecondaryContainer">@color/mono_fg</item>
+        <item name="colorOnSecondaryContainer">@color/mono_bg</item>
+        <item name="colorTertiary">@color/mono_fg</item>
+        <item name="colorOnTertiary">@color/mono_bg</item>
+        <item name="colorTertiaryContainer">@color/mono_fg</item>
+        <item name="colorOnTertiaryContainer">@color/mono_bg</item>
+        <item name="colorOnSurface">@color/mono_fg</item>
+        <item name="colorOnSurfaceVariant">@color/mono_fg</item>
+        <item name="colorOnBackground">@color/mono_fg</item>
+        <item name="colorOutline">@color/mono_fg</item>
+        <item name="colorOutlineVariant">@color/mono_fg</item>
+        <item name="android:textColorPrimary">@color/mono_fg</item>
+        <item name="android:textColorSecondary">@color/mono_fg</item>
+    </style>
+
     <style name="Widget.ShizuWall.Chip" parent="Widget.Material3.Chip.Filter">
         <item name="checkedIconVisible">false</item>
     </style>

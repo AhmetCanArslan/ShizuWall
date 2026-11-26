@@ -123,6 +123,8 @@
     <string name="use_dynamic_color_description">Aplicar colores de fondo de pantalla al tema de la app</string>
     <string name="use_amoled_black">Usar tema AMOLED</string>
     <string name="use_amoled_black_description">Negro puro para pantallas OLED</string>
+    <string name="use_monochrome">Colores monocromáticos</string>
+    <string name="use_monochrome_description">Solo blanco y negro</string>
     <string name="skip_enable_confirmation_description">No preguntar al activar el firewall</string>
     <string name="skip_error_dialog">Omitir diálogo de error</string>
     <string name="skip_error_dialog_description">No mostrar advertencias en caso de fallo</string>
