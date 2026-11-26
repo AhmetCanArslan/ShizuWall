@@ -46,7 +46,7 @@ open class BaseActivity : AppCompatActivity() {
         val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         currentFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         currentDynamicColor = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
-        currentAmoledBlack = prefs.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
+        currentAmoledBlack = isAmoledActive(prefs)
 
         val themeRes = when {
             currentAmoledBlack && currentFont == "ndot" -> R.style.Theme_ShizuWall_Amoled_Ndot
@@ -153,12 +153,19 @@ open class BaseActivity : AppCompatActivity() {
         val prefs = getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
         val savedFont = prefs.getString(MainActivity.KEY_SELECTED_FONT, "default") ?: "default"
         val savedDynamicColor = prefs.getBoolean(MainActivity.KEY_USE_DYNAMIC_COLOR, true)
-        val savedAmoledBlack = prefs.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
+        val savedAmoledBlack = isAmoledActive(prefs)
 
         if (savedFont != currentFont || savedDynamicColor != currentDynamicColor || savedAmoledBlack != currentAmoledBlack) {
             recreateWithAnimation()
         }
     }
+
+    protected fun isAmoledActive(prefs: android.content.SharedPreferences): Boolean =
+        prefs.getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false) && when (androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode()) {
+            androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES -> true
+            androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO -> false
+            else -> applicationContext.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        }
 
     protected fun recreateWithAnimation() {
         val rootView = findViewById<View>(android.R.id.content)

@@ -83,9 +83,7 @@ class AppLockActivity : BaseActivity() {
         setContentView(R.layout.activity_app_lock)
 
         val root = findViewById<View>(R.id.appLockRoot)
-        if (getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE)
-                .getBoolean(MainActivity.KEY_USE_AMOLED_BLACK, false)
-        ) {
+        if (isAmoledActive(getSharedPreferences(MainActivity.PREF_NAME, Context.MODE_PRIVATE))) {
             root.setBackgroundColor(android.graphics.Color.BLACK)
         }
         ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
